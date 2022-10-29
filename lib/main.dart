@@ -1,46 +1,250 @@
-import 'package:flutter/material.dart';
-import 'ffi.dart' if (dart.library.html) 'ffi_web.dart';
+import 'dart:collection';
 
-void main() {
-  runApp(const MyApp());
+import 'package:flutter/material.dart';
+import 'package:flutter_map/plugin_api.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:udp/udp.dart';
+import 'ffi.dart' if (dart.library.html) 'ffi_web.dart';
+import 'dart:async';
+import 'dart:io';
+import 'dart:developer' as developer;
+import 'package:http/http.dart' as http;
+import 'fk-app.pb.dart' as app;
+import 'package:protobuf/protobuf.dart' as protobuf;
+import 'package:provider/provider.dart';
+
+class Station {
+  final String deviceId;
+  final String name;
+
+  const Station({
+    required this.deviceId,
+    required this.name,
+  });
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class KnownStationsModel extends ChangeNotifier {
+  final List<Station> _stations = [
+    const Station(deviceId: '0', name: 'Quirky Puppy 34'),
+    const Station(deviceId: '1', name: 'Super Slinky 11'),
+    const Station(deviceId: '2', name: 'Slippery Penguin 20'),
+  ];
 
-  // This widget is the root of your application.
+  UnmodifiableListView<Station> get stations => UnmodifiableListView(_stations);
+
+  void add(Station station) {
+    _stations.add(station);
+    notifyListeners();
+  }
+}
+
+Future<app.HttpReply> fetchStatus(address) async {
+  var response = await http.get(Uri.parse("http://${address.address}/fk/v1"));
+  var reader = protobuf.CodedBufferReader(response.bodyBytes);
+  var bytes = reader.readBytes();
+  return app.HttpReply.fromBuffer(bytes);
+}
+
+void main() async {
+  var multicastEndpoint = Endpoint.multicast(InternetAddress("224.0.0.123"),
+      port: const Port(22143));
+  var receiver = await UDP.bind(multicastEndpoint);
+
+  receiver.asStream().listen((datagram) async {
+    developer.log("udp:packet ${datagram?.address} ${datagram?.data}");
+
+    if (datagram != null) {
+      var status = await fetchStatus(datagram.address);
+      developer.log("ok $status");
+    }
+  });
+
+  // todo: Close receiver
+
+  runApp(ChangeNotifierProvider(
+    create: (context) => KnownStationsModel(),
+    child: const OurApp(),
+  ));
+}
+
+class StationsTab extends StatelessWidget {
+  const StationsTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(onGenerateRoute: (RouteSettings settings) {
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (context) => Consumer<KnownStationsModel>(
+          builder: (context, knownStations, child) {
+            return ListStationsRoute(stations: knownStations.stations);
+          },
+        ),
+      );
+    });
+  }
+}
+
+class DataSyncTab extends StatelessWidget {
+  const DataSyncTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(onGenerateRoute: (RouteSettings settings) {
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (context) => const DataSyncRoute(),
+      );
+    });
+  }
+}
+
+class Map extends StatelessWidget {
+  const Map({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FlutterMap(
+      options: MapOptions(
+        center: LatLng(48.864716, 2.349014),
+        zoom: 9.2,
+      ),
+      nonRotatedChildren: [
+        AttributionWidget.defaultWidget(
+          source: 'OpenStreetMap contributors',
+          onSourceTapped: null,
+        ),
+      ],
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.example.app',
+        ),
+      ],
+    );
+  }
+}
+
+class ListStationsRoute extends StatelessWidget {
+  const ListStationsRoute({super.key, required this.stations});
+
+  final List<Station> stations;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Stations'),
+      ),
+      body: ListView.builder(
+        itemCount: stations.length + 1,
+        itemBuilder: (context, index) {
+          // This is a huge hack, but was the fastest way to get this working
+          // and shouldn't leak outside of this class.
+          if (index == 0) {
+            return const SizedBox(height: 300, child: Map());
+          }
+
+          return ListTile(
+            title: Text(stations[index - 1].name),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ViewStationRoute(station: stations[index - 1]),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class ViewStationRoute extends StatelessWidget {
+  const ViewStationRoute({super.key, required this.station});
+
+  final Station station;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(station.name),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          child: const Text('Back'),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class DataSyncRoute extends StatelessWidget {
+  const DataSyncRoute({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Data Sync'),
+      ),
+      body: const Center(),
+    );
+  }
+}
+
+class OurApp extends StatefulWidget {
+  const OurApp({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _OurAppState();
+  }
+}
+
+class _OurAppState extends State<OurApp> {
+  Timer? timer;
+
+  @override
+  void initState() {
+    developer.log("app-state:initialize");
+    super.initState();
+
+    timer = Timer(
+      const Duration(seconds: 3),
+      () {
+        developer.log("app-state:tick");
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    timer?.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'FieldKit',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const HomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -142,6 +346,84 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SettingsTab extends StatelessWidget {
+  const SettingsTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(onGenerateRoute: (RouteSettings settings) {
+      return MaterialPageRoute(
+          settings: settings,
+          builder: (BuildContext context) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Settings'),
+              ),
+              body: Center(
+                child: ElevatedButton(
+                  child: const Text('Settings'),
+                  onPressed: () {},
+                ),
+              ),
+            );
+          });
+    });
+  }
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _pageIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: IndexedStack(
+          index: _pageIndex,
+          children: const <Widget>[
+            StationsTab(),
+            DataSyncTab(),
+            SettingsTab(),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Stations',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'Data',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.computer),
+            label: 'Settings',
+          ),
+        ],
+        currentIndex: _pageIndex,
+        onTap: (int index) {
+          setState(
+            () {
+              _pageIndex = index;
+            },
+          );
+        },
       ),
     );
   }
