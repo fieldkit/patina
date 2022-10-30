@@ -17,6 +17,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8A2A4A73290D83A4003F8897 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A35253292866B17200EFD9C6 /* native.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CA603EE7FF4DEAC3B2E0A336;
+			remoteInfo = "native-cdylib";
+		};
+		8A2A4A75290D83A4003F8897 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A35253292866B17200EFD9C6 /* native.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CA60F0FEBE702969E816930C;
+			remoteInfo = "native-staticlib";
+		};
 		A35253372866B1B000EFD9C6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A35253342866B1B000EFD9C6 /* native.xcodeproj */;
@@ -84,6 +98,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8A2A4A6F290D83A4003F8897 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8A2A4A74290D83A4003F8897 /* native.dylib */,
+				8A2A4A76290D83A4003F8897 /* libnative_static.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
@@ -202,6 +225,10 @@
 					ProductGroup = A35253352866B1B000EFD9C6 /* Products */;
 					ProjectRef = A35253342866B1B000EFD9C6 /* native.xcodeproj */;
 				},
+				{
+					ProductGroup = 8A2A4A6F290D83A4003F8897 /* Products */;
+					ProjectRef = A35253292866B17200EFD9C6 /* native.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -211,6 +238,20 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		8A2A4A74290D83A4003F8897 /* native.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = native.dylib;
+			remoteRef = 8A2A4A73290D83A4003F8897 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8A2A4A76290D83A4003F8897 /* libnative_static.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnative_static.a;
+			remoteRef = 8A2A4A75290D83A4003F8897 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		A352533C2866B1B100EFD9C6 /* native.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
