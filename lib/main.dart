@@ -46,8 +46,8 @@ Future<app.HttpReply> fetchStatus(address) async {
 }
 
 void main() async {
-  var multicastEndpoint = Endpoint.multicast(InternetAddress("224.0.0.123"),
-      port: const Port(22143));
+  var multicastEndpoint =
+      Endpoint.multicast(InternetAddress("224.1.2.3"), port: const Port(22143));
   var receiver = await UDP.bind(multicastEndpoint);
 
   receiver.asStream().listen((datagram) async {
@@ -217,9 +217,9 @@ class _OurAppState extends State<OurApp> {
     developer.log("app-state:initialize");
     super.initState();
 
-    timer = Timer(
+    timer = Timer.periodic(
       const Duration(seconds: 3),
-      () {
+      (timer) {
         developer.log("app-state:tick");
       },
     );
