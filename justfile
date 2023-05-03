@@ -22,3 +22,6 @@ serve *args='':
     flutter pub run flutter_rust_bridge:serve {{args}}
 
 # vim:expandtab:sw=4:ts=4
+
+# https://docs.flutter.dev/development/platform-integration/desktop
+# sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev

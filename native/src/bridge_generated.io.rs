@@ -11,6 +11,16 @@ pub extern "C" fn wire_rust_release_mode(port_: i64) {
     wire_rust_release_mode_impl(port_)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_create_log_sink(port_: i64) {
+    wire_create_log_sink_impl(port_)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_tick(port_: i64) {
+    wire_tick_impl(port_)
+}
+
 // Section: allocate functions
 
 // Section: impl Wire2Api

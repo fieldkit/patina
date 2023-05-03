@@ -45,7 +45,15 @@ Future<app.HttpReply> fetchStatus(address) async {
   return app.HttpReply.fromBuffer(bytes);
 }
 
+Future<void> _setupNative() async {
+    api.createLogSink().listen((logRow) {
+      print(logRow.trim());
+    });
+}
+
 void main() async {
+  await _setupNative();
+
   var multicastEndpoint =
       Endpoint.multicast(InternetAddress("224.1.2.3"), port: const Port(22143));
   var receiver = await UDP.bind(multicastEndpoint);
@@ -81,6 +89,31 @@ class StationsTab extends StatelessWidget {
           },
         ),
       );
+    });
+  }
+}
+
+class SettingsTab extends StatelessWidget {
+  const SettingsTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(onGenerateRoute: (RouteSettings settings) {
+      return MaterialPageRoute(
+          settings: settings,
+          builder: (BuildContext context) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Settings'),
+              ),
+              body: Center(
+                child: ElevatedButton(
+                  child: const Text('Settings'),
+                  onPressed: () {},
+                ),
+              ),
+            );
+          });
     });
   }
 }
@@ -200,6 +233,59 @@ class DataSyncRoute extends StatelessWidget {
   }
 }
 
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _pageIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: IndexedStack(
+          index: _pageIndex,
+          children: const <Widget>[
+            StationsTab(),
+            DataSyncTab(),
+            SettingsTab(),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Stations',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'Data',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.computer),
+            label: 'Settings',
+          ),
+        ],
+        currentIndex: _pageIndex,
+        onTap: (int index) {
+          setState(
+            () {
+              _pageIndex = index;
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
 class OurApp extends StatefulWidget {
   const OurApp({Key? key}) : super(key: key);
 
@@ -210,12 +296,19 @@ class OurApp extends StatefulWidget {
 }
 
 class _OurAppState extends State<OurApp> {
+  late Stream<int> ticks;
   Timer? timer;
 
   @override
   void initState() {
     developer.log("app-state:initialize");
     super.initState();
+
+    ticks = api.tick();
+
+    ticks.listen((tick) {
+      print("tick! $tick");
+    });
 
     timer = Timer.periodic(
       const Duration(seconds: 3),
@@ -243,15 +336,7 @@ class _OurAppState extends State<OurApp> {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
+/*
 class _MyHomePageState extends State<MyHomePage> {
   // These futures belong to the state and are only initialized once,
   // in the initState method.
@@ -350,81 +435,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-class SettingsTab extends StatelessWidget {
-  const SettingsTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Navigator(onGenerateRoute: (RouteSettings settings) {
-      return MaterialPageRoute(
-          settings: settings,
-          builder: (BuildContext context) {
-            return Scaffold(
-              appBar: AppBar(
-                title: const Text('Settings'),
-              ),
-              body: Center(
-                child: ElevatedButton(
-                  child: const Text('Settings'),
-                  onPressed: () {},
-                ),
-              ),
-            );
-          });
-    });
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _pageIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: IndexedStack(
-          index: _pageIndex,
-          children: const <Widget>[
-            StationsTab(),
-            DataSyncTab(),
-            SettingsTab(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Stations',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Data',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.computer),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _pageIndex,
-        onTap: (int index) {
-          setState(
-            () {
-              _pageIndex = index;
-            },
-          );
-        },
-      ),
-    );
-  }
-}
+*/

@@ -39,6 +39,26 @@ fn wire_rust_release_mode_impl(port_: MessagePort) {
         move || move |task_callback| Ok(rust_release_mode()),
     )
 }
+fn wire_create_log_sink_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "create_log_sink",
+            port: Some(port_),
+            mode: FfiCallMode::Stream,
+        },
+        move || move |task_callback| create_log_sink(task_callback.stream_sink()),
+    )
+}
+fn wire_tick_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "tick",
+            port: Some(port_),
+            mode: FfiCallMode::Stream,
+        },
+        move || move |task_callback| tick(task_callback.stream_sink()),
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks
@@ -76,6 +96,7 @@ impl support::IntoDart for Platform {
         .into_dart()
     }
 }
+
 // Section: executor
 
 support::lazy_static! {

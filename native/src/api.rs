@@ -1,6 +1,8 @@
-// This is the entry point of your Rust library.
-// When adding new code to your project, note that only items used
-// here will be transformed to their Dart equivalents.
+use anyhow::{bail, Result};
+use flutter_rust_bridge::StreamSink;
+use std::io::Write;
+use std::{thread::sleep, time::Duration};
+use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 // A plain enum without any fields. This is similar to Dart- or C-style enums.
 // flutter_rust_bridge is capable of generating code for enums with fields
@@ -56,4 +58,62 @@ pub fn platform() -> Platform {
 // and they are automatically converted to camelCase on the Dart side.
 pub fn rust_release_mode() -> bool {
     cfg!(not(debug_assertions))
+}
+
+/// Wrapper so that we can implement required Write and MakeWriter traits.
+struct LogSink {
+    sink: StreamSink<String>,
+}
+
+/// Write log lines to our Flutter's sink.
+impl<'a> Write for &'a LogSink {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        let line = String::from_utf8_lossy(buf).to_string();
+        self.sink.add(line);
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
+impl<'a> MakeWriter<'a> for LogSink {
+    type Writer = &'a LogSink;
+
+    fn make_writer(&'a self) -> Self::Writer {
+        self
+    }
+}
+
+pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
+    let log_sink = LogSink { sink };
+
+    if let Err(err) = tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::TRACE)
+        .with_env_filter(EnvFilter::new("trace"))
+        .with_writer(log_sink)
+        .try_init()
+    {
+        bail!("{}", err);
+    }
+
+    Ok(())
+}
+
+const ONE_SECOND: Duration = Duration::from_secs(1);
+
+// can't omit the return type yet, this is a bug
+pub fn tick(sink: StreamSink<i32>) -> Result<()> {
+    let mut ticks = 0;
+    loop {
+        tracing::info!("tick");
+        sink.add(ticks);
+        sleep(ONE_SECOND);
+        if ticks == i32::MAX {
+            break;
+        }
+        ticks += 1;
+    }
+    Ok(())
 }

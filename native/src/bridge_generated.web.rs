@@ -11,6 +11,16 @@ pub fn wire_rust_release_mode(port_: MessagePort) {
     wire_rust_release_mode_impl(port_)
 }
 
+#[wasm_bindgen]
+pub fn wire_create_log_sink(port_: MessagePort) {
+    wire_create_log_sink_impl(port_)
+}
+
+#[wasm_bindgen]
+pub fn wire_tick(port_: MessagePort) {
+    wire_tick_impl(port_)
+}
+
 // Section: allocate functions
 
 // Section: impl Wire2Api

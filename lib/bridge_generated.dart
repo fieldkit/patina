@@ -49,7 +49,41 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
+  Stream<String> createLogSink({dynamic hint}) =>
+      _platform.executeStream(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_create_log_sink(port_),
+        parseSuccessData: _wire2api_String,
+        constMeta: kCreateLogSinkConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kCreateLogSinkConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "create_log_sink",
+        argNames: [],
+      );
+
+  Stream<int> tick({dynamic hint}) =>
+      _platform.executeStream(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_tick(port_),
+        parseSuccessData: _wire2api_i32,
+        constMeta: kTickConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kTickConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "tick",
+        argNames: [],
+      );
+
 // Section: wire2api
+
+  String _wire2api_String(dynamic raw) {
+    return raw as String;
+  }
 
   bool _wire2api_bool(dynamic raw) {
     return raw as bool;
@@ -61,6 +95,14 @@ class NativeImpl implements Native {
 
   Platform _wire2api_platform(dynamic raw) {
     return Platform.values[raw];
+  }
+
+  int _wire2api_u8(dynamic raw) {
+    return raw as int;
+  }
+
+  Uint8List _wire2api_uint_8_list(dynamic raw) {
+    return raw as Uint8List;
   }
 }
 
