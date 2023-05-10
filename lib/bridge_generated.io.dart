@@ -54,20 +54,6 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
       .asFunction<void Function(DartPostCObjectFnType)>();
 
-  void wire_platform(
-    int port_,
-  ) {
-    return _wire_platform(
-      port_,
-    );
-  }
-
-  late final _wire_platformPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_platform');
-  late final _wire_platform =
-      _wire_platformPtr.asFunction<void Function(int)>();
-
   void wire_rust_release_mode(
     int port_,
   ) {
@@ -96,17 +82,19 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_create_log_sink =
       _wire_create_log_sinkPtr.asFunction<void Function(int)>();
 
-  void wire_tick(
+  void wire_start_native(
     int port_,
   ) {
-    return _wire_tick(
+    return _wire_start_native(
       port_,
     );
   }
 
-  late final _wire_tickPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_tick');
-  late final _wire_tick = _wire_tickPtr.asFunction<void Function(int)>();
+  late final _wire_start_nativePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_start_native');
+  late final _wire_start_native =
+      _wire_start_nativePtr.asFunction<void Function(int)>();
 
   void free_WireSyncReturnStruct(
     WireSyncReturnStruct val,

@@ -2,56 +2,25 @@ use anyhow::{bail, Result};
 use flutter_rust_bridge::StreamSink;
 use std::io::Write;
 use std::{thread::sleep, time::Duration};
+use tokio::runtime::Runtime;
+use tokio::sync::mpsc::Sender;
+use tokio::sync::oneshot;
+use tracing::info;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
-// A plain enum without any fields. This is similar to Dart- or C-style enums.
-// flutter_rust_bridge is capable of generating code for enums with fields
-// (@freezed classes in Dart and tagged unions in C).
-pub enum Platform {
-    Unknown,
-    Android,
-    Ios,
-    Windows,
-    Unix,
-    MacIntel,
-    MacApple,
-    Wasm,
-}
+const ONE_SECOND: Duration = Duration::from_secs(1);
 
-// A function definition in Rust. Similar to Dart, the return type must always be named
-// and is never inferred.
-pub fn platform() -> Platform {
-    // This is a macro, a special expression that expands into code. In Rust, all macros
-    // end with an exclamation mark and can be invoked with all kinds of brackets (parentheses,
-    // brackets and curly braces). However, certain conventions exist, for example the
-    // vector macro is almost always invoked as vec![..].
-    //
-    // The cfg!() macro returns a boolean value based on the current compiler configuration.
-    // When attached to expressions (#[cfg(..)] form), they show or hide the expression at compile time.
-    // Here, however, they evaluate to runtime values, which may or may not be optimized out
-    // by the compiler. A variety of configurations are demonstrated here which cover most of
-    // the modern oeprating systems. Try running the Flutter application on different machines
-    // and see if it matches your expected OS.
-    //
-    // Furthermore, in Rust, the last expression in a function is the return value and does
-    // not have the trailing semicolon. This entire if-else chain forms a single expression.
-    if cfg!(windows) {
-        Platform::Windows
-    } else if cfg!(target_os = "android") {
-        Platform::Android
-    } else if cfg!(target_os = "ios") {
-        Platform::Ios
-    } else if cfg!(all(target_os = "macos", target_arch = "aarch64")) {
-        Platform::MacApple
-    } else if cfg!(target_os = "macos") {
-        Platform::MacIntel
-    } else if cfg!(target_family = "wasm") {
-        Platform::Wasm
-    } else if cfg!(unix) {
-        Platform::Unix
-    } else {
-        Platform::Unknown
-    }
+static SDK: std::sync::Mutex<Option<Sdk>> = std::sync::Mutex::new(None);
+static RUNTIME: std::sync::Mutex<Option<Runtime>> = std::sync::Mutex::new(None);
+
+fn start_runtime() -> Result<Runtime> {
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(3)
+        .enable_all()
+        .thread_name("fieldkit-client")
+        .build()?;
+
+    Ok(rt)
 }
 
 // The convention for Rust identifiers is the snake_case,
@@ -101,19 +70,73 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
     Ok(())
 }
 
-const ONE_SECOND: Duration = Duration::from_secs(1);
+#[allow(dead_code)]
+pub enum DomainMessage {
+    PreAccount,
+    PostAccount,
+    Tick,
+}
 
-// can't omit the return type yet, this is a bug
-pub fn tick(sink: StreamSink<i32>) -> Result<()> {
-    let mut ticks = 0;
+async fn create_sdk(publish_tx: tokio::sync::mpsc::Sender<DomainMessage>) -> Result<Sdk> {
+    info!("startup:bg");
+    tokio::spawn(async move { background_task().await });
+
+    Ok(Sdk::new(publish_tx)?)
+}
+
+async fn background_task() {
+    info!("bg:started");
+
     loop {
-        tracing::info!("tick");
-        sink.add(ticks);
+        info!("bg:tick");
         sleep(ONE_SECOND);
-        if ticks == i32::MAX {
-            break;
-        }
-        ticks += 1;
     }
+}
+
+pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
+    info!("startup:runtime");
+    let rt = start_runtime()?;
+
+    let (publish_tx, mut publish_rx) = tokio::sync::mpsc::channel(20);
+    let sdk = rt.block_on(create_sdk(publish_tx))?;
+
+    sink.add(DomainMessage::PreAccount);
+
+    let handle = rt.handle().clone();
+
+    // I really wish there was a better way. There are _other_ ways, though I
+    // dunno if they're better.
+    {
+        *SDK.lock().expect("Set sdk") = Some(sdk);
+        *RUNTIME.lock().expect("Set runtime") = Some(rt);
+    }
+
+    info!("startup:pump");
+    let (tx, rx) = oneshot::channel();
+    // We are spawning an async task from a thread that is not managed by
+    // Tokio runtime. For this to work we need to enter the handle.
+    // Ref: https://docs.rs/tokio/latest/tokio/runtime/struct.Handle.html#method.current
+    let _guard = handle.enter();
+    tokio::spawn(async move {
+        while let Some(e) = publish_rx.recv().await {
+            info!("sdk:publish");
+            sink.add(e.into());
+        }
+        let _ = tx.send(());
+    });
+
+    let _ = rx.blocking_recv();
+    info!("sdk:ready");
     Ok(())
+}
+
+pub struct Sdk {
+    #[allow(dead_code)]
+    publish_tx: Sender<DomainMessage>,
+}
+
+impl Sdk {
+    fn new(publish_tx: Sender<DomainMessage>) -> Result<Self> {
+        Ok(Self { publish_tx })
+    }
 }

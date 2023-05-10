@@ -46,9 +46,19 @@ Future<app.HttpReply> fetchStatus(address) async {
 }
 
 Future<void> _setupNative() async {
-    api.createLogSink().listen((logRow) {
-      print(logRow.trim());
-    });
+  api.createLogSink().listen((logRow) {
+    var display = logRow.trim();
+    debugPrint(display);
+    developer.log(display);
+  });
+
+  await Future.delayed(const Duration(milliseconds: 250));
+
+  api.startNative().listen((e) {
+    var display = e.toString().trim();
+    debugPrint(display);
+    developer.log(display);
+  });
 }
 
 void main() async {
@@ -304,11 +314,13 @@ class _OurAppState extends State<OurApp> {
     developer.log("app-state:initialize");
     super.initState();
 
+    /*
     ticks = api.tick();
 
     ticks.listen((tick) {
       print("tick! $tick");
     });
+    */
 
     timer = Timer.periodic(
       const Duration(seconds: 3),

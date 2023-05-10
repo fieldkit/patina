@@ -19,16 +19,6 @@ use flutter_rust_bridge::*;
 
 // Section: wire functions
 
-fn wire_platform_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "platform",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || move |task_callback| Ok(platform()),
-    )
-}
 fn wire_rust_release_mode_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -49,14 +39,14 @@ fn wire_create_log_sink_impl(port_: MessagePort) {
         move || move |task_callback| create_log_sink(task_callback.stream_sink()),
     )
 }
-fn wire_tick_impl(port_: MessagePort) {
+fn wire_start_native_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "tick",
+            debug_name: "start_native",
             port: Some(port_),
             mode: FfiCallMode::Stream,
         },
-        move || move |task_callback| tick(task_callback.stream_sink()),
+        move || move |task_callback| start_native(task_callback.stream_sink()),
     )
 }
 // Section: wrapper structs
@@ -81,17 +71,12 @@ where
 }
 // Section: impl IntoDart
 
-impl support::IntoDart for Platform {
+impl support::IntoDart for DomainMessage {
     fn into_dart(self) -> support::DartAbi {
         match self {
-            Self::Unknown => 0,
-            Self::Android => 1,
-            Self::Ios => 2,
-            Self::Windows => 3,
-            Self::Unix => 4,
-            Self::MacIntel => 5,
-            Self::MacApple => 6,
-            Self::Wasm => 7,
+            Self::PreAccount => 0,
+            Self::PostAccount => 1,
+            Self::Tick => 2,
         }
         .into_dart()
     }

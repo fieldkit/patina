@@ -19,21 +19,6 @@ class NativeImpl implements Native {
   factory NativeImpl.wasm(FutureOr<WasmModule> module) =>
       NativeImpl(module as ExternalLibrary);
   NativeImpl.raw(this._platform);
-  Future<Platform> platform({dynamic hint}) =>
-      _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_platform(port_),
-        parseSuccessData: _wire2api_platform,
-        constMeta: kPlatformConstMeta,
-        argValues: [],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kPlatformConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "platform",
-        argNames: [],
-      );
-
   Future<bool> rustReleaseMode({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner.wire_rust_release_mode(port_),
@@ -64,18 +49,18 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
-  Stream<int> tick({dynamic hint}) =>
+  Stream<DomainMessage> startNative({dynamic hint}) =>
       _platform.executeStream(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_tick(port_),
-        parseSuccessData: _wire2api_i32,
-        constMeta: kTickConstMeta,
+        callFfi: (port_) => _platform.inner.wire_start_native(port_),
+        parseSuccessData: _wire2api_domain_message,
+        constMeta: kStartNativeConstMeta,
         argValues: [],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kTickConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kStartNativeConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "tick",
+        debugName: "start_native",
         argNames: [],
       );
 
@@ -89,12 +74,12 @@ class NativeImpl implements Native {
     return raw as bool;
   }
 
-  int _wire2api_i32(dynamic raw) {
-    return raw as int;
+  DomainMessage _wire2api_domain_message(dynamic raw) {
+    return DomainMessage.values[raw];
   }
 
-  Platform _wire2api_platform(dynamic raw) {
-    return Platform.values[raw];
+  int _wire2api_i32(dynamic raw) {
+    return raw as int;
   }
 
   int _wire2api_u8(dynamic raw) {
