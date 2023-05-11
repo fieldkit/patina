@@ -75,6 +75,8 @@ pub enum DomainMessage {
     PreAccount,
     PostAccount,
     Tick,
+    MyStations,
+    StationRefreshed,
 }
 
 async fn create_sdk(publish_tx: tokio::sync::mpsc::Sender<DomainMessage>) -> Result<Sdk> {
@@ -124,9 +126,11 @@ pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
         }
         let _ = tx.send(());
     });
+    info!("sdk:ready");
 
     let _ = rx.blocking_recv();
-    info!("sdk:ready");
+    info!("sdk:finished");
+
     Ok(())
 }
 

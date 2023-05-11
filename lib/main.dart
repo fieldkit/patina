@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'fk-app.pb.dart' as app;
 import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:provider/provider.dart';
+import 'dispatcher.dart';
 
 class Station {
   final String deviceId;
@@ -45,7 +46,7 @@ Future<app.HttpReply> fetchStatus(address) async {
   return app.HttpReply.fromBuffer(bytes);
 }
 
-Future<void> _setupNative() async {
+Future<void> _startNative(AppEventDispatcher dispatcher) async {
   api.createLogSink().listen((logRow) {
     var display = logRow.trim();
     debugPrint(display);
@@ -54,15 +55,26 @@ Future<void> _setupNative() async {
 
   await Future.delayed(const Duration(milliseconds: 250));
 
-  api.startNative().listen((e) {
+  await for (final e in api.startNative()) {
     var display = e.toString().trim();
     debugPrint(display);
     developer.log(display);
-  });
+    dispatcher.dispatch(e);
+  }
+}
+
+void _runNative(AppEventDispatcher dispatcher) async {
+  try {
+    await _startNative(dispatcher);
+  } catch (e, st) {
+    debugPrint('Cannot setup native module: $e $st');
+  }
 }
 
 void main() async {
-  await _setupNative();
+  var dispatcher = AppEventDispatcher();
+
+  _runNative(dispatcher);
 
   var multicastEndpoint =
       Endpoint.multicast(InternetAddress("224.1.2.3"), port: const Port(22143));

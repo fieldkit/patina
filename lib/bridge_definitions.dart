@@ -24,4 +24,6 @@ enum DomainMessage {
   PreAccount,
   PostAccount,
   Tick,
+  MyStations,
+  StationRefreshed,
 }

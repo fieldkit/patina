@@ -77,6 +77,8 @@ impl support::IntoDart for DomainMessage {
             Self::PreAccount => 0,
             Self::PostAccount => 1,
             Self::Tick => 2,
+            Self::MyStations => 3,
+            Self::StationRefreshed => 4,
         }
         .into_dart()
     }
