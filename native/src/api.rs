@@ -8,6 +8,8 @@ use tokio::sync::oneshot;
 use tracing::info;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
+use discovery::{Discovered, Discovery};
+
 const ONE_SECOND: Duration = Duration::from_secs(1);
 
 static SDK: std::sync::Mutex<Option<Sdk>> = std::sync::Mutex::new(None);
@@ -88,6 +90,22 @@ async fn create_sdk(publish_tx: tokio::sync::mpsc::Sender<DomainMessage>) -> Res
 
 async fn background_task() {
     info!("bg:started");
+
+    let (tx, mut _rx) = tokio::sync::mpsc::channel::<Discovered>(32);
+    let discovery = Discovery::default();
+
+    let pump = tokio::spawn({
+        async move {
+            loop {
+                sleep(ONE_SECOND);
+            }
+        }
+    });
+
+    tokio::select! {
+        _ = discovery.run(tx) => {},
+        _ = pump => {},
+    };
 
     loop {
         info!("bg:tick");
