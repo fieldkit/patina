@@ -18,6 +18,8 @@ pub extern "C" fn wire_start_native(port_: i64) {
 
 // Section: allocate functions
 
+// Section: related functions
+
 // Section: impl Wire2Api
 
 // Section: wire structs
@@ -37,8 +39,8 @@ impl<T> NewWithNullPtr for *mut T {
 // Section: sync execution mode utility
 
 #[no_mangle]
-pub extern "C" fn free_WireSyncReturnStruct(val: support::WireSyncReturnStruct) {
+pub extern "C" fn free_WireSyncReturn(ptr: support::WireSyncReturn) {
     unsafe {
-        let _ = support::vec_from_leak_ptr(val.ptr, val.len);
-    }
+        let _ = support::box_from_leak_ptr(ptr);
+    };
 }

@@ -18,6 +18,8 @@ pub fn wire_start_native(port_: MessagePort) {
 
 // Section: allocate functions
 
+// Section: related functions
+
 // Section: impl Wire2Api
 
 // Section: impl Wire2Api for JsValue
