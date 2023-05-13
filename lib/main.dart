@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
@@ -53,7 +54,9 @@ Future<void> _startNative(AppEventDispatcher dispatcher) async {
     developer.log(display);
   });
 
-  await Future.delayed(const Duration(milliseconds: 250));
+  // This is here because the initial native logs were getting chopped off, no
+  // idea why and yes this is a hack.
+  await Future.delayed(const Duration(milliseconds: 100));
 
   await for (final e in api.startNative()) {
     var display = e.toString().trim();
@@ -71,10 +74,42 @@ void _runNative(AppEventDispatcher dispatcher) async {
   }
 }
 
-void main() async {
-  var dispatcher = AppEventDispatcher();
+class AppState {
+  final AppEventDispatcher dispatcher;
 
+  AppState._(this.dispatcher);
+
+  static AppState build(AppEventDispatcher dispatcher) {
+    return AppState._(dispatcher);
+  }
+}
+
+class AppEnv {
+  AppEventDispatcher dispatcher;
+  ValueNotifier<AppState?> _appState;
+
+  AppEnv._(this.dispatcher, {AppState? appState})
+      : _appState = ValueNotifier(appState);
+
+  AppEnv.appState(AppEventDispatcher dispatcher)
+      : this._(
+          dispatcher,
+          appState: AppState.build(dispatcher),
+        );
+
+  ValueListenable<AppState?> get appState => _appState;
+}
+
+Future<AppEnv> initializeCurrentEnv(AppEventDispatcher dispatcher) async {
   _runNative(dispatcher);
+
+  return AppEnv.appState(dispatcher);
+}
+
+void main() async {
+  var env = await initializeCurrentEnv(AppEventDispatcher());
+
+  debugPrint("initialized: $env");
 
   // ignore: dead_code
   if (false) {
@@ -96,7 +131,7 @@ void main() async {
 
   runApp(ChangeNotifierProvider(
     create: (context) => KnownStationsModel(),
-    child: const OurApp(),
+    child: OurApp(env: env),
   ));
 }
 
@@ -176,7 +211,7 @@ class Map extends StatelessWidget {
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.example.app',
+          userAgentPackageName: 'org.fieldkit.app',
         ),
       ],
     );
@@ -312,7 +347,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class OurApp extends StatefulWidget {
-  const OurApp({Key? key}) : super(key: key);
+  final AppEnv env;
+  const OurApp({Key? key, required this.env}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -321,34 +357,21 @@ class OurApp extends StatefulWidget {
 }
 
 class _OurAppState extends State<OurApp> {
-  late Stream<int> ticks;
-  Timer? timer;
-
   @override
   void initState() {
-    developer.log("app-state:initialize");
     super.initState();
-
-    /*
-    ticks = api.tick();
-
-    ticks.listen((tick) {
-      print("tick! $tick");
-    });
-    */
-
-    timer = Timer.periodic(
-      const Duration(seconds: 3),
-      (timer) {
-        developer.log("app-state:tick");
-      },
-    );
+    developer.log("app-state:initialize");
+    widget.env.dispatcher.addListener(_listener);
   }
 
   @override
   void dispose() {
     super.dispose();
-    timer?.cancel();
+    widget.env.dispatcher.removeListener(_listener);
+  }
+
+  void _listener(DomainMessage e) async {
+    // debugPrint("app-state: $e");
   }
 
   @override
