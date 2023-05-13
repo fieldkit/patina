@@ -110,6 +110,9 @@ class StationsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final state = context.read<AppState>();
+    final state = context.watch<AppState>();
+
     return Navigator(onGenerateRoute: (RouteSettings settings) {
       return MaterialPageRoute(
         settings: settings,
@@ -340,19 +343,21 @@ class _OurAppState extends State<OurApp> {
     widget.env.dispatcher.removeListener(_listener);
   }
 
-  void _listener(DomainMessage e) async {
-    // debugPrint("app-state: $e");
-  }
+  void _listener(DomainMessage e) async {}
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'FieldKit',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(),
-    );
+    return MultiProvider(
+        providers: [
+          ValueListenableProvider.value(value: widget.env.appState),
+        ],
+        child: MaterialApp(
+          title: 'FieldKit',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: const HomePage(),
+        ));
   }
 }
 
