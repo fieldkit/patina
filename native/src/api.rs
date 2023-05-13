@@ -1,14 +1,17 @@
 use anyhow::{bail, Result};
-use flutter_rust_bridge::StreamSink;
+use flutter_rust_bridge::{frb, StreamSink};
+use std::collections::HashMap;
 use std::io::Write;
 use std::{thread::sleep, time::Duration};
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc::Sender;
 use tokio::sync::oneshot;
-use tracing::info;
+use tracing::{info, warn};
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{Discovered, Discovery};
+
+pub use store::{DeviceId, Station};
 
 const ONE_SECOND: Duration = Duration::from_secs(1);
 
@@ -72,31 +75,68 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
     Ok(())
 }
 
-#[allow(dead_code)]
 pub enum DomainMessage {
     PreAccount,
-    PostAccount,
-    Tick,
-    MyStations,
-    StationRefreshed,
+    // PostAccount,
+    // Tick,
+    // MyStations,
+    // StationRefreshed,
+    NearbyStations, // (Vec<NearbyStation>),
 }
 
-async fn create_sdk(publish_tx: tokio::sync::mpsc::Sender<DomainMessage>) -> Result<Sdk> {
+async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     info!("startup:bg");
-    tokio::spawn(async move { background_task().await });
+    tokio::spawn({
+        let publish_tx = publish_tx.clone();
+        async move { background_task(publish_tx).await }
+    });
 
     Ok(Sdk::new(publish_tx)?)
 }
 
-async fn background_task() {
+#[derive(Clone)]
+pub struct NearbyStation {
+    pub device_id: String,
+}
+
+async fn background_task(publish_tx: Sender<DomainMessage>) {
     info!("bg:started");
 
-    let (tx, mut _rx) = tokio::sync::mpsc::channel::<Discovered>(32);
+    let (tx, mut rx) = tokio::sync::mpsc::channel::<Discovered>(32);
     let discovery = Discovery::default();
 
-    let pump = tokio::spawn({
+    let maintain_discoveries = tokio::spawn({
+        async move {
+            let mut devices: HashMap<discovery::DeviceId, NearbyStation> = HashMap::new();
+            while let Some(announce) = rx.recv().await {
+                let device_id = &announce.device_id;
+                if !devices.contains_key(device_id) {
+                    info!("bg:announce: {:?}", announce);
+                    devices.insert(
+                        device_id.clone(),
+                        NearbyStation {
+                            device_id: device_id.0.to_owned(),
+                        },
+                    );
+
+                    match publish_tx
+                        .send(
+                            DomainMessage::NearbyStations, // devices.values().map(|i| i.clone()).collect(),
+                        )
+                        .await
+                    {
+                        Ok(_) => {}
+                        Err(e) => warn!("Send NearbyStations failed: {}", e),
+                    };
+                }
+            }
+        }
+    });
+
+    let ticks = tokio::spawn({
         async move {
             loop {
+                info!("bg:tick");
                 sleep(ONE_SECOND);
             }
         }
@@ -104,13 +144,9 @@ async fn background_task() {
 
     tokio::select! {
         _ = discovery.run(tx) => {},
-        _ = pump => {},
+        _ = maintain_discoveries => {},
+        _ = ticks => {},
     };
-
-    loop {
-        info!("bg:tick");
-        sleep(ONE_SECOND);
-    }
 }
 
 pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
@@ -120,6 +156,7 @@ pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
     let (publish_tx, mut publish_rx) = tokio::sync::mpsc::channel(20);
     let sdk = rt.block_on(create_sdk(publish_tx))?;
 
+    // Consider moving this to using the above channel?
     sink.add(DomainMessage::PreAccount);
 
     let handle = rt.handle().clone();
@@ -152,7 +189,7 @@ pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
     Ok(())
 }
 
-pub struct Sdk {
+struct Sdk {
     #[allow(dead_code)]
     publish_tx: Sender<DomainMessage>,
 }
@@ -161,4 +198,35 @@ impl Sdk {
     fn new(publish_tx: Sender<DomainMessage>) -> Result<Self> {
         Ok(Self { publish_tx })
     }
+}
+
+#[allow(dead_code)]
+fn with_runtime<R>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R>) -> Result<R> {
+    let mut sdk_guard = SDK.lock().expect("Get sdk");
+    let sdk = sdk_guard.as_mut().expect("Sdk present");
+
+    // We are calling async sdk methods from a thread that is not managed by
+    // Tokio runtime. For this to work we need to enter the handle.
+    // Ref: https://docs.rs/tokio/latest/tokio/runtime/struct.Handle.html#method.current
+    let mut rt_guard = RUNTIME.lock().expect("Get runtime");
+    let rt = rt_guard.as_mut().expect("Runtime present");
+    let _guard = rt.enter();
+    cb(rt, sdk)
+}
+
+#[allow(dead_code)]
+fn with_sdk<R>(cb: impl FnOnce(&mut Sdk) -> Result<R>) -> Result<R> {
+    with_runtime(|_rt, sdk| cb(sdk))
+}
+
+#[allow(dead_code)]
+fn get_nearby_stations() -> Result<Vec<Station>> {
+    Ok(with_sdk(|_sdk| todo!())?)
+}
+
+#[frb(mirror(Station))]
+pub struct _Station {
+    pub id: Option<i64>,
+    pub name: String,
+    pub last_seen: chrono::DateTime<chrono::Utc>,
 }

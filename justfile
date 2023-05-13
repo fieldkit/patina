@@ -8,7 +8,7 @@ gen:
         -c macos/Runner/bridge_generated.h \
         -e ios/Runner \
         --dart-decl-output lib/bridge_definitions.dart \
-        --wasm
+        --wasm --verbose
 
 lint:
     cd native && cargo fmt
