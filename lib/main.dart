@@ -76,20 +76,23 @@ void main() async {
 
   _runNative(dispatcher);
 
-  var multicastEndpoint =
-      Endpoint.multicast(InternetAddress("224.1.2.3"), port: const Port(22143));
-  var receiver = await UDP.bind(multicastEndpoint);
+  // ignore: dead_code
+  if (false) {
+    var multicastEndpoint = Endpoint.multicast(InternetAddress("224.1.2.3"),
+        port: const Port(22143));
+    var receiver = await UDP.bind(multicastEndpoint);
 
-  receiver.asStream().listen((datagram) async {
-    developer.log("udp:packet ${datagram?.address} ${datagram?.data}");
+    receiver.asStream().listen((datagram) async {
+      developer.log("udp:packet ${datagram?.address} ${datagram?.data}");
 
-    if (datagram != null) {
-      var status = await fetchStatus(datagram.address);
-      developer.log("ok $status");
-    }
-  });
+      if (datagram != null) {
+        var status = await fetchStatus(datagram.address);
+        developer.log("ok $status");
+      }
+    });
 
-  // todo: Close receiver
+    // todo: Close receiver
+  }
 
   runApp(ChangeNotifierProvider(
     create: (context) => KnownStationsModel(),
