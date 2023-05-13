@@ -9,6 +9,9 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:uuid/uuid.dart';
+import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
+
+part 'bridge_definitions.freezed.dart';
 
 abstract class Native {
   Future<bool> rustReleaseMode({dynamic hint});
@@ -24,7 +27,18 @@ abstract class Native {
   FlutterRustBridgeTaskConstMeta get kStartNativeConstMeta;
 }
 
-enum DomainMessage {
-  PreAccount,
-  NearbyStations,
+@freezed
+class DomainMessage with _$DomainMessage {
+  const factory DomainMessage.preAccount() = DomainMessage_PreAccount;
+  const factory DomainMessage.nearbyStations(
+    List<NearbyStation> field0,
+  ) = DomainMessage_NearbyStations;
+}
+
+class NearbyStation {
+  final String deviceId;
+
+  const NearbyStation({
+    required this.deviceId,
+  });
 }

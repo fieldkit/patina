@@ -82,11 +82,29 @@ class NativeImpl implements Native {
   }
 
   DomainMessage _wire2api_domain_message(dynamic raw) {
-    return DomainMessage.values[raw as int];
+    switch (raw[0]) {
+      case 0:
+        return DomainMessage_PreAccount();
+      case 1:
+        return DomainMessage_NearbyStations(
+          _wire2api_list_nearby_station(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
-  int _wire2api_i32(dynamic raw) {
-    return raw as int;
+  List<NearbyStation> _wire2api_list_nearby_station(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_nearby_station).toList();
+  }
+
+  NearbyStation _wire2api_nearby_station(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return NearbyStation(
+      deviceId: _wire2api_String(arr[0]),
+    );
   }
 
   int _wire2api_u8(dynamic raw) {

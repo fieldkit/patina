@@ -78,13 +78,20 @@ where
 impl support::IntoDart for DomainMessage {
     fn into_dart(self) -> support::DartAbi {
         match self {
-            Self::PreAccount => 0,
-            Self::NearbyStations => 1,
+            Self::PreAccount => vec![0.into_dart()],
+            Self::NearbyStations(field0) => vec![1.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for DomainMessage {}
+
+impl support::IntoDart for NearbyStation {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.device_id.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for NearbyStation {}
 
 // Section: executor
 

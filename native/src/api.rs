@@ -81,7 +81,7 @@ pub enum DomainMessage {
     // Tick,
     // MyStations,
     // StationRefreshed,
-    NearbyStations, // (Vec<NearbyStation>),
+    NearbyStations(Vec<NearbyStation>),
 }
 
 async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
@@ -120,9 +120,9 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
                     );
 
                     match publish_tx
-                        .send(
-                            DomainMessage::NearbyStations, // devices.values().map(|i| i.clone()).collect(),
-                        )
+                        .send(DomainMessage::NearbyStations(
+                            devices.values().map(|i| i.clone()).collect(),
+                        ))
                         .await
                     {
                         Ok(_) => {}
