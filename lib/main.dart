@@ -4,14 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:udp/udp.dart';
 import 'ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'dart:async';
-import 'dart:io';
 import 'dart:developer' as developer;
-import 'package:http/http.dart' as http;
-import 'fk-app.pb.dart' as app;
-import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:provider/provider.dart';
 import 'dispatcher.dart';
 
@@ -38,13 +33,6 @@ class KnownStationsModel extends ChangeNotifier {
     _stations.add(station);
     notifyListeners();
   }
-}
-
-Future<app.HttpReply> fetchStatus(address) async {
-  var response = await http.get(Uri.parse("http://${address.address}/fk/v1"));
-  var reader = protobuf.CodedBufferReader(response.bodyBytes);
-  var bytes = reader.readBytes();
-  return app.HttpReply.fromBuffer(bytes);
 }
 
 Future<void> _startNative(AppEventDispatcher dispatcher) async {
@@ -110,24 +98,6 @@ void main() async {
   var env = await initializeCurrentEnv(AppEventDispatcher());
 
   debugPrint("initialized: $env");
-
-  // ignore: dead_code
-  if (false) {
-    var multicastEndpoint = Endpoint.multicast(InternetAddress("224.1.2.3"),
-        port: const Port(22143));
-    var receiver = await UDP.bind(multicastEndpoint);
-
-    receiver.asStream().listen((datagram) async {
-      developer.log("udp:packet ${datagram?.address} ${datagram?.data}");
-
-      if (datagram != null) {
-        var status = await fetchStatus(datagram.address);
-        developer.log("ok $status");
-      }
-    });
-
-    // todo: Close receiver
-  }
 
   runApp(ChangeNotifierProvider(
     create: (context) => KnownStationsModel(),
