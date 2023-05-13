@@ -6,7 +6,7 @@ use std::{thread::sleep, time::Duration};
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc::Sender;
 use tokio::sync::oneshot;
-use tracing::{info, warn};
+use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{Discovered, Discovery};
@@ -61,12 +61,24 @@ impl<'a> MakeWriter<'a> for LogSink {
 }
 
 pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
-    let log_sink = LogSink { sink };
+    fn get_rust_log() -> String {
+        let mut original = std::env::var("RUST_LOG").unwrap_or_else(|_| "debug".into());
+
+        if !original.contains("hyper=") {
+            original.push_str(",hyper=info");
+        }
+
+        if !original.contains("reqwest=") {
+            original.push_str(",reqwest=info");
+        }
+
+        original
+    }
 
     if let Err(err) = tracing_subscriber::fmt()
         .with_max_level(tracing::Level::TRACE)
-        .with_env_filter(EnvFilter::new("trace"))
-        .with_writer(log_sink)
+        .with_env_filter(EnvFilter::new(get_rust_log()))
+        .with_writer(LogSink { sink })
         .try_init()
     {
         bail!("{}", err);
@@ -86,6 +98,7 @@ pub enum DomainMessage {
 
 async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     info!("startup:bg");
+
     tokio::spawn({
         let publish_tx = publish_tx.clone();
         async move { background_task(publish_tx).await }
@@ -136,7 +149,7 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
     let ticks = tokio::spawn({
         async move {
             loop {
-                info!("bg:tick");
+                trace!("bg:tick");
                 sleep(ONE_SECOND);
             }
         }
