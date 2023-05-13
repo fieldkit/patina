@@ -12,7 +12,7 @@ import 'dispatcher.dart';
 
 class Station {
   final String deviceId;
-  final String name;
+  final String? name;
 
   const Station({
     required this.deviceId,
@@ -21,17 +21,19 @@ class Station {
 }
 
 class KnownStationsModel extends ChangeNotifier {
-  final List<Station> _stations = [
-    const Station(deviceId: '0', name: 'Quirky Puppy 34'),
-    const Station(deviceId: '1', name: 'Super Slinky 11'),
-    const Station(deviceId: '2', name: 'Slippery Penguin 20'),
-  ];
+  final List<Station> _stations = [];
 
   UnmodifiableListView<Station> get stations => UnmodifiableListView(_stations);
 
-  void add(Station station) {
-    _stations.add(station);
-    notifyListeners();
+  KnownStationsModel(AppEventDispatcher dispatcher) {
+    dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
+      debugPrint("known-stations:nearby $nearby");
+      for (var station in nearby.field0) {
+        debugPrint("known-stations:nearby $station");
+        _stations.add(Station(deviceId: station.deviceId, name: station.name));
+      }
+      notifyListeners();
+    });
   }
 }
 
@@ -63,12 +65,13 @@ void _runNative(AppEventDispatcher dispatcher) async {
 }
 
 class AppState {
+  final KnownStationsModel knownStations;
   final AppEventDispatcher dispatcher;
 
-  AppState._(this.dispatcher);
+  AppState._(this.dispatcher, this.knownStations);
 
   static AppState build(AppEventDispatcher dispatcher) {
-    return AppState._(dispatcher);
+    return AppState._(dispatcher, KnownStationsModel(dispatcher));
   }
 }
 
@@ -99,10 +102,13 @@ void main() async {
 
   debugPrint("initialized: $env");
 
-  runApp(ChangeNotifierProvider(
-    create: (context) => KnownStationsModel(),
+  runApp(OurApp(env: env));
+  /*
+  ChangeNotifierProvider(
+    create: (context) => KnownStationsModel(env.dispatcher),
     child: OurApp(env: env),
-  ));
+  )
+  */
 }
 
 class StationsTab extends StatelessWidget {
@@ -110,8 +116,7 @@ class StationsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final state = context.read<AppState>();
-    final state = context.watch<AppState>();
+    debugPrint("stations:build");
 
     return Navigator(onGenerateRoute: (RouteSettings settings) {
       return MaterialPageRoute(
@@ -198,6 +203,8 @@ class ListStationsRoute extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("list-stations:build");
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Stations'),
@@ -212,7 +219,7 @@ class ListStationsRoute extends StatelessWidget {
           }
 
           return ListTile(
-            title: Text(stations[index - 1].name),
+            title: Text(stations[index - 1].name ?? "..."),
             onTap: () {
               Navigator.push(
                 context,
@@ -238,7 +245,7 @@ class ViewStationRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(station.name),
+        title: Text(station.name ?? "..."),
       ),
       body: Center(
         child: ElevatedButton(
@@ -279,14 +286,20 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.read<AppState>();
+    debugPrint("home:build $state");
+
     return Scaffold(
       body: SafeArea(
         child: IndexedStack(
           index: _pageIndex,
-          children: const <Widget>[
-            StationsTab(),
-            DataSyncTab(),
-            SettingsTab(),
+          children: <Widget>[
+            ChangeNotifierProvider(
+              create: (context) => state.knownStations,
+              child: const StationsTab(),
+            ),
+            const DataSyncTab(),
+            const SettingsTab(),
           ],
         ),
       ),

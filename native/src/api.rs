@@ -110,6 +110,7 @@ async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
 #[derive(Clone)]
 pub struct NearbyStation {
     pub device_id: String,
+    pub name: Option<String>,
 }
 
 async fn background_task(publish_tx: Sender<DomainMessage>) {
@@ -129,6 +130,7 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
                         device_id.clone(),
                         NearbyStation {
                             device_id: device_id.0.to_owned(),
+                            name: Some("New Station".to_owned()),
                         },
                     );
 

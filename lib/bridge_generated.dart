@@ -100,11 +100,16 @@ class NativeImpl implements Native {
 
   NearbyStation _wire2api_nearby_station(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 1)
-      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
     return NearbyStation(
       deviceId: _wire2api_String(arr[0]),
+      name: _wire2api_opt_String(arr[1]),
     );
+  }
+
+  String? _wire2api_opt_String(dynamic raw) {
+    return raw == null ? null : _wire2api_String(raw);
   }
 
   int _wire2api_u8(dynamic raw) {

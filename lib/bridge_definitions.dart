@@ -37,8 +37,10 @@ class DomainMessage with _$DomainMessage {
 
 class NearbyStation {
   final String deviceId;
+  final String? name;
 
   const NearbyStation({
     required this.deviceId,
+    this.name,
   });
 }

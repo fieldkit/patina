@@ -88,7 +88,7 @@ impl support::IntoDartExceptPrimitive for DomainMessage {}
 
 impl support::IntoDart for NearbyStation {
     fn into_dart(self) -> support::DartAbi {
-        vec![self.device_id.into_dart()].into_dart()
+        vec![self.device_id.into_dart(), self.name.into_dart()].into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for NearbyStation {}
