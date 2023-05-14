@@ -5,6 +5,7 @@ use query::HttpReply;
 use std::collections::HashMap;
 use std::io::Write;
 use std::sync::Arc;
+use store::Db;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc::Sender;
 use tokio::sync::{oneshot, Mutex};
@@ -95,30 +96,14 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
     let (tx, mut rx) = tokio::sync::mpsc::channel::<Discovered>(32);
     let discovery = Discovery::default();
 
-    let devices: Arc<Mutex<HashMap<discovery::DeviceId, NearbyStation>>> = Default::default();
+    let nearby: NearbyDevices = Default::default();
 
     let maintain_discoveries = tokio::spawn({
-        let devices = Arc::clone(&devices);
+        let nearby = nearby.clone();
         async move {
             while let Some(announce) = rx.recv().await {
-                let mut devices = devices.lock().await;
-                let device_id = &announce.device_id;
-                if !devices.contains_key(device_id) {
-                    info!("bg:announce: {:?}", announce);
-
-                    devices.insert(
-                        device_id.clone(),
-                        NearbyStation {
-                            device_id: device_id.0.to_owned(),
-                            // This is only here because NearbyStation is
-                            // exposed via bridge and so the types are limited.
-                            http_addr: format!("{}", announce.http_addr),
-                            querying: None,
-                            config: None,
-                        },
-                    );
-
-                    match publish_nearby(&devices, publish_tx.clone()).await {
+                if nearby.add_if_necessary(announce).await {
+                    match nearby.publish(publish_tx.clone()).await {
                         Ok(_) => {}
                         Err(e) => warn!("Publish nearby error: {}", e),
                     }
@@ -132,12 +117,12 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
             loop {
                 sleep(ONE_SECOND).await;
 
-                match first_station_to_query(&devices).await {
-                    Ok(Some(nearby)) => match query_station(&nearby).await {
+                match nearby.first_station_to_query().await {
+                    Ok(Some(querying)) => match nearby.query_station(&querying).await {
                         Ok(status) => {
-                            let device_id = nearby.device_id.clone();
+                            let device_id = querying.device_id.clone();
                             let device_id = discovery::DeviceId(device_id);
-                            match update_from_status(&devices, &device_id, status).await {
+                            match nearby.update_from_status(&device_id, status).await {
                                 Ok(_) => {}
                                 Err(e) => warn!("Update station: {}", e),
                             }
@@ -168,74 +153,101 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
     };
 }
 
-async fn first_station_to_query(
-    devices: &Arc<Mutex<HashMap<discovery::DeviceId, NearbyStation>>>,
-) -> Result<Option<NearbyStation>> {
-    let mut devices = devices.lock().await;
-    for (_, nearby) in devices.iter_mut() {
-        info!("nearby-device {:?}", nearby);
-        if nearby.should_query() {
-            nearby.querying = Some(Querying {
-                attempted: Some(Utc::now()),
-                finished: Some(Utc::now()),
-            });
-            return Ok(Some(nearby.clone()));
+#[derive(Default, Clone)]
+struct NearbyDevices {
+    devices: Arc<Mutex<HashMap<discovery::DeviceId, NearbyStation>>>,
+}
+
+impl NearbyDevices {
+    async fn add_if_necessary(&self, announce: discovery::Discovered) -> bool {
+        let mut devices = self.devices.lock().await;
+        let device_id = &announce.device_id;
+        if !devices.contains_key(device_id) {
+            info!("bg:announce: {:?}", announce);
+
+            devices.insert(
+                device_id.clone(),
+                NearbyStation {
+                    device_id: device_id.0.to_owned(),
+                    // This is only here because NearbyStation is
+                    // exposed via bridge and so the types are limited.
+                    http_addr: format!("{}", announce.http_addr),
+                    querying: None,
+                    config: None,
+                },
+            );
+
+            true
+        } else {
+            false
         }
     }
 
-    Ok(None)
-}
+    async fn first_station_to_query(&self) -> Result<Option<NearbyStation>> {
+        let mut devices = self.devices.lock().await;
+        for (_, nearby) in devices.iter_mut() {
+            info!("nearby-device {:?}", nearby);
+            if nearby.should_query() {
+                nearby.querying = Some(Querying {
+                    attempted: Some(Utc::now()),
+                    finished: Some(Utc::now()),
+                });
+                return Ok(Some(nearby.clone()));
+            }
+        }
 
-async fn http_reply_to_station_config(reply: HttpReply) -> Result<StationConfig> {
-    let status = reply.status.expect("No status");
-    let identity = status.identity.expect("No identity");
-    Ok(StationConfig {
-        name: identity.name.to_owned(),
-        generation_id: hex::encode(identity.generation_id),
-        modules: Vec::new(),
-    })
-}
+        Ok(None)
+    }
 
-async fn update_from_status(
-    devices: &Arc<Mutex<HashMap<discovery::DeviceId, NearbyStation>>>,
-    device_id: &discovery::DeviceId,
-    status: HttpReply,
-) -> Result<()> {
-    let mut devices = devices.lock().await;
-    let mut nearby = devices.get_mut(device_id).expect("Whoa, no station yet?");
+    async fn publish(&self, publish_tx: Sender<DomainMessage>) -> Result<()> {
+        let devices = self.devices.lock().await;
+        let nearby = devices.values().map(|i| i.clone()).collect();
 
-    trace!("updating {:?} {:?}", nearby, &status);
-    let config = http_reply_to_station_config(status).await?;
-
-    info!("updating {:?}", &config);
-    nearby.config = Some(config);
-
-    nearby.querying = Some(Querying {
-        attempted: Some(Utc::now()),
-        finished: Some(Utc::now()),
-    });
-
-    Ok(())
-}
-
-async fn publish_nearby(
-    devices: &HashMap<discovery::DeviceId, NearbyStation>,
-    publish_tx: Sender<DomainMessage>,
-) -> Result<()> {
-    let nearby = devices.values().map(|i| i.clone()).collect();
-
-    match publish_tx.send(DomainMessage::NearbyStations(nearby)).await {
-        Ok(_) => Ok(()),
-        Err(e) => {
-            warn!("Send NearbyStations failed: {}", e);
-            Ok(())
+        match publish_tx.send(DomainMessage::NearbyStations(nearby)).await {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                warn!("Send NearbyStations failed: {}", e);
+                Ok(())
+            }
         }
     }
-}
 
-async fn query_station(nearby: &NearbyStation) -> Result<HttpReply> {
-    let client = query::Client::new()?;
-    Ok(client.query_status(&nearby.http_addr).await?)
+    async fn update_from_status(
+        &self,
+        device_id: &discovery::DeviceId,
+        status: HttpReply,
+    ) -> Result<()> {
+        let mut devices = self.devices.lock().await;
+        let mut nearby = devices.get_mut(device_id).expect("Whoa, no station yet?");
+
+        trace!("updating {:?} {:?}", nearby, &status);
+        let config = self.http_reply_to_station_config(status).await?;
+
+        info!("updating {:?}", &config);
+        nearby.config = Some(config);
+
+        nearby.querying = Some(Querying {
+            attempted: Some(Utc::now()),
+            finished: Some(Utc::now()),
+        });
+
+        Ok(())
+    }
+
+    async fn http_reply_to_station_config(&self, reply: HttpReply) -> Result<StationConfig> {
+        let status = reply.status.expect("No status");
+        let identity = status.identity.expect("No identity");
+        Ok(StationConfig {
+            name: identity.name.to_owned(),
+            generation_id: hex::encode(identity.generation_id),
+            modules: Vec::new(),
+        })
+    }
+
+    async fn query_station(&self, nearby: &NearbyStation) -> Result<HttpReply> {
+        let client = query::Client::new()?;
+        Ok(client.query_status(&nearby.http_addr).await?)
+    }
 }
 
 fn start_runtime() -> Result<Runtime> {
@@ -289,13 +301,17 @@ pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
 }
 
 struct Sdk {
+    db: Db,
     #[allow(dead_code)]
     publish_tx: Sender<DomainMessage>,
 }
 
 impl Sdk {
     fn new(publish_tx: Sender<DomainMessage>) -> Result<Self> {
-        Ok(Self { publish_tx })
+        Ok(Self {
+            db: Db::new(),
+            publish_tx,
+        })
     }
 }
 
@@ -319,25 +335,18 @@ fn with_sdk<R>(cb: impl FnOnce(&mut Sdk) -> Result<R>) -> Result<R> {
 }
 
 #[allow(dead_code)]
-fn get_nearby_stations() -> Result<Vec<NearbyStation>> {
-    Ok(with_sdk(|_sdk| todo!())?)
+fn get_my_stations() -> Result<Vec<NearbyStation>> {
+    Ok(with_sdk(|sdk| {
+        let _stations = sdk.db.get_stations()?;
+        Ok(Vec::new())
+    })?)
 }
 
 pub enum DomainMessage {
     PreAccount,
-    // PostAccount,
-    // Tick,
-    // MyStations,
-    // StationRefreshed,
     NearbyStations(Vec<NearbyStation>),
-}
-
-pub type ModelTime = DateTime<Utc>;
-
-#[derive(Clone, Debug)]
-pub struct Querying {
-    pub attempted: Option<ModelTime>,
-    pub finished: Option<ModelTime>,
+    // #[allow(dead_code)]
+    // MyStations(Vec<NearbyStation>),
 }
 
 #[derive(Clone, Debug)]
@@ -366,16 +375,30 @@ pub struct NearbyStation {
 impl NearbyStation {
     fn should_query(&self) -> bool {
         match &self.querying {
-            Some(querying) => match querying.attempted {
-                Some(attempted) => {
-                    if Utc::now() - attempted > chrono::Duration::seconds(10) {
-                        true
-                    } else {
-                        false
-                    }
+            Some(querying) => querying.should_query(),
+            None => true,
+        }
+    }
+}
+
+pub type ModelTime = DateTime<Utc>;
+
+#[derive(Clone, Debug)]
+pub struct Querying {
+    pub attempted: Option<ModelTime>,
+    pub finished: Option<ModelTime>,
+}
+
+impl Querying {
+    fn should_query(&self) -> bool {
+        match self.attempted {
+            Some(attempted) => {
+                if Utc::now() - attempted > chrono::Duration::seconds(10) {
+                    true
+                } else {
+                    false
                 }
-                None => true,
-            },
+            }
             None => true,
         }
     }
