@@ -1,6 +1,6 @@
 use anyhow::{bail, Result};
 use chrono::{DateTime, Utc};
-use flutter_rust_bridge::{frb, StreamSink};
+use flutter_rust_bridge::StreamSink;
 use query::HttpReply;
 use std::collections::HashMap;
 use std::io::Write;
@@ -14,22 +14,10 @@ use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{Discovered, Discovery};
 
-pub use store::{DeviceId, Station};
-
 const ONE_SECOND: Duration = Duration::from_secs(1);
 
 static SDK: std::sync::Mutex<Option<Sdk>> = std::sync::Mutex::new(None);
 static RUNTIME: std::sync::Mutex<Option<Runtime>> = std::sync::Mutex::new(None);
-
-fn start_runtime() -> Result<Runtime> {
-    let rt = tokio::runtime::Builder::new_multi_thread()
-        .worker_threads(3)
-        .enable_all()
-        .thread_name("fieldkit-client")
-        .build()?;
-
-    Ok(rt)
-}
 
 // The convention for Rust identifiers is the snake_case,
 // and they are automatically converted to camelCase on the Dart side.
@@ -90,15 +78,6 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
     Ok(())
 }
 
-pub enum DomainMessage {
-    PreAccount,
-    // PostAccount,
-    // Tick,
-    // MyStations,
-    // StationRefreshed,
-    NearbyStations(Vec<NearbyStation>),
-}
-
 async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     info!("startup:bg");
 
@@ -108,45 +87,6 @@ async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     });
 
     Ok(Sdk::new(publish_tx)?)
-}
-
-pub type ModelTime = DateTime<Utc>;
-
-#[derive(Clone, Debug)]
-pub struct Querying {
-    pub attempted: Option<ModelTime>,
-    pub finished: Option<ModelTime>,
-}
-
-#[derive(Clone, Debug)]
-pub struct StationConfig {
-    pub name: String,
-}
-
-#[derive(Clone, Debug)]
-pub struct NearbyStation {
-    pub device_id: String,
-    pub http_addr: String,
-    pub querying: Option<Querying>,
-    pub config: Option<StationConfig>,
-}
-
-impl NearbyStation {
-    fn should_query(&self) -> bool {
-        match &self.querying {
-            Some(querying) => match querying.attempted {
-                Some(attempted) => {
-                    if Utc::now() - attempted > chrono::Duration::seconds(10) {
-                        true
-                    } else {
-                        false
-                    }
-                }
-                None => true,
-            },
-            None => true,
-        }
-    }
 }
 
 async fn background_task(publish_tx: Sender<DomainMessage>) {
@@ -251,6 +191,8 @@ async fn http_reply_to_station_config(reply: HttpReply) -> Result<StationConfig>
     let identity = status.identity.expect("No identity");
     Ok(StationConfig {
         name: identity.name.to_owned(),
+        generation_id: hex::encode(identity.generation_id),
+        modules: Vec::new(),
     })
 }
 
@@ -294,6 +236,16 @@ async fn publish_nearby(
 async fn query_station(nearby: &NearbyStation) -> Result<HttpReply> {
     let client = query::Client::new()?;
     Ok(client.query_status(&nearby.http_addr).await?)
+}
+
+fn start_runtime() -> Result<Runtime> {
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(3)
+        .enable_all()
+        .thread_name("fieldkit-client")
+        .build()?;
+
+    Ok(rt)
 }
 
 pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
@@ -367,13 +319,64 @@ fn with_sdk<R>(cb: impl FnOnce(&mut Sdk) -> Result<R>) -> Result<R> {
 }
 
 #[allow(dead_code)]
-fn get_nearby_stations() -> Result<Vec<Station>> {
+fn get_nearby_stations() -> Result<Vec<NearbyStation>> {
     Ok(with_sdk(|_sdk| todo!())?)
 }
 
-#[frb(mirror(Station))]
-pub struct _Station {
-    pub id: Option<i64>,
+pub enum DomainMessage {
+    PreAccount,
+    // PostAccount,
+    // Tick,
+    // MyStations,
+    // StationRefreshed,
+    NearbyStations(Vec<NearbyStation>),
+}
+
+pub type ModelTime = DateTime<Utc>;
+
+#[derive(Clone, Debug)]
+pub struct Querying {
+    pub attempted: Option<ModelTime>,
+    pub finished: Option<ModelTime>,
+}
+
+#[derive(Clone, Debug)]
+pub struct StationConfig {
     pub name: String,
-    pub last_seen: chrono::DateTime<chrono::Utc>,
+    pub generation_id: String,
+    pub modules: Vec<ModuleConfig>,
+}
+
+#[derive(Clone, Debug)]
+pub struct ModuleConfig {
+    pub sensors: Vec<SensorConfig>,
+}
+
+#[derive(Clone, Debug)]
+pub struct SensorConfig {}
+
+#[derive(Clone, Debug)]
+pub struct NearbyStation {
+    pub device_id: String,
+    pub http_addr: String,
+    pub querying: Option<Querying>,
+    pub config: Option<StationConfig>,
+}
+
+impl NearbyStation {
+    fn should_query(&self) -> bool {
+        match &self.querying {
+            Some(querying) => match querying.attempted {
+                Some(attempted) => {
+                    if Utc::now() - attempted > chrono::Duration::seconds(10) {
+                        true
+                    } else {
+                        false
+                    }
+                }
+                None => true,
+            },
+            None => true,
+        }
+    }
 }
