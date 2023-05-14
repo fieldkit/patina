@@ -88,30 +88,10 @@ impl support::IntoDartExceptPrimitive for DomainMessage {}
 
 impl support::IntoDart for NearbyStation {
     fn into_dart(self) -> support::DartAbi {
-        vec![
-            self.device_id.into_dart(),
-            self.http_addr.into_dart(),
-            self.querying.into_dart(),
-            self.config.into_dart(),
-        ]
-        .into_dart()
+        vec![self.device_id.into_dart()].into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for NearbyStation {}
-
-impl support::IntoDart for Querying {
-    fn into_dart(self) -> support::DartAbi {
-        vec![self.attempted.into_dart(), self.finished.into_dart()].into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for Querying {}
-
-impl support::IntoDart for StationConfig {
-    fn into_dart(self) -> support::DartAbi {
-        vec![self.name.into_dart()].into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for StationConfig {}
 
 // Section: executor
 

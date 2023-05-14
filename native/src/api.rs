@@ -13,7 +13,7 @@ use tokio::time::{sleep, Duration};
 use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
-use discovery::{Discovered, Discovery};
+use discovery::{DeviceId, Discovered, Discovery};
 
 const ONE_SECOND: Duration = Duration::from_secs(1);
 
@@ -121,7 +121,6 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
                     Ok(Some(querying)) => match nearby.query_station(&querying).await {
                         Ok(status) => {
                             let device_id = querying.device_id.clone();
-                            let device_id = discovery::DeviceId(device_id);
                             match nearby.update_from_status(&device_id, status).await {
                                 Ok(_) => {}
                                 Err(e) => warn!("Update station: {}", e),
@@ -153,9 +152,34 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
     };
 }
 
+type ModelTime = DateTime<Utc>;
+
+#[derive(Clone, Debug)]
+struct Querying {
+    pub device_id: DeviceId,
+    pub http_addr: String,
+    pub attempted: Option<ModelTime>,
+    pub finished: Option<ModelTime>,
+}
+
+impl Querying {
+    fn should_query(&self) -> bool {
+        match self.attempted {
+            Some(attempted) => {
+                if Utc::now() - attempted > chrono::Duration::seconds(10) {
+                    true
+                } else {
+                    false
+                }
+            }
+            None => true,
+        }
+    }
+}
+
 #[derive(Default, Clone)]
 struct NearbyDevices {
-    devices: Arc<Mutex<HashMap<discovery::DeviceId, NearbyStation>>>,
+    devices: Arc<Mutex<HashMap<discovery::DeviceId, Querying>>>,
 }
 
 impl NearbyDevices {
@@ -167,13 +191,11 @@ impl NearbyDevices {
 
             devices.insert(
                 device_id.clone(),
-                NearbyStation {
-                    device_id: device_id.0.to_owned(),
-                    // This is only here because NearbyStation is
-                    // exposed via bridge and so the types are limited.
+                Querying {
+                    device_id: device_id.clone(),
                     http_addr: format!("{}", announce.http_addr),
-                    querying: None,
-                    config: None,
+                    attempted: None,
+                    finished: None,
                 },
             );
 
@@ -183,15 +205,13 @@ impl NearbyDevices {
         }
     }
 
-    async fn first_station_to_query(&self) -> Result<Option<NearbyStation>> {
+    async fn first_station_to_query(&self) -> Result<Option<Querying>> {
         let mut devices = self.devices.lock().await;
         for (_, nearby) in devices.iter_mut() {
             info!("nearby-device {:?}", nearby);
             if nearby.should_query() {
-                nearby.querying = Some(Querying {
-                    attempted: Some(Utc::now()),
-                    finished: Some(Utc::now()),
-                });
+                nearby.attempted = Some(Utc::now());
+                nearby.finished = None;
                 return Ok(Some(nearby.clone()));
             }
         }
@@ -201,7 +221,12 @@ impl NearbyDevices {
 
     async fn publish(&self, publish_tx: Sender<DomainMessage>) -> Result<()> {
         let devices = self.devices.lock().await;
-        let nearby = devices.values().map(|i| i.clone()).collect();
+        let nearby = devices
+            .values()
+            .map(|q| NearbyStation {
+                device_id: q.device_id.0.to_string(),
+            })
+            .collect();
 
         match publish_tx.send(DomainMessage::NearbyStations(nearby)).await {
             Ok(_) => Ok(()),
@@ -218,35 +243,16 @@ impl NearbyDevices {
         status: HttpReply,
     ) -> Result<()> {
         let mut devices = self.devices.lock().await;
-        let mut nearby = devices.get_mut(device_id).expect("Whoa, no station yet?");
-
-        trace!("updating {:?} {:?}", nearby, &status);
-        let config = self.http_reply_to_station_config(status).await?;
-
-        info!("updating {:?}", &config);
-        nearby.config = Some(config);
-
-        nearby.querying = Some(Querying {
-            attempted: Some(Utc::now()),
-            finished: Some(Utc::now()),
-        });
+        let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
+        trace!("updating {:?} {:?}", querying, &status);
+        querying.finished = Some(Utc::now());
 
         Ok(())
     }
 
-    async fn http_reply_to_station_config(&self, reply: HttpReply) -> Result<StationConfig> {
-        let status = reply.status.expect("No status");
-        let identity = status.identity.expect("No identity");
-        Ok(StationConfig {
-            name: identity.name.to_owned(),
-            generation_id: hex::encode(identity.generation_id),
-            modules: Vec::new(),
-        })
-    }
-
-    async fn query_station(&self, nearby: &NearbyStation) -> Result<HttpReply> {
+    async fn query_station(&self, querying: &Querying) -> Result<HttpReply> {
         let client = query::Client::new()?;
-        Ok(client.query_status(&nearby.http_addr).await?)
+        Ok(client.query_status(&querying.http_addr).await?)
     }
 }
 
@@ -367,39 +373,4 @@ pub struct SensorConfig {}
 #[derive(Clone, Debug)]
 pub struct NearbyStation {
     pub device_id: String,
-    pub http_addr: String,
-    pub querying: Option<Querying>,
-    pub config: Option<StationConfig>,
-}
-
-impl NearbyStation {
-    fn should_query(&self) -> bool {
-        match &self.querying {
-            Some(querying) => querying.should_query(),
-            None => true,
-        }
-    }
-}
-
-pub type ModelTime = DateTime<Utc>;
-
-#[derive(Clone, Debug)]
-pub struct Querying {
-    pub attempted: Option<ModelTime>,
-    pub finished: Option<ModelTime>,
-}
-
-impl Querying {
-    fn should_query(&self) -> bool {
-        match self.attempted {
-            Some(attempted) => {
-                if Utc::now() - attempted > chrono::Duration::seconds(10) {
-                    true
-                } else {
-                    false
-                }
-            }
-            None => true,
-        }
-    }
 }

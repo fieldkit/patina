@@ -73,28 +73,12 @@ class NativeImpl implements Native {
   }
 // Section: wire2api
 
-  DateTime _wire2api_Chrono_Utc(dynamic raw) {
-    return wire2apiTimestamp(ts: _wire2api_i64(raw), isUtc: true);
-  }
-
   String _wire2api_String(dynamic raw) {
     return raw as String;
   }
 
   bool _wire2api_bool(dynamic raw) {
     return raw as bool;
-  }
-
-  DateTime _wire2api_box_autoadd_Chrono_Utc(dynamic raw) {
-    return _wire2api_Chrono_Utc(raw);
-  }
-
-  Querying _wire2api_box_autoadd_querying(dynamic raw) {
-    return _wire2api_querying(raw);
-  }
-
-  StationConfig _wire2api_box_autoadd_station_config(dynamic raw) {
-    return _wire2api_station_config(raw);
   }
 
   DomainMessage _wire2api_domain_message(dynamic raw) {
@@ -110,54 +94,16 @@ class NativeImpl implements Native {
     }
   }
 
-  int _wire2api_i64(dynamic raw) {
-    return castInt(raw);
-  }
-
   List<NearbyStation> _wire2api_list_nearby_station(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_nearby_station).toList();
   }
 
   NearbyStation _wire2api_nearby_station(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-    return NearbyStation(
-      deviceId: _wire2api_String(arr[0]),
-      httpAddr: _wire2api_String(arr[1]),
-      querying: _wire2api_opt_box_autoadd_querying(arr[2]),
-      config: _wire2api_opt_box_autoadd_station_config(arr[3]),
-    );
-  }
-
-  DateTime? _wire2api_opt_box_autoadd_Chrono_Utc(dynamic raw) {
-    return raw == null ? null : _wire2api_box_autoadd_Chrono_Utc(raw);
-  }
-
-  Querying? _wire2api_opt_box_autoadd_querying(dynamic raw) {
-    return raw == null ? null : _wire2api_box_autoadd_querying(raw);
-  }
-
-  StationConfig? _wire2api_opt_box_autoadd_station_config(dynamic raw) {
-    return raw == null ? null : _wire2api_box_autoadd_station_config(raw);
-  }
-
-  Querying _wire2api_querying(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-    return Querying(
-      attempted: _wire2api_opt_box_autoadd_Chrono_Utc(arr[0]),
-      finished: _wire2api_opt_box_autoadd_Chrono_Utc(arr[1]),
-    );
-  }
-
-  StationConfig _wire2api_station_config(dynamic raw) {
-    final arr = raw as List<dynamic>;
     if (arr.length != 1)
       throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
-    return StationConfig(
-      name: _wire2api_String(arr[0]),
+    return NearbyStation(
+      deviceId: _wire2api_String(arr[0]),
     );
   }
 
