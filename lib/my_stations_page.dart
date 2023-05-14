@@ -10,7 +10,7 @@ class StationsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("stations:build");
+    debugPrint("stations-tab:build");
 
     return Navigator(onGenerateRoute: (RouteSettings settings) {
       return MaterialPageRoute(
@@ -26,41 +26,66 @@ class StationsTab extends StatelessWidget {
 }
 
 class ListStationsRoute extends StatelessWidget {
-  const ListStationsRoute({super.key, required this.stations});
-
   final List<Station> stations;
+
+  const ListStationsRoute({super.key, required this.stations});
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("list-stations:build");
+    debugPrint("list-stations-route:build");
+
+    final List<Widget> map = [const SizedBox(height: 200, child: Map())];
+
+    final cards = stations.map((station) {
+      return StationCard(station: station);
+    }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Stations'),
-      ),
-      body: ListView.builder(
-        itemCount: stations.length + 1,
-        itemBuilder: (context, index) {
-          // This is a huge hack, but was the fastest way to get this working
-          // and shouldn't leak outside of this class.
-          if (index == 0) {
-            return const SizedBox(height: 300, child: Map());
-          }
+        appBar: AppBar(
+          title: const Text('My Stations'),
+        ),
+        body: ListView(children: map + cards));
+  }
+}
 
-          return ListTile(
-            title: Text(stations[index - 1].name ?? "..."),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      ViewStationRoute(station: stations[index - 1]),
-                ),
-              );
-            },
-          );
-        },
-      ),
+class DiscoveringStationCard extends StatelessWidget {
+  final Station station;
+
+  const DiscoveringStationCard({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(station.name ?? "..."),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ViewStationRoute(station: station),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class StationCard extends StatelessWidget {
+  final Station station;
+
+  const StationCard({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(station.name ?? "..."),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ViewStationRoute(station: station),
+          ),
+        );
+      },
     );
   }
 }
