@@ -82,28 +82,51 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
 async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     info!("startup:bg");
 
-    tokio::spawn({
-        let publish_tx = publish_tx.clone();
-        async move { background_task(publish_tx).await }
+    let sdk = Sdk::new(publish_tx.clone())?;
+
+    let (bg_tx, mut bg_rx) = tokio::sync::mpsc::channel::<BackgroundMessage>(32);
+
+    tokio::spawn(async move {
+        loop {
+            while let Some(bg) = bg_rx.recv().await {
+                match bg {
+                    BackgroundMessage::Domain(message) => match publish_tx.send(message).await {
+                        Err(e) => warn!("Publish domain message: {}", e),
+                        _ => {}
+                    },
+                    BackgroundMessage::StationReply(_) => {
+                        info!("reply");
+                    }
+                }
+            }
+        }
     });
 
-    Ok(Sdk::new(publish_tx)?)
+    tokio::spawn(async move { background_task(bg_tx).await });
+
+    Ok(sdk)
 }
 
-async fn background_task(publish_tx: Sender<DomainMessage>) {
+#[derive(Debug)]
+enum BackgroundMessage {
+    Domain(DomainMessage),
+    StationReply(HttpReply),
+}
+
+async fn background_task(publish_tx: Sender<BackgroundMessage>) {
     info!("bg:started");
 
     let (tx, mut rx) = tokio::sync::mpsc::channel::<Discovered>(32);
     let discovery = Discovery::default();
 
-    let nearby: NearbyDevices = Default::default();
+    let nearby = NearbyDevices::new(publish_tx);
 
     let maintain_discoveries = tokio::spawn({
         let nearby = nearby.clone();
         async move {
             while let Some(announce) = rx.recv().await {
                 if nearby.add_if_necessary(announce).await {
-                    match nearby.publish(publish_tx.clone()).await {
+                    match nearby.publish().await {
                         Ok(_) => {}
                         Err(e) => warn!("Publish nearby error: {}", e),
                     }
@@ -177,12 +200,20 @@ impl Querying {
     }
 }
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 struct NearbyDevices {
+    publish_tx: Sender<BackgroundMessage>,
     devices: Arc<Mutex<HashMap<discovery::DeviceId, Querying>>>,
 }
 
 impl NearbyDevices {
+    fn new(publish_tx: Sender<BackgroundMessage>) -> Self {
+        Self {
+            publish_tx,
+            devices: Default::default(),
+        }
+    }
+
     async fn add_if_necessary(&self, announce: discovery::Discovered) -> bool {
         let mut devices = self.devices.lock().await;
         let device_id = &announce.device_id;
@@ -208,7 +239,7 @@ impl NearbyDevices {
     async fn first_station_to_query(&self) -> Result<Option<Querying>> {
         let mut devices = self.devices.lock().await;
         for (_, nearby) in devices.iter_mut() {
-            info!("nearby-device {:?}", nearby);
+            debug!("{:?}", nearby);
             if nearby.should_query() {
                 nearby.attempted = Some(Utc::now());
                 nearby.finished = None;
@@ -219,7 +250,7 @@ impl NearbyDevices {
         Ok(None)
     }
 
-    async fn publish(&self, publish_tx: Sender<DomainMessage>) -> Result<()> {
+    async fn publish(&self) -> Result<()> {
         let devices = self.devices.lock().await;
         let nearby = devices
             .values()
@@ -228,7 +259,13 @@ impl NearbyDevices {
             })
             .collect();
 
-        match publish_tx.send(DomainMessage::NearbyStations(nearby)).await {
+        match self
+            .publish_tx
+            .send(BackgroundMessage::Domain(DomainMessage::NearbyStations(
+                nearby,
+            )))
+            .await
+        {
             Ok(_) => Ok(()),
             Err(e) => {
                 warn!("Send NearbyStations failed: {}", e);
@@ -242,10 +279,16 @@ impl NearbyDevices {
         device_id: &discovery::DeviceId,
         status: HttpReply,
     ) -> Result<()> {
-        let mut devices = self.devices.lock().await;
-        let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
-        trace!("updating {:?} {:?}", querying, &status);
-        querying.finished = Some(Utc::now());
+        {
+            let mut devices = self.devices.lock().await;
+            let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
+            debug!("updating {:?}", device_id);
+            querying.finished = Some(Utc::now());
+        }
+
+        self.publish_tx
+            .send(BackgroundMessage::StationReply(status))
+            .await?;
 
         Ok(())
     }
@@ -275,6 +318,7 @@ pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
 
     // Consider moving this to using the above channel?
     sink.add(DomainMessage::PreAccount);
+    sink.add(DomainMessage::MyStations(vec![]));
 
     let handle = rt.handle().clone();
 
@@ -319,6 +363,11 @@ impl Sdk {
             publish_tx,
         })
     }
+
+    fn get_my_stations(&self) -> Result<Vec<StationConfig>> {
+        let _stations = self.db.get_stations()?;
+        Ok(Vec::new())
+    }
 }
 
 #[allow(dead_code)]
@@ -341,18 +390,15 @@ fn with_sdk<R>(cb: impl FnOnce(&mut Sdk) -> Result<R>) -> Result<R> {
 }
 
 #[allow(dead_code)]
-fn get_my_stations() -> Result<Vec<NearbyStation>> {
-    Ok(with_sdk(|sdk| {
-        let _stations = sdk.db.get_stations()?;
-        Ok(Vec::new())
-    })?)
+fn get_my_stations() -> Result<Vec<StationConfig>> {
+    Ok(with_sdk(|sdk| Ok(sdk.get_my_stations()?))?)
 }
 
+#[derive(Debug)]
 pub enum DomainMessage {
     PreAccount,
     NearbyStations(Vec<NearbyStation>),
-    // #[allow(dead_code)]
-    // MyStations(Vec<NearbyStation>),
+    MyStations(Vec<StationConfig>),
 }
 
 #[derive(Clone, Debug)]

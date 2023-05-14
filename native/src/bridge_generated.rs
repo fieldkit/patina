@@ -80,11 +80,19 @@ impl support::IntoDart for DomainMessage {
         match self {
             Self::PreAccount => vec![0.into_dart()],
             Self::NearbyStations(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::MyStations(field0) => vec![2.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for DomainMessage {}
+
+impl support::IntoDart for ModuleConfig {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.sensors.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for ModuleConfig {}
 
 impl support::IntoDart for NearbyStation {
     fn into_dart(self) -> support::DartAbi {
@@ -92,6 +100,25 @@ impl support::IntoDart for NearbyStation {
     }
 }
 impl support::IntoDartExceptPrimitive for NearbyStation {}
+
+impl support::IntoDart for SensorConfig {
+    fn into_dart(self) -> support::DartAbi {
+        Vec::<u8>::new().into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for SensorConfig {}
+
+impl support::IntoDart for StationConfig {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.name.into_dart(),
+            self.generation_id.into_dart(),
+            self.modules.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for StationConfig {}
 
 // Section: executor
 

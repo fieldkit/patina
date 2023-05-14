@@ -89,13 +89,38 @@ class NativeImpl implements Native {
         return DomainMessage_NearbyStations(
           _wire2api_list_nearby_station(raw[1]),
         );
+      case 2:
+        return DomainMessage_MyStations(
+          _wire2api_list_station_config(raw[1]),
+        );
       default:
         throw Exception("unreachable");
     }
   }
 
+  List<ModuleConfig> _wire2api_list_module_config(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_module_config).toList();
+  }
+
   List<NearbyStation> _wire2api_list_nearby_station(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_nearby_station).toList();
+  }
+
+  List<SensorConfig> _wire2api_list_sensor_config(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_sensor_config).toList();
+  }
+
+  List<StationConfig> _wire2api_list_station_config(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_station_config).toList();
+  }
+
+  ModuleConfig _wire2api_module_config(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return ModuleConfig(
+      sensors: _wire2api_list_sensor_config(arr[0]),
+    );
   }
 
   NearbyStation _wire2api_nearby_station(dynamic raw) {
@@ -104,6 +129,24 @@ class NativeImpl implements Native {
       throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
     return NearbyStation(
       deviceId: _wire2api_String(arr[0]),
+    );
+  }
+
+  SensorConfig _wire2api_sensor_config(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 0)
+      throw Exception('unexpected arr length: expect 0 but see ${arr.length}');
+    return SensorConfig();
+  }
+
+  StationConfig _wire2api_station_config(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return StationConfig(
+      name: _wire2api_String(arr[0]),
+      generationId: _wire2api_String(arr[1]),
+      modules: _wire2api_list_module_config(arr[2]),
     );
   }
 

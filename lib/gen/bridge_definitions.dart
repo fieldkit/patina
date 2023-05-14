@@ -33,6 +33,17 @@ class DomainMessage with _$DomainMessage {
   const factory DomainMessage.nearbyStations(
     List<NearbyStation> field0,
   ) = DomainMessage_NearbyStations;
+  const factory DomainMessage.myStations(
+    List<StationConfig> field0,
+  ) = DomainMessage_MyStations;
+}
+
+class ModuleConfig {
+  final List<SensorConfig> sensors;
+
+  const ModuleConfig({
+    required this.sensors,
+  });
 }
 
 class NearbyStation {
@@ -40,5 +51,21 @@ class NearbyStation {
 
   const NearbyStation({
     required this.deviceId,
+  });
+}
+
+class SensorConfig {
+  const SensorConfig();
+}
+
+class StationConfig {
+  final String name;
+  final String generationId;
+  final List<ModuleConfig> modules;
+
+  const StationConfig({
+    required this.name,
+    required this.generationId,
+    required this.modules,
   });
 }
