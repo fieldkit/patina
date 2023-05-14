@@ -37,10 +37,32 @@ class DomainMessage with _$DomainMessage {
 
 class NearbyStation {
   final String deviceId;
-  final String? name;
+  final String httpAddr;
+  final Querying? querying;
+  final StationConfig? config;
 
   const NearbyStation({
     required this.deviceId,
-    this.name,
+    required this.httpAddr,
+    this.querying,
+    this.config,
+  });
+}
+
+class Querying {
+  final DateTime? attempted;
+  final DateTime? finished;
+
+  const Querying({
+    this.attempted,
+    this.finished,
+  });
+}
+
+class StationConfig {
+  final String name;
+
+  const StationConfig({
+    required this.name,
   });
 }

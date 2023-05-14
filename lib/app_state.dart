@@ -5,27 +5,34 @@ import 'package:flutter/foundation.dart';
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'dispatcher.dart';
 
-class Station {
-  final String deviceId;
-  final String? name;
+class StationConfig {
+  final String name;
 
-  const Station({
+  const StationConfig({required this.name});
+}
+
+class StationModel {
+  final String deviceId;
+  final StationConfig? config;
+
+  const StationModel({
     required this.deviceId,
-    required this.name,
+    this.config,
   });
 }
 
 class KnownStationsModel extends ChangeNotifier {
-  final List<Station> _stations = [];
+  final List<StationModel> _stations = [];
 
-  UnmodifiableListView<Station> get stations => UnmodifiableListView(_stations);
+  UnmodifiableListView<StationModel> get stations =>
+      UnmodifiableListView(_stations);
 
   KnownStationsModel(AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
       debugPrint("known-stations:nearby $nearby");
       for (var station in nearby.field0) {
         debugPrint("known-stations:nearby $station");
-        _stations.add(Station(deviceId: station.deviceId, name: station.name));
+        _stations.add(StationModel(deviceId: station.deviceId));
       }
       notifyListeners();
     });

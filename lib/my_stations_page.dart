@@ -37,7 +37,11 @@ class ListStationsRoute extends StatelessWidget {
     final List<Widget> map = [const SizedBox(height: 200, child: Map())];
 
     final cards = known.stations.map((station) {
-      return StationCard(station: station);
+      if (station.config == null) {
+        return DiscoveringStationCard(station: station);
+      } else {
+        return StationCard(station: station);
+      }
     }).toList();
 
     return Scaffold(
@@ -49,30 +53,29 @@ class ListStationsRoute extends StatelessWidget {
 }
 
 class DiscoveringStationCard extends StatelessWidget {
-  final Station station;
+  final StationModel station;
 
   const DiscoveringStationCard({super.key, required this.station});
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(station.name ?? "..."),
-      onTap: () {
-        pushViewStationRoute(context, station);
-      },
+    return const ListTile(
+      title: Text("..."),
     );
   }
 }
 
 class StationCard extends StatelessWidget {
-  final Station station;
+  final StationModel station;
+
+  StationConfig get config => station.config!;
 
   const StationCard({super.key, required this.station});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(station.name ?? "..."),
+      title: Text(config.name),
       onTap: () {
         pushViewStationRoute(context, station);
       },
@@ -80,7 +83,7 @@ class StationCard extends StatelessWidget {
   }
 }
 
-void pushViewStationRoute(BuildContext context, Station station) {
+void pushViewStationRoute(BuildContext context, StationModel station) {
   Navigator.push(
     context,
     MaterialPageRoute(

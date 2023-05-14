@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'app_state.dart';
 
 class ViewStationRoute extends StatelessWidget {
-  final Station station;
+  final StationModel station;
+
+  StationConfig get config => station.config!;
 
   const ViewStationRoute({super.key, required this.station});
 
@@ -11,7 +13,7 @@ class ViewStationRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(station.name ?? "..."),
+        title: Text(config.name),
       ),
       body: Center(
         child: ElevatedButton(

@@ -1,11 +1,14 @@
 use anyhow::{bail, Result};
+use chrono::{DateTime, Utc};
 use flutter_rust_bridge::{frb, StreamSink};
+use query::HttpReply;
 use std::collections::HashMap;
 use std::io::Write;
-use std::{thread::sleep, time::Duration};
+use std::sync::Arc;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc::Sender;
-use tokio::sync::oneshot;
+use tokio::sync::{oneshot, Mutex};
+use tokio::time::{sleep, Duration};
 use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
@@ -107,10 +110,43 @@ async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     Ok(Sdk::new(publish_tx)?)
 }
 
-#[derive(Clone)]
+pub type ModelTime = DateTime<Utc>;
+
+#[derive(Clone, Debug)]
+pub struct Querying {
+    pub attempted: Option<ModelTime>,
+    pub finished: Option<ModelTime>,
+}
+
+#[derive(Clone, Debug)]
+pub struct StationConfig {
+    pub name: String,
+}
+
+#[derive(Clone, Debug)]
 pub struct NearbyStation {
     pub device_id: String,
-    pub name: Option<String>,
+    pub http_addr: String,
+    pub querying: Option<Querying>,
+    pub config: Option<StationConfig>,
+}
+
+impl NearbyStation {
+    fn should_query(&self) -> bool {
+        match &self.querying {
+            Some(querying) => match querying.attempted {
+                Some(attempted) => {
+                    if Utc::now() - attempted > chrono::Duration::seconds(10) {
+                        true
+                    } else {
+                        false
+                    }
+                }
+                None => true,
+            },
+            None => true,
+        }
+    }
 }
 
 async fn background_task(publish_tx: Sender<DomainMessage>) {
@@ -119,30 +155,57 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
     let (tx, mut rx) = tokio::sync::mpsc::channel::<Discovered>(32);
     let discovery = Discovery::default();
 
+    let devices: Arc<Mutex<HashMap<discovery::DeviceId, NearbyStation>>> = Default::default();
+
     let maintain_discoveries = tokio::spawn({
+        let devices = Arc::clone(&devices);
         async move {
-            let mut devices: HashMap<discovery::DeviceId, NearbyStation> = HashMap::new();
             while let Some(announce) = rx.recv().await {
+                let mut devices = devices.lock().await;
                 let device_id = &announce.device_id;
                 if !devices.contains_key(device_id) {
                     info!("bg:announce: {:?}", announce);
+
                     devices.insert(
                         device_id.clone(),
                         NearbyStation {
                             device_id: device_id.0.to_owned(),
-                            name: Some("New Station".to_owned()),
+                            // This is only here because NearbyStation is
+                            // exposed via bridge and so the types are limited.
+                            http_addr: format!("{}", announce.http_addr),
+                            querying: None,
+                            config: None,
                         },
                     );
 
-                    match publish_tx
-                        .send(DomainMessage::NearbyStations(
-                            devices.values().map(|i| i.clone()).collect(),
-                        ))
-                        .await
-                    {
+                    match publish_nearby(&devices, publish_tx.clone()).await {
                         Ok(_) => {}
-                        Err(e) => warn!("Send NearbyStations failed: {}", e),
-                    };
+                        Err(e) => warn!("Publish nearby error: {}", e),
+                    }
+                }
+            }
+        }
+    });
+
+    let query_stations = tokio::spawn({
+        async move {
+            loop {
+                sleep(ONE_SECOND).await;
+
+                match first_station_to_query(&devices).await {
+                    Ok(Some(nearby)) => match query_station(&nearby).await {
+                        Ok(status) => {
+                            let device_id = nearby.device_id.clone();
+                            let device_id = discovery::DeviceId(device_id);
+                            match update_from_status(&devices, &device_id, status).await {
+                                Ok(_) => {}
+                                Err(e) => warn!("Update station: {}", e),
+                            }
+                        }
+                        Err(e) => warn!("Query station: {}", e),
+                    },
+                    Ok(None) => {}
+                    Err(e) => warn!("Station to query error: {}", e),
                 }
             }
         }
@@ -152,7 +215,7 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
         async move {
             loop {
                 trace!("bg:tick");
-                sleep(ONE_SECOND);
+                sleep(ONE_SECOND).await;
             }
         }
     });
@@ -160,8 +223,77 @@ async fn background_task(publish_tx: Sender<DomainMessage>) {
     tokio::select! {
         _ = discovery.run(tx) => {},
         _ = maintain_discoveries => {},
+        _ = query_stations => {},
         _ = ticks => {},
     };
+}
+
+async fn first_station_to_query(
+    devices: &Arc<Mutex<HashMap<discovery::DeviceId, NearbyStation>>>,
+) -> Result<Option<NearbyStation>> {
+    let mut devices = devices.lock().await;
+    for (_, nearby) in devices.iter_mut() {
+        info!("nearby-device {:?}", nearby);
+        if nearby.should_query() {
+            nearby.querying = Some(Querying {
+                attempted: Some(Utc::now()),
+                finished: Some(Utc::now()),
+            });
+            return Ok(Some(nearby.clone()));
+        }
+    }
+
+    Ok(None)
+}
+
+async fn http_reply_to_station_config(reply: HttpReply) -> Result<StationConfig> {
+    let status = reply.status.expect("No status");
+    let identity = status.identity.expect("No identity");
+    Ok(StationConfig {
+        name: identity.name.to_owned(),
+    })
+}
+
+async fn update_from_status(
+    devices: &Arc<Mutex<HashMap<discovery::DeviceId, NearbyStation>>>,
+    device_id: &discovery::DeviceId,
+    status: HttpReply,
+) -> Result<()> {
+    let mut devices = devices.lock().await;
+    let mut nearby = devices.get_mut(device_id).expect("Whoa, no station yet?");
+
+    trace!("updating {:?} {:?}", nearby, &status);
+    let config = http_reply_to_station_config(status).await?;
+
+    info!("updating {:?}", &config);
+    nearby.config = Some(config);
+
+    nearby.querying = Some(Querying {
+        attempted: Some(Utc::now()),
+        finished: Some(Utc::now()),
+    });
+
+    Ok(())
+}
+
+async fn publish_nearby(
+    devices: &HashMap<discovery::DeviceId, NearbyStation>,
+    publish_tx: Sender<DomainMessage>,
+) -> Result<()> {
+    let nearby = devices.values().map(|i| i.clone()).collect();
+
+    match publish_tx.send(DomainMessage::NearbyStations(nearby)).await {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            warn!("Send NearbyStations failed: {}", e);
+            Ok(())
+        }
+    }
+}
+
+async fn query_station(nearby: &NearbyStation) -> Result<HttpReply> {
+    let client = query::Client::new()?;
+    Ok(client.query_status(&nearby.http_addr).await?)
 }
 
 pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
