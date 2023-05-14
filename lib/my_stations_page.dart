@@ -17,7 +17,7 @@ class StationsTab extends StatelessWidget {
         settings: settings,
         builder: (context) => Consumer<KnownStationsModel>(
           builder: (context, knownStations, child) {
-            return ListStationsRoute(stations: knownStations.stations);
+            return ListStationsRoute(known: knownStations);
           },
         ),
       );
@@ -26,9 +26,9 @@ class StationsTab extends StatelessWidget {
 }
 
 class ListStationsRoute extends StatelessWidget {
-  final List<Station> stations;
+  final KnownStationsModel known;
 
-  const ListStationsRoute({super.key, required this.stations});
+  const ListStationsRoute({super.key, required this.known});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class ListStationsRoute extends StatelessWidget {
 
     final List<Widget> map = [const SizedBox(height: 200, child: Map())];
 
-    final cards = stations.map((station) {
+    final cards = known.stations.map((station) {
       return StationCard(station: station);
     }).toList();
 
@@ -58,12 +58,7 @@ class DiscoveringStationCard extends StatelessWidget {
     return ListTile(
       title: Text(station.name ?? "..."),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ViewStationRoute(station: station),
-          ),
-        );
+        pushViewStationRoute(context, station);
       },
     );
   }
@@ -79,13 +74,17 @@ class StationCard extends StatelessWidget {
     return ListTile(
       title: Text(station.name ?? "..."),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ViewStationRoute(station: station),
-          ),
-        );
+        pushViewStationRoute(context, station);
       },
     );
   }
+}
+
+void pushViewStationRoute(BuildContext context, Station station) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ViewStationRoute(station: station),
+    ),
+  );
 }

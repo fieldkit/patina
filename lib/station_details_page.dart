@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'app_state.dart';
 
 class ViewStationRoute extends StatelessWidget {
-  const ViewStationRoute({super.key, required this.station});
-
   final Station station;
+
+  const ViewStationRoute({super.key, required this.station});
 
   @override
   Widget build(BuildContext context) {
