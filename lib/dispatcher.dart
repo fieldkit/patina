@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'ffi.dart' if (dart.library.html) 'ffi_web.dart';
 
-// import 'package:timeline/bridge_generated.dart';
-// import 'package:timeline/common/models/phase_info.dart';
+import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 
 /// Global event dispatcher. All components are supposed to dispatch their events via this class.
 class AppEventDispatcher {

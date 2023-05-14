@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'app_state.dart';
-import 'ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
+import 'app_state.dart';
 import 'dispatcher.dart';
 import 'home_page.dart';
 

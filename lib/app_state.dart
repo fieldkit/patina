@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 
-import 'ffi.dart' if (dart.library.html) 'ffi_web.dart';
+import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'dispatcher.dart';
 
 class Station {
