@@ -56,12 +56,10 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
     fn get_rust_log() -> String {
         let mut original = std::env::var("RUST_LOG").unwrap_or_else(|_| "debug".into());
 
-        if !original.contains("hyper=") {
-            original.push_str(",hyper=info");
-        }
-
-        if !original.contains("reqwest=") {
-            original.push_str(",reqwest=info");
+        for logger in ["hyper=", "reqwest=", "rusqlite_migration="] {
+            if !original.contains(logger) {
+                original.push_str(&format!(",{}info", logger));
+            }
         }
 
         original
