@@ -13,7 +13,7 @@ use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
 use query::HttpReply;
-use store::{http_reply_to_station, Db, Station};
+use store::Db;
 
 const ONE_SECOND: Duration = Duration::from_secs(1);
 
@@ -88,36 +88,8 @@ async fn handle_background_message(
         BackgroundMessage::Domain(message) => Ok(publish_tx.send(message).await?),
         BackgroundMessage::StationReply(device_id, reply) => {
             let db = db.lock().await;
-
-            info!("reply:begin {:?}", device_id);
-
-            let station = http_reply_to_station(reply)?;
-            let existing = db.hydrate_station(&store::DeviceId(device_id.0))?;
-
-            let saving = match existing {
-                Some(station) => Station {
-                    modules: station
-                        .modules
-                        .into_iter()
-                        .map(|module| store::Module {
-                            sensors: module
-                                .sensors
-                                .into_iter()
-                                .map(|sensor| store::Sensor { ..sensor })
-                                .collect(),
-                            ..module
-                        })
-                        .collect(),
-                    ..station
-                },
-                None => station,
-            };
-
-            let saved = db.persist_station(&saving)?;
-
-            info!("reply:saved {:?}", saved.id);
-
-            Ok(publish_tx.send(DomainMessage::MyStations(vec![])).await?)
+            db.synchronize_reply(store::DeviceId(device_id.0), reply)?;
+            Ok(())
         }
     }
 }
@@ -186,7 +158,7 @@ async fn background_task(publish_tx: Sender<BackgroundMessage>) {
                     Ok(Some(querying)) => match nearby.query_station(&querying).await {
                         Ok(status) => {
                             match nearby
-                                .mark_finished_publish_reply(&querying.device_id, status)
+                                .mark_finished_and_publish_reply(&querying.device_id, status)
                                 .await
                             {
                                 Ok(_) => {}
@@ -283,7 +255,7 @@ impl NearbyDevices {
     async fn first_station_to_query(&self) -> Result<Option<Querying>> {
         let mut devices = self.devices.lock().await;
         for (_, nearby) in devices.iter_mut() {
-            trace!("{:?}", nearby);
+            debug!("{:?}", nearby);
             if nearby.should_query() {
                 nearby.attempted = Some(Utc::now());
                 nearby.finished = None;
@@ -318,17 +290,20 @@ impl NearbyDevices {
         }
     }
 
-    async fn mark_finished_publish_reply(
+    async fn mark_finished(&self, device_id: &discovery::DeviceId) -> Result<()> {
+        let mut devices = self.devices.lock().await;
+        let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
+        querying.finished = Some(Utc::now());
+
+        Ok(())
+    }
+
+    async fn mark_finished_and_publish_reply(
         &self,
         device_id: &discovery::DeviceId,
         status: HttpReply,
     ) -> Result<()> {
-        {
-            let mut devices = self.devices.lock().await;
-            let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
-            trace!("finished {:?}", device_id);
-            querying.finished = Some(Utc::now());
-        }
+        self.mark_finished(device_id).await?;
 
         self.publish_tx
             .send(BackgroundMessage::StationReply(device_id.clone(), status))
@@ -420,9 +395,24 @@ impl Sdk {
         Ok(stations
             .into_iter()
             .map(|station| StationConfig {
-                device_id: station.device_id,
+                device_id: station.device_id.0.to_owned(),
                 name: station.name,
                 last_seen: station.last_seen,
+                meta: StreamInfo {
+                    size: station.meta.size,
+                    records: station.meta.records,
+                },
+                data: StreamInfo {
+                    size: station.data.size,
+                    records: station.data.records,
+                },
+                battery: BatteryInfo {
+                    percentage: station.battery.percentage,
+                    voltage: station.battery.voltage,
+                },
+                solar: SolarInfo {
+                    voltage: station.solar.voltage,
+                },
                 modules: station
                     .modules
                     .into_iter()
@@ -480,10 +470,31 @@ pub enum DomainMessage {
 }
 
 #[derive(Clone, Debug)]
+pub struct StreamInfo {
+    pub size: u64,
+    pub records: u64,
+}
+
+#[derive(Clone, Debug)]
+pub struct BatteryInfo {
+    pub percentage: f32,
+    pub voltage: f32,
+}
+
+#[derive(Clone, Debug)]
+pub struct SolarInfo {
+    pub voltage: f32,
+}
+
+#[derive(Clone, Debug)]
 pub struct StationConfig {
-    pub device_id: store::DeviceId,
+    pub device_id: String,
     pub name: String,
     pub last_seen: ModelTime,
+    pub meta: StreamInfo,
+    pub data: StreamInfo,
+    pub battery: BatteryInfo,
+    pub solar: SolarInfo,
     pub modules: Vec<ModuleConfig>,
 }
 

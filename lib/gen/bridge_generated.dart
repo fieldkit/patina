@@ -89,12 +89,30 @@ class NativeImpl implements Native {
   }
 // Section: wire2api
 
+  DateTime _wire2api_Chrono_Utc(dynamic raw) {
+    return wire2apiTimestamp(ts: _wire2api_i64(raw), isUtc: true);
+  }
+
   String _wire2api_String(dynamic raw) {
     return raw as String;
   }
 
+  BatteryInfo _wire2api_battery_info(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return BatteryInfo(
+      percentage: _wire2api_f32(arr[0]),
+      voltage: _wire2api_f32(arr[1]),
+    );
+  }
+
   bool _wire2api_bool(dynamic raw) {
     return raw as bool;
+  }
+
+  SensorValue _wire2api_box_autoadd_sensor_value(dynamic raw) {
+    return _wire2api_sensor_value(raw);
   }
 
   DomainMessage _wire2api_domain_message(dynamic raw) {
@@ -112,6 +130,14 @@ class NativeImpl implements Native {
       default:
         throw Exception("unreachable");
     }
+  }
+
+  double _wire2api_f32(dynamic raw) {
+    return raw as double;
+  }
+
+  int _wire2api_i64(dynamic raw) {
+    return castInt(raw);
   }
 
   List<ModuleConfig> _wire2api_list_module_config(dynamic raw) {
@@ -150,30 +176,74 @@ class NativeImpl implements Native {
     );
   }
 
+  SensorValue? _wire2api_opt_box_autoadd_sensor_value(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_sensor_value(raw);
+  }
+
   SensorConfig _wire2api_sensor_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return SensorConfig(
       number: _wire2api_u32(arr[0]),
       key: _wire2api_String(arr[1]),
       calibratedUom: _wire2api_String(arr[2]),
       uncalibratedUom: _wire2api_String(arr[3]),
+      value: _wire2api_opt_box_autoadd_sensor_value(arr[4]),
+    );
+  }
+
+  SensorValue _wire2api_sensor_value(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return SensorValue(
+      value: _wire2api_f32(arr[0]),
+      uncalibrated: _wire2api_f32(arr[1]),
+    );
+  }
+
+  SolarInfo _wire2api_solar_info(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return SolarInfo(
+      voltage: _wire2api_f32(arr[0]),
     );
   }
 
   StationConfig _wire2api_station_config(dynamic raw) {
     final arr = raw as List<dynamic>;
+    if (arr.length != 8)
+      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
+    return StationConfig(
+      deviceId: _wire2api_String(arr[0]),
+      name: _wire2api_String(arr[1]),
+      lastSeen: _wire2api_Chrono_Utc(arr[2]),
+      meta: _wire2api_stream_info(arr[3]),
+      data: _wire2api_stream_info(arr[4]),
+      battery: _wire2api_battery_info(arr[5]),
+      solar: _wire2api_solar_info(arr[6]),
+      modules: _wire2api_list_module_config(arr[7]),
+    );
+  }
+
+  StreamInfo _wire2api_stream_info(dynamic raw) {
+    final arr = raw as List<dynamic>;
     if (arr.length != 2)
       throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-    return StationConfig(
-      name: _wire2api_String(arr[0]),
-      modules: _wire2api_list_module_config(arr[1]),
+    return StreamInfo(
+      size: _wire2api_u64(arr[0]),
+      records: _wire2api_u64(arr[1]),
     );
   }
 
   int _wire2api_u32(dynamic raw) {
     return raw as int;
+  }
+
+  int _wire2api_u64(dynamic raw) {
+    return castInt(raw);
   }
 
   int _wire2api_u8(dynamic raw) {

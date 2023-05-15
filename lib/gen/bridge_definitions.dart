@@ -31,6 +31,16 @@ abstract class Native {
   FlutterRustBridgeTaskConstMeta get kGetMyStationsConstMeta;
 }
 
+class BatteryInfo {
+  final double percentage;
+  final double voltage;
+
+  const BatteryInfo({
+    required this.percentage,
+    required this.voltage,
+  });
+}
+
 @freezed
 class DomainMessage with _$DomainMessage {
   const factory DomainMessage.preAccount() = DomainMessage_PreAccount;
@@ -67,21 +77,63 @@ class SensorConfig {
   final String key;
   final String calibratedUom;
   final String uncalibratedUom;
+  final SensorValue? value;
 
   const SensorConfig({
     required this.number,
     required this.key,
     required this.calibratedUom,
     required this.uncalibratedUom,
+    this.value,
+  });
+}
+
+class SensorValue {
+  final double value;
+  final double uncalibrated;
+
+  const SensorValue({
+    required this.value,
+    required this.uncalibrated,
+  });
+}
+
+class SolarInfo {
+  final double voltage;
+
+  const SolarInfo({
+    required this.voltage,
   });
 }
 
 class StationConfig {
+  final String deviceId;
   final String name;
+  final DateTime lastSeen;
+  final StreamInfo meta;
+  final StreamInfo data;
+  final BatteryInfo battery;
+  final SolarInfo solar;
   final List<ModuleConfig> modules;
 
   const StationConfig({
+    required this.deviceId,
     required this.name,
+    required this.lastSeen,
+    required this.meta,
+    required this.data,
+    required this.battery,
+    required this.solar,
     required this.modules,
+  });
+}
+
+class StreamInfo {
+  final int size;
+  final int records;
+
+  const StreamInfo({
+    required this.size,
+    required this.records,
   });
 }

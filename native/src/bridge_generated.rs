@@ -85,6 +85,13 @@ where
 }
 // Section: impl IntoDart
 
+impl support::IntoDart for BatteryInfo {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.percentage.into_dart(), self.voltage.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for BatteryInfo {}
+
 impl support::IntoDart for DomainMessage {
     fn into_dart(self) -> support::DartAbi {
         match self {
@@ -123,18 +130,50 @@ impl support::IntoDart for SensorConfig {
             self.key.into_dart(),
             self.calibrated_uom.into_dart(),
             self.uncalibrated_uom.into_dart(),
+            self.value.into_dart(),
         ]
         .into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for SensorConfig {}
 
+impl support::IntoDart for SensorValue {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.value.into_dart(), self.uncalibrated.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for SensorValue {}
+
+impl support::IntoDart for SolarInfo {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.voltage.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for SolarInfo {}
+
 impl support::IntoDart for StationConfig {
     fn into_dart(self) -> support::DartAbi {
-        vec![self.name.into_dart(), self.modules.into_dart()].into_dart()
+        vec![
+            self.device_id.into_dart(),
+            self.name.into_dart(),
+            self.last_seen.into_dart(),
+            self.meta.into_dart(),
+            self.data.into_dart(),
+            self.battery.into_dart(),
+            self.solar.into_dart(),
+            self.modules.into_dart(),
+        ]
+        .into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for StationConfig {}
+
+impl support::IntoDart for StreamInfo {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.size.into_dart(), self.records.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for StreamInfo {}
 
 // Section: executor
 
