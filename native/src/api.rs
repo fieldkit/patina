@@ -1,11 +1,9 @@
 use anyhow::{bail, Result};
 use chrono::{DateTime, Utc};
 use flutter_rust_bridge::StreamSink;
-use query::HttpReply;
 use std::collections::HashMap;
 use std::io::Write;
 use std::sync::Arc;
-use store::Db;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc::Sender;
 use tokio::sync::{oneshot, Mutex};
@@ -14,6 +12,8 @@ use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
+use query::HttpReply;
+use store::{http_reply_to_station, Db, Station};
 
 const ONE_SECOND: Duration = Duration::from_secs(1);
 
@@ -82,20 +82,56 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
 async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     info!("startup:bg");
 
-    let sdk = Sdk::new(publish_tx.clone())?;
-
     let (bg_tx, mut bg_rx) = tokio::sync::mpsc::channel::<BackgroundMessage>(32);
 
-    tokio::spawn(async move {
-        loop {
-            while let Some(bg) = bg_rx.recv().await {
-                match bg {
-                    BackgroundMessage::Domain(message) => match publish_tx.send(message).await {
-                        Err(e) => warn!("Publish domain message: {}", e),
-                        _ => {}
-                    },
-                    BackgroundMessage::StationReply(_) => {
-                        info!("reply");
+    let sdk = Sdk::new(publish_tx.clone())?;
+
+    sdk.open().await?;
+
+    tokio::spawn({
+        let db = sdk.db.clone();
+        async move {
+            loop {
+                while let Some(bg) = bg_rx.recv().await {
+                    match bg {
+                        BackgroundMessage::Domain(message) => {
+                            match publish_tx.send(message).await {
+                                Err(e) => warn!("Publish domain message: {}", e),
+                                _ => {}
+                            }
+                        }
+                        BackgroundMessage::StationReply(device_id, reply) => {
+                            let station =
+                                http_reply_to_station(reply).expect("Error mapping reply");
+                            let db = db.lock().await;
+                            let existing = db
+                                .hydrate_station(&store::DeviceId(device_id.0))
+                                .expect("Error hyrdrating station");
+
+                            let saving = match existing {
+                                Some(station) => Station {
+                                    modules: station
+                                        .modules
+                                        .into_iter()
+                                        .map(|module| store::Module {
+                                            sensors: module
+                                                .sensors
+                                                .into_iter()
+                                                .map(|sensor| store::Sensor { ..sensor })
+                                                .collect(),
+                                            ..module
+                                        })
+                                        .collect(),
+                                    ..station
+                                },
+                                None => station,
+                            };
+
+                            db.persist_station(&saving)
+                                .expect("Error persisting station");
+
+                            info!("reply");
+                        }
                     }
                 }
             }
@@ -110,7 +146,7 @@ async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
 #[derive(Debug)]
 enum BackgroundMessage {
     Domain(DomainMessage),
-    StationReply(HttpReply),
+    StationReply(discovery::DeviceId, HttpReply),
 }
 
 async fn background_task(publish_tx: Sender<BackgroundMessage>) {
@@ -287,7 +323,7 @@ impl NearbyDevices {
         }
 
         self.publish_tx
-            .send(BackgroundMessage::StationReply(status))
+            .send(BackgroundMessage::StationReply(device_id.clone(), status))
             .await?;
 
         Ok(())
@@ -351,26 +387,32 @@ pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
 }
 
 struct Sdk {
-    db: Db,
-    #[allow(dead_code)]
-    publish_tx: Sender<DomainMessage>,
+    db: Arc<Mutex<Db>>,
+    _publish_tx: Sender<DomainMessage>,
 }
 
 impl Sdk {
     fn new(publish_tx: Sender<DomainMessage>) -> Result<Self> {
         Ok(Self {
-            db: Db::new(),
-            publish_tx,
+            db: Arc::new(Mutex::new(Db::new())),
+            _publish_tx: publish_tx,
         })
     }
 
-    fn get_my_stations(&self) -> Result<Vec<StationConfig>> {
-        let _stations = self.db.get_stations()?;
+    async fn open(&self) -> Result<()> {
+        let mut db = self.db.lock().await;
+        db.open()?;
+        Ok(())
+    }
+
+    async fn get_my_stations(&self) -> Result<Vec<StationConfig>> {
+        let db = self.db.lock().await;
+        let stations = db.get_stations()?;
+        info!("my-stations: {:?}", stations);
         Ok(Vec::new())
     }
 }
 
-#[allow(dead_code)]
 fn with_runtime<R>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R>) -> Result<R> {
     let mut sdk_guard = SDK.lock().expect("Get sdk");
     let sdk = sdk_guard.as_mut().expect("Sdk present");
@@ -389,9 +431,8 @@ fn with_sdk<R>(cb: impl FnOnce(&mut Sdk) -> Result<R>) -> Result<R> {
     with_runtime(|_rt, sdk| cb(sdk))
 }
 
-#[allow(dead_code)]
-fn get_my_stations() -> Result<Vec<StationConfig>> {
-    Ok(with_sdk(|sdk| Ok(sdk.get_my_stations()?))?)
+pub fn get_my_stations() -> Result<Vec<StationConfig>> {
+    Ok(with_runtime(|rt, sdk| rt.block_on(sdk.get_my_stations()))?)
 }
 
 #[derive(Debug)]
@@ -410,11 +451,21 @@ pub struct StationConfig {
 
 #[derive(Clone, Debug)]
 pub struct ModuleConfig {
+    pub position: u32,
+    pub flags: u32,
+    pub name: String,
+    pub path: String,
     pub sensors: Vec<SensorConfig>,
 }
 
 #[derive(Clone, Debug)]
-pub struct SensorConfig {}
+pub struct SensorConfig {
+    pub number: u32,
+    pub key: String,
+    pub path: String,
+    pub calibrated_uom: String,
+    pub uncalibrated_uom: String,
+}
 
 #[derive(Clone, Debug)]
 pub struct NearbyStation {

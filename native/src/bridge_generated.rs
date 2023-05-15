@@ -51,6 +51,16 @@ fn wire_start_native_impl(port_: MessagePort) {
         move || move |task_callback| start_native(task_callback.stream_sink()),
     )
 }
+fn wire_get_my_stations_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_my_stations",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| get_my_stations(),
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks
@@ -89,7 +99,14 @@ impl support::IntoDartExceptPrimitive for DomainMessage {}
 
 impl support::IntoDart for ModuleConfig {
     fn into_dart(self) -> support::DartAbi {
-        vec![self.sensors.into_dart()].into_dart()
+        vec![
+            self.position.into_dart(),
+            self.flags.into_dart(),
+            self.name.into_dart(),
+            self.path.into_dart(),
+            self.sensors.into_dart(),
+        ]
+        .into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for ModuleConfig {}
@@ -103,7 +120,14 @@ impl support::IntoDartExceptPrimitive for NearbyStation {}
 
 impl support::IntoDart for SensorConfig {
     fn into_dart(self) -> support::DartAbi {
-        Vec::<u8>::new().into_dart()
+        vec![
+            self.number.into_dart(),
+            self.key.into_dart(),
+            self.path.into_dart(),
+            self.calibrated_uom.into_dart(),
+            self.uncalibrated_uom.into_dart(),
+        ]
+        .into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for SensorConfig {}

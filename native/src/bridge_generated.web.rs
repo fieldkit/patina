@@ -16,6 +16,11 @@ pub fn wire_start_native(port_: MessagePort) {
     wire_start_native_impl(port_)
 }
 
+#[wasm_bindgen]
+pub fn wire_get_my_stations(port_: MessagePort) {
+    wire_get_my_stations_impl(port_)
+}
+
 // Section: allocate functions
 
 // Section: related functions

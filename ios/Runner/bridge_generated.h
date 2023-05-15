@@ -27,6 +27,8 @@ void wire_create_log_sink(int64_t port_);
 
 void wire_start_native(int64_t port_);
 
+void wire_get_my_stations(int64_t port_);
+
 void free_WireSyncReturn(WireSyncReturn ptr);
 
 static int64_t dummy_method_to_enforce_bundling(void) {
@@ -34,6 +36,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_rust_release_mode);
     dummy_var ^= ((int64_t) (void*) wire_create_log_sink);
     dummy_var ^= ((int64_t) (void*) wire_start_native);
+    dummy_var ^= ((int64_t) (void*) wire_get_my_stations);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);
     dummy_var ^= ((int64_t) (void*) get_dart_object);

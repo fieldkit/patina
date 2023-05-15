@@ -160,6 +160,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_start_native =
       _wire_start_nativePtr.asFunction<void Function(int)>();
 
+  void wire_get_my_stations(
+    int port_,
+  ) {
+    return _wire_get_my_stations(
+      port_,
+    );
+  }
+
+  late final _wire_get_my_stationsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_get_my_stations');
+  late final _wire_get_my_stations =
+      _wire_get_my_stationsPtr.asFunction<void Function(int)>();
+
   void free_WireSyncReturn(
     WireSyncReturn ptr,
   ) {

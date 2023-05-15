@@ -25,6 +25,10 @@ abstract class Native {
   Stream<DomainMessage> startNative({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStartNativeConstMeta;
+
+  Future<List<StationConfig>> getMyStations({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetMyStationsConstMeta;
 }
 
 @freezed
@@ -39,9 +43,17 @@ class DomainMessage with _$DomainMessage {
 }
 
 class ModuleConfig {
+  final int position;
+  final int flags;
+  final String name;
+  final String path;
   final List<SensorConfig> sensors;
 
   const ModuleConfig({
+    required this.position,
+    required this.flags,
+    required this.name,
+    required this.path,
     required this.sensors,
   });
 }
@@ -55,7 +67,19 @@ class NearbyStation {
 }
 
 class SensorConfig {
-  const SensorConfig();
+  final int number;
+  final String key;
+  final String path;
+  final String calibratedUom;
+  final String uncalibratedUom;
+
+  const SensorConfig({
+    required this.number,
+    required this.key,
+    required this.path,
+    required this.calibratedUom,
+    required this.uncalibratedUom,
+  });
 }
 
 class StationConfig {

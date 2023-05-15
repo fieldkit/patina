@@ -16,6 +16,11 @@ pub extern "C" fn wire_start_native(port_: i64) {
     wire_start_native_impl(port_)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_get_my_stations(port_: i64) {
+    wire_get_my_stations_impl(port_)
+}
+
 // Section: allocate functions
 
 // Section: related functions
