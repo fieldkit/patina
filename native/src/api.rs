@@ -88,8 +88,10 @@ async fn handle_background_message(
         BackgroundMessage::Domain(message) => Ok(publish_tx.send(message).await?),
         BackgroundMessage::StationReply(device_id, reply) => {
             let db = db.lock().await;
-            db.synchronize_reply(store::DeviceId(device_id.0), reply)?;
-            Ok(())
+            let station = db.synchronize_reply(store::DeviceId(device_id.0), reply)?;
+            Ok(publish_tx
+                .send(DomainMessage::StationRefreshed(station.try_into()?))
+                .await?)
         }
     }
 }
@@ -394,49 +396,8 @@ impl Sdk {
         info!("my-stations: {:?}", stations);
         Ok(stations
             .into_iter()
-            .map(|station| StationConfig {
-                device_id: station.device_id.0.to_owned(),
-                name: station.name,
-                last_seen: station.last_seen,
-                meta: StreamInfo {
-                    size: station.meta.size,
-                    records: station.meta.records,
-                },
-                data: StreamInfo {
-                    size: station.data.size,
-                    records: station.data.records,
-                },
-                battery: BatteryInfo {
-                    percentage: station.battery.percentage,
-                    voltage: station.battery.voltage,
-                },
-                solar: SolarInfo {
-                    voltage: station.solar.voltage,
-                },
-                modules: station
-                    .modules
-                    .into_iter()
-                    .map(|module| ModuleConfig {
-                        position: module.position,
-                        key: module.name,
-                        sensors: module
-                            .sensors
-                            .into_iter()
-                            .map(|sensor| SensorConfig {
-                                number: sensor.number,
-                                key: sensor.key,
-                                calibrated_uom: sensor.calibrated_uom,
-                                uncalibrated_uom: sensor.uncalibrated_uom,
-                                value: sensor.value.map(|v| SensorValue {
-                                    value: v.value,
-                                    uncalibrated: v.uncalibrated,
-                                }),
-                            })
-                            .collect(),
-                    })
-                    .collect(),
-            })
-            .collect())
+            .map(|station| Ok(station.try_into()?))
+            .collect::<Result<Vec<_>>>()?)
     }
 }
 
@@ -466,6 +427,7 @@ pub fn get_my_stations() -> Result<Vec<StationConfig>> {
 pub enum DomainMessage {
     PreAccount,
     NearbyStations(Vec<NearbyStation>),
+    StationRefreshed(StationConfig),
     MyStations(Vec<StationConfig>),
 }
 
@@ -524,3 +486,57 @@ pub struct SensorValue {
 pub struct NearbyStation {
     pub device_id: String,
 }
+
+impl TryInto<StationConfig> for store::Station {
+    type Error = SdkMappingError;
+
+    fn try_into(self) -> std::result::Result<StationConfig, Self::Error> {
+        Ok(StationConfig {
+            device_id: self.device_id.0.to_owned(),
+            name: self.name,
+            last_seen: self.last_seen,
+            meta: StreamInfo {
+                size: self.meta.size,
+                records: self.meta.records,
+            },
+            data: StreamInfo {
+                size: self.data.size,
+                records: self.data.records,
+            },
+            battery: BatteryInfo {
+                percentage: self.battery.percentage,
+                voltage: self.battery.voltage,
+            },
+            solar: SolarInfo {
+                voltage: self.solar.voltage,
+            },
+            modules: self
+                .modules
+                .into_iter()
+                .map(|module| ModuleConfig {
+                    position: module.position,
+                    key: module.name,
+                    sensors: module
+                        .sensors
+                        .into_iter()
+                        .map(|sensor| SensorConfig {
+                            number: sensor.number,
+                            key: sensor.key,
+                            calibrated_uom: sensor.calibrated_uom,
+                            uncalibrated_uom: sensor.uncalibrated_uom,
+                            value: sensor.value.map(|v| SensorValue {
+                                value: v.value,
+                                uncalibrated: v.uncalibrated,
+                            }),
+                        })
+                        .collect(),
+                })
+                .collect(),
+        })
+    }
+}
+
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum SdkMappingError {}

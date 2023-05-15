@@ -47,6 +47,9 @@ class DomainMessage with _$DomainMessage {
   const factory DomainMessage.nearbyStations(
     List<NearbyStation> field0,
   ) = DomainMessage_NearbyStations;
+  const factory DomainMessage.stationRefreshed(
+    StationConfig field0,
+  ) = DomainMessage_StationRefreshed;
   const factory DomainMessage.myStations(
     List<StationConfig> field0,
   ) = DomainMessage_MyStations;

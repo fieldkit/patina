@@ -115,6 +115,10 @@ class NativeImpl implements Native {
     return _wire2api_sensor_value(raw);
   }
 
+  StationConfig _wire2api_box_autoadd_station_config(dynamic raw) {
+    return _wire2api_station_config(raw);
+  }
+
   DomainMessage _wire2api_domain_message(dynamic raw) {
     switch (raw[0]) {
       case 0:
@@ -124,6 +128,10 @@ class NativeImpl implements Native {
           _wire2api_list_nearby_station(raw[1]),
         );
       case 2:
+        return DomainMessage_StationRefreshed(
+          _wire2api_box_autoadd_station_config(raw[1]),
+        );
+      case 3:
         return DomainMessage_MyStations(
           _wire2api_list_station_config(raw[1]),
         );

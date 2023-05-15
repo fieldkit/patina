@@ -20,6 +20,7 @@ mixin _$DomainMessage {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
+    required TResult Function(StationConfig field0) stationRefreshed,
     required TResult Function(List<StationConfig> field0) myStations,
   }) =>
       throw _privateConstructorUsedError;
@@ -27,6 +28,7 @@ mixin _$DomainMessage {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
+    TResult? Function(StationConfig field0)? stationRefreshed,
     TResult? Function(List<StationConfig> field0)? myStations,
   }) =>
       throw _privateConstructorUsedError;
@@ -34,6 +36,7 @@ mixin _$DomainMessage {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
+    TResult Function(StationConfig field0)? stationRefreshed,
     TResult Function(List<StationConfig> field0)? myStations,
     required TResult orElse(),
   }) =>
@@ -43,6 +46,8 @@ mixin _$DomainMessage {
     required TResult Function(DomainMessage_PreAccount value) preAccount,
     required TResult Function(DomainMessage_NearbyStations value)
         nearbyStations,
+    required TResult Function(DomainMessage_StationRefreshed value)
+        stationRefreshed,
     required TResult Function(DomainMessage_MyStations value) myStations,
   }) =>
       throw _privateConstructorUsedError;
@@ -50,6 +55,7 @@ mixin _$DomainMessage {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DomainMessage_PreAccount value)? preAccount,
     TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
     TResult? Function(DomainMessage_MyStations value)? myStations,
   }) =>
       throw _privateConstructorUsedError;
@@ -57,6 +63,7 @@ mixin _$DomainMessage {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DomainMessage_PreAccount value)? preAccount,
     TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
     TResult Function(DomainMessage_MyStations value)? myStations,
     required TResult orElse(),
   }) =>
@@ -122,6 +129,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
+    required TResult Function(StationConfig field0) stationRefreshed,
     required TResult Function(List<StationConfig> field0) myStations,
   }) {
     return preAccount();
@@ -132,6 +140,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
+    TResult? Function(StationConfig field0)? stationRefreshed,
     TResult? Function(List<StationConfig> field0)? myStations,
   }) {
     return preAccount?.call();
@@ -142,6 +151,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
+    TResult Function(StationConfig field0)? stationRefreshed,
     TResult Function(List<StationConfig> field0)? myStations,
     required TResult orElse(),
   }) {
@@ -157,6 +167,8 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     required TResult Function(DomainMessage_PreAccount value) preAccount,
     required TResult Function(DomainMessage_NearbyStations value)
         nearbyStations,
+    required TResult Function(DomainMessage_StationRefreshed value)
+        stationRefreshed,
     required TResult Function(DomainMessage_MyStations value) myStations,
   }) {
     return preAccount(this);
@@ -167,6 +179,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DomainMessage_PreAccount value)? preAccount,
     TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
     TResult? Function(DomainMessage_MyStations value)? myStations,
   }) {
     return preAccount?.call(this);
@@ -177,6 +190,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DomainMessage_PreAccount value)? preAccount,
     TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
     TResult Function(DomainMessage_MyStations value)? myStations,
     required TResult orElse(),
   }) {
@@ -267,6 +281,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
+    required TResult Function(StationConfig field0) stationRefreshed,
     required TResult Function(List<StationConfig> field0) myStations,
   }) {
     return nearbyStations(field0);
@@ -277,6 +292,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
+    TResult? Function(StationConfig field0)? stationRefreshed,
     TResult? Function(List<StationConfig> field0)? myStations,
   }) {
     return nearbyStations?.call(field0);
@@ -287,6 +303,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
+    TResult Function(StationConfig field0)? stationRefreshed,
     TResult Function(List<StationConfig> field0)? myStations,
     required TResult orElse(),
   }) {
@@ -302,6 +319,8 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     required TResult Function(DomainMessage_PreAccount value) preAccount,
     required TResult Function(DomainMessage_NearbyStations value)
         nearbyStations,
+    required TResult Function(DomainMessage_StationRefreshed value)
+        stationRefreshed,
     required TResult Function(DomainMessage_MyStations value) myStations,
   }) {
     return nearbyStations(this);
@@ -312,6 +331,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DomainMessage_PreAccount value)? preAccount,
     TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
     TResult? Function(DomainMessage_MyStations value)? myStations,
   }) {
     return nearbyStations?.call(this);
@@ -322,6 +342,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DomainMessage_PreAccount value)? preAccount,
     TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
     TResult Function(DomainMessage_MyStations value)? myStations,
     required TResult orElse(),
   }) {
@@ -339,6 +360,158 @@ abstract class DomainMessage_NearbyStations implements DomainMessage {
   List<NearbyStation> get field0;
   @JsonKey(ignore: true)
   _$$DomainMessage_NearbyStationsCopyWith<_$DomainMessage_NearbyStations>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$DomainMessage_StationRefreshedCopyWith<$Res> {
+  factory _$$DomainMessage_StationRefreshedCopyWith(
+          _$DomainMessage_StationRefreshed value,
+          $Res Function(_$DomainMessage_StationRefreshed) then) =
+      __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>;
+  @useResult
+  $Res call({StationConfig field0});
+}
+
+/// @nodoc
+class __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_StationRefreshed>
+    implements _$$DomainMessage_StationRefreshedCopyWith<$Res> {
+  __$$DomainMessage_StationRefreshedCopyWithImpl(
+      _$DomainMessage_StationRefreshed _value,
+      $Res Function(_$DomainMessage_StationRefreshed) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$DomainMessage_StationRefreshed(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as StationConfig,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$DomainMessage_StationRefreshed
+    implements DomainMessage_StationRefreshed {
+  const _$DomainMessage_StationRefreshed(this.field0);
+
+  @override
+  final StationConfig field0;
+
+  @override
+  String toString() {
+    return 'DomainMessage.stationRefreshed(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DomainMessage_StationRefreshed &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DomainMessage_StationRefreshedCopyWith<_$DomainMessage_StationRefreshed>
+      get copyWith => __$$DomainMessage_StationRefreshedCopyWithImpl<
+          _$DomainMessage_StationRefreshed>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() preAccount,
+    required TResult Function(List<NearbyStation> field0) nearbyStations,
+    required TResult Function(StationConfig field0) stationRefreshed,
+    required TResult Function(List<StationConfig> field0) myStations,
+  }) {
+    return stationRefreshed(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? preAccount,
+    TResult? Function(List<NearbyStation> field0)? nearbyStations,
+    TResult? Function(StationConfig field0)? stationRefreshed,
+    TResult? Function(List<StationConfig> field0)? myStations,
+  }) {
+    return stationRefreshed?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? preAccount,
+    TResult Function(List<NearbyStation> field0)? nearbyStations,
+    TResult Function(StationConfig field0)? stationRefreshed,
+    TResult Function(List<StationConfig> field0)? myStations,
+    required TResult orElse(),
+  }) {
+    if (stationRefreshed != null) {
+      return stationRefreshed(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(DomainMessage_PreAccount value) preAccount,
+    required TResult Function(DomainMessage_NearbyStations value)
+        nearbyStations,
+    required TResult Function(DomainMessage_StationRefreshed value)
+        stationRefreshed,
+    required TResult Function(DomainMessage_MyStations value) myStations,
+  }) {
+    return stationRefreshed(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(DomainMessage_PreAccount value)? preAccount,
+    TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult? Function(DomainMessage_MyStations value)? myStations,
+  }) {
+    return stationRefreshed?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(DomainMessage_PreAccount value)? preAccount,
+    TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult Function(DomainMessage_MyStations value)? myStations,
+    required TResult orElse(),
+  }) {
+    if (stationRefreshed != null) {
+      return stationRefreshed(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class DomainMessage_StationRefreshed implements DomainMessage {
+  const factory DomainMessage_StationRefreshed(final StationConfig field0) =
+      _$DomainMessage_StationRefreshed;
+
+  StationConfig get field0;
+  @JsonKey(ignore: true)
+  _$$DomainMessage_StationRefreshedCopyWith<_$DomainMessage_StationRefreshed>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -417,6 +590,7 @@ class _$DomainMessage_MyStations implements DomainMessage_MyStations {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
+    required TResult Function(StationConfig field0) stationRefreshed,
     required TResult Function(List<StationConfig> field0) myStations,
   }) {
     return myStations(field0);
@@ -427,6 +601,7 @@ class _$DomainMessage_MyStations implements DomainMessage_MyStations {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
+    TResult? Function(StationConfig field0)? stationRefreshed,
     TResult? Function(List<StationConfig> field0)? myStations,
   }) {
     return myStations?.call(field0);
@@ -437,6 +612,7 @@ class _$DomainMessage_MyStations implements DomainMessage_MyStations {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
+    TResult Function(StationConfig field0)? stationRefreshed,
     TResult Function(List<StationConfig> field0)? myStations,
     required TResult orElse(),
   }) {
@@ -452,6 +628,8 @@ class _$DomainMessage_MyStations implements DomainMessage_MyStations {
     required TResult Function(DomainMessage_PreAccount value) preAccount,
     required TResult Function(DomainMessage_NearbyStations value)
         nearbyStations,
+    required TResult Function(DomainMessage_StationRefreshed value)
+        stationRefreshed,
     required TResult Function(DomainMessage_MyStations value) myStations,
   }) {
     return myStations(this);
@@ -462,6 +640,7 @@ class _$DomainMessage_MyStations implements DomainMessage_MyStations {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DomainMessage_PreAccount value)? preAccount,
     TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
     TResult? Function(DomainMessage_MyStations value)? myStations,
   }) {
     return myStations?.call(this);
@@ -472,6 +651,7 @@ class _$DomainMessage_MyStations implements DomainMessage_MyStations {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DomainMessage_PreAccount value)? preAccount,
     TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
     TResult Function(DomainMessage_MyStations value)? myStations,
     required TResult orElse(),
   }) {
