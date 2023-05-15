@@ -283,7 +283,7 @@ impl NearbyDevices {
     async fn first_station_to_query(&self) -> Result<Option<Querying>> {
         let mut devices = self.devices.lock().await;
         for (_, nearby) in devices.iter_mut() {
-            debug!("{:?}", nearby);
+            trace!("{:?}", nearby);
             if nearby.should_query() {
                 nearby.attempted = Some(Utc::now());
                 nearby.finished = None;
@@ -417,7 +417,36 @@ impl Sdk {
         let db = self.db.lock().await;
         let stations = db.get_stations()?;
         info!("my-stations: {:?}", stations);
-        Ok(Vec::new())
+        Ok(stations
+            .into_iter()
+            .map(|station| StationConfig {
+                device_id: station.device_id,
+                name: station.name,
+                last_seen: station.last_seen,
+                modules: station
+                    .modules
+                    .into_iter()
+                    .map(|module| ModuleConfig {
+                        position: module.position,
+                        key: module.name,
+                        sensors: module
+                            .sensors
+                            .into_iter()
+                            .map(|sensor| SensorConfig {
+                                number: sensor.number,
+                                key: sensor.key,
+                                calibrated_uom: sensor.calibrated_uom,
+                                uncalibrated_uom: sensor.uncalibrated_uom,
+                                value: sensor.value.map(|v| SensorValue {
+                                    value: v.value,
+                                    uncalibrated: v.uncalibrated,
+                                }),
+                            })
+                            .collect(),
+                    })
+                    .collect(),
+            })
+            .collect())
     }
 }
 
@@ -452,17 +481,16 @@ pub enum DomainMessage {
 
 #[derive(Clone, Debug)]
 pub struct StationConfig {
+    pub device_id: store::DeviceId,
     pub name: String,
-    pub generation_id: String,
+    pub last_seen: ModelTime,
     pub modules: Vec<ModuleConfig>,
 }
 
 #[derive(Clone, Debug)]
 pub struct ModuleConfig {
     pub position: u32,
-    pub flags: u32,
-    pub name: String,
-    pub path: String,
+    pub key: String,
     pub sensors: Vec<SensorConfig>,
 }
 
@@ -470,9 +498,15 @@ pub struct ModuleConfig {
 pub struct SensorConfig {
     pub number: u32,
     pub key: String,
-    pub path: String,
     pub calibrated_uom: String,
     pub uncalibrated_uom: String,
+    pub value: Option<SensorValue>,
+}
+
+#[derive(Clone, Debug)]
+pub struct SensorValue {
+    pub value: f32,
+    pub uncalibrated: f32,
 }
 
 #[derive(Clone, Debug)]

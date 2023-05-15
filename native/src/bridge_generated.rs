@@ -101,9 +101,7 @@ impl support::IntoDart for ModuleConfig {
     fn into_dart(self) -> support::DartAbi {
         vec![
             self.position.into_dart(),
-            self.flags.into_dart(),
-            self.name.into_dart(),
-            self.path.into_dart(),
+            self.key.into_dart(),
             self.sensors.into_dart(),
         ]
         .into_dart()
@@ -123,7 +121,6 @@ impl support::IntoDart for SensorConfig {
         vec![
             self.number.into_dart(),
             self.key.into_dart(),
-            self.path.into_dart(),
             self.calibrated_uom.into_dart(),
             self.uncalibrated_uom.into_dart(),
         ]
@@ -134,12 +131,7 @@ impl support::IntoDartExceptPrimitive for SensorConfig {}
 
 impl support::IntoDart for StationConfig {
     fn into_dart(self) -> support::DartAbi {
-        vec![
-            self.name.into_dart(),
-            self.generation_id.into_dart(),
-            self.modules.into_dart(),
-        ]
-        .into_dart()
+        vec![self.name.into_dart(), self.modules.into_dart()].into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for StationConfig {}

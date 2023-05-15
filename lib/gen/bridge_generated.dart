@@ -132,14 +132,12 @@ class NativeImpl implements Native {
 
   ModuleConfig _wire2api_module_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
     return ModuleConfig(
       position: _wire2api_u32(arr[0]),
-      flags: _wire2api_u32(arr[1]),
-      name: _wire2api_String(arr[2]),
-      path: _wire2api_String(arr[3]),
-      sensors: _wire2api_list_sensor_config(arr[4]),
+      key: _wire2api_String(arr[1]),
+      sensors: _wire2api_list_sensor_config(arr[2]),
     );
   }
 
@@ -154,25 +152,23 @@ class NativeImpl implements Native {
 
   SensorConfig _wire2api_sensor_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return SensorConfig(
       number: _wire2api_u32(arr[0]),
       key: _wire2api_String(arr[1]),
-      path: _wire2api_String(arr[2]),
-      calibratedUom: _wire2api_String(arr[3]),
-      uncalibratedUom: _wire2api_String(arr[4]),
+      calibratedUom: _wire2api_String(arr[2]),
+      uncalibratedUom: _wire2api_String(arr[3]),
     );
   }
 
   StationConfig _wire2api_station_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 3)
-      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
     return StationConfig(
       name: _wire2api_String(arr[0]),
-      generationId: _wire2api_String(arr[1]),
-      modules: _wire2api_list_module_config(arr[2]),
+      modules: _wire2api_list_module_config(arr[1]),
     );
   }
 

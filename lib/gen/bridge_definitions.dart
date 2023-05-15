@@ -44,16 +44,12 @@ class DomainMessage with _$DomainMessage {
 
 class ModuleConfig {
   final int position;
-  final int flags;
-  final String name;
-  final String path;
+  final String key;
   final List<SensorConfig> sensors;
 
   const ModuleConfig({
     required this.position,
-    required this.flags,
-    required this.name,
-    required this.path,
+    required this.key,
     required this.sensors,
   });
 }
@@ -69,14 +65,12 @@ class NearbyStation {
 class SensorConfig {
   final int number;
   final String key;
-  final String path;
   final String calibratedUom;
   final String uncalibratedUom;
 
   const SensorConfig({
     required this.number,
     required this.key,
-    required this.path,
     required this.calibratedUom,
     required this.uncalibratedUom,
   });
@@ -84,12 +78,10 @@ class SensorConfig {
 
 class StationConfig {
   final String name;
-  final String generationId;
   final List<ModuleConfig> modules;
 
   const StationConfig({
     required this.name,
-    required this.generationId,
     required this.modules,
   });
 }
