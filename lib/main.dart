@@ -28,18 +28,32 @@ Future<void> _startNative(AppEventDispatcher dispatcher) async {
   }
 }
 
-void _runNative(AppEventDispatcher dispatcher) async {
-  try {
-    await _startNative(dispatcher);
-  } catch (e, st) {
-    debugPrint('Native module error: $e $st');
-  }
-}
-
 Future<AppEnv> initializeCurrentEnv(AppEventDispatcher dispatcher) async {
-  _runNative(dispatcher);
+  final completer = Completer<AppEnv>();
 
-  return AppEnv.appState(dispatcher);
+  void listener(DomainMessage e) {
+    // Remove the listener because we'll continue to be called after the first
+    // message and the completer will be done.
+    dispatcher.removeListener(listener);
+    completer.complete(AppEnv.appState(dispatcher));
+  }
+
+  dispatcher.addListener(listener);
+
+  void run() async {
+    try {
+      await _startNative(dispatcher);
+    } catch (err, stack) {
+      // TODO Complete with error to avoid startup hang.
+      debugPrint('Native module error: $err $stack');
+    } finally {
+      dispatcher.removeListener(listener);
+    }
+  }
+
+  run();
+
+  return completer.future;
 }
 
 class OurApp extends StatefulWidget {
@@ -57,16 +71,12 @@ class _OurAppState extends State<OurApp> {
   void initState() {
     super.initState();
     developer.log("app-state:initialize");
-    widget.env.dispatcher.addListener(_listener);
   }
 
   @override
   void dispose() {
     super.dispose();
-    widget.env.dispatcher.removeListener(_listener);
   }
-
-  void _listener(DomainMessage e) async {}
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'gen/ffi.dart';
+
 import 'app_state.dart';
 import 'station_details_page.dart';
 import 'map_widget.dart';
@@ -10,8 +12,6 @@ class StationsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("stations-tab:build");
-
     return Navigator(onGenerateRoute: (RouteSettings settings) {
       return MaterialPageRoute(
         settings: settings,
@@ -32,8 +32,6 @@ class ListStationsRoute extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("list-stations-route:build");
-
     final List<Widget> map = [const SizedBox(height: 200, child: Map())];
 
     final cards = known.stations.map((station) {

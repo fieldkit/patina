@@ -12,8 +12,8 @@ class AppEventDispatcher {
         if (listener.test(m)) {
           listener.callback(m);
         }
-      } catch (e) {
-        debugPrint("Failed to push event: $e");
+      } catch (err) {
+        debugPrint("Failed to push event: $err $listener");
       }
     }
   }

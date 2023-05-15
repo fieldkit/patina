@@ -255,7 +255,7 @@ impl NearbyDevices {
     async fn first_station_to_query(&self) -> Result<Option<Querying>> {
         let mut devices = self.devices.lock().await;
         for (_, nearby) in devices.iter_mut() {
-            debug!("{:?}", nearby);
+            trace!("{:?}", nearby);
             if nearby.should_query() {
                 nearby.attempted = Some(Utc::now());
                 nearby.finished = None;
@@ -356,7 +356,7 @@ pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
     let _guard = handle.enter();
     tokio::spawn(async move {
         while let Some(e) = publish_rx.recv().await {
-            info!("sdk:publish");
+            trace!("sdk:publish");
             sink.add(e.into());
         }
         let _ = tx.send(());

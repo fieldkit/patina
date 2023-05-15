@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'gen/ffi.dart';
+
 import 'app_state.dart';
 
 class ViewStationRoute extends StatelessWidget {
