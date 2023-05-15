@@ -117,7 +117,7 @@ async fn handle_background_message(
 
             info!("reply:saved {:?}", saved.id);
 
-            Ok(())
+            Ok(publish_tx.send(DomainMessage::MyStations(vec![])).await?)
         }
     }
 }
@@ -185,8 +185,10 @@ async fn background_task(publish_tx: Sender<BackgroundMessage>) {
                 match nearby.first_station_to_query().await {
                     Ok(Some(querying)) => match nearby.query_station(&querying).await {
                         Ok(status) => {
-                            let device_id = querying.device_id.clone();
-                            match nearby.update_from_status(&device_id, status).await {
+                            match nearby
+                                .mark_finished_publish_reply(&querying.device_id, status)
+                                .await
+                            {
                                 Ok(_) => {}
                                 Err(e) => warn!("Update station: {}", e),
                             }
@@ -316,7 +318,7 @@ impl NearbyDevices {
         }
     }
 
-    async fn update_from_status(
+    async fn mark_finished_publish_reply(
         &self,
         device_id: &discovery::DeviceId,
         status: HttpReply,
@@ -324,7 +326,7 @@ impl NearbyDevices {
         {
             let mut devices = self.devices.lock().await;
             let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
-            debug!("updating {:?}", device_id);
+            trace!("finished {:?}", device_id);
             querying.finished = Some(Utc::now());
         }
 
