@@ -79,6 +79,49 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
     Ok(())
 }
 
+async fn handle_background_message(
+    db: &Arc<Mutex<Db>>,
+    publish_tx: Sender<DomainMessage>,
+    bg: BackgroundMessage,
+) -> Result<()> {
+    match bg {
+        BackgroundMessage::Domain(message) => Ok(publish_tx.send(message).await?),
+        BackgroundMessage::StationReply(device_id, reply) => {
+            let db = db.lock().await;
+
+            info!("reply:begin {:?}", device_id);
+
+            let station = http_reply_to_station(reply)?;
+            let existing = db.hydrate_station(&store::DeviceId(device_id.0))?;
+
+            let saving = match existing {
+                Some(station) => Station {
+                    modules: station
+                        .modules
+                        .into_iter()
+                        .map(|module| store::Module {
+                            sensors: module
+                                .sensors
+                                .into_iter()
+                                .map(|sensor| store::Sensor { ..sensor })
+                                .collect(),
+                            ..module
+                        })
+                        .collect(),
+                    ..station
+                },
+                None => station,
+            };
+
+            let saved = db.persist_station(&saving)?;
+
+            info!("reply:saved {:?}", saved.id);
+
+            Ok(())
+        }
+    }
+}
+
 async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     info!("startup:bg");
 
@@ -93,46 +136,9 @@ async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
         async move {
             loop {
                 while let Some(bg) = bg_rx.recv().await {
-                    match bg {
-                        BackgroundMessage::Domain(message) => {
-                            match publish_tx.send(message).await {
-                                Err(e) => warn!("Publish domain message: {}", e),
-                                _ => {}
-                            }
-                        }
-                        BackgroundMessage::StationReply(device_id, reply) => {
-                            let station =
-                                http_reply_to_station(reply).expect("Error mapping reply");
-                            let db = db.lock().await;
-                            let existing = db
-                                .hydrate_station(&store::DeviceId(device_id.0))
-                                .expect("Error hyrdrating station");
-
-                            let saving = match existing {
-                                Some(station) => Station {
-                                    modules: station
-                                        .modules
-                                        .into_iter()
-                                        .map(|module| store::Module {
-                                            sensors: module
-                                                .sensors
-                                                .into_iter()
-                                                .map(|sensor| store::Sensor { ..sensor })
-                                                .collect(),
-                                            ..module
-                                        })
-                                        .collect(),
-                                    ..station
-                                },
-                                None => station,
-                            };
-
-                            db.persist_station(&saving)
-                                .expect("Error persisting station");
-
-                            info!("reply");
-                        }
-                    }
+                    handle_background_message(&db, publish_tx.clone(), bg)
+                        .await
+                        .expect("Background error:")
                 }
             }
         }
