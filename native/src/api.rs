@@ -86,9 +86,15 @@ async fn handle_background_message(
         BackgroundMessage::Domain(message) => Ok(publish_tx.send(message).await?),
         BackgroundMessage::StationReply(device_id, reply) => {
             let db = db.lock().await;
-            let station = db.synchronize_reply(store::DeviceId(device_id.0), reply)?;
+            let station = db.merge_reply(store::DeviceId(device_id.0), reply)?;
             Ok(publish_tx
-                .send(DomainMessage::StationRefreshed(station.try_into()?))
+                .send(DomainMessage::StationRefreshed(
+                    StationAndConnection {
+                        station,
+                        connection: Some(Connection::Connected),
+                    }
+                    .try_into()?,
+                ))
                 .await?)
         }
     }
@@ -99,7 +105,9 @@ async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
 
     let (bg_tx, mut bg_rx) = tokio::sync::mpsc::channel::<BackgroundMessage>(32);
 
-    let sdk = Sdk::new(publish_tx.clone())?;
+    let nearby = NearbyDevices::new(bg_tx.clone());
+
+    let sdk = Sdk::new(nearby.clone())?;
 
     sdk.open().await?;
 
@@ -116,7 +124,7 @@ async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
         }
     });
 
-    tokio::spawn(async move { background_task(bg_tx).await });
+    tokio::spawn(async move { background_task(nearby).await });
 
     Ok(sdk)
 }
@@ -127,13 +135,11 @@ enum BackgroundMessage {
     StationReply(discovery::DeviceId, HttpReply),
 }
 
-async fn background_task(publish_tx: Sender<BackgroundMessage>) {
+async fn background_task(nearby: NearbyDevices) {
     info!("bg:started");
 
     let (tx, mut rx) = tokio::sync::mpsc::channel::<Discovered>(32);
     let discovery = Discovery::default();
-
-    let nearby = NearbyDevices::new(publish_tx);
 
     let maintain_discoveries = tokio::spawn({
         let nearby = nearby.clone();
@@ -216,6 +222,12 @@ impl Querying {
     }
 }
 
+impl Into<Connection> for &Querying {
+    fn into(self) -> Connection {
+        Connection::Connected
+    }
+}
+
 #[derive(Clone)]
 struct NearbyDevices {
     publish_tx: Sender<BackgroundMessage>,
@@ -228,6 +240,14 @@ impl NearbyDevices {
             publish_tx,
             devices: Default::default(),
         }
+    }
+
+    async fn get_connections(&self) -> Result<HashMap<discovery::DeviceId, Connection>> {
+        let devices = self.devices.lock().await;
+        Ok(devices
+            .iter()
+            .map(|(key, value)| (key.clone(), value.into()))
+            .collect())
     }
 
     async fn add_if_necessary(&self, announce: discovery::Discovered) -> bool {
@@ -371,30 +391,40 @@ pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
 
 struct Sdk {
     db: Arc<Mutex<Db>>,
-    _publish_tx: Sender<DomainMessage>,
+    nearby: NearbyDevices,
 }
 
 impl Sdk {
-    fn new(publish_tx: Sender<DomainMessage>) -> Result<Self> {
+    fn new(nearby: NearbyDevices) -> Result<Self> {
         Ok(Self {
             db: Arc::new(Mutex::new(Db::new())),
-            _publish_tx: publish_tx,
+            nearby,
         })
     }
 
     async fn open(&self) -> Result<()> {
         let mut db = self.db.lock().await;
         db.open()?;
+
         Ok(())
     }
 
     async fn get_my_stations(&self) -> Result<Vec<StationConfig>> {
+        let connections = self.nearby.get_connections().await?;
         let db = self.db.lock().await;
         let stations = db.get_stations()?;
-        info!("my-stations: {:?}", stations);
+
         Ok(stations
             .into_iter()
-            .map(|station| Ok(station.try_into()?))
+            .map(|station| {
+                let device_id = &discovery::DeviceId(station.device_id.clone().0);
+                let connection = connections.get(&device_id).cloned();
+                Ok(StationAndConnection {
+                    station,
+                    connection,
+                }
+                .try_into()?)
+            })
             .collect::<Result<Vec<_>>>()?)
     }
 }
@@ -447,6 +477,12 @@ pub struct SolarInfo {
 }
 
 #[derive(Clone, Debug)]
+pub enum Connection {
+    Connected,
+    Lost,
+}
+
+#[derive(Clone, Debug)]
 pub struct StationConfig {
     pub device_id: String,
     pub name: String,
@@ -455,6 +491,7 @@ pub struct StationConfig {
     pub data: StreamInfo,
     pub battery: BatteryInfo,
     pub solar: SolarInfo,
+    pub connected: Option<Connection>,
     pub modules: Vec<ModuleConfig>,
 }
 
@@ -485,30 +522,38 @@ pub struct NearbyStation {
     pub device_id: String,
 }
 
-impl TryInto<StationConfig> for store::Station {
+pub struct StationAndConnection {
+    station: store::Station,
+    connection: Option<Connection>,
+}
+
+impl TryInto<StationConfig> for StationAndConnection {
     type Error = SdkMappingError;
 
     fn try_into(self) -> std::result::Result<StationConfig, Self::Error> {
+        let station = self.station;
+
         Ok(StationConfig {
-            device_id: self.device_id.0.to_owned(),
-            name: self.name,
-            last_seen: self.last_seen,
+            device_id: station.device_id.0.to_owned(),
+            name: station.name,
+            last_seen: station.last_seen,
             meta: StreamInfo {
-                size: self.meta.size,
-                records: self.meta.records,
+                size: station.meta.size,
+                records: station.meta.records,
             },
             data: StreamInfo {
-                size: self.data.size,
-                records: self.data.records,
+                size: station.data.size,
+                records: station.data.records,
             },
             battery: BatteryInfo {
-                percentage: self.battery.percentage,
-                voltage: self.battery.voltage,
+                percentage: station.battery.percentage,
+                voltage: station.battery.voltage,
             },
             solar: SolarInfo {
-                voltage: self.solar.voltage,
+                voltage: station.solar.voltage,
             },
-            modules: self
+            connected: self.connection,
+            modules: station
                 .modules
                 .into_iter()
                 .map(|module| ModuleConfig {
