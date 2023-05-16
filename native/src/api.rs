@@ -171,7 +171,19 @@ async fn background_task(nearby: NearbyDevices) {
                                 Err(e) => warn!("Update station: {}", e),
                             }
                         }
-                        Err(e) => warn!("Query station: {}", e),
+                        Err(e) => {
+                            warn!("Query station: {}", e);
+                            match nearby.mark_retry(&querying.device_id).await {
+                                Ok(connection) => match connection {
+                                    Connection::Connected => {}
+                                    Connection::Lost => match nearby.publish().await {
+                                        Ok(_) => {}
+                                        Err(e) => warn!("Publish: {}", e),
+                                    },
+                                },
+                                Err(e) => warn!("Mark retry: {}", e),
+                            }
+                        }
                     },
                     Ok(None) => {}
                     Err(e) => warn!("Station to query error: {}", e),
@@ -205,26 +217,36 @@ struct Querying {
     pub http_addr: String,
     pub attempted: Option<ModelTime>,
     pub finished: Option<ModelTime>,
+    pub retry: Option<ModelTime>,
+    pub failures: i32,
 }
 
 impl Querying {
     fn should_query(&self) -> bool {
+        let now = Utc::now();
         match self.attempted {
             Some(attempted) => {
-                if Utc::now() - attempted > chrono::Duration::seconds(10) {
+                if now - attempted > chrono::Duration::seconds(10) {
                     true
                 } else {
-                    false
+                    match self.retry {
+                        Some(retry) => {
+                            if now >= retry {
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                        None => false,
+                    }
                 }
             }
             None => true,
         }
     }
-}
 
-impl Into<Connection> for &Querying {
-    fn into(self) -> Connection {
-        Connection::Connected
+    fn is_disconnected(&self) -> bool {
+        self.failures >= 3
     }
 }
 
@@ -263,6 +285,8 @@ impl NearbyDevices {
                     http_addr: format!("{}", announce.http_addr),
                     attempted: None,
                     finished: None,
+                    retry: None,
+                    failures: 0,
                 },
             );
 
@@ -279,6 +303,7 @@ impl NearbyDevices {
             if nearby.should_query() {
                 nearby.attempted = Some(Utc::now());
                 nearby.finished = None;
+                nearby.retry = None;
                 return Ok(Some(nearby.clone()));
             }
         }
@@ -290,6 +315,7 @@ impl NearbyDevices {
         let devices = self.devices.lock().await;
         let nearby = devices
             .values()
+            .filter(|q| q.is_disconnected())
             .map(|q| NearbyStation {
                 device_id: q.device_id.0.to_string(),
             })
@@ -310,10 +336,24 @@ impl NearbyDevices {
         }
     }
 
+    async fn mark_retry(&self, device_id: &DeviceId) -> Result<Connection> {
+        use chrono::Duration;
+
+        let mut devices = self.devices.lock().await;
+        let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
+        querying.failures += 1;
+        if !querying.is_disconnected() {
+            querying.retry = Some(Utc::now() + Duration::seconds(1));
+        }
+
+        Ok(querying.into())
+    }
+
     async fn mark_finished(&self, device_id: &discovery::DeviceId) -> Result<()> {
         let mut devices = self.devices.lock().await;
         let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
         querying.finished = Some(Utc::now());
+        querying.failures = 0;
 
         Ok(())
     }
@@ -480,6 +520,28 @@ pub struct SolarInfo {
 pub enum Connection {
     Connected,
     Lost,
+}
+
+// TODO Blanket implementation?
+
+impl Into<Connection> for &Querying {
+    fn into(self) -> Connection {
+        if self.is_disconnected() {
+            Connection::Lost
+        } else {
+            Connection::Connected
+        }
+    }
+}
+
+impl Into<Connection> for &mut Querying {
+    fn into(self) -> Connection {
+        if self.is_disconnected() {
+            Connection::Lost
+        } else {
+            Connection::Connected
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
