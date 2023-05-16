@@ -18,21 +18,19 @@ class StationModel {
 class KnownStationsModel extends ChangeNotifier {
   final Map<String, StationModel> _stations = {};
 
-  UnmodifiableListView<StationModel> get stations =>
-      UnmodifiableListView(_stations.values);
+  UnmodifiableListView<StationModel> get stations => UnmodifiableListView(_stations.values);
 
   KnownStationsModel(Native api, AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
       for (var station in nearby.field0) {
-        _stations[station.deviceId] = StationModel(deviceId: station.deviceId);
+        _stations.putIfAbsent(station.deviceId, () => StationModel(deviceId: station.deviceId));
       }
       notifyListeners();
     });
 
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) {
       var station = refreshed.field0;
-      _stations[station.deviceId] =
-          StationModel(deviceId: station.deviceId, config: station);
+      _stations[station.deviceId] = StationModel(deviceId: station.deviceId, config: station);
       notifyListeners();
     });
 
@@ -43,10 +41,13 @@ class KnownStationsModel extends ChangeNotifier {
     var stations = await api.getMyStations();
     debugPrint("(load) my-stations: $stations");
     for (var station in stations) {
-      _stations[station.deviceId] =
-          StationModel(deviceId: station.deviceId, config: station);
+      _stations[station.deviceId] = StationModel(deviceId: station.deviceId, config: station);
     }
     notifyListeners();
+  }
+
+  StationModel? find(String deviceId) {
+    return _stations[deviceId];
   }
 }
 
@@ -66,8 +67,7 @@ class AppEnv {
   AppEventDispatcher dispatcher;
   ValueNotifier<AppState?> _appState;
 
-  AppEnv._(this.dispatcher, {AppState? appState})
-      : _appState = ValueNotifier(appState);
+  AppEnv._(this.dispatcher, {AppState? appState}) : _appState = ValueNotifier(appState);
 
   AppEnv.appState(AppEventDispatcher dispatcher)
       : this._(

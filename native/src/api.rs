@@ -194,7 +194,6 @@ pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
 
     // Consider moving this to using the above channel?
     sink.add(DomainMessage::PreAccount);
-    sink.add(DomainMessage::MyStations(vec![]));
 
     let handle = rt.handle().clone();
 
@@ -293,7 +292,6 @@ pub enum DomainMessage {
     PreAccount,
     NearbyStations(Vec<NearbyStation>),
     StationRefreshed(StationConfig),
-    MyStations(Vec<StationConfig>),
 }
 
 #[derive(Clone, Debug)]
@@ -337,6 +335,7 @@ pub struct ModuleConfig {
 pub struct SensorConfig {
     pub number: u32,
     pub key: String,
+    pub full_key: String,
     pub calibrated_uom: String,
     pub uncalibrated_uom: String,
     pub value: Option<SensorValue>,
@@ -389,12 +388,13 @@ impl TryInto<StationConfig> for StationAndConnection {
                 .into_iter()
                 .map(|module| ModuleConfig {
                     position: module.position,
-                    key: module.name,
+                    key: module.name.clone(),
                     sensors: module
                         .sensors
                         .into_iter()
                         .map(|sensor| SensorConfig {
                             number: sensor.number,
+                            full_key: format!("{}.{}", &module.name, &sensor.key),
                             key: sensor.key,
                             calibrated_uom: sensor.calibrated_uom,
                             uncalibrated_uom: sensor.uncalibrated_uom,

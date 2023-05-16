@@ -12,12 +12,14 @@ class StationsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("stations-tab:build");
     return Navigator(onGenerateRoute: (RouteSettings settings) {
       return MaterialPageRoute(
         settings: settings,
         builder: (context) => Consumer<KnownStationsModel>(
           builder: (context, knownStations, child) {
-            return ListStationsRoute(known: knownStations);
+            debugPrint("stations-tab:list-stations-page");
+            return ListStationsPage(known: knownStations);
           },
         ),
       );
@@ -25,13 +27,15 @@ class StationsTab extends StatelessWidget {
   }
 }
 
-class ListStationsRoute extends StatelessWidget {
+class ListStationsPage extends StatelessWidget {
   final KnownStationsModel known;
 
-  const ListStationsRoute({super.key, required this.known});
+  const ListStationsPage({super.key, required this.known});
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("list-stations-page:build");
+
     final List<Widget> map = [const SizedBox(height: 200, child: Map())];
 
     final cards = known.stations.map((station) {
@@ -50,19 +54,6 @@ class ListStationsRoute extends StatelessWidget {
   }
 }
 
-class DiscoveringStationCard extends StatelessWidget {
-  final StationModel station;
-
-  const DiscoveringStationCard({super.key, required this.station});
-
-  @override
-  Widget build(BuildContext context) {
-    return const ListTile(
-      title: Text("..."),
-    );
-  }
-}
-
 class StationCard extends StatelessWidget {
   final StationModel station;
 
@@ -72,20 +63,42 @@ class StationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(config.name),
-      onTap: () {
-        pushViewStationRoute(context, station);
-      },
-    );
+    var connected = config.connected != null;
+    var icon = Icon(Icons.aod_rounded, color: connected ? Colors.blue : Colors.grey);
+
+    return Container(
+        padding: const EdgeInsets.all(10),
+        child: ListTile(
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(color: Colors.grey, width: 1),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          title: Container(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(config.name)),
+          subtitle: const Text("Ready to deploy"),
+          trailing: icon,
+          dense: false,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ViewStationRoute(deviceId: station.deviceId),
+              ),
+            );
+          },
+        ));
   }
 }
 
-void pushViewStationRoute(BuildContext context, StationModel station) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ViewStationRoute(station: station),
-    ),
-  );
+class DiscoveringStationCard extends StatelessWidget {
+  final StationModel station;
+
+  const DiscoveringStationCard({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    return const ListTile(
+      title: Text("..."),
+      subtitle: Text("Contacting..."),
+    );
+  }
 }

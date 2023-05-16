@@ -55,9 +55,6 @@ class DomainMessage with _$DomainMessage {
   const factory DomainMessage.stationRefreshed(
     StationConfig field0,
   ) = DomainMessage_StationRefreshed;
-  const factory DomainMessage.myStations(
-    List<StationConfig> field0,
-  ) = DomainMessage_MyStations;
 }
 
 class ModuleConfig {
@@ -83,6 +80,7 @@ class NearbyStation {
 class SensorConfig {
   final int number;
   final String key;
+  final String fullKey;
   final String calibratedUom;
   final String uncalibratedUom;
   final SensorValue? value;
@@ -90,6 +88,7 @@ class SensorConfig {
   const SensorConfig({
     required this.number,
     required this.key,
+    required this.fullKey,
     required this.calibratedUom,
     required this.uncalibratedUom,
     this.value,

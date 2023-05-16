@@ -139,10 +139,6 @@ class NativeImpl implements Native {
         return DomainMessage_StationRefreshed(
           _wire2api_box_autoadd_station_config(raw[1]),
         );
-      case 3:
-        return DomainMessage_MyStations(
-          _wire2api_list_station_config(raw[1]),
-        );
       default:
         throw Exception("unreachable");
     }
@@ -206,14 +202,15 @@ class NativeImpl implements Native {
 
   SensorConfig _wire2api_sensor_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return SensorConfig(
       number: _wire2api_u32(arr[0]),
       key: _wire2api_String(arr[1]),
-      calibratedUom: _wire2api_String(arr[2]),
-      uncalibratedUom: _wire2api_String(arr[3]),
-      value: _wire2api_opt_box_autoadd_sensor_value(arr[4]),
+      fullKey: _wire2api_String(arr[2]),
+      calibratedUom: _wire2api_String(arr[3]),
+      uncalibratedUom: _wire2api_String(arr[4]),
+      value: _wire2api_opt_box_autoadd_sensor_value(arr[5]),
     );
   }
 

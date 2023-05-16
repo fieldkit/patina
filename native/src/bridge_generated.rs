@@ -110,7 +110,6 @@ impl support::IntoDart for DomainMessage {
             Self::PreAccount => vec![0.into_dart()],
             Self::NearbyStations(field0) => vec![1.into_dart(), field0.into_dart()],
             Self::StationRefreshed(field0) => vec![2.into_dart(), field0.into_dart()],
-            Self::MyStations(field0) => vec![3.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }
@@ -141,6 +140,7 @@ impl support::IntoDart for SensorConfig {
         vec![
             self.number.into_dart(),
             self.key.into_dart(),
+            self.full_key.into_dart(),
             self.calibrated_uom.into_dart(),
             self.uncalibrated_uom.into_dart(),
             self.value.into_dart(),
