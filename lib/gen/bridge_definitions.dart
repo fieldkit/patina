@@ -41,6 +41,11 @@ class BatteryInfo {
   });
 }
 
+enum Connection {
+  Connected,
+  Lost,
+}
+
 @freezed
 class DomainMessage with _$DomainMessage {
   const factory DomainMessage.preAccount() = DomainMessage_PreAccount;
@@ -117,6 +122,7 @@ class StationConfig {
   final StreamInfo data;
   final BatteryInfo battery;
   final SolarInfo solar;
+  final Connection? connected;
   final List<ModuleConfig> modules;
 
   const StationConfig({
@@ -127,6 +133,7 @@ class StationConfig {
     required this.data,
     required this.battery,
     required this.solar,
+    this.connected,
     required this.modules,
   });
 }

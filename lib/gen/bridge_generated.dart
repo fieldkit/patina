@@ -111,12 +111,20 @@ class NativeImpl implements Native {
     return raw as bool;
   }
 
+  Connection _wire2api_box_autoadd_connection(dynamic raw) {
+    return _wire2api_connection(raw);
+  }
+
   SensorValue _wire2api_box_autoadd_sensor_value(dynamic raw) {
     return _wire2api_sensor_value(raw);
   }
 
   StationConfig _wire2api_box_autoadd_station_config(dynamic raw) {
     return _wire2api_station_config(raw);
+  }
+
+  Connection _wire2api_connection(dynamic raw) {
+    return Connection.values[raw as int];
   }
 
   DomainMessage _wire2api_domain_message(dynamic raw) {
@@ -142,6 +150,10 @@ class NativeImpl implements Native {
 
   double _wire2api_f32(dynamic raw) {
     return raw as double;
+  }
+
+  int _wire2api_i32(dynamic raw) {
+    return raw as int;
   }
 
   int _wire2api_i64(dynamic raw) {
@@ -184,6 +196,10 @@ class NativeImpl implements Native {
     );
   }
 
+  Connection? _wire2api_opt_box_autoadd_connection(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_connection(raw);
+  }
+
   SensorValue? _wire2api_opt_box_autoadd_sensor_value(dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_sensor_value(raw);
   }
@@ -222,8 +238,8 @@ class NativeImpl implements Native {
 
   StationConfig _wire2api_station_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 8)
-      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
+    if (arr.length != 9)
+      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
     return StationConfig(
       deviceId: _wire2api_String(arr[0]),
       name: _wire2api_String(arr[1]),
@@ -232,7 +248,8 @@ class NativeImpl implements Native {
       data: _wire2api_stream_info(arr[4]),
       battery: _wire2api_battery_info(arr[5]),
       solar: _wire2api_solar_info(arr[6]),
-      modules: _wire2api_list_module_config(arr[7]),
+      connected: _wire2api_opt_box_autoadd_connection(arr[7]),
+      modules: _wire2api_list_module_config(arr[8]),
     );
   }
 
