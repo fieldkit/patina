@@ -27,11 +27,15 @@ class _HomePageState extends State<HomePage> {
         child: IndexedStack(
           index: _pageIndex,
           children: <Widget>[
+            // Should we just push this to the top?
             ChangeNotifierProvider(
               create: (context) => state.knownStations,
               child: const StationsTab(),
             ),
-            const DataSyncTab(),
+            ChangeNotifierProvider(
+              create: (context) => state.knownStations,
+              child: const DataSyncTab(),
+            ),
             const SettingsTab(),
           ],
         ),

@@ -5,6 +5,8 @@ import '../gen/ffi.dart';
 
 import '../app_state.dart';
 import '../meta.dart';
+import '../unknown_station_page.dart';
+import 'configure_station.dart';
 import 'sensor_widgets.dart';
 
 class ViewStationRoute extends StatelessWidget {
@@ -38,11 +40,21 @@ class ViewStationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
     return Scaffold(
       appBar: AppBar(
         title: Text(config.name),
-        // bottom: const PreferredSize(preferredSize: Size.zero, child: Text("Ready to deploy")),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ConfigureStationRoute(deviceId: station.deviceId),
+                  ),
+                );
+              },
+              child: const Text("Configure", style: TextStyle(color: Colors.white)))
+        ],
       ),
       body: ListView(children: [
         HighLevelsDetails(station: station),
@@ -103,27 +115,6 @@ class HighLevelsDetails extends StatelessWidget {
         ),
         Column(children: modules)
       ],
-    );
-  }
-}
-
-class NoSuchStationPage extends StatelessWidget {
-  const NoSuchStationPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Which station?"),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          child: const Text('Back'),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
     );
   }
 }
