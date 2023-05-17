@@ -89,7 +89,16 @@ class ConfigureNetworksPage extends StatelessWidget {
       body: ListView(children: [
         ListTile(
           title: const Text("WiFi"),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ConfigureWiFiPage(
+                  station: station,
+                ),
+              ),
+            );
+          },
         ),
         const Divider(),
         ListTile(
@@ -97,12 +106,58 @@ class ConfigureNetworksPage extends StatelessWidget {
           onTap: () {},
         ),
         const Divider(),
+      ]),
+    );
+  }
+}
+
+class ConfigureWiFiPage extends StatelessWidget {
+  final StationModel station;
+
+  StationConfig get config => station.config!;
+
+  const ConfigureWiFiPage({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(config.name),
+      ),
+      body: ListView(children: [
         ListTile(
           title: const Text("Automatic Upload"),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ConfigureAutomaticUploadPage(
+                  station: station,
+                ),
+              ),
+            );
+          },
         ),
         const Divider(),
       ]),
+    );
+  }
+}
+
+class ConfigureAutomaticUploadPage extends StatelessWidget {
+  final StationModel station;
+
+  StationConfig get config => station.config!;
+
+  const ConfigureAutomaticUploadPage({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(config.name),
+      ),
+      body: const Column(children: []),
     );
   }
 }
