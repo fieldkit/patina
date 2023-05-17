@@ -320,7 +320,6 @@ pub struct StationConfig {
     pub data: StreamInfo,
     pub battery: BatteryInfo,
     pub solar: SolarInfo,
-    pub connected: Option<Connection>,
     pub modules: Vec<ModuleConfig>,
 }
 
@@ -382,7 +381,6 @@ impl TryInto<StationConfig> for StationAndConnection {
             solar: SolarInfo {
                 voltage: station.solar.voltage,
             },
-            connected: self.connection,
             modules: station
                 .modules
                 .into_iter()

@@ -19,8 +19,6 @@ use std::sync::Arc;
 
 // Section: imports
 
-use crate::nearby::Connection;
-
 // Section: wire functions
 
 fn wire_rust_release_mode_impl(port_: MessagePort) {
@@ -94,16 +92,6 @@ impl support::IntoDart for BatteryInfo {
 }
 impl support::IntoDartExceptPrimitive for BatteryInfo {}
 
-impl support::IntoDart for Connection {
-    fn into_dart(self) -> support::DartAbi {
-        match self {
-            Self::Connected => 0,
-            Self::Lost => 1,
-        }
-        .into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for Connection {}
 impl support::IntoDart for DomainMessage {
     fn into_dart(self) -> support::DartAbi {
         match self {
@@ -174,7 +162,6 @@ impl support::IntoDart for StationConfig {
             self.data.into_dart(),
             self.battery.into_dart(),
             self.solar.into_dart(),
-            self.connected.into_dart(),
             self.modules.into_dart(),
         ]
         .into_dart()
