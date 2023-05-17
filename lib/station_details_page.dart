@@ -60,6 +60,9 @@ class HighLevelsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final battery = config.battery.percentage;
+    final bytesUsed = config.meta.size + config.data.size;
+
     final modules = config.modules.sorted((a, b) => a.position.compareTo(b.position)).map((module) {
       return ModuleInfo(module: module);
     }).toList();
@@ -71,6 +74,7 @@ class HighLevelsDetails extends StatelessWidget {
           "00:00:00",
           style: TextStyle(fontSize: 20, color: Colors.white),
         ));
+
     return Column(
       children: [
         Container(
@@ -84,11 +88,11 @@ class HighLevelsDetails extends StatelessWidget {
                   ListTile(
                       leading: Image.asset("resources/images/battery/normal_40.png", cacheWidth: 16),
                       title: const Text("Battery Life"),
-                      subtitle: const Text("98%")),
+                      subtitle: Text("$battery%")),
                   ListTile(
                       leading: Image.asset("resources/images/memory/icon.png", cacheWidth: 16),
                       title: const Text("Memory"),
-                      subtitle: const Text("586KB of 512MB")),
+                      subtitle: Text("$bytesUsed bytes of 512MB")),
                 ],
               ))
             ])),
