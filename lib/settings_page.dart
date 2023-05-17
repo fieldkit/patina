@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rust_bridge_template/flows_widgets.dart';
 
 class SettingsTab extends StatelessWidget {
   const SettingsTab({super.key});
@@ -16,7 +17,14 @@ class SettingsTab extends StatelessWidget {
               body: Center(
                 child: ElevatedButton(
                   child: const Text('Settings'),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProvideContentFlowsWidget(child: QuickFlow(start: StartFlow(name: "onboarding"))),
+                      ),
+                    );
+                  },
                 ),
               ),
             );

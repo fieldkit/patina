@@ -1,4 +1,32 @@
+import 'package:flutter/foundation.dart';
+import 'package:markdown/markdown.dart' as md;
 import 'dart:convert';
+
+class MarkdownParser implements md.NodeVisitor {
+  void parse(String markdownContent) {
+    md.Document document = md.Document(encodeHtml: false);
+    List<String> lines = markdownContent.split('\n');
+    for (md.Node node in document.parseLines(lines)) {
+      node.accept(this);
+    }
+  }
+
+  @override
+  void visitElementAfter(md.Element element) {
+    debugPrint('vea: ${element.tag}');
+  }
+
+  @override
+  bool visitElementBefore(md.Element element) {
+    debugPrint('veb: ${element.tag}');
+    return true;
+  }
+
+  @override
+  void visitText(md.Text text) {
+    debugPrint('vet: ${text.textContent}');
+  }
+}
 
 class Flow {
   final String id;
@@ -39,6 +67,8 @@ class Simple {
     final logo = logoData != null ? Image.fromJson(logoData) : null;
     final imagesData = data['images'] as List<dynamic>?;
     final images = imagesData != null ? imagesData.map((imageData) => Image.fromJson(imageData)).toList() : <Image>[];
+
+    // MarkdownParser().parse(body);
 
     return Simple(body: body, images: images, logo: logo);
   }
