@@ -110,7 +110,7 @@ impl NearbyDevices {
         let devices = self.devices.lock().await;
         let nearby = devices
             .values()
-            .filter(|q| q.is_disconnected())
+            .filter(|q| !q.is_disconnected())
             .map(|q| NearbyStation {
                 device_id: q.device_id.0.to_string(),
             })

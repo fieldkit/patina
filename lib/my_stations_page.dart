@@ -63,8 +63,7 @@ class StationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var connected = config.connected != null;
-    var icon = Icon(Icons.aod_rounded, color: connected ? Colors.blue : Colors.grey);
+    var icon = Icon(Icons.aod_rounded, color: station.connected ? Colors.blue : Colors.grey);
 
     return Container(
         padding: const EdgeInsets.all(10),

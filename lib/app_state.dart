@@ -8,10 +8,12 @@ import 'dispatcher.dart';
 class StationModel {
   final String deviceId;
   final StationConfig? config;
+  bool connected;
 
-  const StationModel({
+  StationModel({
     required this.deviceId,
     this.config,
+    this.connected = false,
   });
 }
 
@@ -22,15 +24,20 @@ class KnownStationsModel extends ChangeNotifier {
 
   KnownStationsModel(Native api, AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
+      var byDeviceId = {};
       for (var station in nearby.field0) {
         _stations.putIfAbsent(station.deviceId, () => StationModel(deviceId: station.deviceId));
+        byDeviceId[station.deviceId] = true;
+      }
+      for (var station in _stations.values) {
+        station.connected = byDeviceId.containsKey(station.deviceId);
       }
       notifyListeners();
     });
 
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) {
       var station = refreshed.field0;
-      _stations[station.deviceId] = StationModel(deviceId: station.deviceId, config: station);
+      _stations[station.deviceId] = StationModel(deviceId: station.deviceId, config: station, connected: true);
       notifyListeners();
     });
 
