@@ -97,7 +97,8 @@ class HighLevelsDetails extends StatelessWidget {
               ))
             ])),
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.all(10),
+          width: double.infinity,
           child: ElevatedButton(onPressed: () {}, child: const Text("Deploy")),
         ),
         Column(children: modules)
@@ -221,6 +222,14 @@ class ModuleInfo extends StatelessWidget {
             borderRadius: const BorderRadius.all(Radius.circular(5))),
         child: Column(children: [
           ListTile(leading: Image(image: localized.icon), title: Text(localized.name), subtitle: Text(bay)),
+          Container(
+              padding: const EdgeInsets.all(10),
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {},
+                // style: ElevatedButton.styleFrom(),
+                child: const Text("Calibrate"),
+              )),
           SensorsGrid(children: sensors),
         ]));
   }
