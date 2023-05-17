@@ -44,7 +44,6 @@ Future<AppEnv> initializeCurrentEnv(AppEventDispatcher dispatcher) async {
     try {
       await _startNative(dispatcher);
     } catch (err, stack) {
-      // TODO Complete with error to avoid startup hang.
       debugPrint('Native module error: $err $stack');
     } finally {
       dispatcher.removeListener(listener);
