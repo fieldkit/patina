@@ -353,6 +353,7 @@ pub struct NearbyStation {
 
 pub struct StationAndConnection {
     station: store::Station,
+    #[allow(dead_code)]
     connection: Option<Connection>,
 }
 
