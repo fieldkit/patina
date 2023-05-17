@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 
 import 'app_state.dart';
 import 'my_stations_page.dart';
-import 'settings_page.dart';
-import 'sync_page.dart';
+import 'settings/settings_page.dart';
+import 'sync/sync_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

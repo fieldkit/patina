@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rust_bridge_template/flows_widgets.dart';
+
+import '../reader/widgets.dart';
 
 class SettingsTab extends StatelessWidget {
   const SettingsTab({super.key});

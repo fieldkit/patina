@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import 'gen/ffi.dart';
 
 import 'app_state.dart';
-import 'station_details_page.dart';
 import 'map_widget.dart';
+import 'details/station_details_page.dart';
 
 class StationsTab extends StatelessWidget {
   const StationsTab({super.key});
