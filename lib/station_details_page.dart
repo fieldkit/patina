@@ -64,17 +64,38 @@ class HighLevelsDetails extends StatelessWidget {
       return ModuleInfo(module: module);
     }).toList();
 
+    var circle = Container(
+        decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
+        alignment: Alignment.center,
+        child: const Text(
+          "00:00:00",
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ));
     return Column(
       children: [
-        const Row(children: [
-          Column(
-            children: [const Text("Ok")],
-          ),
-          Column(
-            children: [const Text("Battery Life"), const Text("Memory Used")],
-          )
-        ]),
-        ElevatedButton(onPressed: () {}, child: const Text("Deploy")),
+        Container(
+            padding: const EdgeInsets.only(top: 20),
+            child: Row(children: [
+              Expanded(child: SizedBox(height: 150, child: circle)),
+              Expanded(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ListTile(
+                      leading: Image.asset("resources/images/battery/normal_40.png", cacheWidth: 16),
+                      title: const Text("Battery Life"),
+                      subtitle: const Text("98%")),
+                  ListTile(
+                      leading: Image.asset("resources/images/memory/icon.png", cacheWidth: 16),
+                      title: const Text("Memory"),
+                      subtitle: const Text("586KB of 512MB")),
+                ],
+              ))
+            ])),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: ElevatedButton(onPressed: () {}, child: const Text("Deploy")),
+        ),
         Column(children: modules)
       ],
     );
