@@ -39,6 +39,7 @@ class Flow {
     final id = data['id'] as String;
     final name = data['name'] as String;
     final showProgress = data["showProgress"] as bool;
+
     return Flow(id: id, name: name, showProgress: showProgress);
   }
 }
@@ -50,6 +51,7 @@ class Image {
 
   factory Image.fromJson(Map<String, dynamic> data) {
     final url = data['url'] as String;
+
     return Image(url: url);
   }
 }
@@ -68,8 +70,6 @@ class Simple {
     final imagesData = data['images'] as List<dynamic>?;
     final images = imagesData != null ? imagesData.map((imageData) => Image.fromJson(imageData)).toList() : <Image>[];
 
-    // MarkdownParser().parse(body);
-
     return Simple(body: body, images: images, logo: logo);
   }
 }
@@ -83,6 +83,7 @@ class Header {
   factory Header.fromJson(Map<String, dynamic> data) {
     final title = data['title'] as String;
     final subtitle = data['subtitle'] as String?;
+
     return Header(title: title, subtitle: subtitle);
   }
 }
@@ -121,6 +122,7 @@ class Screen {
     final header = headerData != null ? Header.fromJson(headerData) : null;
     final simpleData = data["simple"] as List<dynamic>?;
     final simple = simpleData != null ? simpleData.map((row) => Simple.fromJson(row)).toList() : List<Simple>.empty();
+
     return Screen(
         id: id,
         name: name,
