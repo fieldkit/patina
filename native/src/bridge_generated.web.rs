@@ -12,8 +12,8 @@ pub fn wire_create_log_sink(port_: MessagePort) {
 }
 
 #[wasm_bindgen]
-pub fn wire_start_native(port_: MessagePort) {
-    wire_start_native_impl(port_)
+pub fn wire_start_native(port_: MessagePort, storage_path: String) {
+    wire_start_native_impl(port_, storage_path)
 }
 
 #[wasm_bindgen]
@@ -24,6 +24,16 @@ pub fn wire_get_my_stations(port_: MessagePort) {
 #[wasm_bindgen]
 pub fn wire_authenticate_portal(port_: MessagePort, email: String, password: String) {
     wire_authenticate_portal_impl(port_, email, password)
+}
+
+#[wasm_bindgen]
+pub fn wire_start_download(port_: MessagePort, device_id: String) {
+    wire_start_download_impl(port_, device_id)
+}
+
+#[wasm_bindgen]
+pub fn wire_start_upload(port_: MessagePort, device_id: String) {
+    wire_start_upload_impl(port_, device_id)
 }
 
 // Section: allocate functions

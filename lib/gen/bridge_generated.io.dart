@@ -159,17 +159,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
 
   void wire_start_native(
     int port_,
+    ffi.Pointer<wire_uint_8_list> storage_path,
   ) {
     return _wire_start_native(
       port_,
+      storage_path,
     );
   }
 
-  late final _wire_start_nativePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_start_native');
-  late final _wire_start_native =
-      _wire_start_nativePtr.asFunction<void Function(int)>();
+  late final _wire_start_nativePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_start_native');
+  late final _wire_start_native = _wire_start_nativePtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_get_my_stations(
     int port_,
@@ -205,6 +208,40 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _wire_authenticate_portalPtr.asFunction<
           void Function(int, ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_start_download(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> device_id,
+  ) {
+    return _wire_start_download(
+      port_,
+      device_id,
+    );
+  }
+
+  late final _wire_start_downloadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_start_download');
+  late final _wire_start_download = _wire_start_downloadPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_start_upload(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> device_id,
+  ) {
+    return _wire_start_upload(
+      port_,
+      device_id,
+    );
+  }
+
+  late final _wire_start_uploadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_start_upload');
+  late final _wire_start_upload = _wire_start_uploadPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,

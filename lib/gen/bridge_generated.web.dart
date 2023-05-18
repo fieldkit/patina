@@ -46,12 +46,19 @@ class NativeWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_create_log_sink(NativePortType port_);
 
-  external dynamic /* void */ wire_start_native(NativePortType port_);
+  external dynamic /* void */ wire_start_native(
+      NativePortType port_, String storage_path);
 
   external dynamic /* void */ wire_get_my_stations(NativePortType port_);
 
   external dynamic /* void */ wire_authenticate_portal(
       NativePortType port_, String email, String password);
+
+  external dynamic /* void */ wire_start_download(
+      NativePortType port_, String device_id);
+
+  external dynamic /* void */ wire_start_upload(
+      NativePortType port_, String device_id);
 }
 
 // Section: WASM wire connector
@@ -66,8 +73,8 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_create_log_sink(NativePortType port_) =>
       wasmModule.wire_create_log_sink(port_);
 
-  void wire_start_native(NativePortType port_) =>
-      wasmModule.wire_start_native(port_);
+  void wire_start_native(NativePortType port_, String storage_path) =>
+      wasmModule.wire_start_native(port_, storage_path);
 
   void wire_get_my_stations(NativePortType port_) =>
       wasmModule.wire_get_my_stations(port_);
@@ -75,4 +82,10 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_authenticate_portal(
           NativePortType port_, String email, String password) =>
       wasmModule.wire_authenticate_portal(port_, email, password);
+
+  void wire_start_download(NativePortType port_, String device_id) =>
+      wasmModule.wire_start_download(port_, device_id);
+
+  void wire_start_upload(NativePortType port_, String device_id) =>
+      wasmModule.wire_start_upload(port_, device_id);
 }

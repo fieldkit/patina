@@ -2,12 +2,23 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'app_state.dart';
 import 'dispatcher.dart';
 import 'home_page.dart';
+
+Future<String> _getStoragePath() async {
+  const fromEnv = String.fromEnvironment('FK_APP_SUPPORT_PATH');
+  if (fromEnv.isNotEmpty) {
+    return fromEnv;
+  }
+
+  final location = await getApplicationSupportDirectory();
+  return location.path;
+}
 
 Future<void> _startNative(AppEventDispatcher dispatcher) async {
   api.createLogSink().listen((logRow) {
@@ -16,11 +27,13 @@ Future<void> _startNative(AppEventDispatcher dispatcher) async {
     developer.log(display);
   });
 
+  final storagePath = await _getStoragePath();
+
   // This is here because the initial native logs were getting chopped off, no
   // idea why and yes this is a hack.
   await Future.delayed(const Duration(milliseconds: 100));
 
-  await for (final e in api.startNative()) {
+  await for (final e in api.startNative(storagePath: storagePath)) {
     var display = e.toString().trim();
     debugPrint(display);
     developer.log(display);

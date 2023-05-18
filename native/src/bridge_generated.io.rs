@@ -12,8 +12,8 @@ pub extern "C" fn wire_create_log_sink(port_: i64) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_start_native(port_: i64) {
-    wire_start_native_impl(port_)
+pub extern "C" fn wire_start_native(port_: i64, storage_path: *mut wire_uint_8_list) {
+    wire_start_native_impl(port_, storage_path)
 }
 
 #[no_mangle]
@@ -28,6 +28,16 @@ pub extern "C" fn wire_authenticate_portal(
     password: *mut wire_uint_8_list,
 ) {
     wire_authenticate_portal_impl(port_, email, password)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_start_download(port_: i64, device_id: *mut wire_uint_8_list) {
+    wire_start_download_impl(port_, device_id)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_start_upload(port_: i64, device_id: *mut wire_uint_8_list) {
+    wire_start_upload_impl(port_, device_id)
 }
 
 // Section: allocate functions

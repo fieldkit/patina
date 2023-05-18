@@ -22,7 +22,8 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kCreateLogSinkConstMeta;
 
-  Stream<DomainMessage> startNative({dynamic hint});
+  Stream<DomainMessage> startNative(
+      {required String storagePath, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStartNativeConstMeta;
 
@@ -34,6 +35,16 @@ abstract class Native {
       {required String email, required String password, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kAuthenticatePortalConstMeta;
+
+  Future<TransferProgress> startDownload(
+      {required String deviceId, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kStartDownloadConstMeta;
+
+  Future<TransferProgress> startUpload(
+      {required String deviceId, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kStartUploadConstMeta;
 }
 
 class BatteryInfo {
@@ -172,6 +183,23 @@ class Tokens {
     required this.token,
     this.refresh,
   });
+}
+
+class TransferProgress {
+  final String deviceId;
+  final TransferStatus status;
+
+  const TransferProgress({
+    required this.deviceId,
+    required this.status,
+  });
+}
+
+enum TransferStatus {
+  Starting,
+  Transferring,
+  Failed,
+  Done,
 }
 
 class TransmissionConfig {

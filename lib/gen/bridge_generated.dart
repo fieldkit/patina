@@ -52,12 +52,14 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
-  Stream<DomainMessage> startNative({dynamic hint}) {
+  Stream<DomainMessage> startNative(
+      {required String storagePath, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(storagePath);
     return _platform.executeStream(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_start_native(port_),
+      callFfi: (port_) => _platform.inner.wire_start_native(port_, arg0),
       parseSuccessData: _wire2api_domain_message,
       constMeta: kStartNativeConstMeta,
-      argValues: [],
+      argValues: [storagePath],
       hint: hint,
     ));
   }
@@ -65,7 +67,7 @@ class NativeImpl implements Native {
   FlutterRustBridgeTaskConstMeta get kStartNativeConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "start_native",
-        argNames: [],
+        argNames: ["storagePath"],
       );
 
   Future<List<StationConfig>> getMyStations({dynamic hint}) {
@@ -102,6 +104,42 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "authenticate_portal",
         argNames: ["email", "password"],
+      );
+
+  Future<TransferProgress> startDownload(
+      {required String deviceId, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_start_download(port_, arg0),
+      parseSuccessData: _wire2api_transfer_progress,
+      constMeta: kStartDownloadConstMeta,
+      argValues: [deviceId],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kStartDownloadConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "start_download",
+        argNames: ["deviceId"],
+      );
+
+  Future<TransferProgress> startUpload(
+      {required String deviceId, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_start_upload(port_, arg0),
+      parseSuccessData: _wire2api_transfer_progress,
+      constMeta: kStartUploadConstMeta,
+      argValues: [deviceId],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kStartUploadConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "start_upload",
+        argNames: ["deviceId"],
       );
 
   void dispose() {
@@ -171,6 +209,10 @@ class NativeImpl implements Native {
 
   double _wire2api_f32(dynamic raw) {
     return raw as double;
+  }
+
+  int _wire2api_i32(dynamic raw) {
+    return raw as int;
   }
 
   int _wire2api_i64(dynamic raw) {
@@ -324,6 +366,20 @@ class NativeImpl implements Native {
       token: _wire2api_String(arr[0]),
       refresh: _wire2api_opt_String(arr[1]),
     );
+  }
+
+  TransferProgress _wire2api_transfer_progress(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return TransferProgress(
+      deviceId: _wire2api_String(arr[0]),
+      status: _wire2api_transfer_status(arr[1]),
+    );
+  }
+
+  TransferStatus _wire2api_transfer_status(dynamic raw) {
+    return TransferStatus.values[raw as int];
   }
 
   TransmissionConfig _wire2api_transmission_config(dynamic raw) {

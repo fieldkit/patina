@@ -41,14 +41,17 @@ fn wire_create_log_sink_impl(port_: MessagePort) {
         move || move |task_callback| create_log_sink(task_callback.stream_sink()),
     )
 }
-fn wire_start_native_impl(port_: MessagePort) {
+fn wire_start_native_impl(port_: MessagePort, storage_path: impl Wire2Api<String> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
             debug_name: "start_native",
             port: Some(port_),
             mode: FfiCallMode::Stream,
         },
-        move || move |task_callback| start_native(task_callback.stream_sink()),
+        move || {
+            let api_storage_path = storage_path.wire2api();
+            move |task_callback| start_native(task_callback.stream_sink(), api_storage_path)
+        },
     )
 }
 fn wire_get_my_stations_impl(port_: MessagePort) {
@@ -76,6 +79,32 @@ fn wire_authenticate_portal_impl(
             let api_email = email.wire2api();
             let api_password = password.wire2api();
             move |task_callback| authenticate_portal(api_email, api_password)
+        },
+    )
+}
+fn wire_start_download_impl(port_: MessagePort, device_id: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "start_download",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            move |task_callback| start_download(api_device_id)
+        },
+    )
+}
+fn wire_start_upload_impl(port_: MessagePort, device_id: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "start_upload",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            move |task_callback| start_upload(api_device_id)
         },
     )
 }
@@ -224,6 +253,25 @@ impl support::IntoDart for Tokens {
 }
 impl support::IntoDartExceptPrimitive for Tokens {}
 
+impl support::IntoDart for TransferProgress {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.device_id.into_dart(), self.status.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for TransferProgress {}
+
+impl support::IntoDart for TransferStatus {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Starting => 0,
+            Self::Transferring => 1,
+            Self::Failed => 2,
+            Self::Done => 3,
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for TransferStatus {}
 impl support::IntoDart for TransmissionConfig {
     fn into_dart(self) -> support::DartAbi {
         vec![self.enabled.into_dart()].into_dart()

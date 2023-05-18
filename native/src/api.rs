@@ -108,14 +108,14 @@ async fn handle_background_message(
     }
 }
 
-async fn create_sdk(publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
+async fn create_sdk(storage_path: String, publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     info!("startup:bg");
 
     let (bg_tx, mut bg_rx) = tokio::sync::mpsc::channel::<BackgroundMessage>(32);
 
     let nearby = NearbyDevices::new(bg_tx.clone());
 
-    let sdk = Sdk::new(nearby.clone())?;
+    let sdk = Sdk::new(storage_path, nearby.clone())?;
 
     sdk.open().await?;
 
@@ -195,12 +195,12 @@ fn start_runtime() -> Result<Runtime> {
     Ok(rt)
 }
 
-pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
+pub fn start_native(sink: StreamSink<DomainMessage>, storage_path: String) -> Result<()> {
     info!("startup:runtime");
     let rt = start_runtime()?;
 
     let (publish_tx, mut publish_rx) = tokio::sync::mpsc::channel(20);
-    let sdk = rt.block_on(create_sdk(publish_tx))?;
+    let sdk = rt.block_on(create_sdk(storage_path, publish_tx))?;
 
     // Consider moving this to using the above channel?
     sink.add(DomainMessage::PreAccount);
@@ -236,13 +236,16 @@ pub fn start_native(sink: StreamSink<DomainMessage>) -> Result<()> {
 }
 
 struct Sdk {
+    #[allow(dead_code)]
+    storage_path: String,
     db: Arc<Mutex<Db>>,
     nearby: NearbyDevices,
 }
 
 impl Sdk {
-    fn new(nearby: NearbyDevices) -> Result<Self> {
+    fn new(storage_path: String, nearby: NearbyDevices) -> Result<Self> {
         Ok(Self {
+            storage_path,
             db: Arc::new(Mutex::new(Db::new())),
             nearby,
         })
@@ -285,6 +288,14 @@ impl Sdk {
             refresh: t.refresh,
         }))
     }
+
+    async fn start_download(&self, _device_id: String) -> Result<TransferProgress> {
+        todo!()
+    }
+
+    async fn start_upload(&self, _device_id: String) -> Result<TransferProgress> {
+        todo!()
+    }
 }
 
 fn with_runtime<R>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R>) -> Result<R> {
@@ -315,10 +326,37 @@ pub fn authenticate_portal(email: String, password: String) -> Result<Option<Tok
     })?)
 }
 
+pub fn start_download(device_id: String) -> Result<TransferProgress> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.start_download(device_id))
+    })?)
+}
+
+pub fn start_upload(device_id: String) -> Result<TransferProgress> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.start_upload(device_id))
+    })?)
+}
+
 #[derive(Debug)]
 pub struct Tokens {
     pub token: String,
     pub refresh: Option<String>,
+}
+
+#[derive(Debug)]
+#[allow(dead_code)]
+pub enum TransferStatus {
+    Starting,
+    Transferring,
+    Failed,
+    Done,
+}
+
+#[derive(Debug)]
+pub struct TransferProgress {
+    pub device_id: String,
+    pub status: TransferStatus,
 }
 
 #[derive(Debug)]
