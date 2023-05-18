@@ -97,7 +97,9 @@ impl support::IntoDart for DomainMessage {
         match self {
             Self::PreAccount => vec![0.into_dart()],
             Self::NearbyStations(field0) => vec![1.into_dart(), field0.into_dart()],
-            Self::StationRefreshed(field0) => vec![2.into_dart(), field0.into_dart()],
+            Self::StationRefreshed(field0, field1) => {
+                vec![2.into_dart(), field0.into_dart(), field1.into_dart()]
+            }
         }
         .into_dart()
     }
@@ -122,6 +124,20 @@ impl support::IntoDart for NearbyStation {
     }
 }
 impl support::IntoDartExceptPrimitive for NearbyStation {}
+
+impl support::IntoDart for NetworkConfig {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.ssid.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for NetworkConfig {}
+
+impl support::IntoDart for SensitiveConfig {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.transmission.into_dart(), self.networks.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for SensitiveConfig {}
 
 impl support::IntoDart for SensorConfig {
     fn into_dart(self) -> support::DartAbi {
@@ -175,6 +191,13 @@ impl support::IntoDart for StreamInfo {
     }
 }
 impl support::IntoDartExceptPrimitive for StreamInfo {}
+
+impl support::IntoDart for TransmissionConfig {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.enabled.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for TransmissionConfig {}
 
 // Section: executor
 

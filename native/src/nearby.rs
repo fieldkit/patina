@@ -8,7 +8,7 @@ use tokio::sync::Mutex;
 use tracing::*;
 
 use discovery::DeviceId;
-use query::HttpReply;
+use query::device::HttpReply;
 
 use crate::api::{DomainMessage, NearbyStation};
 
@@ -168,7 +168,7 @@ impl NearbyDevices {
     }
 
     async fn query_station(&self, querying: &Querying) -> Result<HttpReply> {
-        let client = query::Client::new()?;
+        let client = query::device::Client::new()?;
         Ok(client.query_status(&querying.http_addr).await?)
     }
 }

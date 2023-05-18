@@ -3,6 +3,7 @@ use chrono::{DateTime, Utc};
 use flutter_rust_bridge::StreamSink;
 use std::io::Write;
 use std::sync::Arc;
+use thiserror::Error;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc::Sender;
 use tokio::sync::{oneshot, Mutex};
@@ -12,6 +13,8 @@ use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{Discovered, Discovery};
 use store::Db;
+
+use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
 
 const ONE_SECOND: Duration = Duration::from_secs(1);
 
@@ -92,6 +95,7 @@ async fn handle_background_message(
                         connection: Some(Connection::Connected),
                     }
                     .try_into()?,
+                    None,
                 ))
                 .await?)
         }
@@ -291,7 +295,7 @@ pub fn get_my_stations() -> Result<Vec<StationConfig>> {
 pub enum DomainMessage {
     PreAccount,
     NearbyStations(Vec<NearbyStation>),
-    StationRefreshed(StationConfig),
+    StationRefreshed(StationConfig, Option<SensitiveConfig>),
 }
 
 #[derive(Clone, Debug)]
@@ -351,6 +355,22 @@ pub struct NearbyStation {
     pub device_id: String,
 }
 
+#[derive(Clone, Debug)]
+pub struct SensitiveConfig {
+    pub transmission: Option<TransmissionConfig>,
+    pub networks: Vec<NetworkConfig>,
+}
+
+#[derive(Clone, Debug)]
+pub struct NetworkConfig {
+    pub ssid: String,
+}
+
+#[derive(Clone, Debug)]
+pub struct TransmissionConfig {
+    pub enabled: bool,
+}
+
 pub struct StationAndConnection {
     station: store::Station,
     #[allow(dead_code)]
@@ -387,13 +407,13 @@ impl TryInto<StationConfig> for StationAndConnection {
                 .into_iter()
                 .map(|module| ModuleConfig {
                     position: module.position,
-                    key: module.name.clone(),
+                    key: module.key.clone(),
                     sensors: module
                         .sensors
                         .into_iter()
                         .map(|sensor| SensorConfig {
                             number: sensor.number,
-                            full_key: format!("{}.{}", &module.name, &sensor.key),
+                            full_key: format!("{}.{}", &module.key, &sensor.key),
                             key: sensor.key,
                             calibrated_uom: sensor.calibrated_uom,
                             uncalibrated_uom: sensor.uncalibrated_uom,
@@ -408,10 +428,6 @@ impl TryInto<StationConfig> for StationAndConnection {
         })
     }
 }
-
-use thiserror::Error;
-
-use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
 
 #[derive(Error, Debug)]
 pub enum SdkMappingError {}

@@ -20,21 +20,24 @@ mixin _$DomainMessage {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0) stationRefreshed,
+    required TResult Function(StationConfig field0, SensitiveConfig? field1)
+        stationRefreshed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0)? stationRefreshed,
+    TResult? Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0)? stationRefreshed,
+    TResult Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -123,7 +126,8 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0) stationRefreshed,
+    required TResult Function(StationConfig field0, SensitiveConfig? field1)
+        stationRefreshed,
   }) {
     return preAccount();
   }
@@ -133,7 +137,8 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0)? stationRefreshed,
+    TResult? Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
   }) {
     return preAccount?.call();
   }
@@ -143,7 +148,8 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0)? stationRefreshed,
+    TResult Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
     required TResult orElse(),
   }) {
     if (preAccount != null) {
@@ -269,7 +275,8 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0) stationRefreshed,
+    required TResult Function(StationConfig field0, SensitiveConfig? field1)
+        stationRefreshed,
   }) {
     return nearbyStations(field0);
   }
@@ -279,7 +286,8 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0)? stationRefreshed,
+    TResult? Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
   }) {
     return nearbyStations?.call(field0);
   }
@@ -289,7 +297,8 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0)? stationRefreshed,
+    TResult Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
     required TResult orElse(),
   }) {
     if (nearbyStations != null) {
@@ -352,7 +361,7 @@ abstract class _$$DomainMessage_StationRefreshedCopyWith<$Res> {
           $Res Function(_$DomainMessage_StationRefreshed) then) =
       __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>;
   @useResult
-  $Res call({StationConfig field0});
+  $Res call({StationConfig field0, SensitiveConfig? field1});
 }
 
 /// @nodoc
@@ -368,12 +377,17 @@ class __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>
   @override
   $Res call({
     Object? field0 = null,
+    Object? field1 = freezed,
   }) {
     return _then(_$DomainMessage_StationRefreshed(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
               as StationConfig,
+      freezed == field1
+          ? _value.field1
+          : field1 // ignore: cast_nullable_to_non_nullable
+              as SensitiveConfig?,
     ));
   }
 }
@@ -382,14 +396,16 @@ class __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>
 
 class _$DomainMessage_StationRefreshed
     implements DomainMessage_StationRefreshed {
-  const _$DomainMessage_StationRefreshed(this.field0);
+  const _$DomainMessage_StationRefreshed(this.field0, [this.field1]);
 
   @override
   final StationConfig field0;
+  @override
+  final SensitiveConfig? field1;
 
   @override
   String toString() {
-    return 'DomainMessage.stationRefreshed(field0: $field0)';
+    return 'DomainMessage.stationRefreshed(field0: $field0, field1: $field1)';
   }
 
   @override
@@ -397,11 +413,12 @@ class _$DomainMessage_StationRefreshed
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DomainMessage_StationRefreshed &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            (identical(other.field0, field0) || other.field0 == field0) &&
+            (identical(other.field1, field1) || other.field1 == field1));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, field0, field1);
 
   @JsonKey(ignore: true)
   @override
@@ -415,9 +432,10 @@ class _$DomainMessage_StationRefreshed
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0) stationRefreshed,
+    required TResult Function(StationConfig field0, SensitiveConfig? field1)
+        stationRefreshed,
   }) {
-    return stationRefreshed(field0);
+    return stationRefreshed(field0, field1);
   }
 
   @override
@@ -425,9 +443,10 @@ class _$DomainMessage_StationRefreshed
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0)? stationRefreshed,
+    TResult? Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
   }) {
-    return stationRefreshed?.call(field0);
+    return stationRefreshed?.call(field0, field1);
   }
 
   @override
@@ -435,11 +454,12 @@ class _$DomainMessage_StationRefreshed
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0)? stationRefreshed,
+    TResult Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
     required TResult orElse(),
   }) {
     if (stationRefreshed != null) {
-      return stationRefreshed(field0);
+      return stationRefreshed(field0, field1);
     }
     return orElse();
   }
@@ -482,10 +502,11 @@ class _$DomainMessage_StationRefreshed
 }
 
 abstract class DomainMessage_StationRefreshed implements DomainMessage {
-  const factory DomainMessage_StationRefreshed(final StationConfig field0) =
-      _$DomainMessage_StationRefreshed;
+  const factory DomainMessage_StationRefreshed(final StationConfig field0,
+      [final SensitiveConfig? field1]) = _$DomainMessage_StationRefreshed;
 
   StationConfig get field0;
+  SensitiveConfig? get field1;
   @JsonKey(ignore: true)
   _$$DomainMessage_StationRefreshedCopyWith<_$DomainMessage_StationRefreshed>
       get copyWith => throw _privateConstructorUsedError;

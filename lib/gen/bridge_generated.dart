@@ -111,12 +111,20 @@ class NativeImpl implements Native {
     return raw as bool;
   }
 
+  SensitiveConfig _wire2api_box_autoadd_sensitive_config(dynamic raw) {
+    return _wire2api_sensitive_config(raw);
+  }
+
   SensorValue _wire2api_box_autoadd_sensor_value(dynamic raw) {
     return _wire2api_sensor_value(raw);
   }
 
   StationConfig _wire2api_box_autoadd_station_config(dynamic raw) {
     return _wire2api_station_config(raw);
+  }
+
+  TransmissionConfig _wire2api_box_autoadd_transmission_config(dynamic raw) {
+    return _wire2api_transmission_config(raw);
   }
 
   DomainMessage _wire2api_domain_message(dynamic raw) {
@@ -130,6 +138,7 @@ class NativeImpl implements Native {
       case 2:
         return DomainMessage_StationRefreshed(
           _wire2api_box_autoadd_station_config(raw[1]),
+          _wire2api_opt_box_autoadd_sensitive_config(raw[2]),
         );
       default:
         throw Exception("unreachable");
@@ -150,6 +159,10 @@ class NativeImpl implements Native {
 
   List<NearbyStation> _wire2api_list_nearby_station(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_nearby_station).toList();
+  }
+
+  List<NetworkConfig> _wire2api_list_network_config(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_network_config).toList();
   }
 
   List<SensorConfig> _wire2api_list_sensor_config(dynamic raw) {
@@ -180,8 +193,36 @@ class NativeImpl implements Native {
     );
   }
 
+  NetworkConfig _wire2api_network_config(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return NetworkConfig(
+      ssid: _wire2api_String(arr[0]),
+    );
+  }
+
+  SensitiveConfig? _wire2api_opt_box_autoadd_sensitive_config(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_sensitive_config(raw);
+  }
+
   SensorValue? _wire2api_opt_box_autoadd_sensor_value(dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_sensor_value(raw);
+  }
+
+  TransmissionConfig? _wire2api_opt_box_autoadd_transmission_config(
+      dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_transmission_config(raw);
+  }
+
+  SensitiveConfig _wire2api_sensitive_config(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return SensitiveConfig(
+      transmission: _wire2api_opt_box_autoadd_transmission_config(arr[0]),
+      networks: _wire2api_list_network_config(arr[1]),
+    );
   }
 
   SensorConfig _wire2api_sensor_config(dynamic raw) {
@@ -240,6 +281,15 @@ class NativeImpl implements Native {
     return StreamInfo(
       size: _wire2api_u64(arr[0]),
       records: _wire2api_u64(arr[1]),
+    );
+  }
+
+  TransmissionConfig _wire2api_transmission_config(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return TransmissionConfig(
+      enabled: _wire2api_bool(arr[0]),
     );
   }
 

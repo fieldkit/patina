@@ -48,8 +48,9 @@ class DomainMessage with _$DomainMessage {
     List<NearbyStation> field0,
   ) = DomainMessage_NearbyStations;
   const factory DomainMessage.stationRefreshed(
-    StationConfig field0,
-  ) = DomainMessage_StationRefreshed;
+    StationConfig field0, [
+    SensitiveConfig? field1,
+  ]) = DomainMessage_StationRefreshed;
 }
 
 class ModuleConfig {
@@ -69,6 +70,24 @@ class NearbyStation {
 
   const NearbyStation({
     required this.deviceId,
+  });
+}
+
+class NetworkConfig {
+  final String ssid;
+
+  const NetworkConfig({
+    required this.ssid,
+  });
+}
+
+class SensitiveConfig {
+  final TransmissionConfig? transmission;
+  final List<NetworkConfig> networks;
+
+  const SensitiveConfig({
+    this.transmission,
+    required this.networks,
   });
 }
 
@@ -137,5 +156,13 @@ class StreamInfo {
   const StreamInfo({
     required this.size,
     required this.records,
+  });
+}
+
+class TransmissionConfig {
+  final bool enabled;
+
+  const TransmissionConfig({
+    required this.enabled,
   });
 }
