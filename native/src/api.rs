@@ -289,12 +289,22 @@ impl Sdk {
         }))
     }
 
-    async fn start_download(&self, _device_id: String) -> Result<TransferProgress> {
-        todo!()
+    async fn start_download(&self, device_id: String) -> Result<TransferProgress> {
+        info!("{:?} start download", &device_id);
+
+        Ok(TransferProgress {
+            device_id,
+            status: TransferStatus::Starting,
+        })
     }
 
-    async fn start_upload(&self, _device_id: String) -> Result<TransferProgress> {
-        todo!()
+    async fn start_upload(&self, device_id: String) -> Result<TransferProgress> {
+        info!("{:?} start upload", &device_id);
+
+        Ok(TransferProgress {
+            device_id,
+            status: TransferStatus::Starting,
+        })
     }
 }
 

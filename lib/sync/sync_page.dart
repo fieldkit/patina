@@ -14,7 +14,15 @@ class DataSyncTab extends StatelessWidget {
         settings: settings,
         builder: (context) => Consumer<KnownStationsModel>(
           builder: (context, knownStations, child) {
-            return DataSyncPage(known: knownStations);
+            return DataSyncPage(
+              known: knownStations,
+              onDownload: (station) async {
+                await knownStations.startDownload(deviceId: station.deviceId);
+              },
+              onUpload: (station) async {
+                await knownStations.startUpload(deviceId: station.deviceId);
+              },
+            );
           },
         ),
       );
@@ -24,13 +32,21 @@ class DataSyncTab extends StatelessWidget {
 
 class DataSyncPage extends StatelessWidget {
   final KnownStationsModel known;
+  final void Function(StationModel) onDownload;
+  final void Function(StationModel) onUpload;
 
-  const DataSyncPage({super.key, required this.known});
+  const DataSyncPage({super.key, required this.known, required this.onDownload, required this.onUpload});
 
   @override
   Widget build(BuildContext context) {
-    final stations =
-        known.stations.where((station) => station.config != null).map((station) => StationSyncStatus(station: station)).toList();
+    final stations = known.stations
+        .where((station) => station.config != null)
+        .map((station) => StationSyncStatus(
+              station: station,
+              onDownload: () => onDownload(station),
+              onUpload: () => onUpload(station),
+            ))
+        .toList();
 
     return Scaffold(
         appBar: AppBar(
@@ -42,13 +58,17 @@ class DataSyncPage extends StatelessWidget {
 
 class StationSyncStatus extends StatelessWidget {
   final StationModel station;
+  final VoidCallback onDownload;
+  final VoidCallback onUpload;
 
   StationConfig get config => station.config!;
 
-  const StationSyncStatus({super.key, required this.station});
+  const StationSyncStatus({super.key, required this.station, required this.onDownload, required this.onUpload});
 
   @override
   Widget build(BuildContext context) {
+    final subtitle = Text("${config.data.records} readings.");
+
     return Container(
         padding: const EdgeInsets.all(10),
         child: Column(children: [
@@ -58,18 +78,18 @@ class StationSyncStatus extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
             ),
             title: Container(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(config.name)),
-            subtitle: const Text("Ready to sync"),
+            subtitle: subtitle,
             dense: false,
             onTap: () {},
           ),
           Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: ElevatedButton(onPressed: () {}, child: const Text("Download"))),
+              child: ElevatedButton(onPressed: onDownload, child: const Text("Download"))),
           Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: ElevatedButton(onPressed: () {}, child: const Text("Upload")))
+              child: ElevatedButton(onPressed: onUpload, child: const Text("Upload")))
         ]));
   }
 }

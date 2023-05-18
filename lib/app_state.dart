@@ -10,6 +10,7 @@ import 'dispatcher.dart';
 class StationModel {
   final String deviceId;
   final StationConfig? config;
+  SyncingProgress? syncing;
   bool connected;
 
   StationModel({
@@ -57,6 +58,14 @@ class KnownStationsModel extends ChangeNotifier {
 
   StationModel? find(String deviceId) {
     return _stations[deviceId];
+  }
+
+  Future<void> startDownload({required String deviceId}) async {
+    await api.startDownload(deviceId: deviceId);
+  }
+
+  Future<void> startUpload({required String deviceId}) async {
+    await api.startUpload(deviceId: deviceId);
   }
 }
 
@@ -216,3 +225,5 @@ class PortalAccounts extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class SyncingProgress extends ChangeNotifier {}
