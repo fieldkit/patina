@@ -84,6 +84,26 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
+  Future<Tokens?> authenticatePortal(
+      {required String email, required String password, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(email);
+    var arg1 = _platform.api2wire_String(password);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_authenticate_portal(port_, arg0, arg1),
+      parseSuccessData: _wire2api_opt_box_autoadd_tokens,
+      constMeta: kAuthenticatePortalConstMeta,
+      argValues: [email, password],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kAuthenticatePortalConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "authenticate_portal",
+        argNames: ["email", "password"],
+      );
+
   void dispose() {
     _platform.dispose();
   }
@@ -121,6 +141,10 @@ class NativeImpl implements Native {
 
   StationConfig _wire2api_box_autoadd_station_config(dynamic raw) {
     return _wire2api_station_config(raw);
+  }
+
+  Tokens _wire2api_box_autoadd_tokens(dynamic raw) {
+    return _wire2api_tokens(raw);
   }
 
   TransmissionConfig _wire2api_box_autoadd_transmission_config(dynamic raw) {
@@ -202,12 +226,20 @@ class NativeImpl implements Native {
     );
   }
 
+  String? _wire2api_opt_String(dynamic raw) {
+    return raw == null ? null : _wire2api_String(raw);
+  }
+
   SensitiveConfig? _wire2api_opt_box_autoadd_sensitive_config(dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_sensitive_config(raw);
   }
 
   SensorValue? _wire2api_opt_box_autoadd_sensor_value(dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_sensor_value(raw);
+  }
+
+  Tokens? _wire2api_opt_box_autoadd_tokens(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_tokens(raw);
   }
 
   TransmissionConfig? _wire2api_opt_box_autoadd_transmission_config(
@@ -284,6 +316,16 @@ class NativeImpl implements Native {
     );
   }
 
+  Tokens _wire2api_tokens(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return Tokens(
+      token: _wire2api_String(arr[0]),
+      refresh: _wire2api_opt_String(arr[1]),
+    );
+  }
+
   TransmissionConfig _wire2api_transmission_config(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 1)
@@ -311,5 +353,10 @@ class NativeImpl implements Native {
 }
 
 // Section: api2wire
+
+@protected
+int api2wire_u8(int raw) {
+  return raw;
+}
 
 // Section: finalizer

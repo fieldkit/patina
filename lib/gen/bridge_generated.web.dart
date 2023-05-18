@@ -20,6 +20,15 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
 
 // Section: api2wire
 
+  @protected
+  String api2wire_String(String raw) {
+    return raw;
+  }
+
+  @protected
+  Uint8List api2wire_uint_8_list(Uint8List raw) {
+    return raw;
+  }
 // Section: finalizer
 }
 
@@ -40,6 +49,9 @@ class NativeWasmModule implements WasmModule {
   external dynamic /* void */ wire_start_native(NativePortType port_);
 
   external dynamic /* void */ wire_get_my_stations(NativePortType port_);
+
+  external dynamic /* void */ wire_authenticate_portal(
+      NativePortType port_, String email, String password);
 }
 
 // Section: WASM wire connector
@@ -59,4 +71,8 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
 
   void wire_get_my_stations(NativePortType port_) =>
       wasmModule.wire_get_my_stations(port_);
+
+  void wire_authenticate_portal(
+          NativePortType port_, String email, String password) =>
+      wasmModule.wire_authenticate_portal(port_, email, password);
 }

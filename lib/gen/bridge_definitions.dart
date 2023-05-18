@@ -29,6 +29,11 @@ abstract class Native {
   Future<List<StationConfig>> getMyStations({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kGetMyStationsConstMeta;
+
+  Future<Tokens?> authenticatePortal(
+      {required String email, required String password, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kAuthenticatePortalConstMeta;
 }
 
 class BatteryInfo {
@@ -156,6 +161,16 @@ class StreamInfo {
   const StreamInfo({
     required this.size,
     required this.records,
+  });
+}
+
+class Tokens {
+  final String token;
+  final String? refresh;
+
+  const Tokens({
+    required this.token,
+    this.refresh,
   });
 }
 

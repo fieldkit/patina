@@ -61,6 +61,24 @@ fn wire_get_my_stations_impl(port_: MessagePort) {
         move || move |task_callback| get_my_stations(),
     )
 }
+fn wire_authenticate_portal_impl(
+    port_: MessagePort,
+    email: impl Wire2Api<String> + UnwindSafe,
+    password: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "authenticate_portal",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_email = email.wire2api();
+            let api_password = password.wire2api();
+            move |task_callback| authenticate_portal(api_email, api_password)
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks
@@ -83,6 +101,13 @@ where
         (!self.is_null()).then(|| self.wire2api())
     }
 }
+
+impl Wire2Api<u8> for u8 {
+    fn wire2api(self) -> u8 {
+        self
+    }
+}
+
 // Section: impl IntoDart
 
 impl support::IntoDart for BatteryInfo {
@@ -191,6 +216,13 @@ impl support::IntoDart for StreamInfo {
     }
 }
 impl support::IntoDartExceptPrimitive for StreamInfo {}
+
+impl support::IntoDart for Tokens {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.token.into_dart(), self.refresh.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Tokens {}
 
 impl support::IntoDart for TransmissionConfig {
     fn into_dart(self) -> support::DartAbi {

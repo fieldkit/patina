@@ -62,13 +62,14 @@ class KnownStationsModel extends ChangeNotifier {
 
 class AppState {
   final Native api;
-  final KnownStationsModel knownStations;
   final AppEventDispatcher dispatcher;
+  final KnownStationsModel knownStations;
+  final PortalAccounts portalAccounts;
 
-  AppState._(this.api, this.dispatcher, this.knownStations);
+  AppState._(this.api, this.dispatcher, this.knownStations, this.portalAccounts);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
-    return AppState._(api, dispatcher, KnownStationsModel(api, dispatcher));
+    return AppState._(api, dispatcher, KnownStationsModel(api, dispatcher), PortalAccounts(api: api, accounts: List.empty()));
   }
 }
 
@@ -87,25 +88,44 @@ class AppEnv {
   ValueListenable<AppState?> get appState => _appState;
 }
 
+class PortalTokens {
+  final String token;
+  final String? refresh;
+
+  const PortalTokens({required this.token, this.refresh});
+
+  factory PortalTokens.fromJson(Map<String, dynamic> data) {
+    final token = data['token'] as String;
+    final refresh = data['refresh'] as String?;
+
+    return PortalTokens(token: token, refresh: refresh);
+  }
+
+  Map<String, dynamic> toJson() => {
+        'token': token,
+        'refresh': refresh,
+      };
+}
+
 class PortalAccount extends ChangeNotifier {
   final String email;
-  final String token;
-  final String refreshToken;
+  final PortalTokens? tokens;
   final bool active;
 
-  PortalAccount({required this.email, required this.token, required this.refreshToken, required this.active});
+  PortalAccount({required this.email, required this.tokens, required this.active});
 
   factory PortalAccount.fromJson(Map<String, dynamic> data) {
     final email = data['email'] as String;
-    final token = data['token'] as String;
-    final refreshToken = data['refresh_token'] as String;
     final active = data['active'] as bool;
+    final tokensData = data["tokens"] as Map<String, dynamic>?;
+    final tokens = tokensData != null ? PortalTokens.fromJson(tokensData) : null;
 
-    return PortalAccount(email: email, token: token, refreshToken: refreshToken, active: active);
+    return PortalAccount(email: email, tokens: tokens, active: active);
   }
 
   Map<String, dynamic> toJson() => {
         'email': email,
+        'tokens': tokens?.toJson(),
         'active': active,
       };
 }
@@ -123,11 +143,15 @@ class PortalAccounts extends ChangeNotifier {
   factory PortalAccounts.fromJson(Native api, Map<String, dynamic> data) {
     final accountsData = data['accounts'] as List<dynamic>;
     final accounts = accountsData.map((accountData) => PortalAccount.fromJson(accountData)).toList();
-    final portalAccounts = PortalAccounts(api: api, accounts: accounts); // Global
-    return portalAccounts;
+    return PortalAccounts(api: api, accounts: accounts);
   }
 
-  static Future<PortalAccounts> get(Native api) async {
+  Map<String, dynamic> toJson() => {
+        'accounts': _accounts.map((a) => a.toJson()).toList(),
+      };
+
+  // ignore: unused_element
+  static Future<PortalAccounts> _get(Native api) async {
     const storage = FlutterSecureStorage();
     String? value = await storage.read(key: "fk.accounts");
     if (value == null) {
@@ -137,20 +161,58 @@ class PortalAccounts extends ChangeNotifier {
     }
   }
 
-  void save() async {
+  // A little messy, I know.
+  Future<PortalAccounts> load() async {
+    const storage = FlutterSecureStorage();
+    String? value = await storage.read(key: "fk.accounts");
+    if (value != null) {
+      final loaded = PortalAccounts.fromJson(api, jsonDecode(value));
+      _accounts.clear();
+      _accounts.addAll(loaded.accounts);
+      notifyListeners();
+    }
+    return this;
+  }
+
+  Future<PortalAccounts> save() async {
     const storage = FlutterSecureStorage();
     final serialized = jsonEncode(this);
     await storage.write(key: "fk.accounts", value: serialized);
+    return this;
   }
 
-  void activate(PortalAccount account) async {
-    debugPrint("activating $account");
+  Future<bool> addOrUpdate(String email, String password) async {
+    final tokens = await api.authenticatePortal(email: email, password: password);
+    if (tokens != null) {
+      final portalTokens = PortalTokens(token: tokens.token, refresh: tokens.refresh);
+      final account = PortalAccount(email: email, tokens: portalTokens, active: true);
+      _accounts.add(account);
+      await save();
+      notifyListeners();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<void> activate(PortalAccount account) async {
     var updated = _accounts.map((iter) {
       // Got a hunch there's a better way to do this.
-      return PortalAccount(email: iter.email, token: iter.token, refreshToken: iter.refreshToken, active: account == iter);
+      return PortalAccount(email: iter.email, tokens: iter.tokens, active: account == iter);
     }).toList();
     _accounts.clear();
     _accounts.addAll(updated);
+    await save();
+    notifyListeners();
+  }
+
+  Future<void> delete(PortalAccount account) async {
+    var updated = _accounts.where((iter) {
+      return iter.email != account.email;
+    }).toList();
+    _accounts.clear();
+    _accounts.addAll(updated);
+    await save();
     notifyListeners();
   }
 }

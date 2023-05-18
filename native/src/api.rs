@@ -57,7 +57,13 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
     fn get_rust_log() -> String {
         let mut original = std::env::var("RUST_LOG").unwrap_or_else(|_| "debug".into());
 
-        for logger in ["hyper=", "reqwest=", "rusqlite_migration="] {
+        for logger in [
+            "hyper=",
+            "reqwest=",
+            "rusqlite_migration=",
+            "rustls=",
+            "h2=",
+        ] {
             if !original.contains(logger) {
                 original.push_str(&format!(",{}info", logger));
             }
@@ -267,6 +273,18 @@ impl Sdk {
             })
             .collect::<Result<Vec<_>>>()?)
     }
+
+    async fn authenticate_portal(&self, email: String, password: String) -> Result<Option<Tokens>> {
+        let client = query::portal::Client::new()?;
+        let tokens = client
+            .login(query::portal::LoginPayload { email, password })
+            .await?;
+
+        Ok(tokens.map(|t| Tokens {
+            token: t.token,
+            refresh: t.refresh,
+        }))
+    }
 }
 
 fn with_runtime<R>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R>) -> Result<R> {
@@ -289,6 +307,18 @@ fn with_sdk<R>(cb: impl FnOnce(&mut Sdk) -> Result<R>) -> Result<R> {
 
 pub fn get_my_stations() -> Result<Vec<StationConfig>> {
     Ok(with_runtime(|rt, sdk| rt.block_on(sdk.get_my_stations()))?)
+}
+
+pub fn authenticate_portal(email: String, password: String) -> Result<Option<Tokens>> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.authenticate_portal(email, password))
+    })?)
+}
+
+#[derive(Debug)]
+pub struct Tokens {
+    pub token: String,
+    pub refresh: Option<String>,
 }
 
 #[derive(Debug)]
