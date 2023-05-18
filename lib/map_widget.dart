@@ -12,11 +12,13 @@ class Map extends StatelessWidget {
         center: LatLng(48.864716, 2.349014),
         zoom: 9.2,
       ),
-      nonRotatedChildren: [
+      nonRotatedChildren: const [
+        /* Can we style this differently? Maybe if not we can hide over time?
         AttributionWidget.defaultWidget(
           source: 'OpenStreetMap contributors',
           onSourceTapped: null,
         ),
+        */
       ],
       children: [
         TileLayer(
