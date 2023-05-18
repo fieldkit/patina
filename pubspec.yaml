@@ -48,6 +48,7 @@ dependencies:
   meta: 1.9.1
   intl: ^0.18.1
   markdown: ^7.1.0
+  flutter_secure_storage: ^8.0.0
 
 dev_dependencies:
   flutter_test:
