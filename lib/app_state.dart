@@ -1,6 +1,8 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'dispatcher.dart';
@@ -83,4 +85,72 @@ class AppEnv {
         );
 
   ValueListenable<AppState?> get appState => _appState;
+}
+
+class PortalAccount extends ChangeNotifier {
+  final String email;
+  final String token;
+  final String refreshToken;
+  final bool active;
+
+  PortalAccount({required this.email, required this.token, required this.refreshToken, required this.active});
+
+  factory PortalAccount.fromJson(Map<String, dynamic> data) {
+    final email = data['email'] as String;
+    final token = data['token'] as String;
+    final refreshToken = data['refresh_token'] as String;
+    final active = data['active'] as bool;
+
+    return PortalAccount(email: email, token: token, refreshToken: refreshToken, active: active);
+  }
+
+  Map<String, dynamic> toJson() => {
+        'email': email,
+        'active': active,
+      };
+}
+
+class PortalAccounts extends ChangeNotifier {
+  final Native api;
+  final List<PortalAccount> _accounts = List.empty(growable: true);
+
+  UnmodifiableListView<PortalAccount> get accounts => UnmodifiableListView(_accounts);
+
+  PortalAccounts({required this.api, required List<PortalAccount> accounts}) {
+    _accounts.addAll(accounts);
+  }
+
+  factory PortalAccounts.fromJson(Native api, Map<String, dynamic> data) {
+    final accountsData = data['accounts'] as List<dynamic>;
+    final accounts = accountsData.map((accountData) => PortalAccount.fromJson(accountData)).toList();
+    final portalAccounts = PortalAccounts(api: api, accounts: accounts); // Global
+    return portalAccounts;
+  }
+
+  static Future<PortalAccounts> get(Native api) async {
+    const storage = FlutterSecureStorage();
+    String? value = await storage.read(key: "fk.accounts");
+    if (value == null) {
+      return PortalAccounts(api: api, accounts: List.empty());
+    } else {
+      return PortalAccounts.fromJson(api, jsonDecode(value));
+    }
+  }
+
+  void save() async {
+    const storage = FlutterSecureStorage();
+    final serialized = jsonEncode(this);
+    await storage.write(key: "fk.accounts", value: serialized);
+  }
+
+  void activate(PortalAccount account) async {
+    debugPrint("activating $account");
+    var updated = _accounts.map((iter) {
+      // Got a hunch there's a better way to do this.
+      return PortalAccount(email: iter.email, token: iter.token, refreshToken: iter.refreshToken, active: account == iter);
+    }).toList();
+    _accounts.clear();
+    _accounts.addAll(updated);
+    notifyListeners();
+  }
 }

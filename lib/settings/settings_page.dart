@@ -1,8 +1,7 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../app_state.dart';
 import '../gen/ffi.dart';
 import '../reader/widgets.dart';
 
@@ -50,35 +49,6 @@ class SettingsTab extends StatelessWidget {
   }
 }
 
-class PortalAccount extends ChangeNotifier {
-  final String email;
-  final bool active;
-
-  PortalAccount({required this.email, required this.active});
-}
-
-class PortalAccounts extends ChangeNotifier {
-  final Native api;
-  final List<PortalAccount> _accounts = List.empty(growable: true);
-
-  UnmodifiableListView<PortalAccount> get accounts => UnmodifiableListView(_accounts);
-
-  PortalAccounts({required this.api}) {
-    _accounts.add(PortalAccount(email: "jacob@conservify.org", active: true));
-    _accounts.add(PortalAccount(email: "carla@conservify.org", active: false));
-  }
-
-  void activate(PortalAccount account) async {
-    debugPrint("activating $account");
-    var updated = _accounts.map((iter) {
-      return PortalAccount(email: iter.email, active: account == iter);
-    }).toList();
-    _accounts.clear();
-    _accounts.addAll(updated);
-    notifyListeners();
-  }
-}
-
 class ProvideAccountsWidget extends StatelessWidget {
   final Widget child;
 
@@ -86,10 +56,18 @@ class ProvideAccountsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => PortalAccounts(api: api), // Global Native/API access
-      child: child,
-    );
+    return FutureBuilder<PortalAccounts>(
+        future: PortalAccounts.get(api), // Global Native/API access
+        builder: (context, AsyncSnapshot<PortalAccounts> snapshot) {
+          if (snapshot.hasData) {
+            return ChangeNotifierProvider(
+              create: (context) => snapshot.data!,
+              child: child,
+            );
+          } else {
+            return const CircularProgressIndicator();
+          }
+        });
   }
 }
 
@@ -103,6 +81,18 @@ class AccountsPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Accounts'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditAccountPage(original: PortalAccount(email: "", token: "", refreshToken: "", active: false)),
+                    ),
+                  );
+                },
+                child: const Text("Add", style: TextStyle(color: Colors.white)))
+          ],
         ),
         body: ListView(children: [
           AccountsList(
@@ -151,5 +141,26 @@ class AccountItem extends StatelessWidget {
         onActivate();
       },
     );
+  }
+}
+
+class EditAccountPage extends StatefulWidget {
+  final PortalAccount original;
+
+  const EditAccountPage({super.key, required this.original});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _EditAccountState createState() => _EditAccountState();
+}
+
+class _EditAccountState extends State<EditAccountPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit Account'),
+        ),
+        body: ListView(children: const []));
   }
 }
