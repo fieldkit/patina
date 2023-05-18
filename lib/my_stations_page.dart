@@ -96,8 +96,7 @@ class DiscoveringStationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const ListTile(
-      title: Text("..."),
-      subtitle: Text("Contacting..."),
+      title: Text("Contacting..."),
     );
   }
 }
