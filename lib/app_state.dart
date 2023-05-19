@@ -9,7 +9,7 @@ import 'dispatcher.dart';
 
 class StationModel {
   final String deviceId;
-  final StationConfig? config;
+  StationConfig? config;
   SyncingProgress? syncing;
   bool connected;
 
@@ -27,9 +27,9 @@ class KnownStationsModel extends ChangeNotifier {
 
   KnownStationsModel(Native api, AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
-      var byDeviceId = {};
+      final byDeviceId = {};
       for (var station in nearby.field0) {
-        _stations.putIfAbsent(station.deviceId, () => StationModel(deviceId: station.deviceId));
+        findOrCreate(station.deviceId);
         byDeviceId[station.deviceId] = true;
       }
       for (var station in _stations.values) {
@@ -39,8 +39,9 @@ class KnownStationsModel extends ChangeNotifier {
     });
 
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) {
-      var station = refreshed.field0;
-      _stations[station.deviceId] = StationModel(deviceId: station.deviceId, config: station, connected: true);
+      final station = findOrCreate(refreshed.field0.deviceId);
+      station.config = refreshed.field0;
+      station.connected = true;
       notifyListeners();
     });
 
@@ -51,7 +52,7 @@ class KnownStationsModel extends ChangeNotifier {
     var stations = await api.getMyStations();
     debugPrint("(load) my-stations: $stations");
     for (var station in stations) {
-      _stations[station.deviceId] = StationModel(deviceId: station.deviceId, config: station);
+      findOrCreate(station.deviceId).config = station;
     }
     notifyListeners();
   }
@@ -60,12 +61,41 @@ class KnownStationsModel extends ChangeNotifier {
     return _stations[deviceId];
   }
 
+  StationModel findOrCreate(String deviceId) {
+    _stations.putIfAbsent(deviceId, () => StationModel(deviceId: deviceId));
+    return _stations[deviceId]!;
+  }
+
   Future<void> startDownload({required String deviceId}) async {
-    await api.startDownload(deviceId: deviceId);
+    final station = find(deviceId);
+    if (station == null) {
+      debugPrint("$deviceId station missing");
+      return;
+    }
+
+    if (station.syncing != null) {
+      debugPrint("$deviceId already syncing");
+      return;
+    }
+
+    final progress = await api.startDownload(deviceId: deviceId);
+    station.syncing = SyncingProgress(progress: progress);
   }
 
   Future<void> startUpload({required String deviceId}) async {
-    await api.startUpload(deviceId: deviceId);
+    final station = find(deviceId);
+    if (station == null) {
+      debugPrint("$deviceId station missing");
+      return;
+    }
+
+    if (station.syncing != null) {
+      debugPrint("$deviceId already syncing");
+      return;
+    }
+
+    final progress = await api.startUpload(deviceId: deviceId);
+    station.syncing = SyncingProgress(progress: progress);
   }
 }
 
@@ -238,8 +268,8 @@ class PortalAccounts extends ChangeNotifier {
         if (validated == null) {
           _accounts.add(PortalAccount(email: iter.email, tokens: null, active: iter.active, valid: false));
         } else {
-          _accounts.add(PortalAccount(
-              email: iter.email, tokens: PortalTokens(token: tokens.token, refresh: tokens.refresh), active: iter.active, valid: true));
+          final portalTokens = PortalTokens(token: tokens.token, refresh: tokens.refresh);
+          _accounts.add(PortalAccount(email: iter.email, tokens: portalTokens, active: iter.active, valid: true));
         }
       }
     }
@@ -249,4 +279,8 @@ class PortalAccounts extends ChangeNotifier {
   }
 }
 
-class SyncingProgress extends ChangeNotifier {}
+class SyncingProgress extends ChangeNotifier {
+  final TransferProgress progress;
+
+  SyncingProgress({required this.progress});
+}
