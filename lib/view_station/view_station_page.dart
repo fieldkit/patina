@@ -63,6 +63,13 @@ class ViewStationPage extends StatelessWidget {
   }
 }
 
+int defaultModuleSorter(ModuleConfig a, ModuleConfig b) {
+  if (a.position == b.position) {
+    return a.key.compareTo(b.key);
+  }
+  return a.position.compareTo(b.position);
+}
+
 class HighLevelsDetails extends StatelessWidget {
   final StationModel station;
 
@@ -75,7 +82,7 @@ class HighLevelsDetails extends StatelessWidget {
     final battery = config.battery.percentage;
     final bytesUsed = config.meta.size + config.data.size;
 
-    final modules = config.modules.sorted((a, b) => a.position.compareTo(b.position)).map((module) {
+    final modules = config.modules.sorted(defaultModuleSorter).map((module) {
       return ModuleInfo(module: module);
     }).toList();
 

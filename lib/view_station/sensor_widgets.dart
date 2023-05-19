@@ -92,6 +92,10 @@ class SensorsGrid extends StatelessWidget {
   }
 }
 
+int defaultSensorSorter(SensorConfig a, SensorConfig b) {
+  return a.number.compareTo(b.number);
+}
+
 class ModuleInfo extends StatelessWidget {
   final ModuleConfig module;
 
@@ -102,7 +106,7 @@ class ModuleInfo extends StatelessWidget {
     final localized = LocalizedModule.get(module);
     final bay = "Bay ${module.position}";
 
-    final List<Widget> sensors = module.sensors.sorted((a, b) => a.number.compareTo(b.number)).map((sensor) {
+    final List<Widget> sensors = module.sensors.sorted(defaultSensorSorter).map((sensor) {
       return SensorInfo(sensor: sensor);
     }).toList();
 
