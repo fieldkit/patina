@@ -22,6 +22,7 @@ mixin _$DomainMessage {
     required TResult Function(List<NearbyStation> field0) nearbyStations,
     required TResult Function(StationConfig field0, SensitiveConfig? field1)
         stationRefreshed,
+    required TResult Function(TransferProgress field0) transferProgress,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -30,6 +31,7 @@ mixin _$DomainMessage {
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
     TResult? Function(StationConfig field0, SensitiveConfig? field1)?
         stationRefreshed,
+    TResult? Function(TransferProgress field0)? transferProgress,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -38,6 +40,7 @@ mixin _$DomainMessage {
     TResult Function(List<NearbyStation> field0)? nearbyStations,
     TResult Function(StationConfig field0, SensitiveConfig? field1)?
         stationRefreshed,
+    TResult Function(TransferProgress field0)? transferProgress,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -48,6 +51,8 @@ mixin _$DomainMessage {
         nearbyStations,
     required TResult Function(DomainMessage_StationRefreshed value)
         stationRefreshed,
+    required TResult Function(DomainMessage_TransferProgress value)
+        transferProgress,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -55,6 +60,7 @@ mixin _$DomainMessage {
     TResult? Function(DomainMessage_PreAccount value)? preAccount,
     TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
     TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult? Function(DomainMessage_TransferProgress value)? transferProgress,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -62,6 +68,7 @@ mixin _$DomainMessage {
     TResult Function(DomainMessage_PreAccount value)? preAccount,
     TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
     TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult Function(DomainMessage_TransferProgress value)? transferProgress,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -128,6 +135,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     required TResult Function(List<NearbyStation> field0) nearbyStations,
     required TResult Function(StationConfig field0, SensitiveConfig? field1)
         stationRefreshed,
+    required TResult Function(TransferProgress field0) transferProgress,
   }) {
     return preAccount();
   }
@@ -139,6 +147,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
     TResult? Function(StationConfig field0, SensitiveConfig? field1)?
         stationRefreshed,
+    TResult? Function(TransferProgress field0)? transferProgress,
   }) {
     return preAccount?.call();
   }
@@ -150,6 +159,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     TResult Function(List<NearbyStation> field0)? nearbyStations,
     TResult Function(StationConfig field0, SensitiveConfig? field1)?
         stationRefreshed,
+    TResult Function(TransferProgress field0)? transferProgress,
     required TResult orElse(),
   }) {
     if (preAccount != null) {
@@ -166,6 +176,8 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
         nearbyStations,
     required TResult Function(DomainMessage_StationRefreshed value)
         stationRefreshed,
+    required TResult Function(DomainMessage_TransferProgress value)
+        transferProgress,
   }) {
     return preAccount(this);
   }
@@ -176,6 +188,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     TResult? Function(DomainMessage_PreAccount value)? preAccount,
     TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
     TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult? Function(DomainMessage_TransferProgress value)? transferProgress,
   }) {
     return preAccount?.call(this);
   }
@@ -186,6 +199,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     TResult Function(DomainMessage_PreAccount value)? preAccount,
     TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
     TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult Function(DomainMessage_TransferProgress value)? transferProgress,
     required TResult orElse(),
   }) {
     if (preAccount != null) {
@@ -277,6 +291,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     required TResult Function(List<NearbyStation> field0) nearbyStations,
     required TResult Function(StationConfig field0, SensitiveConfig? field1)
         stationRefreshed,
+    required TResult Function(TransferProgress field0) transferProgress,
   }) {
     return nearbyStations(field0);
   }
@@ -288,6 +303,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
     TResult? Function(StationConfig field0, SensitiveConfig? field1)?
         stationRefreshed,
+    TResult? Function(TransferProgress field0)? transferProgress,
   }) {
     return nearbyStations?.call(field0);
   }
@@ -299,6 +315,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     TResult Function(List<NearbyStation> field0)? nearbyStations,
     TResult Function(StationConfig field0, SensitiveConfig? field1)?
         stationRefreshed,
+    TResult Function(TransferProgress field0)? transferProgress,
     required TResult orElse(),
   }) {
     if (nearbyStations != null) {
@@ -315,6 +332,8 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
         nearbyStations,
     required TResult Function(DomainMessage_StationRefreshed value)
         stationRefreshed,
+    required TResult Function(DomainMessage_TransferProgress value)
+        transferProgress,
   }) {
     return nearbyStations(this);
   }
@@ -325,6 +344,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     TResult? Function(DomainMessage_PreAccount value)? preAccount,
     TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
     TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult? Function(DomainMessage_TransferProgress value)? transferProgress,
   }) {
     return nearbyStations?.call(this);
   }
@@ -335,6 +355,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     TResult Function(DomainMessage_PreAccount value)? preAccount,
     TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
     TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult Function(DomainMessage_TransferProgress value)? transferProgress,
     required TResult orElse(),
   }) {
     if (nearbyStations != null) {
@@ -434,6 +455,7 @@ class _$DomainMessage_StationRefreshed
     required TResult Function(List<NearbyStation> field0) nearbyStations,
     required TResult Function(StationConfig field0, SensitiveConfig? field1)
         stationRefreshed,
+    required TResult Function(TransferProgress field0) transferProgress,
   }) {
     return stationRefreshed(field0, field1);
   }
@@ -445,6 +467,7 @@ class _$DomainMessage_StationRefreshed
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
     TResult? Function(StationConfig field0, SensitiveConfig? field1)?
         stationRefreshed,
+    TResult? Function(TransferProgress field0)? transferProgress,
   }) {
     return stationRefreshed?.call(field0, field1);
   }
@@ -456,6 +479,7 @@ class _$DomainMessage_StationRefreshed
     TResult Function(List<NearbyStation> field0)? nearbyStations,
     TResult Function(StationConfig field0, SensitiveConfig? field1)?
         stationRefreshed,
+    TResult Function(TransferProgress field0)? transferProgress,
     required TResult orElse(),
   }) {
     if (stationRefreshed != null) {
@@ -472,6 +496,8 @@ class _$DomainMessage_StationRefreshed
         nearbyStations,
     required TResult Function(DomainMessage_StationRefreshed value)
         stationRefreshed,
+    required TResult Function(DomainMessage_TransferProgress value)
+        transferProgress,
   }) {
     return stationRefreshed(this);
   }
@@ -482,6 +508,7 @@ class _$DomainMessage_StationRefreshed
     TResult? Function(DomainMessage_PreAccount value)? preAccount,
     TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
     TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult? Function(DomainMessage_TransferProgress value)? transferProgress,
   }) {
     return stationRefreshed?.call(this);
   }
@@ -492,6 +519,7 @@ class _$DomainMessage_StationRefreshed
     TResult Function(DomainMessage_PreAccount value)? preAccount,
     TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
     TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult Function(DomainMessage_TransferProgress value)? transferProgress,
     required TResult orElse(),
   }) {
     if (stationRefreshed != null) {
@@ -509,5 +537,161 @@ abstract class DomainMessage_StationRefreshed implements DomainMessage {
   SensitiveConfig? get field1;
   @JsonKey(ignore: true)
   _$$DomainMessage_StationRefreshedCopyWith<_$DomainMessage_StationRefreshed>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$DomainMessage_TransferProgressCopyWith<$Res> {
+  factory _$$DomainMessage_TransferProgressCopyWith(
+          _$DomainMessage_TransferProgress value,
+          $Res Function(_$DomainMessage_TransferProgress) then) =
+      __$$DomainMessage_TransferProgressCopyWithImpl<$Res>;
+  @useResult
+  $Res call({TransferProgress field0});
+}
+
+/// @nodoc
+class __$$DomainMessage_TransferProgressCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_TransferProgress>
+    implements _$$DomainMessage_TransferProgressCopyWith<$Res> {
+  __$$DomainMessage_TransferProgressCopyWithImpl(
+      _$DomainMessage_TransferProgress _value,
+      $Res Function(_$DomainMessage_TransferProgress) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$DomainMessage_TransferProgress(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as TransferProgress,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$DomainMessage_TransferProgress
+    implements DomainMessage_TransferProgress {
+  const _$DomainMessage_TransferProgress(this.field0);
+
+  @override
+  final TransferProgress field0;
+
+  @override
+  String toString() {
+    return 'DomainMessage.transferProgress(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DomainMessage_TransferProgress &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DomainMessage_TransferProgressCopyWith<_$DomainMessage_TransferProgress>
+      get copyWith => __$$DomainMessage_TransferProgressCopyWithImpl<
+          _$DomainMessage_TransferProgress>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() preAccount,
+    required TResult Function(List<NearbyStation> field0) nearbyStations,
+    required TResult Function(StationConfig field0, SensitiveConfig? field1)
+        stationRefreshed,
+    required TResult Function(TransferProgress field0) transferProgress,
+  }) {
+    return transferProgress(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? preAccount,
+    TResult? Function(List<NearbyStation> field0)? nearbyStations,
+    TResult? Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
+    TResult? Function(TransferProgress field0)? transferProgress,
+  }) {
+    return transferProgress?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? preAccount,
+    TResult Function(List<NearbyStation> field0)? nearbyStations,
+    TResult Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
+    TResult Function(TransferProgress field0)? transferProgress,
+    required TResult orElse(),
+  }) {
+    if (transferProgress != null) {
+      return transferProgress(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(DomainMessage_PreAccount value) preAccount,
+    required TResult Function(DomainMessage_NearbyStations value)
+        nearbyStations,
+    required TResult Function(DomainMessage_StationRefreshed value)
+        stationRefreshed,
+    required TResult Function(DomainMessage_TransferProgress value)
+        transferProgress,
+  }) {
+    return transferProgress(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(DomainMessage_PreAccount value)? preAccount,
+    TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult? Function(DomainMessage_TransferProgress value)? transferProgress,
+  }) {
+    return transferProgress?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(DomainMessage_PreAccount value)? preAccount,
+    TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult Function(DomainMessage_TransferProgress value)? transferProgress,
+    required TResult orElse(),
+  }) {
+    if (transferProgress != null) {
+      return transferProgress(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class DomainMessage_TransferProgress implements DomainMessage {
+  const factory DomainMessage_TransferProgress(final TransferProgress field0) =
+      _$DomainMessage_TransferProgress;
+
+  TransferProgress get field0;
+  @JsonKey(ignore: true)
+  _$$DomainMessage_TransferProgressCopyWith<_$DomainMessage_TransferProgress>
       get copyWith => throw _privateConstructorUsedError;
 }

@@ -394,7 +394,7 @@ pub struct Tokens {
 }
 
 impl Tokens {
-    pub fn refresh_token(&self) -> Result<String> {
+    fn refresh_token(&self) -> Result<String> {
         Ok(decode_token(&self.token)?.refresh_token)
     }
 }
@@ -419,6 +419,8 @@ pub enum DomainMessage {
     PreAccount,
     NearbyStations(Vec<NearbyStation>),
     StationRefreshed(StationConfig, Option<SensitiveConfig>),
+    #[allow(dead_code)]
+    TransferProgress(TransferProgress),
 }
 
 #[derive(Clone, Debug)]

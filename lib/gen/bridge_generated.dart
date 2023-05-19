@@ -202,6 +202,10 @@ class NativeImpl implements Native {
     return _wire2api_tokens(raw);
   }
 
+  TransferProgress _wire2api_box_autoadd_transfer_progress(dynamic raw) {
+    return _wire2api_transfer_progress(raw);
+  }
+
   TransmissionConfig _wire2api_box_autoadd_transmission_config(dynamic raw) {
     return _wire2api_transmission_config(raw);
   }
@@ -218,6 +222,10 @@ class NativeImpl implements Native {
         return DomainMessage_StationRefreshed(
           _wire2api_box_autoadd_station_config(raw[1]),
           _wire2api_opt_box_autoadd_sensitive_config(raw[2]),
+        );
+      case 3:
+        return DomainMessage_TransferProgress(
+          _wire2api_box_autoadd_transfer_progress(raw[1]),
         );
       default:
         throw Exception("unreachable");

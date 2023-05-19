@@ -167,6 +167,7 @@ impl support::IntoDart for DomainMessage {
             Self::StationRefreshed(field0, field1) => {
                 vec![2.into_dart(), field0.into_dart(), field1.into_dart()]
             }
+            Self::TransferProgress(field0) => vec![3.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }

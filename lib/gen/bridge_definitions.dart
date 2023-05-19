@@ -71,6 +71,9 @@ class DomainMessage with _$DomainMessage {
     StationConfig field0, [
     SensitiveConfig? field1,
   ]) = DomainMessage_StationRefreshed;
+  const factory DomainMessage.transferProgress(
+    TransferProgress field0,
+  ) = DomainMessage_TransferProgress;
 }
 
 class ModuleConfig {
