@@ -78,11 +78,13 @@ class DomainMessage with _$DomainMessage {
 
 class ModuleConfig {
   final int position;
+  final String moduleId;
   final String key;
   final List<SensorConfig> sensors;
 
   const ModuleConfig({
     required this.position,
+    required this.moduleId,
     required this.key,
     required this.sensors,
   });

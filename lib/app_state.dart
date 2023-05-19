@@ -123,6 +123,20 @@ class KnownStationsModel extends ChangeNotifier {
     final progress = await api.startUpload(deviceId: deviceId);
     applyTransferProgress(progress);
   }
+
+  ModuleConfig? findModule(ModuleIdentity moduleIdentity) {
+    for (final station in stations) {
+      final config = station.config;
+      if (config != null) {
+        for (final module in config.modules) {
+          if (module.identity == moduleIdentity) {
+            return module;
+          }
+        }
+      }
+    }
+    return null;
+  }
 }
 
 class AppState {
@@ -309,4 +323,30 @@ class SyncingProgress extends ChangeNotifier {
   final TransferProgress progress;
 
   SyncingProgress({required this.progress});
+}
+
+class ModuleIdentity {
+  final String moduleId;
+
+  ModuleIdentity({required this.moduleId});
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is ModuleIdentity && other.moduleId == moduleId;
+  }
+
+  @override
+  int get hashCode => moduleId.hashCode;
+}
+
+extension Identity on ModuleConfig {
+  ModuleIdentity get identity => ModuleIdentity(moduleId: moduleId);
+
+  SensorConfig? get calibrationSensor {
+    if (key.startsWith("modules.water")) {
+      return sensors[0];
+    }
+    return null;
+  }
 }

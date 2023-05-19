@@ -319,13 +319,17 @@ impl Sdk {
     async fn refresh_tokens(&self, tokens: Tokens) -> Result<Option<Tokens>> {
         let refresh_token = tokens.refresh_token()?;
         let client = query::portal::Client::new()?;
-        Ok(client
-            .use_refresh_token(&refresh_token)
-            .await?
-            .map(|t| Tokens {
-                token: t.token,
-                refresh: t.refresh,
-            }))
+        if true {
+            Ok(None)
+        } else {
+            Ok(client
+                .use_refresh_token(&refresh_token)
+                .await?
+                .map(|t| Tokens {
+                    token: t.token,
+                    refresh: t.refresh,
+                }))
+        }
     }
 
     async fn start_download(&self, device_id: String) -> Result<TransferProgress> {
@@ -486,6 +490,7 @@ pub struct StationConfig {
 #[derive(Clone, Debug)]
 pub struct ModuleConfig {
     pub position: u32,
+    pub module_id: String,
     pub key: String,
     pub sensors: Vec<SensorConfig>,
 }
@@ -563,6 +568,7 @@ impl TryInto<StationConfig> for StationAndConnection {
                 .into_iter()
                 .map(|module| ModuleConfig {
                     position: module.position,
+                    module_id: module.hardware_id,
                     key: module.key.clone(),
                     sensors: module
                         .sensors

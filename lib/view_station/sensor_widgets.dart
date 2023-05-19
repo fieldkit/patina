@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rust_bridge_template/app_state.dart';
+import 'package:flutter_rust_bridge_template/calibration/calibration_page.dart';
 import 'package:intl/intl.dart';
 
 import '../gen/ffi.dart';
@@ -7,8 +9,9 @@ import '../meta.dart';
 class SensorValue extends StatelessWidget {
   final SensorConfig sensor;
   final LocalizedSensor localized;
+  final MainAxisSize mainAxisSize;
 
-  const SensorValue({super.key, required this.sensor, required this.localized});
+  const SensorValue({super.key, required this.sensor, required this.localized, this.mainAxisSize = MainAxisSize.max});
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +32,9 @@ class SensorValue extends StatelessWidget {
     var suffix = Container(padding: const EdgeInsets.only(left: 6), child: Text(uom, style: unitsStyle));
 
     if (value == null) {
-      return Row(children: [Text("--", style: valueStyle), suffix]);
+      return Row(mainAxisSize: mainAxisSize, children: [Text("--", style: valueStyle), suffix]);
     }
-    return Row(children: [Text(valueFormatter.format(value), style: valueStyle), suffix]);
+    return Row(mainAxisSize: mainAxisSize, children: [Text(valueFormatter.format(value), style: valueStyle), suffix]);
   }
 }
 
@@ -123,7 +126,14 @@ class ModuleInfo extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CalibrationPage(moduleIdentity: module.identity),
+                    ),
+                  );
+                },
                 // style: ElevatedButton.styleFrom(),
                 child: const Text("Calibrate"),
               )),

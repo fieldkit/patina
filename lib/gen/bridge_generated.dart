@@ -266,12 +266,13 @@ class NativeImpl implements Native {
 
   ModuleConfig _wire2api_module_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 3)
-      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return ModuleConfig(
       position: _wire2api_u32(arr[0]),
-      key: _wire2api_String(arr[1]),
-      sensors: _wire2api_list_sensor_config(arr[2]),
+      moduleId: _wire2api_String(arr[1]),
+      key: _wire2api_String(arr[2]),
+      sensors: _wire2api_list_sensor_config(arr[3]),
     );
   }
 

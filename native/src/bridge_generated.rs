@@ -178,6 +178,7 @@ impl support::IntoDart for ModuleConfig {
     fn into_dart(self) -> support::DartAbi {
         vec![
             self.position.into_dart(),
+            self.module_id.into_dart(),
             self.key.into_dart(),
             self.sensors.into_dart(),
         ]
