@@ -99,11 +99,7 @@ class EditAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AccountForm(
-        original: original,
-        onSave: (account) {
-          debugPrint("saved: $account");
-        });
+    return AccountForm(original: original, onSave: (account) {});
   }
 }
 
@@ -157,8 +153,10 @@ class _AccountState extends State<AccountForm> {
                   final navigator = Navigator.of(context);
                   final email = _formKey.currentState!.value['email'];
                   final password = _formKey.currentState!.value['password'];
-                  if (await accounts.addOrUpdate(email, password)) {
+                  final saved = await accounts.addOrUpdate(email, password);
+                  if (saved != null) {
                     navigator.pop();
+                    widget.onSave(saved);
                   } else {
                     messenger.showSnackBar(const SnackBar(
                       content: Text("Invalid email or password."),

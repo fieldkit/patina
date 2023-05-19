@@ -190,7 +190,7 @@ class PortalAccounts extends ChangeNotifier {
     return this;
   }
 
-  Future<bool> addOrUpdate(String email, String password) async {
+  Future<PortalAccount?> addOrUpdate(String email, String password) async {
     final tokens = await api.authenticatePortal(email: email, password: password);
     if (tokens != null) {
       final portalTokens = PortalTokens(token: tokens.token, refresh: tokens.refresh);
@@ -198,9 +198,9 @@ class PortalAccounts extends ChangeNotifier {
       _accounts.add(account);
       await save();
       notifyListeners();
-      return true;
+      return account;
     } else {
-      return false;
+      return null;
     }
   }
 
