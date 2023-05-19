@@ -120,8 +120,9 @@ class PortalAccount extends ChangeNotifier {
   final String email;
   final PortalTokens? tokens;
   final bool active;
+  final bool? valid;
 
-  PortalAccount({required this.email, required this.tokens, required this.active});
+  PortalAccount({required this.email, required this.tokens, required this.active, this.valid});
 
   factory PortalAccount.fromJson(Map<String, dynamic> data) {
     final email = data['email'] as String;
@@ -144,6 +145,8 @@ class PortalAccounts extends ChangeNotifier {
   final List<PortalAccount> _accounts = List.empty(growable: true);
 
   UnmodifiableListView<PortalAccount> get accounts => UnmodifiableListView(_accounts);
+
+  PortalAccount? get active => _accounts.where((a) => a.active).first;
 
   PortalAccounts({required this.api, required List<PortalAccount> accounts}) {
     _accounts.addAll(accounts);
@@ -194,7 +197,7 @@ class PortalAccounts extends ChangeNotifier {
     final tokens = await api.authenticatePortal(email: email, password: password);
     if (tokens != null) {
       final portalTokens = PortalTokens(token: tokens.token, refresh: tokens.refresh);
-      final account = PortalAccount(email: email, tokens: portalTokens, active: true);
+      final account = PortalAccount(email: email, tokens: portalTokens, active: true, valid: true);
       _accounts.add(account);
       await save();
       notifyListeners();
@@ -207,7 +210,7 @@ class PortalAccounts extends ChangeNotifier {
   Future<void> activate(PortalAccount account) async {
     var updated = _accounts.map((iter) {
       // Got a hunch there's a better way to do this.
-      return PortalAccount(email: iter.email, tokens: iter.tokens, active: account == iter);
+      return PortalAccount(email: iter.email, tokens: iter.tokens, active: account == iter, valid: iter.valid);
     }).toList();
     _accounts.clear();
     _accounts.addAll(updated);
@@ -223,6 +226,20 @@ class PortalAccounts extends ChangeNotifier {
     _accounts.addAll(updated);
     await save();
     notifyListeners();
+  }
+
+  Future<PortalAccounts> validate() async {
+    final validating = _accounts.map((e) => e).toList();
+    _accounts.clear();
+    for (final iter in validating) {
+      final tokens = iter.tokens;
+      if (tokens != null) {
+        final validated = await api.validateTokens(tokens: Tokens(token: tokens.token));
+        _accounts.add(PortalAccount(email: iter.email, tokens: tokens, active: iter.active, valid: validated != null));
+      }
+    }
+    notifyListeners();
+    return this;
   }
 }
 

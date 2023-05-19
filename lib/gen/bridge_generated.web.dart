@@ -26,6 +26,21 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic> api2wire_box_autoadd_tokens(Tokens raw) {
+    return api2wire_tokens(raw);
+  }
+
+  @protected
+  String? api2wire_opt_String(String? raw) {
+    return raw == null ? null : api2wire_String(raw);
+  }
+
+  @protected
+  List<dynamic> api2wire_tokens(Tokens raw) {
+    return [api2wire_String(raw.token), api2wire_opt_String(raw.refresh)];
+  }
+
+  @protected
   Uint8List api2wire_uint_8_list(Uint8List raw) {
     return raw;
   }
@@ -53,6 +68,9 @@ class NativeWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_authenticate_portal(
       NativePortType port_, String email, String password);
+
+  external dynamic /* void */ wire_validate_tokens(
+      NativePortType port_, List<dynamic> tokens);
 
   external dynamic /* void */ wire_start_download(
       NativePortType port_, String device_id);
@@ -82,6 +100,9 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_authenticate_portal(
           NativePortType port_, String email, String password) =>
       wasmModule.wire_authenticate_portal(port_, email, password);
+
+  void wire_validate_tokens(NativePortType port_, List<dynamic> tokens) =>
+      wasmModule.wire_validate_tokens(port_, tokens);
 
   void wire_start_download(NativePortType port_, String device_id) =>
       wasmModule.wire_start_download(port_, device_id);

@@ -82,6 +82,19 @@ fn wire_authenticate_portal_impl(
         },
     )
 }
+fn wire_validate_tokens_impl(port_: MessagePort, tokens: impl Wire2Api<Tokens> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "validate_tokens",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_tokens = tokens.wire2api();
+            move |task_callback| validate_tokens(api_tokens)
+        },
+    )
+}
 fn wire_start_download_impl(port_: MessagePort, device_id: impl Wire2Api<String> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {

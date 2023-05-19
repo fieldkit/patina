@@ -31,6 +31,11 @@ pub extern "C" fn wire_authenticate_portal(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_validate_tokens(port_: i64, tokens: *mut wire_Tokens) {
+    wire_validate_tokens_impl(port_, tokens)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_start_download(port_: i64, device_id: *mut wire_uint_8_list) {
     wire_start_download_impl(port_, device_id)
 }
@@ -41,6 +46,11 @@ pub extern "C" fn wire_start_upload(port_: i64, device_id: *mut wire_uint_8_list
 }
 
 // Section: allocate functions
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_tokens_0() -> *mut wire_Tokens {
+    support::new_leak_box_ptr(wire_Tokens::new_with_null_ptr())
+}
 
 #[no_mangle]
 pub extern "C" fn new_uint_8_list_0(len: i32) -> *mut wire_uint_8_list {
@@ -61,6 +71,21 @@ impl Wire2Api<String> for *mut wire_uint_8_list {
         String::from_utf8_lossy(&vec).into_owned()
     }
 }
+impl Wire2Api<Tokens> for *mut wire_Tokens {
+    fn wire2api(self) -> Tokens {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<Tokens>::wire2api(*wrap).into()
+    }
+}
+
+impl Wire2Api<Tokens> for wire_Tokens {
+    fn wire2api(self) -> Tokens {
+        Tokens {
+            token: self.token.wire2api(),
+            refresh: self.refresh.wire2api(),
+        }
+    }
+}
 
 impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
     fn wire2api(self) -> Vec<u8> {
@@ -71,6 +96,13 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
     }
 }
 // Section: wire structs
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_Tokens {
+    token: *mut wire_uint_8_list,
+    refresh: *mut wire_uint_8_list,
+}
 
 #[repr(C)]
 #[derive(Clone)]
@@ -88,6 +120,21 @@ pub trait NewWithNullPtr {
 impl<T> NewWithNullPtr for *mut T {
     fn new_with_null_ptr() -> Self {
         std::ptr::null_mut()
+    }
+}
+
+impl NewWithNullPtr for wire_Tokens {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            token: core::ptr::null_mut(),
+            refresh: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl Default for wire_Tokens {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 

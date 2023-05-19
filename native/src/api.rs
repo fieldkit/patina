@@ -12,6 +12,7 @@ use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{Discovered, Discovery};
+use query::portal::Tokens as PortalTokens;
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
@@ -289,6 +290,20 @@ impl Sdk {
         }))
     }
 
+    async fn validate_tokens(&self, tokens: Tokens) -> Result<Option<Tokens>> {
+        let client = query::portal::Client::new()?;
+        let client = client.to_authenticated(PortalTokens {
+            token: tokens.token,
+            refresh: tokens.refresh,
+        })?;
+
+        let ourselves = client.query_ourselves().await?;
+
+        info!("{:?}", ourselves);
+
+        Ok(None)
+    }
+
     async fn start_download(&self, device_id: String) -> Result<TransferProgress> {
         info!("{:?} start download", &device_id);
 
@@ -333,6 +348,12 @@ pub fn get_my_stations() -> Result<Vec<StationConfig>> {
 pub fn authenticate_portal(email: String, password: String) -> Result<Option<Tokens>> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.authenticate_portal(email, password))
+    })?)
+}
+
+pub fn validate_tokens(tokens: Tokens) -> Result<Option<Tokens>> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.validate_tokens(tokens))
     })?)
 }
 

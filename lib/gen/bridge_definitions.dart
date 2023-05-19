@@ -36,6 +36,10 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kAuthenticatePortalConstMeta;
 
+  Future<Tokens?> validateTokens({required Tokens tokens, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kValidateTokensConstMeta;
+
   Future<TransferProgress> startDownload(
       {required String deviceId, dynamic hint});
 

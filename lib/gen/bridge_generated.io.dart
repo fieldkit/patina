@@ -23,6 +23,18 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_Tokens> api2wire_box_autoadd_tokens(Tokens raw) {
+    final ptr = inner.new_box_autoadd_tokens_0();
+    _api_fill_to_wire_tokens(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_opt_String(String? raw) {
+    return raw == null ? ffi.nullptr : api2wire_String(raw);
+  }
+
+  @protected
   ffi.Pointer<wire_uint_8_list> api2wire_uint_8_list(Uint8List raw) {
     final ans = inner.new_uint_8_list_0(raw.length);
     ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
@@ -31,6 +43,16 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
 // Section: finalizer
 
 // Section: api_fill_to_wire
+
+  void _api_fill_to_wire_box_autoadd_tokens(
+      Tokens apiObj, ffi.Pointer<wire_Tokens> wireObj) {
+    _api_fill_to_wire_tokens(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_tokens(Tokens apiObj, wire_Tokens wireObj) {
+    wireObj.token = api2wire_String(apiObj.token);
+    wireObj.refresh = api2wire_opt_String(apiObj.refresh);
+  }
 }
 
 // ignore_for_file: camel_case_types, non_constant_identifier_names, avoid_positional_boolean_parameters, annotate_overrides, constant_identifier_names
@@ -209,6 +231,23 @@ class NativeWire implements FlutterRustBridgeWireBase {
           void Function(int, ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_validate_tokens(
+    int port_,
+    ffi.Pointer<wire_Tokens> tokens,
+  ) {
+    return _wire_validate_tokens(
+      port_,
+      tokens,
+    );
+  }
+
+  late final _wire_validate_tokensPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_Tokens>)>>('wire_validate_tokens');
+  late final _wire_validate_tokens = _wire_validate_tokensPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_Tokens>)>();
+
   void wire_start_download(
     int port_,
     ffi.Pointer<wire_uint_8_list> device_id,
@@ -242,6 +281,16 @@ class NativeWire implements FlutterRustBridgeWireBase {
               ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_start_upload');
   late final _wire_start_upload = _wire_start_uploadPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  ffi.Pointer<wire_Tokens> new_box_autoadd_tokens_0() {
+    return _new_box_autoadd_tokens_0();
+  }
+
+  late final _new_box_autoadd_tokens_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_Tokens> Function()>>(
+          'new_box_autoadd_tokens_0');
+  late final _new_box_autoadd_tokens_0 = _new_box_autoadd_tokens_0Ptr
+      .asFunction<ffi.Pointer<wire_Tokens> Function()>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
@@ -280,6 +329,12 @@ class wire_uint_8_list extends ffi.Struct {
 
   @ffi.Int32()
   external int len;
+}
+
+class wire_Tokens extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> token;
+
+  external ffi.Pointer<wire_uint_8_list> refresh;
 }
 
 typedef DartPostCObjectFnType = ffi.Pointer<

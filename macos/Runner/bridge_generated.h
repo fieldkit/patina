@@ -14,6 +14,11 @@ typedef struct wire_uint_8_list {
   int32_t len;
 } wire_uint_8_list;
 
+typedef struct wire_Tokens {
+  struct wire_uint_8_list *token;
+  struct wire_uint_8_list *refresh;
+} wire_Tokens;
+
 typedef struct DartCObject *WireSyncReturn;
 
 void store_dart_post_cobject(DartPostCObjectFnType ptr);
@@ -38,9 +43,13 @@ void wire_authenticate_portal(int64_t port_,
                               struct wire_uint_8_list *email,
                               struct wire_uint_8_list *password);
 
+void wire_validate_tokens(int64_t port_, struct wire_Tokens *tokens);
+
 void wire_start_download(int64_t port_, struct wire_uint_8_list *device_id);
 
 void wire_start_upload(int64_t port_, struct wire_uint_8_list *device_id);
+
+struct wire_Tokens *new_box_autoadd_tokens_0(void);
 
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
@@ -53,8 +62,10 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_start_native);
     dummy_var ^= ((int64_t) (void*) wire_get_my_stations);
     dummy_var ^= ((int64_t) (void*) wire_authenticate_portal);
+    dummy_var ^= ((int64_t) (void*) wire_validate_tokens);
     dummy_var ^= ((int64_t) (void*) wire_start_download);
     dummy_var ^= ((int64_t) (void*) wire_start_upload);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_tokens_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

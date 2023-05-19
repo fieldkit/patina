@@ -106,6 +106,23 @@ class NativeImpl implements Native {
         argNames: ["email", "password"],
       );
 
+  Future<Tokens?> validateTokens({required Tokens tokens, dynamic hint}) {
+    var arg0 = _platform.api2wire_box_autoadd_tokens(tokens);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_validate_tokens(port_, arg0),
+      parseSuccessData: _wire2api_opt_box_autoadd_tokens,
+      constMeta: kValidateTokensConstMeta,
+      argValues: [tokens],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kValidateTokensConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "validate_tokens",
+        argNames: ["tokens"],
+      );
+
   Future<TransferProgress> startDownload(
       {required String deviceId, dynamic hint}) {
     var arg0 = _platform.api2wire_String(deviceId);

@@ -27,6 +27,11 @@ pub fn wire_authenticate_portal(port_: MessagePort, email: String, password: Str
 }
 
 #[wasm_bindgen]
+pub fn wire_validate_tokens(port_: MessagePort, tokens: JsValue) {
+    wire_validate_tokens_impl(port_, tokens)
+}
+
+#[wasm_bindgen]
 pub fn wire_start_download(port_: MessagePort, device_id: String) {
     wire_start_download_impl(port_, device_id)
 }
@@ -48,6 +53,27 @@ impl Wire2Api<String> for String {
     }
 }
 
+impl Wire2Api<Option<String>> for Option<String> {
+    fn wire2api(self) -> Option<String> {
+        self.map(Wire2Api::wire2api)
+    }
+}
+impl Wire2Api<Tokens> for JsValue {
+    fn wire2api(self) -> Tokens {
+        let self_ = self.dyn_into::<JsArray>().unwrap();
+        assert_eq!(
+            self_.length(),
+            2,
+            "Expected 2 elements, got {}",
+            self_.length()
+        );
+        Tokens {
+            token: self_.get(0).wire2api(),
+            refresh: self_.get(1).wire2api(),
+        }
+    }
+}
+
 impl Wire2Api<Vec<u8>> for Box<[u8]> {
     fn wire2api(self) -> Vec<u8> {
         self.into_vec()
@@ -58,6 +84,11 @@ impl Wire2Api<Vec<u8>> for Box<[u8]> {
 impl Wire2Api<String> for JsValue {
     fn wire2api(self) -> String {
         self.as_string().expect("non-UTF-8 string, or not a string")
+    }
+}
+impl Wire2Api<Option<String>> for JsValue {
+    fn wire2api(self) -> Option<String> {
+        (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
     }
 }
 impl Wire2Api<u8> for JsValue {

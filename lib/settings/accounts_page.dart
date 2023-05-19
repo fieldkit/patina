@@ -182,7 +182,7 @@ class ProvideAccountsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final accounts = context.read<AppState>().portalAccounts;
     return FutureBuilder<PortalAccounts>(
-        future: accounts.load(),
+        future: accounts.load().then((a) => a.validate()),
         builder: (context, AsyncSnapshot<PortalAccounts> snapshot) {
           if (snapshot.hasData) {
             return ChangeNotifierProvider(
