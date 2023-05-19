@@ -116,7 +116,7 @@ async fn create_sdk(storage_path: String, publish_tx: Sender<DomainMessage>) -> 
 
     let nearby = NearbyDevices::new(bg_tx.clone());
 
-    let sdk = Sdk::new(storage_path, nearby.clone())?;
+    let sdk = Sdk::new(storage_path, nearby.clone(), publish_tx.clone())?;
 
     sdk.open().await?;
 
@@ -241,14 +241,20 @@ struct Sdk {
     storage_path: String,
     db: Arc<Mutex<Db>>,
     nearby: NearbyDevices,
+    publish_tx: Sender<DomainMessage>,
 }
 
 impl Sdk {
-    fn new(storage_path: String, nearby: NearbyDevices) -> Result<Self> {
+    fn new(
+        storage_path: String,
+        nearby: NearbyDevices,
+        publish_tx: Sender<DomainMessage>,
+    ) -> Result<Self> {
         Ok(Self {
             storage_path,
             db: Arc::new(Mutex::new(Db::new())),
             nearby,
+            publish_tx,
         })
     }
 
@@ -324,6 +330,31 @@ impl Sdk {
 
     async fn start_download(&self, device_id: String) -> Result<TransferProgress> {
         info!("{:?} start download", &device_id);
+
+        tokio::spawn({
+            let device_id = device_id.clone();
+            let publish_tx = self.publish_tx.clone();
+            async move {
+                for _i in 0..10 {
+                    sleep(ONE_SECOND).await;
+                    publish_tx
+                        .send(DomainMessage::TransferProgress(TransferProgress {
+                            device_id: device_id.clone(),
+                            status: TransferStatus::Transferring,
+                        }))
+                        .await
+                        .expect("Send progress error");
+                }
+
+                publish_tx
+                    .send(DomainMessage::TransferProgress(TransferProgress {
+                        device_id: device_id.clone(),
+                        status: TransferStatus::Done,
+                    }))
+                    .await
+                    .expect("Send progress error");
+            }
+        });
 
         Ok(TransferProgress {
             device_id,

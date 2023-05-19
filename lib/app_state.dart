@@ -45,7 +45,33 @@ class KnownStationsModel extends ChangeNotifier {
       notifyListeners();
     });
 
+    dispatcher.addListener<DomainMessage_TransferProgress>((transferProgress) {
+      applyTransferProgress(transferProgress.field0);
+    });
+
     _load();
+  }
+
+  void applyTransferProgress(TransferProgress transferProgress) {
+    final deviceId = transferProgress.deviceId;
+    debugPrint("$deviceId transfer ${transferProgress.status}");
+    final station = findOrCreate(deviceId);
+    station.connected = true;
+    switch (transferProgress.status) {
+      case TransferStatus.Starting:
+        station.syncing = SyncingProgress(progress: transferProgress);
+        break;
+      case TransferStatus.Transferring:
+        station.syncing = SyncingProgress(progress: transferProgress);
+        break;
+      case TransferStatus.Failed:
+        station.syncing = SyncingProgress(progress: transferProgress);
+        break;
+      case TransferStatus.Done:
+        station.syncing = null;
+        break;
+    }
+    notifyListeners();
   }
 
   void _load() async {
@@ -79,7 +105,7 @@ class KnownStationsModel extends ChangeNotifier {
     }
 
     final progress = await api.startDownload(deviceId: deviceId);
-    station.syncing = SyncingProgress(progress: progress);
+    applyTransferProgress(progress);
   }
 
   Future<void> startUpload({required String deviceId}) async {
@@ -95,7 +121,7 @@ class KnownStationsModel extends ChangeNotifier {
     }
 
     final progress = await api.startUpload(deviceId: deviceId);
-    station.syncing = SyncingProgress(progress: progress);
+    applyTransferProgress(progress);
   }
 }
 

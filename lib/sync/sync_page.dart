@@ -82,14 +82,24 @@ class StationSyncStatus extends StatelessWidget {
             dense: false,
             onTap: () {},
           ),
-          Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: ElevatedButton(onPressed: onDownload, child: const Text("Download"))),
-          Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: ElevatedButton(onPressed: onUpload, child: const Text("Upload")))
+          buildLower(context)
         ]));
+  }
+
+  Widget buildLower(BuildContext context) {
+    if (station.syncing == null) {
+      return Column(children: [
+        Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: ElevatedButton(onPressed: onDownload, child: const Text("Download"))),
+        Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: ElevatedButton(onPressed: onUpload, child: const Text("Upload")))
+      ]);
+    }
+
+    return const Column(children: [Text("Busy")]);
   }
 }
