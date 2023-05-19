@@ -2,5 +2,11 @@
   "helloWorld": "Hello World!",
   "@helloWorld": {
     "description": "The conventional newborn programmer greeting"
-  }
+  },
+  "dataSync": "Data Sync",
+  "download": "Download",
+  "upload": "Upload",
+  "stationsTab": "Stations",
+  "dataSyncTab": "Data",
+  "settingsTab": "Settings"
 }

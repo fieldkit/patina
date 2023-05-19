@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state.dart';
@@ -20,7 +21,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final state = context.read<AppState>();
-    debugPrint("home:build $state");
 
     return Scaffold(
       body: SafeArea(
@@ -42,18 +42,18 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Stations',
+            icon: const Icon(Icons.home),
+            label: AppLocalizations.of(context)!.stationsTab,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Data',
+            icon: const Icon(Icons.business),
+            label: AppLocalizations.of(context)!.dataSyncTab,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.computer),
-            label: 'Settings',
+            icon: const Icon(Icons.computer),
+            label: AppLocalizations.of(context)!.settingsTab,
           ),
         ],
         currentIndex: _pageIndex,

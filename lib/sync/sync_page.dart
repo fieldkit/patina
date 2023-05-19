@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
 import '../gen/ffi.dart';
@@ -50,7 +51,7 @@ class DataSyncPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Data Sync'),
+          title: Text(AppLocalizations.of(context)!.dataSync),
         ),
         body: ListView(children: stations));
   }
@@ -92,11 +93,11 @@ class StationSyncStatus extends StatelessWidget {
         Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 10),
-            child: ElevatedButton(onPressed: onDownload, child: const Text("Download"))),
+            child: ElevatedButton(onPressed: onDownload, child: Text(AppLocalizations.of(context)!.download))),
         Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 10),
-            child: ElevatedButton(onPressed: onUpload, child: const Text("Upload")))
+            child: ElevatedButton(onPressed: onUpload, child: Text(AppLocalizations.of(context)!.upload)))
       ]);
     }
 
