@@ -228,6 +228,19 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
+		5A0BA0F2657325A2AE344C45 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				206AC29D0FF194F7983106EC /* Pods-Runner.debug.xcconfig */,
+				AFDF2DB62ADACA54293D9DA1 /* Pods-Runner.release.xcconfig */,
+				87A37B1153CFA364062F2B49 /* Pods-Runner.profile.xcconfig */,
+				EACCBB30778648E9F47B32AD /* Pods-RunnerTests.debug.xcconfig */,
+				BFC72AA2F4CC34C49DB2868B /* Pods-RunnerTests.release.xcconfig */,
+				0C3AEC2F3DE4A2963635589A /* Pods-RunnerTests.profile.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		8A2A4A79290D883A003F8897 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -244,20 +257,6 @@
 				A35253552866B29F00EFD9C6 /* libnative_static.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		5A0BA0F2657325A2AE344C45 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				206AC29D0FF194F7983106EC /* Pods-Runner.debug.xcconfig */,
-				AFDF2DB62ADACA54293D9DA1 /* Pods-Runner.release.xcconfig */,
-				87A37B1153CFA364062F2B49 /* Pods-Runner.profile.xcconfig */,
-				EACCBB30778648E9F47B32AD /* Pods-RunnerTests.debug.xcconfig */,
-				BFC72AA2F4CC34C49DB2868B /* Pods-RunnerTests.release.xcconfig */,
-				0C3AEC2F3DE4A2963635589A /* Pods-RunnerTests.profile.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
 			sourceTree = "<group>";
 		};
 		D73912EC22F37F3D000D13A0 /* Frameworks */ = {
@@ -676,7 +675,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/DebugProfile.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = ZMG583YLW7;
@@ -685,6 +684,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.fieldkit.patina;
 				PRODUCT_NAME = FieldKit;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = Runner/bridge_generated.h;
@@ -806,7 +806,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/DebugProfile.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = ZMG583YLW7;
@@ -815,6 +815,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.fieldkit.patina;
 				PRODUCT_NAME = FieldKit;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = Runner/bridge_generated.h;
@@ -830,7 +831,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Release.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = ZMG583YLW7;
@@ -839,6 +840,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.fieldkit.patina;
 				PRODUCT_NAME = FieldKit;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = Runner/bridge_generated.h;
