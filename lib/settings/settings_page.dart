@@ -205,6 +205,7 @@ class _AccountState extends State<AccountForm> {
           children: [
             FormBuilderTextField(
               name: 'email',
+              decoration: const InputDecoration(labelText: 'Email'),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
                 FormBuilderValidators.email(),
@@ -212,6 +213,7 @@ class _AccountState extends State<AccountForm> {
             ),
             FormBuilderTextField(
               name: 'password',
+              decoration: const InputDecoration(labelText: 'Password'),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
                 FormBuilderValidators.minLength(10),
