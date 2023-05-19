@@ -107,6 +107,11 @@ class _OurAppState extends State<OurApp> {
 }
 
 void main() async {
+  // Necessary so we can call path_provider from startup, otherwise this is done
+  // inside runApp. 'The "instance" getter on the ServicesBinding binding mixin
+  // is only available once that binding has been initialized.'
+  WidgetsFlutterBinding.ensureInitialized();
+
   var env = await initializeCurrentEnv(AppEventDispatcher());
 
   debugPrint("initialized: $env");
