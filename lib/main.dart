@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_rust_bridge_template/settings/accounts_page.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -96,13 +97,14 @@ class _OurAppState extends State<OurApp> {
         providers: [
           ValueListenableProvider.value(value: widget.env.appState),
         ],
-        child: MaterialApp(
+        child: ProvideAccountsWidget(
+            child: MaterialApp(
           title: 'FieldKit',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
           home: const HomePage(),
-        ));
+        )));
   }
 }
 
