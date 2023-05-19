@@ -235,9 +235,15 @@ class PortalAccounts extends ChangeNotifier {
       final tokens = iter.tokens;
       if (tokens != null) {
         final validated = await api.validateTokens(tokens: Tokens(token: tokens.token));
-        _accounts.add(PortalAccount(email: iter.email, tokens: tokens, active: iter.active, valid: validated != null));
+        if (validated == null) {
+          _accounts.add(PortalAccount(email: iter.email, tokens: null, active: iter.active, valid: false));
+        } else {
+          _accounts.add(PortalAccount(
+              email: iter.email, tokens: PortalTokens(token: tokens.token, refresh: tokens.refresh), active: iter.active, valid: true));
+        }
       }
     }
+    await save();
     notifyListeners();
     return this;
   }

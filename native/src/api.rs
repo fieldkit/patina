@@ -12,7 +12,7 @@ use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{Discovered, Discovery};
-use query::portal::Tokens as PortalTokens;
+use query::portal::{decode_token, PortalError, StatusCode, Tokens as PortalTokens};
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
@@ -293,15 +293,33 @@ impl Sdk {
     async fn validate_tokens(&self, tokens: Tokens) -> Result<Option<Tokens>> {
         let client = query::portal::Client::new()?;
         let client = client.to_authenticated(PortalTokens {
-            token: tokens.token,
-            refresh: tokens.refresh,
+            token: tokens.token.clone(),
+            refresh: tokens.refresh.clone(),
         })?;
 
-        let ourselves = client.query_ourselves().await?;
+        match client.query_ourselves().await {
+            Ok(ourselves) => {
+                info!("{:?} {:?}", tokens.refresh_token(), ourselves);
+                Ok(Some(tokens))
+                // Ok(self.refresh_tokens(tokens).await?)
+            }
+            Err(PortalError::HttpStatus(StatusCode::UNAUTHORIZED)) => {
+                Ok(self.refresh_tokens(tokens).await?)
+            }
+            Err(e) => Err(e.into()),
+        }
+    }
 
-        info!("{:?}", ourselves);
-
-        Ok(None)
+    async fn refresh_tokens(&self, tokens: Tokens) -> Result<Option<Tokens>> {
+        let refresh_token = tokens.refresh_token()?;
+        let client = query::portal::Client::new()?;
+        Ok(client
+            .use_refresh_token(&refresh_token)
+            .await?
+            .map(|t| Tokens {
+                token: t.token,
+                refresh: t.refresh,
+            }))
     }
 
     async fn start_download(&self, device_id: String) -> Result<TransferProgress> {
@@ -373,6 +391,12 @@ pub fn start_upload(device_id: String) -> Result<TransferProgress> {
 pub struct Tokens {
     pub token: String,
     pub refresh: Option<String>,
+}
+
+impl Tokens {
+    pub fn refresh_token(&self) -> Result<String> {
+        Ok(decode_token(&self.token)?.refresh_token)
+    }
 }
 
 #[derive(Debug)]
