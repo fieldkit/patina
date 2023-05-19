@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_rust_bridge_template/settings/accounts_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -100,6 +102,16 @@ class _OurAppState extends State<OurApp> {
         child: ProvideAccountsWidget(
             child: MaterialApp(
           title: 'FieldKit',
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('es'),
+          ],
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
