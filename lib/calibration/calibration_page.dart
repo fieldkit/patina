@@ -75,7 +75,7 @@ class CalibrationPage extends StatelessWidget {
           return CalibrationWait(
               config: config,
               sensor: sensor,
-              canContinue: canContinue(sensor, countdown) == CanContinue.yes,
+              canContinue: canContinue(sensor, countdown),
               onCalibrateAndContinue: () => calibrateAndContinue(context, sensor));
         })));
   }
@@ -85,10 +85,21 @@ class CalibrationWait extends StatelessWidget {
   final CalibrationPointConfig config;
   final SensorConfig sensor;
   final VoidCallback onCalibrateAndContinue;
-  final bool canContinue;
+  final CanContinue canContinue;
 
   const CalibrationWait(
       {super.key, required this.config, required this.sensor, required this.onCalibrateAndContinue, required this.canContinue});
+
+  Widget continueWidget() {
+    switch (canContinue) {
+      case CanContinue.yes:
+        return ElevatedButton(onPressed: () => onCalibrateAndContinue(), child: const Text("Calibrate"));
+      case CanContinue.timer:
+        return const ElevatedButton(onPressed: null, child: Text("Waiting on Timer "));
+      case CanContinue.staleValue:
+        return const ElevatedButton(onPressed: null, child: Text("Waiting for Fresh Reading"));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +109,7 @@ class CalibrationWait extends StatelessWidget {
         standard: config.standard!,
       ),
       const DisplayCountdown(),
-      ElevatedButton(onPressed: canContinue ? () => onCalibrateAndContinue() : null, child: const Text("Calibrate"))
+      continueWidget(),
     ];
 
     return Center(
