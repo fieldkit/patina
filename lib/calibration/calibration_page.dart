@@ -47,46 +47,56 @@ class CalibrationPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Calibration"),
+        appBar: AppBar(
+          title: const Text("Calibration"),
+        ),
+        body: ProvideCountdown(
+            child: CalibrationWait(
+                config: config, sensor: sensor, canContinue: true, onCalibrateAndContinue: () => calibrateAndContinue(context, sensor))));
+  }
+}
+
+class CalibrationWait extends StatelessWidget {
+  final CalibrationPointConfig config;
+  final SensorConfig sensor;
+  final VoidCallback onCalibrateAndContinue;
+  final bool canContinue;
+
+  const CalibrationWait(
+      {super.key, required this.config, required this.sensor, required this.onCalibrateAndContinue, required this.canContinue});
+
+  @override
+  Widget build(BuildContext context) {
+    final children = [
+      ReadingAndStandard(
+        sensor: sensor,
+        standard: config.standard!,
       ),
-      body: ProvideCountdown(
-          child: Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ReadingAndStandard(
-                      moduleIdentity: config.moduleIdentity,
-                      standard: config.standard!,
-                    ),
-                    const DisplayCountdown(),
-                    ElevatedButton(onPressed: () => calibrateAndContinue(context, sensor), child: const Text("Calibrate"))
-                  ]
-                      .map((e) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: e,
-                          ))
-                      .toList()))),
-    );
+      const DisplayCountdown(),
+      ElevatedButton(onPressed: canContinue ? () => onCalibrateAndContinue() : null, child: const Text("Calibrate"))
+    ];
+
+    return Center(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: children
+                .map((e) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: e,
+                    ))
+                .toList()));
   }
 }
 
 class ReadingAndStandard extends StatelessWidget {
-  final ModuleIdentity moduleIdentity;
+  final SensorConfig sensor;
   final Standard standard;
 
-  const ReadingAndStandard({super.key, required this.moduleIdentity, required this.standard});
+  const ReadingAndStandard({super.key, required this.sensor, required this.standard});
 
   @override
   Widget build(BuildContext context) {
-    final knownStations = context.watch<KnownStationsModel>();
-    final module = knownStations.findModule(moduleIdentity);
-    final sensor = module?.calibrationSensor;
-    if (sensor == null) {
-      return const OopsBug();
-    }
-
     final localized = LocalizedSensor.get(sensor);
     final sensorValue = DisplaySensorValue(sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
     return Column(children: [
