@@ -1,18 +1,31 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CountdownTimer {
   static const Duration period = Duration(seconds: 1);
-  static const int expectedTicks = 120;
+  static const Duration expected = Duration(seconds: 120);
+  static const Duration trailing = Duration(seconds: 5);
 
-  final int elapsed;
+  final DateTime started;
+  final DateTime now = DateTime.now().toUtc();
+  final Duration elapsed;
 
-  bool get done => elapsed >= expectedTicks;
+  bool get done => elapsed >= expected;
 
-  CountdownTimer({required this.elapsed});
+  DateTime get finished => started.add(expected);
+
+  bool get wasDone {
+    final finallyDone = started.add(expected).add(trailing);
+    debugPrint("$started $now ${now.difference(started)} $finallyDone");
+    return now.isAfter(finallyDone);
+  }
+
+  CountdownTimer({required this.started, required this.elapsed});
 
   String toStringRemaining() {
-    return toMinutesSecondsString(expectedTicks - elapsed);
+    return toMinutesSecondsString([(expected - elapsed).inSeconds, 0].reduce(max));
   }
 
   String toMinutesSecondsString(int total) {
@@ -57,11 +70,16 @@ class ProvideCountdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final started = DateTime.now().toUtc();
     return StreamProvider(
-        initialData: CountdownTimer(elapsed: 0),
+        initialData: CountdownTimer(started: started, elapsed: Duration.zero),
         create: (BuildContext context) {
-          return Stream<CountdownTimer>.periodic(CountdownTimer.period, (c) => CountdownTimer(elapsed: c + 1))
-              .take(CountdownTimer.expectedTicks);
+          return Stream<CountdownTimer>.periodic(
+              CountdownTimer.period,
+              (c) => CountdownTimer(
+                    started: started,
+                    elapsed: Duration(seconds: c + 1),
+                  )).takeWhile((e) => !e.wasDone);
         },
         child: child);
   }

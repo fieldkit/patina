@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../app_state.dart';
 import 'countdown.dart';
 
+enum CanContinue { timer, staleValue, yes }
+
 class CalibrationPage extends StatelessWidget {
   final CurrentCalibration? current;
   final CalibrationPointConfig config;
@@ -37,6 +39,25 @@ class CalibrationPage extends StatelessWidget {
     }
   }
 
+  CanContinue canContinue(SensorConfig sensor, CountdownTimer countdown) {
+    final finished = countdown.finished;
+    debugPrint("$finished");
+    debugPrint("${sensor.value?.time}");
+
+    if (countdown.done) {
+      final time = sensor.value?.time;
+      if (time == null) {
+        return CanContinue.staleValue;
+      } else {
+        if (time.isAfter(countdown.finished)) {
+          return CanContinue.yes;
+        }
+        return CanContinue.staleValue;
+      }
+    }
+    return CanContinue.timer;
+  }
+
   @override
   Widget build(BuildContext context) {
     final knownStations = context.watch<KnownStationsModel>();
@@ -54,7 +75,7 @@ class CalibrationPage extends StatelessWidget {
           return CalibrationWait(
               config: config,
               sensor: sensor,
-              canContinue: countdown.done,
+              canContinue: canContinue(sensor, countdown) == CanContinue.yes,
               onCalibrateAndContinue: () => calibrateAndContinue(context, sensor));
         })));
   }
