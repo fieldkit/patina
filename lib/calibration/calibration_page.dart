@@ -50,9 +50,13 @@ class CalibrationPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Calibration"),
         ),
-        body: ProvideCountdown(
-            child: CalibrationWait(
-                config: config, sensor: sensor, canContinue: true, onCalibrateAndContinue: () => calibrateAndContinue(context, sensor))));
+        body: ProvideCountdown(child: Consumer<CountdownTimer>(builder: (context, countdown, child) {
+          return CalibrationWait(
+              config: config,
+              sensor: sensor,
+              canContinue: countdown.done,
+              onCalibrateAndContinue: () => calibrateAndContinue(context, sensor));
+        })));
   }
 }
 
