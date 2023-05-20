@@ -131,15 +131,6 @@ class CurrentCalibration {
   String toString() => _points.toString();
 }
 
-class OopsBug extends StatelessWidget {
-  const OopsBug({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text("Oops, bug!?");
-  }
-}
-
 class CalibrationPointConfig {
   final ModuleIdentity moduleIdentity;
   final List<Standard> standardsRemaining;
@@ -162,4 +153,13 @@ class Standard {
 
   @override
   String toString() => "Standard($value)";
+}
+
+class OopsBug extends StatelessWidget {
+  const OopsBug({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text("Oops, bug!?");
+  }
 }

@@ -39,9 +39,10 @@ class DisplayCountdown extends StatelessWidget {
           color: Colors.grey,
         ),
         Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(countdown.toStringRemaining(), style: const TextStyle(fontSize: 18)),
-            const Text("min sec", style: TextStyle(fontSize: 18))
+            const Text("min sec", style: TextStyle(fontSize: 14))
           ],
         )
       ],
