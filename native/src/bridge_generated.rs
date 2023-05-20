@@ -225,7 +225,12 @@ impl support::IntoDartExceptPrimitive for SensorConfig {}
 
 impl support::IntoDart for SensorValue {
     fn into_dart(self) -> support::DartAbi {
-        vec![self.value.into_dart(), self.uncalibrated.into_dart()].into_dart()
+        vec![
+            self.time.into_dart(),
+            self.value.into_dart(),
+            self.uncalibrated.into_dart(),
+        ]
+        .into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for SensorValue {}

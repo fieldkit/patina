@@ -507,6 +507,7 @@ pub struct SensorConfig {
 
 #[derive(Clone, Debug)]
 pub struct SensorValue {
+    pub time: DateTime<Utc>,
     pub value: f32,
     pub uncalibrated: f32,
 }
@@ -580,6 +581,7 @@ impl TryInto<StationConfig> for StationAndConnection {
                             calibrated_uom: sensor.calibrated_uom,
                             uncalibrated_uom: sensor.uncalibrated_uom,
                             value: sensor.value.map(|v| SensorValue {
+                                time: v.time,
                                 value: v.value,
                                 uncalibrated: v.uncalibrated,
                             }),

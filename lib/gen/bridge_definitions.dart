@@ -135,10 +135,12 @@ class SensorConfig {
 }
 
 class SensorValue {
+  final DateTime time;
   final double value;
   final double uncalibrated;
 
   const SensorValue({
+    required this.time,
     required this.value,
     required this.uncalibrated,
   });

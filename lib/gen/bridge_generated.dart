@@ -341,11 +341,12 @@ class NativeImpl implements Native {
 
   SensorValue _wire2api_sensor_value(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
     return SensorValue(
-      value: _wire2api_f32(arr[0]),
-      uncalibrated: _wire2api_f32(arr[1]),
+      time: _wire2api_Chrono_Utc(arr[0]),
+      value: _wire2api_f32(arr[1]),
+      uncalibrated: _wire2api_f32(arr[2]),
     );
   }
 
