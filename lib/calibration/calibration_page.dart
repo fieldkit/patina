@@ -1,19 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rust_bridge_template/gen/ffi.dart';
 import 'package:flutter_rust_bridge_template/meta.dart';
-import 'package:flutter_rust_bridge_template/view_station/sensor_widgets.dart' as sensor_widgets;
+import 'package:flutter_rust_bridge_template/view_station/sensor_widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../app_state.dart';
 import 'countdown.dart';
 
 class CalibrationPage extends StatelessWidget {
-  final ModuleIdentity moduleIdentity;
+  final CurrentCalibration? current;
+  final CalibrationPointConfig config;
 
-  const CalibrationPage({super.key, required this.moduleIdentity});
+  const CalibrationPage({super.key, this.current, required this.config});
+
+  Future<void> calibrateAndContinue(BuildContext context, SensorConfig sensor) async {
+    final current = this.current ?? CurrentCalibration();
+    final standard = config.standard!;
+
+    current.addPoint(CalibrationPoint(standard: standard, reading: sensor.value!));
+
+    debugPrint("calibration: $current");
+
+    final nextConfig = config.popStandard();
+    if (nextConfig.done) {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CalibrationPage(
+            config: nextConfig,
+            current: current,
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final knownStations = context.watch<KnownStationsModel>();
+    final module = knownStations.findModule(config.moduleIdentity);
+    final sensor = module?.calibrationSensor;
+    if (sensor == null) {
+      return const OopsBug();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Calibration"),
@@ -25,9 +57,11 @@ class CalibrationPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ReadingAndStandard(
-                      moduleIdentity: moduleIdentity,
+                      moduleIdentity: config.moduleIdentity,
+                      standard: config.standard!,
                     ),
-                    const DisplayCountdown()
+                    const DisplayCountdown(),
+                    ElevatedButton(onPressed: () => calibrateAndContinue(context, sensor), child: const Text("Calibrate"))
                   ]
                       .map((e) => Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
@@ -40,8 +74,9 @@ class CalibrationPage extends StatelessWidget {
 
 class ReadingAndStandard extends StatelessWidget {
   final ModuleIdentity moduleIdentity;
+  final Standard standard;
 
-  const ReadingAndStandard({super.key, required this.moduleIdentity});
+  const ReadingAndStandard({super.key, required this.moduleIdentity, required this.standard});
 
   @override
   Widget build(BuildContext context) {
@@ -53,18 +88,48 @@ class ReadingAndStandard extends StatelessWidget {
     }
 
     final localized = LocalizedSensor.get(sensor);
-    final sensorValue = sensor_widgets.SensorValue(sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
-    return Column(children: [sensorValue]);
+    final sensorValue = DisplaySensorValue(sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
+    return Column(children: [
+      sensorValue,
+      Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color.fromRGBO(212, 212, 212, 1),
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(5))),
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              "${standard.value} Standard Value (${sensor.calibratedUom})",
+            ),
+          ))
+    ]);
   }
 }
 
-class StartCalibration {
-  final SensorConfig sensor;
+class CalibrationPoint {
+  final Standard standard;
+  final SensorValue reading;
 
-  StartCalibration({required this.sensor});
+  CalibrationPoint({required this.standard, required this.reading});
+
+  @override
+  String toString() {
+    return "CP($standard, ${reading.toDisplayString()})";
+  }
 }
 
-class CurrentCalibration extends ChangeNotifier {}
+class CurrentCalibration {
+  final List<CalibrationPoint> _points = List.empty(growable: true);
+
+  void addPoint(CalibrationPoint point) {
+    _points.add(point);
+  }
+
+  @override
+  String toString() => _points.toString();
+}
 
 class OopsBug extends StatelessWidget {
   const OopsBug({super.key});
@@ -73,4 +138,28 @@ class OopsBug extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Text("Oops, bug!?");
   }
+}
+
+class CalibrationPointConfig {
+  final ModuleIdentity moduleIdentity;
+  final List<Standard> standardsRemaining;
+
+  Standard? get standard => standardsRemaining.first;
+
+  bool get done => standardsRemaining.isEmpty;
+
+  CalibrationPointConfig({required this.moduleIdentity, required this.standardsRemaining});
+
+  CalibrationPointConfig popStandard() {
+    return CalibrationPointConfig(moduleIdentity: moduleIdentity, standardsRemaining: standardsRemaining.skip(1).toList());
+  }
+}
+
+class Standard {
+  final double value;
+
+  Standard(this.value);
+
+  @override
+  String toString() => "Standard($value)";
 }

@@ -6,12 +6,12 @@ import 'package:intl/intl.dart';
 import '../gen/ffi.dart';
 import '../meta.dart';
 
-class SensorValue extends StatelessWidget {
+class DisplaySensorValue extends StatelessWidget {
   final SensorConfig sensor;
   final LocalizedSensor localized;
   final MainAxisSize mainAxisSize;
 
-  const SensorValue({super.key, required this.sensor, required this.localized, this.mainAxisSize = MainAxisSize.max});
+  const DisplaySensorValue({super.key, required this.sensor, required this.localized, this.mainAxisSize = MainAxisSize.max});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class SensorInfo extends StatelessWidget {
             child: Container(
                 padding: const EdgeInsets.all(6),
                 child: Column(children: [
-                  Container(padding: const EdgeInsets.only(bottom: 8), child: SensorValue(sensor: sensor, localized: localized)),
+                  Container(padding: const EdgeInsets.only(bottom: 8), child: DisplaySensorValue(sensor: sensor, localized: localized)),
                   Row(children: [Text(localized.name)])
                 ]))));
   }
@@ -130,7 +130,9 @@ class ModuleInfo extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CalibrationPage(moduleIdentity: module.identity),
+                      builder: (context) => CalibrationPage(
+                          config: CalibrationPointConfig(
+                              moduleIdentity: module.identity, standardsRemaining: [Standard(4), Standard(7), Standard(10)])),
                     ),
                   );
                 },
