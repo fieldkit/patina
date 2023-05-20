@@ -18,60 +18,43 @@ class CalibrationPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Calibration"),
       ),
-      body: ProvideModuleByIdentity(
-          moduleIdentity: moduleIdentity,
-          child: ProvideCountdown(
-              child: Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [const ReadingAndStandard(), const DisplayCountdown()]
-                          .map((e) => Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                                child: e,
-                              ))
-                          .toList())))),
+      body: ProvideCountdown(
+          child: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ReadingAndStandard(
+                      moduleIdentity: moduleIdentity,
+                    ),
+                    const DisplayCountdown()
+                  ]
+                      .map((e) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: e,
+                          ))
+                      .toList()))),
     );
   }
 }
 
 class ReadingAndStandard extends StatelessWidget {
-  const ReadingAndStandard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<ModuleConfig>(builder: (context, module, child) {
-      final sensor = module.calibrationSensor;
-      if (sensor == null) {
-        return const OopsBug();
-      } else {
-        final localized = LocalizedSensor.get(sensor);
-        final sensorValue = sensor_widgets.SensorValue(sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
-        return Column(children: [sensorValue, Text(module.key)]);
-      }
-    });
-  }
-}
-
-class ProvideModuleByIdentity extends StatelessWidget {
   final ModuleIdentity moduleIdentity;
-  final Widget child;
 
-  const ProvideModuleByIdentity({super.key, required this.moduleIdentity, required this.child});
+  const ReadingAndStandard({super.key, required this.moduleIdentity});
 
   @override
   Widget build(BuildContext context) {
     final knownStations = context.watch<KnownStationsModel>();
     final module = knownStations.findModule(moduleIdentity);
-    if (module == null) {
+    final sensor = module?.calibrationSensor;
+    if (sensor == null) {
       return const OopsBug();
-    } else {
-      return Provider<ModuleConfig>(
-        create: (context) => module,
-        dispose: (context, value) => {},
-        child: child,
-      );
     }
+
+    final localized = LocalizedSensor.get(sensor);
+    final sensorValue = sensor_widgets.SensorValue(sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
+    return Column(children: [sensorValue]);
   }
 }
 
