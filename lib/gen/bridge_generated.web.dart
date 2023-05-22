@@ -31,13 +31,27 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
-  String? api2wire_opt_String(String? raw) {
-    return raw == null ? null : api2wire_String(raw);
+  List<dynamic> api2wire_box_autoadd_transmission_token(TransmissionToken raw) {
+    return api2wire_transmission_token(raw);
+  }
+
+  @protected
+  List<dynamic>? api2wire_opt_box_autoadd_transmission_token(
+      TransmissionToken? raw) {
+    return raw == null ? null : api2wire_box_autoadd_transmission_token(raw);
   }
 
   @protected
   List<dynamic> api2wire_tokens(Tokens raw) {
-    return [api2wire_String(raw.token), api2wire_opt_String(raw.refresh)];
+    return [
+      api2wire_String(raw.token),
+      api2wire_opt_box_autoadd_transmission_token(raw.transmission)
+    ];
+  }
+
+  @protected
+  List<dynamic> api2wire_transmission_token(TransmissionToken raw) {
+    return [api2wire_String(raw.token), api2wire_String(raw.url)];
   }
 
   @protected

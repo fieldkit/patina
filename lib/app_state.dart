@@ -169,20 +169,40 @@ class AppEnv {
 
 class PortalTokens {
   final String token;
-  final String? refresh;
+  final PortalTransmissionToken? transmission;
 
-  const PortalTokens({required this.token, this.refresh});
+  const PortalTokens({required this.token, this.transmission});
 
   factory PortalTokens.fromJson(Map<String, dynamic> data) {
     final token = data['token'] as String;
-    final refresh = data['refresh'] as String?;
+    final transmissionData = data['transmission'] as Map<String, dynamic>?;
+    final transmission = transmissionData != null ? PortalTransmissionToken.fromJson(transmissionData) : null;
 
-    return PortalTokens(token: token, refresh: refresh);
+    return PortalTokens(token: token, transmission: transmission);
   }
 
   Map<String, dynamic> toJson() => {
         'token': token,
-        'refresh': refresh,
+        'transmission': transmission?.toJson(),
+      };
+}
+
+class PortalTransmissionToken {
+  final String token;
+  final String url;
+
+  const PortalTransmissionToken({required this.token, required this.url});
+
+  factory PortalTransmissionToken.fromJson(Map<String, dynamic> data) {
+    final token = data['token'] as String;
+    final url = data['url'] as String;
+
+    return PortalTransmissionToken(token: token, url: url);
+  }
+
+  Map<String, dynamic> toJson() => {
+        'token': token,
+        'url': url,
       };
 }
 
@@ -266,7 +286,11 @@ class PortalAccounts extends ChangeNotifier {
   Future<PortalAccount?> addOrUpdate(String email, String password) async {
     final tokens = await api.authenticatePortal(email: email, password: password);
     if (tokens != null) {
-      final portalTokens = PortalTokens(token: tokens.token, refresh: tokens.refresh);
+      final portalTokens = PortalTokens(
+          token: tokens.token,
+          transmission: tokens.transmission != null
+              ? PortalTransmissionToken(token: tokens.transmission!.token, url: tokens.transmission!.url)
+              : null);
       final account = PortalAccount(email: email, tokens: portalTokens, active: true, valid: true);
       _accounts.add(account);
       await save();
@@ -308,7 +332,7 @@ class PortalAccounts extends ChangeNotifier {
         if (validated == null) {
           _accounts.add(PortalAccount(email: iter.email, tokens: null, active: iter.active, valid: false));
         } else {
-          final portalTokens = PortalTokens(token: tokens.token, refresh: tokens.refresh);
+          final portalTokens = PortalTokens(token: tokens.token, transmission: tokens.transmission);
           _accounts.add(PortalAccount(email: iter.email, tokens: portalTokens, active: iter.active, valid: true));
         }
       }

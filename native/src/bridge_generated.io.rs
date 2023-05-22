@@ -53,6 +53,11 @@ pub extern "C" fn new_box_autoadd_tokens_0() -> *mut wire_Tokens {
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_transmission_token_0() -> *mut wire_TransmissionToken {
+    support::new_leak_box_ptr(wire_TransmissionToken::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_uint_8_list_0(len: i32) -> *mut wire_uint_8_list {
     let ans = wire_uint_8_list {
         ptr: support::new_leak_vec_ptr(Default::default(), len),
@@ -77,12 +82,26 @@ impl Wire2Api<Tokens> for *mut wire_Tokens {
         Wire2Api::<Tokens>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<TransmissionToken> for *mut wire_TransmissionToken {
+    fn wire2api(self) -> TransmissionToken {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<TransmissionToken>::wire2api(*wrap).into()
+    }
+}
 
 impl Wire2Api<Tokens> for wire_Tokens {
     fn wire2api(self) -> Tokens {
         Tokens {
             token: self.token.wire2api(),
-            refresh: self.refresh.wire2api(),
+            transmission: self.transmission.wire2api(),
+        }
+    }
+}
+impl Wire2Api<TransmissionToken> for wire_TransmissionToken {
+    fn wire2api(self) -> TransmissionToken {
+        TransmissionToken {
+            token: self.token.wire2api(),
+            url: self.url.wire2api(),
         }
     }
 }
@@ -101,7 +120,14 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
 #[derive(Clone)]
 pub struct wire_Tokens {
     token: *mut wire_uint_8_list,
-    refresh: *mut wire_uint_8_list,
+    transmission: *mut wire_TransmissionToken,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_TransmissionToken {
+    token: *mut wire_uint_8_list,
+    url: *mut wire_uint_8_list,
 }
 
 #[repr(C)]
@@ -127,12 +153,27 @@ impl NewWithNullPtr for wire_Tokens {
     fn new_with_null_ptr() -> Self {
         Self {
             token: core::ptr::null_mut(),
-            refresh: core::ptr::null_mut(),
+            transmission: core::ptr::null_mut(),
         }
     }
 }
 
 impl Default for wire_Tokens {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
+impl NewWithNullPtr for wire_TransmissionToken {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            token: core::ptr::null_mut(),
+            url: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl Default for wire_TransmissionToken {
     fn default() -> Self {
         Self::new_with_null_ptr()
     }

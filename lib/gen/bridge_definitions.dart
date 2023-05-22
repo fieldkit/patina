@@ -188,11 +188,11 @@ class StreamInfo {
 
 class Tokens {
   final String token;
-  final String? refresh;
+  final TransmissionToken? transmission;
 
   const Tokens({
     required this.token,
-    this.refresh,
+    this.transmission,
   });
 }
 
@@ -218,5 +218,15 @@ class TransmissionConfig {
 
   const TransmissionConfig({
     required this.enabled,
+  });
+}
+
+class TransmissionToken {
+  final String token;
+  final String url;
+
+  const TransmissionToken({
+    required this.token,
+    required this.url,
   });
 }

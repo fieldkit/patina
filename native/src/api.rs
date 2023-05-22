@@ -287,11 +287,17 @@ impl Sdk {
         let client = query::portal::Client::new()?;
         let tokens = client
             .login(query::portal::LoginPayload { email, password })
-            .await?;
+            .await?
+            .ok_or_else(|| anyhow::anyhow!("Tokens are required."))?;
+        let authenticated = client.to_authenticated(tokens.clone())?;
+        let transmission = authenticated.issue_transmission_token().await?;
 
-        Ok(tokens.map(|t| Tokens {
-            token: t.token,
-            refresh: t.refresh,
+        Ok(Some(Tokens {
+            token: tokens.token,
+            transmission: Some(transmission).map(|t| TransmissionToken {
+                token: t.token,
+                url: t.url,
+            }),
         }))
     }
 
@@ -299,7 +305,6 @@ impl Sdk {
         let client = query::portal::Client::new()?;
         let client = client.to_authenticated(PortalTokens {
             token: tokens.token.clone(),
-            refresh: tokens.refresh.clone(),
         })?;
 
         match client.query_ourselves().await {
@@ -321,13 +326,19 @@ impl Sdk {
         if true {
             Ok(None)
         } else {
-            Ok(client
+            let tokens = client
                 .use_refresh_token(&refresh_token)
                 .await?
-                .map(|t| Tokens {
+                .ok_or_else(|| anyhow::anyhow!("Tokens are required."))?;
+            let authenticated = client.to_authenticated(tokens.clone())?;
+            let transmission = authenticated.issue_transmission_token().await?;
+            Ok(Some(Tokens {
+                token: tokens.token,
+                transmission: Some(transmission).map(|t| TransmissionToken {
                     token: t.token,
-                    refresh: t.refresh,
-                }))
+                    url: t.url,
+                }),
+            }))
         }
     }
 
@@ -424,7 +435,13 @@ pub fn start_upload(device_id: String) -> Result<TransferProgress> {
 #[derive(Debug)]
 pub struct Tokens {
     pub token: String,
-    pub refresh: Option<String>,
+    pub transmission: Option<TransmissionToken>,
+}
+
+#[derive(Debug)]
+pub struct TransmissionToken {
+    pub token: String,
+    pub url: String,
 }
 
 impl Tokens {

@@ -30,8 +30,19 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
-  ffi.Pointer<wire_uint_8_list> api2wire_opt_String(String? raw) {
-    return raw == null ? ffi.nullptr : api2wire_String(raw);
+  ffi.Pointer<wire_TransmissionToken> api2wire_box_autoadd_transmission_token(
+      TransmissionToken raw) {
+    final ptr = inner.new_box_autoadd_transmission_token_0();
+    _api_fill_to_wire_transmission_token(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
+  ffi.Pointer<wire_TransmissionToken>
+      api2wire_opt_box_autoadd_transmission_token(TransmissionToken? raw) {
+    return raw == null
+        ? ffi.nullptr
+        : api2wire_box_autoadd_transmission_token(raw);
   }
 
   @protected
@@ -49,9 +60,27 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     _api_fill_to_wire_tokens(apiObj, wireObj.ref);
   }
 
+  void _api_fill_to_wire_box_autoadd_transmission_token(
+      TransmissionToken apiObj, ffi.Pointer<wire_TransmissionToken> wireObj) {
+    _api_fill_to_wire_transmission_token(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_opt_box_autoadd_transmission_token(
+      TransmissionToken? apiObj, ffi.Pointer<wire_TransmissionToken> wireObj) {
+    if (apiObj != null)
+      _api_fill_to_wire_box_autoadd_transmission_token(apiObj, wireObj);
+  }
+
   void _api_fill_to_wire_tokens(Tokens apiObj, wire_Tokens wireObj) {
     wireObj.token = api2wire_String(apiObj.token);
-    wireObj.refresh = api2wire_opt_String(apiObj.refresh);
+    wireObj.transmission =
+        api2wire_opt_box_autoadd_transmission_token(apiObj.transmission);
+  }
+
+  void _api_fill_to_wire_transmission_token(
+      TransmissionToken apiObj, wire_TransmissionToken wireObj) {
+    wireObj.token = api2wire_String(apiObj.token);
+    wireObj.url = api2wire_String(apiObj.url);
   }
 }
 
@@ -292,6 +321,17 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_tokens_0 = _new_box_autoadd_tokens_0Ptr
       .asFunction<ffi.Pointer<wire_Tokens> Function()>();
 
+  ffi.Pointer<wire_TransmissionToken> new_box_autoadd_transmission_token_0() {
+    return _new_box_autoadd_transmission_token_0();
+  }
+
+  late final _new_box_autoadd_transmission_token_0Ptr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<wire_TransmissionToken> Function()>>(
+      'new_box_autoadd_transmission_token_0');
+  late final _new_box_autoadd_transmission_token_0 =
+      _new_box_autoadd_transmission_token_0Ptr
+          .asFunction<ffi.Pointer<wire_TransmissionToken> Function()>();
+
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
   ) {
@@ -331,10 +371,16 @@ class wire_uint_8_list extends ffi.Struct {
   external int len;
 }
 
+class wire_TransmissionToken extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> token;
+
+  external ffi.Pointer<wire_uint_8_list> url;
+}
+
 class wire_Tokens extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> token;
 
-  external ffi.Pointer<wire_uint_8_list> refresh;
+  external ffi.Pointer<wire_TransmissionToken> transmission;
 }
 
 typedef DartPostCObjectFnType = ffi.Pointer<

@@ -210,6 +210,10 @@ class NativeImpl implements Native {
     return _wire2api_transmission_config(raw);
   }
 
+  TransmissionToken _wire2api_box_autoadd_transmission_token(dynamic raw) {
+    return _wire2api_transmission_token(raw);
+  }
+
   DomainMessage _wire2api_domain_message(dynamic raw) {
     switch (raw[0]) {
       case 0:
@@ -294,10 +298,6 @@ class NativeImpl implements Native {
     );
   }
 
-  String? _wire2api_opt_String(dynamic raw) {
-    return raw == null ? null : _wire2api_String(raw);
-  }
-
   SensitiveConfig? _wire2api_opt_box_autoadd_sensitive_config(dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_sensitive_config(raw);
   }
@@ -313,6 +313,10 @@ class NativeImpl implements Native {
   TransmissionConfig? _wire2api_opt_box_autoadd_transmission_config(
       dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_transmission_config(raw);
+  }
+
+  TransmissionToken? _wire2api_opt_box_autoadd_transmission_token(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_transmission_token(raw);
   }
 
   SensitiveConfig _wire2api_sensitive_config(dynamic raw) {
@@ -391,7 +395,7 @@ class NativeImpl implements Native {
       throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
     return Tokens(
       token: _wire2api_String(arr[0]),
-      refresh: _wire2api_opt_String(arr[1]),
+      transmission: _wire2api_opt_box_autoadd_transmission_token(arr[1]),
     );
   }
 
@@ -415,6 +419,16 @@ class NativeImpl implements Native {
       throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
     return TransmissionConfig(
       enabled: _wire2api_bool(arr[0]),
+    );
+  }
+
+  TransmissionToken _wire2api_transmission_token(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return TransmissionToken(
+      token: _wire2api_String(arr[0]),
+      url: _wire2api_String(arr[1]),
     );
   }
 

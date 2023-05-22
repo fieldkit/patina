@@ -268,7 +268,7 @@ impl support::IntoDartExceptPrimitive for StreamInfo {}
 
 impl support::IntoDart for Tokens {
     fn into_dart(self) -> support::DartAbi {
-        vec![self.token.into_dart(), self.refresh.into_dart()].into_dart()
+        vec![self.token.into_dart(), self.transmission.into_dart()].into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for Tokens {}
@@ -298,6 +298,13 @@ impl support::IntoDart for TransmissionConfig {
     }
 }
 impl support::IntoDartExceptPrimitive for TransmissionConfig {}
+
+impl support::IntoDart for TransmissionToken {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.token.into_dart(), self.url.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for TransmissionToken {}
 
 // Section: executor
 
