@@ -37,7 +37,27 @@ class AccountsPage extends StatelessWidget {
                 await accounts.activate(account);
               },
               onDelete: (account) async {
-                await accounts.delete(account);
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text("Delete Account"),
+                        content: const Text("Are you sure?"),
+                        actions: <Widget>[
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Cancel')),
+                          TextButton(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                await accounts.delete(account);
+                              },
+                              child: const Text('Yes'))
+                        ],
+                      );
+                    });
               }),
         ]));
   }
