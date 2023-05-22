@@ -159,11 +159,10 @@ async fn background_task(nearby: NearbyDevices) {
     let query_stations = tokio::spawn({
         async move {
             loop {
-                sleep(ONE_SECOND).await;
-
                 match nearby.schedule_queries().await {
                     Err(e) => warn!("Schedule queries: {}", e),
-                    _ => {}
+                    Ok(false) => sleep(ONE_SECOND).await,
+                    Ok(true) => {}
                 }
             }
         }

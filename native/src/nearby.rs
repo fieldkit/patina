@@ -48,22 +48,23 @@ impl NearbyDevices {
         }
     }
 
-    pub async fn schedule_queries(&self) -> Result<()> {
+    pub async fn schedule_queries(&self) -> Result<bool> {
         match self.first_station_to_query().await? {
             Some(querying) => match self.query_station(&querying).await {
                 Ok(status) => Ok(self
                     .mark_finished_and_publish_reply(&querying.device_id, status)
-                    .await?),
+                    .await
+                    .map(|_| true)?),
                 Err(e) => {
                     warn!("Query station: {}", e);
 
                     match self.mark_retry(&querying.device_id).await? {
-                        Connection::Connected => Ok(()),
-                        Connection::Lost => Ok(self.publish().await?),
+                        Connection::Connected => Ok(true),
+                        Connection::Lost => Ok(self.publish().await.map(|_| true)?),
                     }
                 }
             },
-            None => Ok(()),
+            None => Ok(false),
         }
     }
 
