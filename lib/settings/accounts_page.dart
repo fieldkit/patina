@@ -210,7 +210,7 @@ class ProvideAccountsWidget extends StatelessWidget {
               child: child,
             );
           } else {
-            return const CircularProgressIndicator();
+            return const Center(child: SizedBox(width: 200, height: 200, child: CircularProgressIndicator()));
           }
         });
   }
