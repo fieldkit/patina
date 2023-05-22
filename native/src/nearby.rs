@@ -70,7 +70,16 @@ impl NearbyDevices {
     async fn add_if_necessary(&self, announce: discovery::Discovered) -> bool {
         let mut devices = self.devices.lock().await;
         let device_id = &announce.device_id;
-        if !devices.contains_key(device_id) {
+        if let Some(connected) = devices.get_mut(device_id) {
+            if connected.is_disconnected() && connected.retry.is_none() {
+                info!("bg:announce: {:?}", connected);
+
+                connected.attempted = None;
+                connected.finished = None;
+            }
+
+            false
+        } else {
             info!("bg:announce: {:?}", announce);
 
             devices.insert(
@@ -86,8 +95,6 @@ impl NearbyDevices {
             );
 
             true
-        } else {
-            false
         }
     }
 
