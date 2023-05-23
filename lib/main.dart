@@ -101,7 +101,7 @@ class _OurAppState extends State<OurApp> {
         ],
         child: ProvideAccountsWidget(
             child: MaterialApp(
-          title: 'FieldKit',
+          onGenerateTitle: (BuildContext context) => AppLocalizations.of(context)!.fieldKit,
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
