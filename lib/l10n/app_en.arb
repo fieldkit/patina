@@ -1,12 +1,24 @@
 {
-  "helloWorld": "Hello World!",
-  "@helloWorld": {
-    "description": "The conventional newborn programmer greeting"
-  },
-  "dataSync": "Data Sync",
-  "download": "Download",
-  "upload": "Upload",
+  "fieldKit": "FieldKit",
+  
   "stationsTab": "Stations",
   "dataSyncTab": "Data",
-  "settingsTab": "Settings"
+  "settingsTab": "Settings",
+
+  "dataSyncTitle": "Data Sync",
+  "download": "Download",
+  "upload": "Upload",
+
+  "myStationsTitle": "My Stations",
+  "readyToDeploy": "Ready to deploy",
+  "contacting": "Contacting...",
+  "unknownStationTitle": "Unknown Station",
+  "backButtonTitle": "Back",
+
+  "calibrationTitle": "Calibration",
+  "calibrateButton": "Calibrate",
+  "waitingOnTimer": "Waiting on Timer",
+  "waitingOnReading": "Waiting for Fresh Reading",
+  "standardValue": "{value} StandardValue ({uom})",
+  "oopsBugTitle": "Oops, bug?"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_rust_bridge_template/gen/ffi.dart';
 import 'package:flutter_rust_bridge_template/meta.dart';
 import 'package:flutter_rust_bridge_template/view_station/sensor_widgets.dart';
@@ -69,7 +70,7 @@ class CalibrationPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Calibration"),
+          title: Text(AppLocalizations.of(context)!.calibrationTitle),
         ),
         body: ProvideCountdown(child: Consumer<CountdownTimer>(builder: (context, countdown, child) {
           return CalibrationWait(
@@ -90,14 +91,14 @@ class CalibrationWait extends StatelessWidget {
   const CalibrationWait(
       {super.key, required this.config, required this.sensor, required this.onCalibrateAndContinue, required this.canContinue});
 
-  Widget continueWidget() {
+  Widget continueWidget(BuildContext context) {
     switch (canContinue) {
       case CanContinue.yes:
-        return ElevatedButton(onPressed: () => onCalibrateAndContinue(), child: const Text("Calibrate"));
+        return ElevatedButton(onPressed: () => onCalibrateAndContinue(), child: Text(AppLocalizations.of(context)!.calibrateButton));
       case CanContinue.timer:
-        return const ElevatedButton(onPressed: null, child: Text("Waiting on Timer "));
+        return ElevatedButton(onPressed: null, child: Text(AppLocalizations.of(context)!.waitingOnTimer));
       case CanContinue.staleValue:
-        return const ElevatedButton(onPressed: null, child: Text("Waiting for Fresh Reading"));
+        return ElevatedButton(onPressed: null, child: Text(AppLocalizations.of(context)!.waitingOnReading));
     }
   }
 
@@ -109,7 +110,7 @@ class CalibrationWait extends StatelessWidget {
         standard: config.standard!,
       ),
       const DisplayCountdown(),
-      continueWidget(),
+      continueWidget(context),
     ];
 
     return Center(
@@ -146,9 +147,7 @@ class ReadingAndStandard extends StatelessWidget {
                 ),
                 borderRadius: const BorderRadius.all(Radius.circular(5))),
             padding: const EdgeInsets.all(8),
-            child: Text(
-              "${standard.value} Standard Value (${sensor.calibratedUom})",
-            ),
+            child: Text(AppLocalizations.of(context)!.standardValue(sensor.calibratedUom, standard.value)),
           ))
     ]);
   }
@@ -206,6 +205,6 @@ class OopsBug extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text("Oops, bug!?");
+    return Text(AppLocalizations.of(context)!.oopsBugTitle);
   }
 }
