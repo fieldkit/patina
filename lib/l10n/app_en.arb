@@ -24,5 +24,9 @@
   "oopsBugTitle": "Oops, bug?",
   "minSec": "min sec",
 
-  "bayNumber": "Bay #{bay}"
+  "bayNumber": "Bay #{bay}",
+  "configureButton": "Configure",
+  "batteryLife": "Battery Life",
+  "memoryUsage": "Memory",
+  "deployButton": "Deploy"
 }

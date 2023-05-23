@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../gen/ffi.dart';
@@ -53,7 +54,7 @@ class ViewStationPage extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text("Configure", style: TextStyle(color: Colors.white)))
+              child: Text(AppLocalizations.of(context)!.configureButton, style: const TextStyle(color: Colors.white)))
         ],
       ),
       body: ListView(children: [
@@ -106,19 +107,19 @@ class HighLevelsDetails extends StatelessWidget {
                 children: [
                   ListTile(
                       leading: Image.asset("resources/images/battery/normal_40.png", cacheWidth: 16),
-                      title: const Text("Battery Life"),
+                      title: Text(AppLocalizations.of(context)!.batteryLife),
                       subtitle: Text("$battery%")),
                   ListTile(
                       leading: Image.asset("resources/images/memory/icon.png", cacheWidth: 16),
-                      title: const Text("Memory"),
-                      subtitle: Text("$bytesUsed bytes of 512MB")),
+                      title: Text(AppLocalizations.of(context)!.memoryUsage),
+                      subtitle: Text("${bytesUsed}b of 512MB")),
                 ],
               ))
             ])),
         Container(
           padding: const EdgeInsets.all(10),
           width: double.infinity,
-          child: ElevatedButton(onPressed: () {}, child: const Text("Deploy")),
+          child: ElevatedButton(onPressed: () {}, child: Text(AppLocalizations.of(context)!.deployButton)),
         ),
         Column(children: modules)
       ],
