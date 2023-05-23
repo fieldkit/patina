@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'gen/ffi.dart';
@@ -48,7 +49,7 @@ class ListStationsPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('My Stations'),
+          title: Text(AppLocalizations.of(context)!.myStationsTitle),
         ),
         body: ListView(children: map + cards));
   }
@@ -73,7 +74,7 @@ class StationCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
           title: Container(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(config.name)),
-          subtitle: const Text("Ready to deploy"),
+          subtitle: Text(AppLocalizations.of(context)!.readyToDeploy),
           trailing: icon,
           dense: false,
           onTap: () {
@@ -95,8 +96,8 @@ class DiscoveringStationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ListTile(
-      title: Text("Contacting..."),
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.contacting),
     );
   }
 }
