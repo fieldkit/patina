@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_rust_bridge_template/app_state.dart';
 import 'package:flutter_rust_bridge_template/calibration/calibration_page.dart';
 import 'package:intl/intl.dart';
@@ -15,7 +16,7 @@ class DisplaySensorValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var valueFormatter = NumberFormat("0.##", "en_US");
+    var valueFormatter = NumberFormat("0.##");
     var valueStyle = const TextStyle(
       fontSize: 18,
       color: Colors.red,
@@ -107,7 +108,7 @@ class ModuleInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localized = LocalizedModule.get(module);
-    final bay = "Bay ${module.position}";
+    final bay = AppLocalizations.of(context)!.bayNumber(module.position);
 
     final List<Widget> sensors = module.sensors.sorted(defaultSensorSorter).map((sensor) {
       return SensorInfo(sensor: sensor);
@@ -137,7 +138,7 @@ class ModuleInfo extends StatelessWidget {
                   );
                 },
                 // style: ElevatedButton.styleFrom(),
-                child: const Text("Calibrate"),
+                child: Text(AppLocalizations.of(context)!.calibrateButton),
               )),
           SensorsGrid(children: sensors),
         ]));
