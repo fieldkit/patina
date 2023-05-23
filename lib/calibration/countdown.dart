@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +56,7 @@ class DisplayCountdown extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(countdown.toStringRemaining(), style: const TextStyle(fontSize: 18)),
-            const Text("min sec", style: TextStyle(fontSize: 14))
+            Text(AppLocalizations.of(context)!.minSec, style: const TextStyle(fontSize: 14))
           ],
         )
       ],

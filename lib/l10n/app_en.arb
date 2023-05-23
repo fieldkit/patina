@@ -21,5 +21,6 @@
   "waitingOnTimer": "Waiting on Timer",
   "waitingOnReading": "Waiting for Fresh Reading",
   "standardValue": "{value} StandardValue ({uom})",
-  "oopsBugTitle": "Oops, bug?"
+  "oopsBugTitle": "Oops, bug?",
+  "minSec": "min sec"
 }
