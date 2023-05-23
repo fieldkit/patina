@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +17,7 @@ class AccountsPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Accounts'),
+          title: Text(AppLocalizations.of(context)!.accountsTitle),
           actions: [
             TextButton(
                 onPressed: () {
@@ -27,7 +28,7 @@ class AccountsPage extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text("Add", style: TextStyle(color: Colors.white)))
+                child: Text(AppLocalizations.of(context)!.accountsAddButton, style: const TextStyle(color: Colors.white)))
           ],
         ),
         body: ListView(children: [
@@ -41,20 +42,20 @@ class AccountsPage extends StatelessWidget {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: const Text("Delete Account"),
-                        content: const Text("Are you sure?"),
+                        title: Text(AppLocalizations.of(context)!.confirmDeleteTitle),
+                        content: Text(AppLocalizations.of(context)!.confirmDelete),
                         actions: <Widget>[
                           TextButton(
                               onPressed: () {
                                 Navigator.pop(context);
                               },
-                              child: const Text('Cancel')),
+                              child: Text(AppLocalizations.of(context)!.confirmCancel)),
                           TextButton(
                               onPressed: () async {
                                 Navigator.pop(context);
                                 await accounts.delete(account);
                               },
-                              child: const Text('Yes'))
+                              child: Text(AppLocalizations.of(context)!.confirmYes))
                         ],
                       );
                     });
@@ -90,6 +91,8 @@ class AccountItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Column(children: [
       ListTile(
         leading: account.active
@@ -107,7 +110,7 @@ class AccountItem extends StatelessWidget {
           onPressed: () {
             onDelete();
           },
-          child: const Text("Delete"))
+          child: Text(localizations.accountDeleteButton))
     ]);
   }
 }
@@ -140,10 +143,11 @@ class _AccountState extends State<AccountForm> {
   @override
   Widget build(BuildContext context) {
     final accounts = context.read<PortalAccounts>();
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Account'),
+        title: Text(AppLocalizations.of(context)!.accountEditTitle),
       ),
       body: FormBuilder(
         key: _formKey,
@@ -152,7 +156,7 @@ class _AccountState extends State<AccountForm> {
           children: [
             FormBuilderTextField(
               name: 'email',
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: localizations.accountEmail),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
                 FormBuilderValidators.email(),
@@ -160,7 +164,7 @@ class _AccountState extends State<AccountForm> {
             ),
             FormBuilderTextField(
               name: 'password',
-              decoration: const InputDecoration(labelText: 'Password'),
+              decoration: InputDecoration(labelText: localizations.accountPassword),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
                 FormBuilderValidators.minLength(10),
@@ -178,13 +182,13 @@ class _AccountState extends State<AccountForm> {
                     navigator.pop();
                     widget.onSave(saved);
                   } else {
-                    messenger.showSnackBar(const SnackBar(
-                      content: Text("Invalid email or password."),
+                    messenger.showSnackBar(SnackBar(
+                      content: Text(localizations.accountFormFail),
                     ));
                   }
                 }
               },
-              child: const Text('Save'),
+              child: Text(localizations.accountSaveButton),
             ),
           ].map((child) => Padding(padding: const EdgeInsets.all(8), child: child)).toList(),
         ),

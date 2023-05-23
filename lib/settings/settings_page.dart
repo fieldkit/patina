@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../reader/widgets.dart';
 import 'accounts_page.dart';
@@ -14,11 +15,11 @@ class SettingsTab extends StatelessWidget {
           builder: (BuildContext context) {
             return Scaffold(
                 appBar: AppBar(
-                  title: const Text('Settings'),
+                  title: Text(AppLocalizations.of(context)!.settingsTitle),
                 ),
                 body: ListView(children: [
                   ListTile(
-                    title: const Text("Accounts"),
+                    title: Text(AppLocalizations.of(context)!.settingsAccounts),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -30,7 +31,7 @@ class SettingsTab extends StatelessWidget {
                   ),
                   const Divider(),
                   ListTile(
-                    title: const Text("Open Flow"),
+                    title: const Text("(DEV) Open Flow"),
                     onTap: () {
                       Navigator.push(
                         context,

@@ -1,3 +1,57 @@
 {
-    "helloWorld": "¡Hola Mundo!"
+  "fieldKit": "FieldKit",
+  
+  "stationsTab": "Stations",
+  "dataSyncTab": "Data",
+  "settingsTab": "Settings",
+
+  "dataSyncTitle": "Data Sync",
+  "download": "Download",
+  "upload": "Upload",
+  "syncItemSubtitle": "{readings} readings.",
+
+  "myStationsTitle": "My Stations",
+  "readyToDeploy": "Ready to deploy",
+  "contacting": "Contacting...",
+  "unknownStationTitle": "Unknown Station",
+  "backButtonTitle": "Back",
+
+  "calibrationTitle": "Calibration",
+  "calibrateButton": "Calibrate",
+  "waitingOnTimer": "Waiting on Timer",
+  "waitingOnReading": "Waiting for Fresh Reading",
+  "standardValue": "{value} StandardValue ({uom})",
+  "oopsBugTitle": "Oops, bug?",
+  "minSec": "min sec",
+
+  "settingsTitle": "Settings",
+
+  "settingsGeneral": "General",
+  "settingsNetwork": "Network",
+  "settingsFirmware": "Firmware",
+  "settingsModules": "Modules",
+  "settingsWifi": "WiFi",
+  "settingsLora": "LoRa",
+  "settingsAutomaticUpload": "Automatic Upload",
+
+  "settingsAccounts": "Accounts",
+  "accountsTitle": "Accounts",
+  "accountsAddButton": "Add",
+  "accountEditTitle": "Edit Account",
+  "accountEmail": "Email",
+  "accountPassword": "Password",
+  "accountFormFail": "Invalid email or password.",
+  "accountSaveButton": "Save",
+  "accountDeleteButton": "Delete",
+
+  "bayNumber": "Bay #{bay}",
+  "configureButton": "Configure",
+  "batteryLife": "Battery Life",
+  "memoryUsage": "Memory",
+  "deployButton": "Deploy",
+
+  "confirmDeleteTitle": "Delete Account",
+  "confirmDelete": "Are you sure",
+  "confirmYes": "Yes",
+  "confirmCancel": "Cancel"
 }

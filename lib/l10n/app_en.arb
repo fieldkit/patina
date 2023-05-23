@@ -24,9 +24,34 @@
   "oopsBugTitle": "Oops, bug?",
   "minSec": "min sec",
 
+  "settingsTitle": "Settings",
+
+  "settingsGeneral": "General",
+  "settingsNetwork": "Network",
+  "settingsFirmware": "Firmware",
+  "settingsModules": "Modules",
+  "settingsWifi": "WiFi",
+  "settingsLora": "LoRa",
+  "settingsAutomaticUpload": "Automatic Upload",
+
+  "settingsAccounts": "Accounts",
+  "accountsTitle": "Accounts",
+  "accountsAddButton": "Add",
+  "accountEditTitle": "Edit Account",
+  "accountEmail": "Email",
+  "accountPassword": "Password",
+  "accountFormFail": "Invalid email or password.",
+  "accountSaveButton": "Save",
+  "accountDeleteButton": "Delete",
+
   "bayNumber": "Bay #{bay}",
   "configureButton": "Configure",
   "batteryLife": "Battery Life",
   "memoryUsage": "Memory",
-  "deployButton": "Deploy"
+  "deployButton": "Deploy",
+
+  "confirmDeleteTitle": "Delete Account",
+  "confirmDelete": "Are you sure",
+  "confirmYes": "Yes",
+  "confirmCancel": "Cancel"
 }

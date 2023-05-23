@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
 import '../gen/ffi.dart';
@@ -40,12 +41,12 @@ class ConfigureStationPage extends StatelessWidget {
       ),
       body: ListView(children: [
         ListTile(
-          title: const Text("General"),
+          title: Text(AppLocalizations.of(context)!.settingsGeneral),
           onTap: () {},
         ),
         const Divider(),
         ListTile(
-          title: const Text("Networks"),
+          title: Text(AppLocalizations.of(context)!.settingsNetwork),
           onTap: () {
             Navigator.push(
               context,
@@ -59,12 +60,12 @@ class ConfigureStationPage extends StatelessWidget {
         ),
         const Divider(),
         ListTile(
-          title: const Text("Firmware"),
+          title: Text(AppLocalizations.of(context)!.settingsFirmware),
           onTap: () {},
         ),
         const Divider(),
         ListTile(
-          title: const Text("Modules"),
+          title: Text(AppLocalizations.of(context)!.settingsModules),
           onTap: () {},
         ),
         const Divider(),
@@ -88,7 +89,7 @@ class ConfigureNetworksPage extends StatelessWidget {
       ),
       body: ListView(children: [
         ListTile(
-          title: const Text("WiFi"),
+          title: Text(AppLocalizations.of(context)!.settingsWifi),
           onTap: () {
             Navigator.push(
               context,
@@ -102,7 +103,7 @@ class ConfigureNetworksPage extends StatelessWidget {
         ),
         const Divider(),
         ListTile(
-          title: const Text("LoRa"),
+          title: Text(AppLocalizations.of(context)!.settingsLora),
           onTap: () {},
         ),
         const Divider(),
@@ -126,7 +127,7 @@ class ConfigureWiFiPage extends StatelessWidget {
       ),
       body: ListView(children: [
         ListTile(
-          title: const Text("Automatic Upload"),
+          title: Text(AppLocalizations.of(context)!.settingsAutomaticUpload),
           onTap: () {
             Navigator.push(
               context,
