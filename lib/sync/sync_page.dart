@@ -51,7 +51,7 @@ class DataSyncPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.dataSync),
+          title: Text(AppLocalizations.of(context)!.dataSyncTitle),
         ),
         body: ListView(children: stations));
   }
@@ -68,7 +68,7 @@ class StationSyncStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = Text("${config.data.records} readings.");
+    final subtitle = Text(AppLocalizations.of(context)!.syncItemSubtitle(config.data.records));
 
     return Container(
         padding: const EdgeInsets.all(10),

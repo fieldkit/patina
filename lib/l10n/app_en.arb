@@ -8,6 +8,7 @@
   "dataSyncTitle": "Data Sync",
   "download": "Download",
   "upload": "Upload",
+  "syncItemSubtitle": "{readings} readings.",
 
   "myStationsTitle": "My Stations",
   "readyToDeploy": "Ready to deploy",
