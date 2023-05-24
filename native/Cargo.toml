@@ -15,8 +15,8 @@ path = "../rustfk/libs/query"
 [dependencies.store]
 path = "../rustfk/libs/store"
 
-# [dependencies.sync]
-# path = "../rustfk/libs/sync"
+[dependencies.sync]
+path = "../rustfk/libs/sync"
 
 [dependencies]
 anyhow = "1"
