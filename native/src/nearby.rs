@@ -41,7 +41,7 @@ impl NearbyDevices {
     }
 
     pub async fn announced(&self, announce: discovery::Discovered) -> Result<()> {
-        if self.add_if_necessary(announce).await {
+        if self.add_if_necessary(announce).await? {
             Ok(self.publish().await?)
         } else {
             Ok(())
@@ -68,7 +68,7 @@ impl NearbyDevices {
         }
     }
 
-    async fn add_if_necessary(&self, announce: discovery::Discovered) -> bool {
+    async fn add_if_necessary(&self, announce: discovery::Discovered) -> Result<bool> {
         let mut devices = self.devices.lock().await;
         let device_id = &announce.device_id;
         if let Some(connected) = devices.get_mut(device_id) {
@@ -79,7 +79,7 @@ impl NearbyDevices {
                 connected.finished = None;
             }
 
-            false
+            Ok(false)
         } else {
             info!("bg:announce: {:?}", announce);
 
@@ -87,7 +87,12 @@ impl NearbyDevices {
                 device_id.clone(),
                 Querying {
                     device_id: device_id.clone(),
-                    http_addr: format!("{}", announce.http_addr),
+                    http_addr: format!(
+                        "{}",
+                        announce
+                            .http_addr
+                            .ok_or(anyhow::anyhow!("Expeted HTTP addr"))?
+                    ),
                     attempted: None,
                     finished: None,
                     retry: None,
@@ -95,7 +100,7 @@ impl NearbyDevices {
                 },
             );
 
-            true
+            Ok(true)
         }
     }
 
