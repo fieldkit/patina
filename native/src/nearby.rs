@@ -182,7 +182,7 @@ impl NearbyDevices {
 
     async fn query_station(&self, querying: &Querying) -> Result<HttpReply> {
         let client = query::device::Client::new()?;
-        Ok(client.query_status(&querying.http_addr).await?)
+        Ok(client.query_readings(&querying.http_addr).await?)
     }
 }
 
