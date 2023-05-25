@@ -65,6 +65,7 @@ class StationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var icon = Icon(Icons.aod_rounded, color: station.connected ? Colors.blue : Colors.grey);
+    var subtitle = station.busy ? Text(AppLocalizations.of(context)!.busyTransferring) : Text(AppLocalizations.of(context)!.readyToDeploy);
 
     return Container(
         padding: const EdgeInsets.all(10),
@@ -74,7 +75,7 @@ class StationCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
           title: Container(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(config.name)),
-          subtitle: Text(AppLocalizations.of(context)!.readyToDeploy),
+          subtitle: subtitle,
           trailing: icon,
           dense: false,
           onTap: () {

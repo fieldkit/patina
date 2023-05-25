@@ -2,7 +2,6 @@ default: gen lint
 
 gen:
     flutter pub get
-    flutter gen-l10n
     flutter_rust_bridge_codegen \
         -r native/src/api.rs \
         -d lib/gen/bridge_generated.dart \
@@ -10,6 +9,9 @@ gen:
         -c macos/Runner/bridge_generated.h \
         -e ios/Runner \
         --wasm --verbose
+
+l10n:
+    flutter gen-l10n
 
 lint:
     cd native && cargo fmt

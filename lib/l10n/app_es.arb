@@ -12,6 +12,7 @@
 
   "myStationsTitle": "My Stations",
   "readyToDeploy": "Ready to deploy",
+  "busyTransferring": "Transferring...",
   "contacting": "Contacting...",
   "unknownStationTitle": "Unknown Station",
   "backButtonTitle": "Back",
