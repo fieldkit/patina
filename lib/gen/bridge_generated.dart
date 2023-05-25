@@ -186,6 +186,10 @@ class NativeImpl implements Native {
     return raw as bool;
   }
 
+  DownloadProgress _wire2api_box_autoadd_download_progress(dynamic raw) {
+    return _wire2api_download_progress(raw);
+  }
+
   SensitiveConfig _wire2api_box_autoadd_sensitive_config(dynamic raw) {
     return _wire2api_sensitive_config(raw);
   }
@@ -236,12 +240,19 @@ class NativeImpl implements Native {
     }
   }
 
-  double _wire2api_f32(dynamic raw) {
-    return raw as double;
+  DownloadProgress _wire2api_download_progress(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return DownloadProgress(
+      completed: _wire2api_f32(arr[0]),
+      total: _wire2api_usize(arr[1]),
+      received: _wire2api_usize(arr[2]),
+    );
   }
 
-  int _wire2api_i32(dynamic raw) {
-    return raw as int;
+  double _wire2api_f32(dynamic raw) {
+    return raw as double;
   }
 
   int _wire2api_i64(dynamic raw) {
@@ -282,10 +293,11 @@ class NativeImpl implements Native {
 
   NearbyStation _wire2api_nearby_station(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 1)
-      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
     return NearbyStation(
       deviceId: _wire2api_String(arr[0]),
+      busy: _wire2api_bool(arr[1]),
     );
   }
 
@@ -410,7 +422,20 @@ class NativeImpl implements Native {
   }
 
   TransferStatus _wire2api_transfer_status(dynamic raw) {
-    return TransferStatus.values[raw as int];
+    switch (raw[0]) {
+      case 0:
+        return TransferStatus_Starting();
+      case 1:
+        return TransferStatus_Transferring(
+          _wire2api_box_autoadd_download_progress(raw[1]),
+        );
+      case 2:
+        return TransferStatus_Completed();
+      case 3:
+        return TransferStatus_Failed();
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   TransmissionConfig _wire2api_transmission_config(dynamic raw) {
@@ -446,6 +471,10 @@ class NativeImpl implements Native {
 
   Uint8List _wire2api_uint_8_list(dynamic raw) {
     return raw as Uint8List;
+  }
+
+  int _wire2api_usize(dynamic raw) {
+    return castInt(raw);
   }
 }
 

@@ -76,6 +76,18 @@ class DomainMessage with _$DomainMessage {
   ) = DomainMessage_TransferProgress;
 }
 
+class DownloadProgress {
+  final double completed;
+  final int total;
+  final int received;
+
+  const DownloadProgress({
+    required this.completed,
+    required this.total,
+    required this.received,
+  });
+}
+
 class ModuleConfig {
   final int position;
   final String moduleId;
@@ -92,9 +104,11 @@ class ModuleConfig {
 
 class NearbyStation {
   final String deviceId;
+  final bool busy;
 
   const NearbyStation({
     required this.deviceId,
+    required this.busy,
   });
 }
 
@@ -206,11 +220,14 @@ class TransferProgress {
   });
 }
 
-enum TransferStatus {
-  Starting,
-  Transferring,
-  Failed,
-  Done,
+@freezed
+class TransferStatus with _$TransferStatus {
+  const factory TransferStatus.starting() = TransferStatus_Starting;
+  const factory TransferStatus.transferring(
+    DownloadProgress field0,
+  ) = TransferStatus_Transferring;
+  const factory TransferStatus.completed() = TransferStatus_Completed;
+  const factory TransferStatus.failed() = TransferStatus_Failed;
 }
 
 class TransmissionConfig {

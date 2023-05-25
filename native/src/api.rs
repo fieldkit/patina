@@ -2,13 +2,14 @@ use anyhow::{bail, Result};
 use chrono::{DateTime, Utc};
 use flutter_rust_bridge::StreamSink;
 use std::io::Write;
+use std::ops::Sub;
 use std::sync::Arc;
 use sync::{Server, ServerEvent};
 use thiserror::Error;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc::Sender;
 use tokio::sync::{oneshot, Mutex};
-use tokio::time::{sleep, Duration};
+use tokio::time::{sleep, Duration, Instant};
 use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
@@ -110,49 +111,142 @@ async fn handle_background_message(
     }
 }
 
+async fn handle_server_event(
+    nearby: &NearbyDevices,
+    publish_tx: Sender<DomainMessage>,
+    last_progress: &mut Option<Instant>,
+    event: ServerEvent,
+) -> Result<()> {
+    match &event {
+        ServerEvent::Began(device_id) => {
+            info!("{:?}", &event);
+            nearby.mark_busy(device_id, true).await.expect("!");
+            publish_tx
+                .send(DomainMessage::TransferProgress(TransferProgress {
+                    device_id: device_id.0.to_owned(),
+                    status: TransferStatus::Starting,
+                }))
+                .await?;
+
+            Ok(())
+        }
+        ServerEvent::Progress(device_id, progress) => {
+            let publish_progress = match last_progress {
+                Some(last_progress) => {
+                    tokio::time::Instant::now().sub(*last_progress) > Duration::from_millis(500)
+                }
+                None => true,
+            };
+
+            if publish_progress {
+                info!("{:?}", &event);
+                let total = progress.total.as_ref().unwrap();
+                publish_tx
+                    .send(DomainMessage::TransferProgress(TransferProgress {
+                        device_id: device_id.0.to_owned(),
+                        status: TransferStatus::Transferring(DownloadProgress {
+                            completed: total.completed,
+                            total: total.total,
+                            received: total.received,
+                        }),
+                    }))
+                    .await
+                    .expect("Transfer event error:");
+
+                *last_progress = Some(Instant::now());
+            }
+
+            Ok(())
+        }
+        ServerEvent::Completed(device_id) => {
+            info!("{:?}", &event);
+            nearby.mark_busy(device_id, false).await.expect("!");
+            publish_tx
+                .send(DomainMessage::TransferProgress(TransferProgress {
+                    device_id: device_id.0.to_owned(),
+                    status: TransferStatus::Completed,
+                }))
+                .await?;
+
+            Ok(())
+        }
+        ServerEvent::Failed(device_id) => {
+            info!("{:?}", &event);
+            nearby.mark_busy(device_id, false).await.expect("!");
+            publish_tx
+                .send(DomainMessage::TransferProgress(TransferProgress {
+                    device_id: device_id.0.to_owned(),
+                    status: TransferStatus::Failed,
+                }))
+                .await?;
+
+            Ok(())
+        }
+    }
+}
+
 async fn create_sdk(storage_path: String, publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     info!("startup:bg");
 
     let (bg_tx, mut bg_rx) = tokio::sync::mpsc::channel::<BackgroundMessage>(32);
 
+    let (transfer_publish, mut transfer_events) = tokio::sync::mpsc::channel::<ServerEvent>(32);
+
+    let server = Arc::new(Server::new(transfer_publish));
+
     let nearby = NearbyDevices::new(bg_tx.clone());
 
-    let sdk = Sdk::new(storage_path, nearby.clone(), publish_tx.clone())?;
+    let sdk = Sdk::new(
+        storage_path,
+        nearby.clone(),
+        server.clone(),
+        publish_tx.clone(),
+    )?;
 
     sdk.open().await?;
 
     tokio::spawn({
+        let publish_tx = publish_tx.clone();
         let db = sdk.db.clone();
         async move {
-            loop {
-                while let Some(bg) = bg_rx.recv().await {
-                    handle_background_message(&db, publish_tx.clone(), bg)
-                        .await
-                        .expect("Background error:")
-                }
+            while let Some(bg) = bg_rx.recv().await {
+                handle_background_message(&db, publish_tx.clone(), bg)
+                    .await
+                    .expect("Background error:")
             }
         }
     });
 
-    tokio::spawn(async move { background_task(nearby).await });
+    tokio::spawn({
+        let publish_tx = publish_tx.clone();
+        let nearby = nearby.clone();
+        async move {
+            let mut last_progress = None::<Instant>;
+            while let Some(event) = transfer_events.recv().await {
+                handle_server_event(&nearby, publish_tx.clone(), &mut last_progress, event)
+                    .await
+                    .expect("Background error:")
+            }
+        }
+    });
+
+    tokio::spawn(async move { background_task(nearby, server).await });
 
     Ok(sdk)
 }
 
-async fn background_task(nearby: NearbyDevices) {
+async fn background_task(nearby: NearbyDevices, server: Arc<Server>) {
     info!("bg:started");
 
     let (tx, mut rx) = tokio::sync::mpsc::channel::<Discovered>(32);
     let discovery = Discovery::default();
-    let (transfer_publish, mut transfer_events) = tokio::sync::mpsc::channel::<ServerEvent>(32);
-    let server = Arc::new(Server::new(transfer_publish));
 
     let maintain_discoveries = tokio::spawn({
         let nearby = nearby.clone();
         async move {
-            while let Some(announce) = rx.recv().await {
-                match nearby.announced(announce).await {
-                    Err(e) => warn!("Handle announce: {}", e),
+            while let Some(discovered) = rx.recv().await {
+                match nearby.discovered(discovered).await {
+                    Err(e) => warn!("Error handling discovered: {}", e),
                     _ => {}
                 }
             }
@@ -163,29 +257,9 @@ async fn background_task(nearby: NearbyDevices) {
         async move {
             loop {
                 match nearby.schedule_queries().await {
-                    Err(e) => warn!("Schedule queries: {}", e),
+                    Err(e) => warn!("Error scheduling queries: {}", e),
                     Ok(false) => sleep(ONE_SECOND).await,
                     Ok(true) => {}
-                }
-            }
-        }
-    });
-
-    let ticks = tokio::spawn({
-        async move {
-            loop {
-                trace!("bg:tick");
-                sleep(ONE_SECOND).await;
-            }
-        }
-    });
-
-    let ignore = tokio::spawn({
-        let _server = server.clone();
-        async move {
-            while let Some(d) = transfer_events.recv().await {
-                match d {
-                    _ => debug!("{:?}", d),
                 }
             }
         }
@@ -196,8 +270,6 @@ async fn background_task(nearby: NearbyDevices) {
         _ = server.run() => {},
         _ = maintain_discoveries => {},
         _ = query_stations => {},
-        _ = ticks => {},
-        _ = ignore => {},
     };
 }
 
@@ -251,11 +323,12 @@ pub fn start_native(sink: StreamSink<DomainMessage>, storage_path: String) -> Re
     Ok(())
 }
 
+#[allow(dead_code)]
 struct Sdk {
-    #[allow(dead_code)]
     storage_path: String,
     db: Arc<Mutex<Db>>,
     nearby: NearbyDevices,
+    server: Arc<Server>,
     publish_tx: Sender<DomainMessage>,
 }
 
@@ -263,12 +336,14 @@ impl Sdk {
     fn new(
         storage_path: String,
         nearby: NearbyDevices,
+        server: Arc<Server>,
         publish_tx: Sender<DomainMessage>,
     ) -> Result<Self> {
         Ok(Self {
             storage_path,
             db: Arc::new(Mutex::new(Db::new())),
             nearby,
+            server,
             publish_tx,
         })
     }
@@ -327,7 +402,6 @@ impl Sdk {
             Ok(ourselves) => {
                 info!("{:?} {:?}", tokens.refresh_token(), ourselves);
                 Ok(Some(tokens))
-                // Ok(self.refresh_tokens(tokens).await?)
             }
             Err(PortalError::HttpStatus(StatusCode::UNAUTHORIZED)) => {
                 Ok(self.refresh_tokens(tokens).await?)
@@ -361,30 +435,16 @@ impl Sdk {
     async fn start_download(&self, device_id: String) -> Result<TransferProgress> {
         info!("{:?} start download", &device_id);
 
-        tokio::spawn({
-            let device_id = device_id.clone();
-            let publish_tx = self.publish_tx.clone();
-            async move {
-                for _i in 0..10 {
-                    sleep(ONE_SECOND).await;
-                    publish_tx
-                        .send(DomainMessage::TransferProgress(TransferProgress {
-                            device_id: device_id.clone(),
-                            status: TransferStatus::Transferring,
-                        }))
-                        .await
-                        .expect("Send progress error");
-                }
+        let discovered = self
+            .nearby
+            .get_discovered(&discovery::DeviceId(device_id.clone()))
+            .await;
 
-                publish_tx
-                    .send(DomainMessage::TransferProgress(TransferProgress {
-                        device_id: device_id.clone(),
-                        status: TransferStatus::Done,
-                    }))
-                    .await
-                    .expect("Send progress error");
-            }
-        });
+        if let Some(discovered) = discovered {
+            self.server.sync(discovered).await?;
+        } else {
+            warn!("{:?} undiscovered!", &device_id);
+        }
 
         Ok(TransferProgress {
             device_id,
@@ -467,12 +527,19 @@ impl Tokens {
 }
 
 #[derive(Debug)]
+pub struct DownloadProgress {
+    pub completed: f32,
+    pub total: usize,
+    pub received: usize,
+}
+
+#[derive(Debug)]
 #[allow(dead_code)]
 pub enum TransferStatus {
     Starting,
-    Transferring,
+    Transferring(DownloadProgress),
+    Completed,
     Failed,
-    Done,
 }
 
 #[derive(Debug)]
@@ -486,7 +553,6 @@ pub enum DomainMessage {
     PreAccount,
     NearbyStations(Vec<NearbyStation>),
     StationRefreshed(StationConfig, Option<SensitiveConfig>),
-    #[allow(dead_code)]
     TransferProgress(TransferProgress),
 }
 
@@ -547,6 +613,7 @@ pub struct SensorValue {
 #[derive(Clone, Debug)]
 pub struct NearbyStation {
     pub device_id: String,
+    pub busy: bool,
 }
 
 #[derive(Clone, Debug)]

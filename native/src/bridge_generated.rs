@@ -173,6 +173,17 @@ impl support::IntoDart for DomainMessage {
     }
 }
 impl support::IntoDartExceptPrimitive for DomainMessage {}
+impl support::IntoDart for DownloadProgress {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.completed.into_dart(),
+            self.total.into_dart(),
+            self.received.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for DownloadProgress {}
 
 impl support::IntoDart for ModuleConfig {
     fn into_dart(self) -> support::DartAbi {
@@ -189,7 +200,7 @@ impl support::IntoDartExceptPrimitive for ModuleConfig {}
 
 impl support::IntoDart for NearbyStation {
     fn into_dart(self) -> support::DartAbi {
-        vec![self.device_id.into_dart()].into_dart()
+        vec![self.device_id.into_dart(), self.busy.into_dart()].into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for NearbyStation {}
@@ -283,10 +294,10 @@ impl support::IntoDartExceptPrimitive for TransferProgress {}
 impl support::IntoDart for TransferStatus {
     fn into_dart(self) -> support::DartAbi {
         match self {
-            Self::Starting => 0,
-            Self::Transferring => 1,
-            Self::Failed => 2,
-            Self::Done => 3,
+            Self::Starting => vec![0.into_dart()],
+            Self::Transferring(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::Completed => vec![2.into_dart()],
+            Self::Failed => vec![3.into_dart()],
         }
         .into_dart()
     }

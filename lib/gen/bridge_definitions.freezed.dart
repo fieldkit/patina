@@ -695,3 +695,568 @@ abstract class DomainMessage_TransferProgress implements DomainMessage {
   _$$DomainMessage_TransferProgressCopyWith<_$DomainMessage_TransferProgress>
       get copyWith => throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+mixin _$TransferStatus {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() starting,
+    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function() completed,
+    required TResult Function() failed,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? starting,
+    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function()? completed,
+    TResult? Function()? failed,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? starting,
+    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function()? completed,
+    TResult Function()? failed,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TransferStatus_Starting value) starting,
+    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Completed value) completed,
+    required TResult Function(TransferStatus_Failed value) failed,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TransferStatus_Starting value)? starting,
+    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Completed value)? completed,
+    TResult? Function(TransferStatus_Failed value)? failed,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TransferStatus_Starting value)? starting,
+    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Completed value)? completed,
+    TResult Function(TransferStatus_Failed value)? failed,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TransferStatusCopyWith<$Res> {
+  factory $TransferStatusCopyWith(
+          TransferStatus value, $Res Function(TransferStatus) then) =
+      _$TransferStatusCopyWithImpl<$Res, TransferStatus>;
+}
+
+/// @nodoc
+class _$TransferStatusCopyWithImpl<$Res, $Val extends TransferStatus>
+    implements $TransferStatusCopyWith<$Res> {
+  _$TransferStatusCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+}
+
+/// @nodoc
+abstract class _$$TransferStatus_StartingCopyWith<$Res> {
+  factory _$$TransferStatus_StartingCopyWith(_$TransferStatus_Starting value,
+          $Res Function(_$TransferStatus_Starting) then) =
+      __$$TransferStatus_StartingCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$TransferStatus_StartingCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Starting>
+    implements _$$TransferStatus_StartingCopyWith<$Res> {
+  __$$TransferStatus_StartingCopyWithImpl(_$TransferStatus_Starting _value,
+      $Res Function(_$TransferStatus_Starting) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$TransferStatus_Starting implements TransferStatus_Starting {
+  const _$TransferStatus_Starting();
+
+  @override
+  String toString() {
+    return 'TransferStatus.starting()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TransferStatus_Starting);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() starting,
+    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function() completed,
+    required TResult Function() failed,
+  }) {
+    return starting();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? starting,
+    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function()? completed,
+    TResult? Function()? failed,
+  }) {
+    return starting?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? starting,
+    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function()? completed,
+    TResult Function()? failed,
+    required TResult orElse(),
+  }) {
+    if (starting != null) {
+      return starting();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TransferStatus_Starting value) starting,
+    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Completed value) completed,
+    required TResult Function(TransferStatus_Failed value) failed,
+  }) {
+    return starting(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TransferStatus_Starting value)? starting,
+    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Completed value)? completed,
+    TResult? Function(TransferStatus_Failed value)? failed,
+  }) {
+    return starting?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TransferStatus_Starting value)? starting,
+    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Completed value)? completed,
+    TResult Function(TransferStatus_Failed value)? failed,
+    required TResult orElse(),
+  }) {
+    if (starting != null) {
+      return starting(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TransferStatus_Starting implements TransferStatus {
+  const factory TransferStatus_Starting() = _$TransferStatus_Starting;
+}
+
+/// @nodoc
+abstract class _$$TransferStatus_TransferringCopyWith<$Res> {
+  factory _$$TransferStatus_TransferringCopyWith(
+          _$TransferStatus_Transferring value,
+          $Res Function(_$TransferStatus_Transferring) then) =
+      __$$TransferStatus_TransferringCopyWithImpl<$Res>;
+  @useResult
+  $Res call({DownloadProgress field0});
+}
+
+/// @nodoc
+class __$$TransferStatus_TransferringCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Transferring>
+    implements _$$TransferStatus_TransferringCopyWith<$Res> {
+  __$$TransferStatus_TransferringCopyWithImpl(
+      _$TransferStatus_Transferring _value,
+      $Res Function(_$TransferStatus_Transferring) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$TransferStatus_Transferring(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as DownloadProgress,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$TransferStatus_Transferring implements TransferStatus_Transferring {
+  const _$TransferStatus_Transferring(this.field0);
+
+  @override
+  final DownloadProgress field0;
+
+  @override
+  String toString() {
+    return 'TransferStatus.transferring(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TransferStatus_Transferring &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TransferStatus_TransferringCopyWith<_$TransferStatus_Transferring>
+      get copyWith => __$$TransferStatus_TransferringCopyWithImpl<
+          _$TransferStatus_Transferring>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() starting,
+    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function() completed,
+    required TResult Function() failed,
+  }) {
+    return transferring(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? starting,
+    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function()? completed,
+    TResult? Function()? failed,
+  }) {
+    return transferring?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? starting,
+    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function()? completed,
+    TResult Function()? failed,
+    required TResult orElse(),
+  }) {
+    if (transferring != null) {
+      return transferring(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TransferStatus_Starting value) starting,
+    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Completed value) completed,
+    required TResult Function(TransferStatus_Failed value) failed,
+  }) {
+    return transferring(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TransferStatus_Starting value)? starting,
+    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Completed value)? completed,
+    TResult? Function(TransferStatus_Failed value)? failed,
+  }) {
+    return transferring?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TransferStatus_Starting value)? starting,
+    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Completed value)? completed,
+    TResult Function(TransferStatus_Failed value)? failed,
+    required TResult orElse(),
+  }) {
+    if (transferring != null) {
+      return transferring(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TransferStatus_Transferring implements TransferStatus {
+  const factory TransferStatus_Transferring(final DownloadProgress field0) =
+      _$TransferStatus_Transferring;
+
+  DownloadProgress get field0;
+  @JsonKey(ignore: true)
+  _$$TransferStatus_TransferringCopyWith<_$TransferStatus_Transferring>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$TransferStatus_CompletedCopyWith<$Res> {
+  factory _$$TransferStatus_CompletedCopyWith(_$TransferStatus_Completed value,
+          $Res Function(_$TransferStatus_Completed) then) =
+      __$$TransferStatus_CompletedCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$TransferStatus_CompletedCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Completed>
+    implements _$$TransferStatus_CompletedCopyWith<$Res> {
+  __$$TransferStatus_CompletedCopyWithImpl(_$TransferStatus_Completed _value,
+      $Res Function(_$TransferStatus_Completed) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$TransferStatus_Completed implements TransferStatus_Completed {
+  const _$TransferStatus_Completed();
+
+  @override
+  String toString() {
+    return 'TransferStatus.completed()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TransferStatus_Completed);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() starting,
+    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function() completed,
+    required TResult Function() failed,
+  }) {
+    return completed();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? starting,
+    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function()? completed,
+    TResult? Function()? failed,
+  }) {
+    return completed?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? starting,
+    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function()? completed,
+    TResult Function()? failed,
+    required TResult orElse(),
+  }) {
+    if (completed != null) {
+      return completed();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TransferStatus_Starting value) starting,
+    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Completed value) completed,
+    required TResult Function(TransferStatus_Failed value) failed,
+  }) {
+    return completed(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TransferStatus_Starting value)? starting,
+    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Completed value)? completed,
+    TResult? Function(TransferStatus_Failed value)? failed,
+  }) {
+    return completed?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TransferStatus_Starting value)? starting,
+    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Completed value)? completed,
+    TResult Function(TransferStatus_Failed value)? failed,
+    required TResult orElse(),
+  }) {
+    if (completed != null) {
+      return completed(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TransferStatus_Completed implements TransferStatus {
+  const factory TransferStatus_Completed() = _$TransferStatus_Completed;
+}
+
+/// @nodoc
+abstract class _$$TransferStatus_FailedCopyWith<$Res> {
+  factory _$$TransferStatus_FailedCopyWith(_$TransferStatus_Failed value,
+          $Res Function(_$TransferStatus_Failed) then) =
+      __$$TransferStatus_FailedCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$TransferStatus_FailedCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Failed>
+    implements _$$TransferStatus_FailedCopyWith<$Res> {
+  __$$TransferStatus_FailedCopyWithImpl(_$TransferStatus_Failed _value,
+      $Res Function(_$TransferStatus_Failed) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$TransferStatus_Failed implements TransferStatus_Failed {
+  const _$TransferStatus_Failed();
+
+  @override
+  String toString() {
+    return 'TransferStatus.failed()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$TransferStatus_Failed);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() starting,
+    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function() completed,
+    required TResult Function() failed,
+  }) {
+    return failed();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? starting,
+    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function()? completed,
+    TResult? Function()? failed,
+  }) {
+    return failed?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? starting,
+    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function()? completed,
+    TResult Function()? failed,
+    required TResult orElse(),
+  }) {
+    if (failed != null) {
+      return failed();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TransferStatus_Starting value) starting,
+    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Completed value) completed,
+    required TResult Function(TransferStatus_Failed value) failed,
+  }) {
+    return failed(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TransferStatus_Starting value)? starting,
+    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Completed value)? completed,
+    TResult? Function(TransferStatus_Failed value)? failed,
+  }) {
+    return failed?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TransferStatus_Starting value)? starting,
+    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Completed value)? completed,
+    TResult Function(TransferStatus_Failed value)? failed,
+    required TResult orElse(),
+  }) {
+    if (failed != null) {
+      return failed(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TransferStatus_Failed implements TransferStatus {
+  const factory TransferStatus_Failed() = _$TransferStatus_Failed;
+}

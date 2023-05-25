@@ -12,11 +12,13 @@ class StationModel {
   StationConfig? config;
   SyncingProgress? syncing;
   bool connected;
+  bool busy;
 
   StationModel({
     required this.deviceId,
     this.config,
     this.connected = false,
+    this.busy = false,
   });
 }
 
@@ -30,10 +32,12 @@ class KnownStationsModel extends ChangeNotifier {
       final byDeviceId = {};
       for (var station in nearby.field0) {
         findOrCreate(station.deviceId);
-        byDeviceId[station.deviceId] = true;
+        byDeviceId[station.deviceId] = station;
       }
       for (var station in _stations.values) {
-        station.connected = byDeviceId.containsKey(station.deviceId);
+        final nearby = byDeviceId[station.deviceId];
+        station.connected = nearby != null;
+        station.busy = nearby?.busy;
       }
       notifyListeners();
     });
@@ -57,19 +61,19 @@ class KnownStationsModel extends ChangeNotifier {
     debugPrint("$deviceId transfer ${transferProgress.status}");
     final station = findOrCreate(deviceId);
     station.connected = true;
-    switch (transferProgress.status) {
-      case TransferStatus.Starting:
-        station.syncing = SyncingProgress(progress: transferProgress);
-        break;
-      case TransferStatus.Transferring:
-        station.syncing = SyncingProgress(progress: transferProgress);
-        break;
-      case TransferStatus.Failed:
-        station.syncing = SyncingProgress(progress: transferProgress);
-        break;
-      case TransferStatus.Done:
-        station.syncing = null;
-        break;
+
+    final status = transferProgress.status;
+    if (status is TransferStatus_Starting) {
+      station.syncing = SyncingProgress(progress: transferProgress);
+    }
+    if (status is TransferStatus_Transferring) {
+      station.syncing = SyncingProgress(progress: transferProgress);
+    }
+    if (status is TransferStatus_Completed) {
+      station.syncing = null;
+    }
+    if (status is TransferStatus_Failed) {
+      station.syncing = SyncingProgress(progress: transferProgress);
     }
     notifyListeners();
   }

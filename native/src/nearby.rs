@@ -7,7 +7,7 @@ use tokio::sync::mpsc::Sender;
 use tokio::sync::Mutex;
 use tracing::*;
 
-use discovery::DeviceId;
+use discovery::{DeviceId, Discovered};
 use query::device::HttpReply;
 
 use crate::api::{DomainMessage, NearbyStation};
@@ -40,8 +40,8 @@ impl NearbyDevices {
             .collect())
     }
 
-    pub async fn announced(&self, announce: discovery::Discovered) -> Result<()> {
-        if self.add_if_necessary(announce).await? {
+    pub async fn discovered(&self, discovered: discovery::Discovered) -> Result<()> {
+        if self.add_if_necessary(discovered).await? {
             Ok(self.publish().await?)
         } else {
             Ok(())
@@ -68,12 +68,12 @@ impl NearbyDevices {
         }
     }
 
-    async fn add_if_necessary(&self, announce: discovery::Discovered) -> Result<bool> {
+    async fn add_if_necessary(&self, discovered: discovery::Discovered) -> Result<bool> {
         let mut devices = self.devices.lock().await;
-        let device_id = &announce.device_id;
+        let device_id = &discovered.device_id;
         if let Some(connected) = devices.get_mut(device_id) {
             if connected.is_disconnected() && connected.retry.is_none() {
-                info!("bg:announce: {:?}", connected);
+                info!("bg:discovered: {:?}", connected);
 
                 connected.attempted = None;
                 connected.finished = None;
@@ -81,7 +81,7 @@ impl NearbyDevices {
 
             Ok(false)
         } else {
-            info!("bg:announce: {:?}", announce);
+            info!("bg:discovered: {:?}", discovered);
 
             devices.insert(
                 device_id.clone(),
@@ -89,10 +89,12 @@ impl NearbyDevices {
                     device_id: device_id.clone(),
                     http_addr: format!(
                         "{}",
-                        announce
+                        discovered
                             .http_addr
-                            .ok_or(anyhow::anyhow!("Expeted HTTP addr"))?
+                            .ok_or(anyhow::anyhow!("Expected HTTP addr"))?
                     ),
+                    busy: false,
+                    discovered,
                     attempted: None,
                     finished: None,
                     retry: None,
@@ -126,6 +128,7 @@ impl NearbyDevices {
             .filter(|q| !q.is_disconnected())
             .map(|q| NearbyStation {
                 device_id: q.device_id.0.to_string(),
+                busy: q.busy,
             })
             .collect();
 
@@ -184,6 +187,19 @@ impl NearbyDevices {
         let client = query::device::Client::new()?;
         Ok(client.query_readings(&querying.http_addr).await?)
     }
+
+    pub async fn mark_busy(&self, device_id: &discovery::DeviceId, busy: bool) -> Result<()> {
+        let mut devices = self.devices.lock().await;
+        let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
+        querying.busy = busy;
+        Ok(())
+    }
+
+    pub async fn get_discovered(&self, device_id: &discovery::DeviceId) -> Option<Discovered> {
+        let devices = self.devices.lock().await;
+        let querying = devices.get(device_id);
+        querying.map(|q| q.discovered.clone())
+    }
 }
 
 type ModelTime = DateTime<Utc>;
@@ -192,6 +208,8 @@ type ModelTime = DateTime<Utc>;
 struct Querying {
     pub device_id: DeviceId,
     pub http_addr: String,
+    pub discovered: Discovered,
+    pub busy: bool,
     pub attempted: Option<ModelTime>,
     pub finished: Option<ModelTime>,
     pub retry: Option<ModelTime>,
@@ -200,6 +218,10 @@ struct Querying {
 
 impl Querying {
     fn should_query(&self) -> bool {
+        if self.busy {
+            return false;
+        }
+
         let now = Utc::now();
         match self.attempted {
             Some(attempted) => {
