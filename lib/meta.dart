@@ -49,18 +49,45 @@ class LocalizedSensor {
         return LocalizedSensor(name: "Conductivity", uom: sensor.calibratedUom);
       case "modules.water.do.do":
         return LocalizedSensor(name: "Dissolved Oxygen", uom: sensor.calibratedUom);
+      case "modules.water.do.pressure":
+        return LocalizedSensor(name: "Air Pressure", uom: sensor.calibratedUom);
+      case "modules.water.do.temperature":
+        return LocalizedSensor(name: "Air Temperature", uom: sensor.calibratedUom);
       case "modules.water.orp.orp":
         return LocalizedSensor(name: "ORP", uom: sensor.calibratedUom);
-      case "modules.diagnostics.battery_charge":
-        return LocalizedSensor(name: "Battery", uom: sensor.calibratedUom);
-      case "modules.diagnostics.battery_voltage":
-        return LocalizedSensor(name: "Battery", uom: sensor.calibratedUom);
+
       case "modules.diagnostics.temperature":
         return LocalizedSensor(name: "Internal Temperature", uom: sensor.calibratedUom);
       case "modules.diagnostics.uptime":
         return LocalizedSensor(name: "Uptime", uom: sensor.calibratedUom);
       case "modules.diagnostics.memory":
         return LocalizedSensor(name: "Memory", uom: sensor.calibratedUom);
+      case "modules.diagnostics.free_memory":
+        return LocalizedSensor(name: "Free Memory", uom: sensor.calibratedUom);
+
+      case "modules.diagnostics.battery_charge":
+        return LocalizedSensor(name: "Battery", uom: sensor.calibratedUom);
+      case "modules.diagnostics.battery_voltage":
+        return LocalizedSensor(name: "Battery", uom: sensor.calibratedUom);
+
+      case "modules.diagnostics.battery_vbus":
+        return LocalizedSensor(name: "Battery (VBus)", uom: sensor.calibratedUom);
+      case "modules.diagnostics.battery_vs":
+        return LocalizedSensor(name: "Battery (Vs)", uom: sensor.calibratedUom);
+      case "modules.diagnostics.battery_ma":
+        return LocalizedSensor(name: "Battery (ma)", uom: sensor.calibratedUom);
+      case "modules.diagnostics.battery_power":
+        return LocalizedSensor(name: "Battery (Power)", uom: sensor.calibratedUom);
+
+      case "modules.diagnostics.solar_vbus":
+        return LocalizedSensor(name: "Solar (VBus)", uom: sensor.calibratedUom);
+      case "modules.diagnostics.solar_vs":
+        return LocalizedSensor(name: "Solar (Vs)", uom: sensor.calibratedUom);
+      case "modules.diagnostics.solar_ma":
+        return LocalizedSensor(name: "Solar (ma)", uom: sensor.calibratedUom);
+      case "modules.diagnostics.solar_power":
+        return LocalizedSensor(name: "Solar (Power)", uom: sensor.calibratedUom);
+
       case "modules.random.random_0":
         return LocalizedSensor(name: "Random 0", uom: sensor.calibratedUom);
       case "modules.random.random_1":
@@ -69,6 +96,16 @@ class LocalizedSensor {
         return LocalizedSensor(name: "Random 2", uom: sensor.calibratedUom);
       case "modules.random.random_3":
         return LocalizedSensor(name: "Random 3", uom: sensor.calibratedUom);
+      case "modules.random.random_4":
+        return LocalizedSensor(name: "Random 4", uom: sensor.calibratedUom);
+      case "modules.random.random_5":
+        return LocalizedSensor(name: "Random 5", uom: sensor.calibratedUom);
+      case "modules.random.random_6":
+        return LocalizedSensor(name: "Random 6", uom: sensor.calibratedUom);
+      case "modules.random.random_7":
+        return LocalizedSensor(name: "Random 7", uom: sensor.calibratedUom);
+      case "modules.random.random_8":
+        return LocalizedSensor(name: "Random 8", uom: sensor.calibratedUom);
       default:
         debugPrint("Unknown sensor key: ${sensor.fullKey}");
         return LocalizedSensor(name: sensor.fullKey, uom: sensor.calibratedUom);
