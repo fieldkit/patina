@@ -1,5 +1,5 @@
 use anyhow::Result;
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, Utc};
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -121,16 +121,20 @@ impl NearbyDevices {
         Ok(None)
     }
 
-    async fn publish(&self) -> Result<()> {
+    async fn get_nearby_stations(&self) -> Result<Vec<NearbyStation>> {
         let devices = self.devices.lock().await;
-        let nearby = devices
+        Ok(devices
             .values()
             .filter(|q| !q.is_disconnected())
             .map(|q| NearbyStation {
                 device_id: q.device_id.0.to_string(),
                 busy: q.busy,
             })
-            .collect();
+            .collect())
+    }
+
+    async fn publish(&self) -> Result<()> {
+        let nearby = self.get_nearby_stations().await?;
 
         match self
             .publish_tx
@@ -148,8 +152,6 @@ impl NearbyDevices {
     }
 
     async fn mark_retry(&self, device_id: &DeviceId) -> Result<Connection> {
-        use chrono::Duration;
-
         let mut devices = self.devices.lock().await;
         let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
         querying.failures += 1;
