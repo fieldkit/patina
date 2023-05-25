@@ -3,6 +3,7 @@ use chrono::{DateTime, Utc};
 use flutter_rust_bridge::StreamSink;
 use std::io::Write;
 use std::sync::Arc;
+use sync::{Server, ServerEvent};
 use thiserror::Error;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc::Sender;
@@ -143,6 +144,8 @@ async fn background_task(nearby: NearbyDevices) {
 
     let (tx, mut rx) = tokio::sync::mpsc::channel::<Discovered>(32);
     let discovery = Discovery::default();
+    let (transfer_publish, mut transfer_events) = tokio::sync::mpsc::channel::<ServerEvent>(32);
+    let server = Arc::new(Server::new(transfer_publish));
 
     let maintain_discoveries = tokio::spawn({
         let nearby = nearby.clone();
@@ -177,11 +180,24 @@ async fn background_task(nearby: NearbyDevices) {
         }
     });
 
+    let ignore = tokio::spawn({
+        let _server = server.clone();
+        async move {
+            while let Some(d) = transfer_events.recv().await {
+                match d {
+                    _ => debug!("{:?}", d),
+                }
+            }
+        }
+    });
+
     tokio::select! {
         _ = discovery.run(tx) => {},
+        _ = server.run() => {},
         _ = maintain_discoveries => {},
         _ = query_stations => {},
         _ = ticks => {},
+        _ = ignore => {},
     };
 }
 
