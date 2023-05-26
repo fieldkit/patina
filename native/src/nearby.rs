@@ -1,16 +1,22 @@
 use anyhow::Result;
 use chrono::{DateTime, Duration, Utc};
-use std::{collections::HashMap, sync::Arc};
-use tokio::sync::{
-    mpsc::{Receiver, Sender},
-    Mutex,
+use std::{collections::HashMap, ops::Sub, sync::Arc, time::UNIX_EPOCH};
+use sync::ServerEvent;
+use tokio::{
+    sync::{
+        mpsc::{Receiver, Sender},
+        Mutex,
+    },
+    time::Instant,
 };
 use tracing::*;
 
 use discovery::{DeviceId, Discovered};
 use query::device::HttpReply;
 
-use crate::api::{DomainMessage, NearbyStation};
+use crate::api::{
+    DomainMessage, DownloadProgress, NearbyStation, TransferProgress, TransferStatus,
+};
 
 #[derive(Debug)]
 pub enum BackgroundMessage {
@@ -34,7 +40,11 @@ impl NearbyDevices {
         }
     }
 
-    pub async fn run(&self, mut rx: Receiver<Discovered>) -> Result<()> {
+    pub async fn run(
+        &self,
+        mut rx: Receiver<Discovered>,
+        mut transfer_events: Receiver<ServerEvent>,
+    ) -> Result<()> {
         let maintain_discoveries = tokio::spawn({
             let nearby = self.clone();
             async move {
@@ -60,9 +70,27 @@ impl NearbyDevices {
             }
         });
 
+        let handle_server_events = tokio::spawn({
+            let publish_tx = self.publish_tx.clone();
+            let nearby = self.clone();
+            async move {
+                let mut last_progress = None::<Instant>;
+                while let Some(event) = transfer_events.recv().await {
+                    match nearby
+                        .handle_server_event(publish_tx.clone(), &mut last_progress, event)
+                        .await
+                    {
+                        Err(e) => warn!("Error handling server event: {}", e),
+                        Ok(_) => {}
+                    }
+                }
+            }
+        });
+
         tokio::select! {
             _ = maintain_discoveries => Ok(()),
             _ = query_stations => Ok(()),
+            _ = handle_server_events => Ok(()),
         }
     }
 
@@ -240,6 +268,89 @@ impl NearbyDevices {
         let devices = self.devices.lock().await;
         let querying = devices.get(device_id);
         querying.map(|q| q.discovered.clone())
+    }
+
+    pub async fn handle_server_event(
+        &self,
+        publish_tx: Sender<BackgroundMessage>,
+        last_progress: &mut Option<Instant>,
+        event: ServerEvent,
+    ) -> Result<()> {
+        match &event {
+            ServerEvent::Began(device_id) => {
+                info!("{:?}", &event);
+                self.mark_busy_and_publish(device_id, true).await?;
+                publish_tx
+                    .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
+                        TransferProgress {
+                            device_id: device_id.0.to_owned(),
+                            status: TransferStatus::Starting,
+                        },
+                    )))
+                    .await?;
+
+                Ok(())
+            }
+            ServerEvent::Progress(device_id, started, progress) => {
+                let publish_progress = match last_progress {
+                    Some(last_progress) => {
+                        tokio::time::Instant::now().sub(*last_progress)
+                            > std::time::Duration::from_millis(500)
+                    }
+                    None => true,
+                };
+
+                if publish_progress {
+                    info!("{:?}", &event);
+                    let total = progress.total.as_ref().unwrap();
+                    publish_tx
+                        .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
+                            TransferProgress {
+                                device_id: device_id.0.to_owned(),
+                                status: TransferStatus::Transferring(DownloadProgress {
+                                    started: started.duration_since(UNIX_EPOCH)?.as_millis() as u64,
+                                    completed: total.completed,
+                                    total: total.total,
+                                    received: total.received,
+                                }),
+                            },
+                        )))
+                        .await?;
+
+                    *last_progress = Some(Instant::now());
+                }
+
+                Ok(())
+            }
+            ServerEvent::Completed(device_id) => {
+                info!("{:?}", &event);
+                self.mark_busy_and_publish(device_id, false).await?;
+                publish_tx
+                    .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
+                        TransferProgress {
+                            device_id: device_id.0.to_owned(),
+                            status: TransferStatus::Completed,
+                        },
+                    )))
+                    .await?;
+
+                Ok(())
+            }
+            ServerEvent::Failed(device_id) => {
+                info!("{:?}", &event);
+                self.mark_busy_and_publish(device_id, false).await?;
+                publish_tx
+                    .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
+                        TransferProgress {
+                            device_id: device_id.0.to_owned(),
+                            status: TransferStatus::Failed,
+                        },
+                    )))
+                    .await?;
+
+                Ok(())
+            }
+        }
     }
 }
 

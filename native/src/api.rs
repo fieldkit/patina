@@ -3,15 +3,12 @@ use chrono::{DateTime, Utc};
 use flutter_rust_bridge::StreamSink;
 use std::{
     io::Write,
-    ops::Sub,
     sync::{Arc, Mutex as StdMutex},
-    time::UNIX_EPOCH,
 };
 use sync::{Server, ServerEvent};
 use thiserror::Error;
-use tokio::runtime::Runtime;
 use tokio::sync::{mpsc::Sender, oneshot, Mutex};
-use tokio::time::{Duration, Instant};
+use tokio::{runtime::Runtime, sync::mpsc::Receiver};
 use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
@@ -24,102 +21,45 @@ use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
 static SDK: StdMutex<Option<Sdk>> = StdMutex::new(None);
 static RUNTIME: StdMutex<Option<Runtime>> = StdMutex::new(None);
 
-async fn handle_background_message(
-    db: &Arc<Mutex<Db>>,
+struct MergeAndPublishReplies {
+    db: Arc<Mutex<Db>>,
     publish_tx: Sender<DomainMessage>,
-    bg: BackgroundMessage,
-) -> Result<()> {
-    match bg {
-        BackgroundMessage::Domain(message) => Ok(publish_tx.send(message).await?),
-        BackgroundMessage::StationReply(device_id, reply) => {
-            let station = {
-                let db = db.lock().await;
-                db.merge_reply(store::DeviceId(device_id.0), reply)?
-            };
-            Ok(publish_tx
-                .send(DomainMessage::StationRefreshed(
-                    StationAndConnection {
-                        station,
-                        connection: Some(Connection::Connected),
-                    }
-                    .try_into()?,
-                    None,
-                ))
-                .await?)
-        }
-    }
 }
 
-async fn handle_server_event(
-    nearby: &NearbyDevices,
-    publish_tx: Sender<DomainMessage>,
-    last_progress: &mut Option<Instant>,
-    event: ServerEvent,
-) -> Result<()> {
-    match &event {
-        ServerEvent::Began(device_id) => {
-            info!("{:?}", &event);
-            nearby.mark_busy_and_publish(device_id, true).await?;
-            publish_tx
-                .send(DomainMessage::TransferProgress(TransferProgress {
-                    device_id: device_id.0.to_owned(),
-                    status: TransferStatus::Starting,
-                }))
-                .await?;
+impl MergeAndPublishReplies {
+    fn new(db: Arc<Mutex<Db>>, publish_tx: Sender<DomainMessage>) -> Self {
+        Self { db, publish_tx }
+    }
 
-            Ok(())
-        }
-        ServerEvent::Progress(device_id, started, progress) => {
-            let publish_progress = match last_progress {
-                Some(last_progress) => {
-                    tokio::time::Instant::now().sub(*last_progress) > Duration::from_millis(500)
-                }
-                None => true,
-            };
-
-            if publish_progress {
-                info!("{:?}", &event);
-                let total = progress.total.as_ref().unwrap();
-                publish_tx
-                    .send(DomainMessage::TransferProgress(TransferProgress {
-                        device_id: device_id.0.to_owned(),
-                        status: TransferStatus::Transferring(DownloadProgress {
-                            started: started.duration_since(UNIX_EPOCH)?.as_millis() as u64,
-                            completed: total.completed,
-                            total: total.total,
-                            received: total.received,
-                        }),
-                    }))
-                    .await?;
-
-                *last_progress = Some(Instant::now());
+    async fn handle_background_message(&self, bg: BackgroundMessage) -> Result<()> {
+        match bg {
+            BackgroundMessage::Domain(message) => Ok(self.publish_tx.send(message).await?),
+            BackgroundMessage::StationReply(device_id, reply) => {
+                let station = {
+                    let db = self.db.lock().await;
+                    db.merge_reply(store::DeviceId(device_id.0), reply)?
+                };
+                Ok(self
+                    .publish_tx
+                    .send(DomainMessage::StationRefreshed(
+                        StationAndConnection {
+                            station,
+                            connection: Some(Connection::Connected),
+                        }
+                        .try_into()?,
+                        None,
+                    ))
+                    .await?)
             }
-
-            Ok(())
         }
-        ServerEvent::Completed(device_id) => {
-            info!("{:?}", &event);
-            nearby.mark_busy_and_publish(device_id, false).await?;
-            publish_tx
-                .send(DomainMessage::TransferProgress(TransferProgress {
-                    device_id: device_id.0.to_owned(),
-                    status: TransferStatus::Completed,
-                }))
-                .await?;
+    }
 
-            Ok(())
-        }
-        ServerEvent::Failed(device_id) => {
-            info!("{:?}", &event);
-            nearby.mark_busy_and_publish(device_id, false).await?;
-            publish_tx
-                .send(DomainMessage::TransferProgress(TransferProgress {
-                    device_id: device_id.0.to_owned(),
-                    status: TransferStatus::Failed,
-                }))
-                .await?;
-
-            Ok(())
+    async fn run(&self, mut bg_rx: Receiver<BackgroundMessage>) {
+        while let Some(bg) = bg_rx.recv().await {
+            match self.handle_background_message(bg).await {
+                Err(e) => warn!("Errr handling background: {:?}", e),
+                Ok(_) => {}
+            }
         }
     }
 }
@@ -127,13 +67,11 @@ async fn handle_server_event(
 async fn create_sdk(storage_path: String, publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
     info!("startup:bg");
 
-    let (bg_tx, mut bg_rx) = tokio::sync::mpsc::channel::<BackgroundMessage>(32);
-
-    let (transfer_publish, mut transfer_events) = tokio::sync::mpsc::channel::<ServerEvent>(32);
-
-    let server = Arc::new(Server::new(transfer_publish));
+    let (bg_tx, bg_rx) = tokio::sync::mpsc::channel::<BackgroundMessage>(32);
 
     let nearby = NearbyDevices::new(bg_tx.clone());
+
+    let server = Arc::new(Server::new());
 
     let sdk = Sdk::new(
         storage_path,
@@ -142,48 +80,33 @@ async fn create_sdk(storage_path: String, publish_tx: Sender<DomainMessage>) -> 
         publish_tx.clone(),
     )?;
 
-    sdk.open().await?;
+    let db = sdk.open().await?;
 
-    tokio::spawn({
-        let publish_tx = publish_tx.clone();
-        let db = sdk.db.clone();
-        async move {
-            while let Some(bg) = bg_rx.recv().await {
-                handle_background_message(&db, publish_tx.clone(), bg)
-                    .await
-                    .expect("Background error:")
-            }
-        }
-    });
+    let merge = MergeAndPublishReplies::new(db, publish_tx);
 
-    tokio::spawn({
-        let publish_tx = publish_tx.clone();
-        let nearby = nearby.clone();
-        async move {
-            let mut last_progress = None::<Instant>;
-            while let Some(event) = transfer_events.recv().await {
-                handle_server_event(&nearby, publish_tx.clone(), &mut last_progress, event)
-                    .await
-                    .expect("Background error:")
-            }
-        }
-    });
-
-    tokio::spawn(async move { background_task(nearby, server).await });
+    tokio::spawn(async move { background_task(nearby, server, merge, bg_rx).await });
 
     Ok(sdk)
 }
 
-async fn background_task(nearby: NearbyDevices, server: Arc<Server>) {
+async fn background_task(
+    nearby: NearbyDevices,
+    server: Arc<Server>,
+    merge: MergeAndPublishReplies,
+    bg_rx: Receiver<BackgroundMessage>,
+) {
     info!("bg:started");
 
-    let (tx, rx) = tokio::sync::mpsc::channel::<Discovered>(8);
+    let (transfer_publish, transfer_events) = tokio::sync::mpsc::channel::<ServerEvent>(32);
+
+    let (discovery_tx, discovery_rx) = tokio::sync::mpsc::channel::<Discovered>(8);
     let discovery = Discovery::default();
 
     tokio::select! {
-        _ = discovery.run(tx) => {},
-        _ = server.run() => {},
-        _ = nearby.run(rx) => {},
+        _ = discovery.run(discovery_tx) => {},
+        _ = nearby.run(discovery_rx, transfer_events) => {},
+        _ = server.run(transfer_publish) => {},
+        _ = merge.run(bg_rx) => {},
     };
 }
 
@@ -252,11 +175,11 @@ impl Sdk {
         })
     }
 
-    async fn open(&self) -> Result<()> {
+    async fn open(&self) -> Result<Arc<Mutex<Db>>> {
         let mut db = self.db.lock().await;
         db.open()?;
 
-        Ok(())
+        Ok(self.db.clone())
     }
 
     async fn get_my_stations(&self) -> Result<Vec<StationConfig>> {
