@@ -1,10 +1,7 @@
 use anyhow::Result;
 use chrono::{DateTime, Duration, Utc};
-use std::collections::HashMap;
-use std::sync::Arc;
-
-use tokio::sync::mpsc::Sender;
-use tokio::sync::Mutex;
+use std::{collections::HashMap, sync::Arc};
+use tokio::sync::{mpsc::Sender, Mutex};
 use tracing::*;
 
 use discovery::{DeviceId, Discovered};
@@ -15,13 +12,13 @@ use crate::api::{DomainMessage, NearbyStation};
 #[derive(Debug)]
 pub enum BackgroundMessage {
     Domain(DomainMessage),
-    StationReply(discovery::DeviceId, HttpReply),
+    StationReply(DeviceId, HttpReply),
 }
 
 #[derive(Clone)]
 pub struct NearbyDevices {
     publish_tx: Sender<BackgroundMessage>,
-    devices: Arc<Mutex<HashMap<discovery::DeviceId, Querying>>>,
+    devices: Arc<Mutex<HashMap<DeviceId, Querying>>>,
 }
 
 impl NearbyDevices {
@@ -32,7 +29,7 @@ impl NearbyDevices {
         }
     }
 
-    pub async fn get_connections(&self) -> Result<HashMap<discovery::DeviceId, Connection>> {
+    pub async fn get_connections(&self) -> Result<HashMap<DeviceId, Connection>> {
         let devices = self.devices.lock().await;
         Ok(devices
             .iter()
@@ -40,7 +37,7 @@ impl NearbyDevices {
             .collect())
     }
 
-    pub async fn discovered(&self, discovered: discovery::Discovered) -> Result<()> {
+    pub async fn discovered(&self, discovered: Discovered) -> Result<()> {
         if self.add_if_necessary(discovered).await? {
             Ok(self.publish().await?)
         } else {
@@ -68,7 +65,7 @@ impl NearbyDevices {
         }
     }
 
-    async fn add_if_necessary(&self, discovered: discovery::Discovered) -> Result<bool> {
+    async fn add_if_necessary(&self, discovered: Discovered) -> Result<bool> {
         let mut devices = self.devices.lock().await;
         let device_id = &discovered.device_id;
         if let Some(connected) = devices.get_mut(device_id) {
@@ -162,7 +159,7 @@ impl NearbyDevices {
         Ok(querying.into())
     }
 
-    async fn mark_finished(&self, device_id: &discovery::DeviceId) -> Result<()> {
+    async fn mark_finished(&self, device_id: &DeviceId) -> Result<()> {
         let mut devices = self.devices.lock().await;
         let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
         querying.finished = Some(Utc::now());
@@ -173,7 +170,7 @@ impl NearbyDevices {
 
     async fn mark_finished_and_publish_reply(
         &self,
-        device_id: &discovery::DeviceId,
+        device_id: &DeviceId,
         status: HttpReply,
     ) -> Result<()> {
         self.mark_finished(device_id).await?;
@@ -190,23 +187,19 @@ impl NearbyDevices {
         Ok(client.query_readings(&querying.http_addr).await?)
     }
 
-    pub async fn mark_busy(&self, device_id: &discovery::DeviceId, busy: bool) -> Result<()> {
+    pub async fn mark_busy(&self, device_id: &DeviceId, busy: bool) -> Result<()> {
         let mut devices = self.devices.lock().await;
         let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
         querying.busy = busy;
         Ok(())
     }
 
-    pub async fn mark_busy_and_publish(
-        &self,
-        device_id: &discovery::DeviceId,
-        busy: bool,
-    ) -> Result<()> {
+    pub async fn mark_busy_and_publish(&self, device_id: &DeviceId, busy: bool) -> Result<()> {
         self.mark_busy(device_id, busy).await?;
         self.publish().await
     }
 
-    pub async fn get_discovered(&self, device_id: &discovery::DeviceId) -> Option<Discovered> {
+    pub async fn get_discovered(&self, device_id: &DeviceId) -> Option<Discovered> {
         let devices = self.devices.lock().await;
         let querying = devices.get(device_id);
         querying.map(|q| q.discovered.clone())
@@ -236,7 +229,7 @@ impl Querying {
         let now = Utc::now();
         match self.attempted {
             Some(attempted) => {
-                if now - attempted > chrono::Duration::seconds(10) {
+                if now - attempted > Duration::seconds(10) {
                     true
                 } else {
                     match self.retry {

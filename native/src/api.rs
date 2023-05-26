@@ -1,20 +1,21 @@
 use anyhow::{bail, Result};
 use chrono::{DateTime, Utc};
 use flutter_rust_bridge::StreamSink;
-use std::io::Write;
-use std::ops::Sub;
-use std::sync::Arc;
-use std::time::UNIX_EPOCH;
+use std::{
+    io::Write,
+    ops::Sub,
+    sync::{Arc, Mutex as StdMutex},
+    time::UNIX_EPOCH,
+};
 use sync::{Server, ServerEvent};
 use thiserror::Error;
 use tokio::runtime::Runtime;
-use tokio::sync::mpsc::Sender;
-use tokio::sync::{oneshot, Mutex};
+use tokio::sync::{mpsc::Sender, oneshot, Mutex};
 use tokio::time::{sleep, Duration, Instant};
 use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
-use discovery::{Discovered, Discovery};
+use discovery::{DeviceId, Discovered, Discovery};
 use query::portal::{decode_token, PortalError, StatusCode, Tokens as PortalTokens};
 use store::Db;
 
@@ -22,8 +23,8 @@ use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
 
 const ONE_SECOND: Duration = Duration::from_secs(1);
 
-static SDK: std::sync::Mutex<Option<Sdk>> = std::sync::Mutex::new(None);
-static RUNTIME: std::sync::Mutex<Option<Runtime>> = std::sync::Mutex::new(None);
+static SDK: StdMutex<Option<Sdk>> = StdMutex::new(None);
+static RUNTIME: StdMutex<Option<Runtime>> = StdMutex::new(None);
 
 // The convention for Rust identifiers is the snake_case,
 // and they are automatically converted to camelCase on the Dart side.
@@ -364,7 +365,7 @@ impl Sdk {
         Ok(stations
             .into_iter()
             .map(|station| {
-                let device_id = &discovery::DeviceId(station.device_id.clone().0);
+                let device_id = &DeviceId(station.device_id.clone().0);
                 let connection = connections.get(&device_id).cloned();
                 Ok(StationAndConnection {
                     station,
@@ -438,7 +439,7 @@ impl Sdk {
 
         let discovered = self
             .nearby
-            .get_discovered(&discovery::DeviceId(device_id.clone()))
+            .get_discovered(&DeviceId(device_id.clone()))
             .await;
 
         if let Some(discovered) = discovered {
