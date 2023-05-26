@@ -26,69 +26,6 @@ const ONE_SECOND: Duration = Duration::from_secs(1);
 static SDK: StdMutex<Option<Sdk>> = StdMutex::new(None);
 static RUNTIME: StdMutex<Option<Runtime>> = StdMutex::new(None);
 
-// The convention for Rust identifiers is the snake_case,
-// and they are automatically converted to camelCase on the Dart side.
-pub fn rust_release_mode() -> bool {
-    cfg!(not(debug_assertions))
-}
-
-/// Wrapper so that we can implement required Write and MakeWriter traits.
-struct LogSink {
-    sink: StreamSink<String>,
-}
-
-/// Write log lines to our Flutter's sink.
-impl<'a> Write for &'a LogSink {
-    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        let line = String::from_utf8_lossy(buf).to_string();
-        self.sink.add(line);
-        Ok(buf.len())
-    }
-
-    fn flush(&mut self) -> std::io::Result<()> {
-        Ok(())
-    }
-}
-
-impl<'a> MakeWriter<'a> for LogSink {
-    type Writer = &'a LogSink;
-
-    fn make_writer(&'a self) -> Self::Writer {
-        self
-    }
-}
-
-pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
-    fn get_rust_log() -> String {
-        let mut original = std::env::var("RUST_LOG").unwrap_or_else(|_| "debug".into());
-
-        for logger in [
-            "hyper=",
-            "reqwest=",
-            "rusqlite_migration=",
-            "rustls=",
-            "h2=",
-        ] {
-            if !original.contains(logger) {
-                original.push_str(&format!(",{}info", logger));
-            }
-        }
-
-        original
-    }
-
-    if let Err(err) = tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::TRACE)
-        .with_env_filter(EnvFilter::new(get_rust_log()))
-        .with_writer(LogSink { sink })
-        .try_init()
-    {
-        bail!("{}", err);
-    }
-
-    Ok(())
-}
-
 async fn handle_background_message(
     db: &Arc<Mutex<Db>>,
     publish_tx: Sender<DomainMessage>,
@@ -97,8 +34,10 @@ async fn handle_background_message(
     match bg {
         BackgroundMessage::Domain(message) => Ok(publish_tx.send(message).await?),
         BackgroundMessage::StationReply(device_id, reply) => {
-            let db = db.lock().await;
-            let station = db.merge_reply(store::DeviceId(device_id.0), reply)?;
+            let station = {
+                let db = db.lock().await;
+                db.merge_reply(store::DeviceId(device_id.0), reply)?
+            };
             Ok(publish_tx
                 .send(DomainMessage::StationRefreshed(
                     StationAndConnection {
@@ -273,16 +212,6 @@ async fn background_task(nearby: NearbyDevices, server: Arc<Server>) {
         _ = maintain_discoveries => {},
         _ = query_stations => {},
     };
-}
-
-fn start_runtime() -> Result<Runtime> {
-    let rt = tokio::runtime::Builder::new_multi_thread()
-        .worker_threads(3)
-        .enable_all()
-        .thread_name("fieldkit-client")
-        .build()?;
-
-    Ok(rt)
 }
 
 pub fn start_native(sink: StreamSink<DomainMessage>, storage_path: String) -> Result<()> {
@@ -464,24 +393,6 @@ impl Sdk {
     }
 }
 
-fn with_runtime<R>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R>) -> Result<R> {
-    let mut sdk_guard = SDK.lock().expect("Get sdk");
-    let sdk = sdk_guard.as_mut().expect("Sdk present");
-
-    // We are calling async sdk methods from a thread that is not managed by
-    // Tokio runtime. For this to work we need to enter the handle.
-    // Ref: https://docs.rs/tokio/latest/tokio/runtime/struct.Handle.html#method.current
-    let mut rt_guard = RUNTIME.lock().expect("Get runtime");
-    let rt = rt_guard.as_mut().expect("Runtime present");
-    let _guard = rt.enter();
-    cb(rt, sdk)
-}
-
-#[allow(dead_code)]
-fn with_sdk<R>(cb: impl FnOnce(&mut Sdk) -> Result<R>) -> Result<R> {
-    with_runtime(|_rt, sdk| cb(sdk))
-}
-
 pub fn get_my_stations() -> Result<Vec<StationConfig>> {
     Ok(with_runtime(|rt, sdk| rt.block_on(sdk.get_my_stations()))?)
 }
@@ -508,6 +419,97 @@ pub fn start_upload(device_id: String) -> Result<TransferProgress> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.start_upload(device_id))
     })?)
+}
+
+fn start_runtime() -> Result<Runtime> {
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(3)
+        .enable_all()
+        .thread_name("fieldkit-client")
+        .build()?;
+
+    Ok(rt)
+}
+
+fn with_runtime<R>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R>) -> Result<R> {
+    let mut sdk_guard = SDK.lock().expect("Get sdk");
+    let sdk = sdk_guard.as_mut().expect("Sdk present");
+
+    // We are calling async sdk methods from a thread that is not managed by
+    // Tokio runtime. For this to work we need to enter the handle.
+    // Ref: https://docs.rs/tokio/latest/tokio/runtime/struct.Handle.html#method.current
+    let mut rt_guard = RUNTIME.lock().expect("Get runtime");
+    let rt = rt_guard.as_mut().expect("Runtime present");
+    let _guard = rt.enter();
+    cb(rt, sdk)
+}
+
+#[allow(dead_code)]
+fn with_sdk<R>(cb: impl FnOnce(&mut Sdk) -> Result<R>) -> Result<R> {
+    with_runtime(|_rt, sdk| cb(sdk))
+}
+
+// The convention for Rust identifiers is the snake_case,
+// and they are automatically converted to camelCase on the Dart side.
+pub fn rust_release_mode() -> bool {
+    cfg!(not(debug_assertions))
+}
+
+/// Wrapper so that we can implement required Write and MakeWriter traits.
+struct LogSink {
+    sink: StreamSink<String>,
+}
+
+/// Write log lines to our Flutter's sink.
+impl<'a> Write for &'a LogSink {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        let line = String::from_utf8_lossy(buf).to_string();
+        self.sink.add(line);
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
+impl<'a> MakeWriter<'a> for LogSink {
+    type Writer = &'a LogSink;
+
+    fn make_writer(&'a self) -> Self::Writer {
+        self
+    }
+}
+
+pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
+    fn get_rust_log() -> String {
+        let mut original = std::env::var("RUST_LOG").unwrap_or_else(|_| "debug".into());
+
+        for logger in [
+            "hyper=",
+            "reqwest=",
+            "rusqlite_migration=",
+            "rustls=",
+            "h2=",
+        ] {
+            if !original.contains(logger) {
+                original.push_str(&format!(",{}info", logger));
+            }
+        }
+
+        original
+    }
+
+    if let Err(err) = tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::TRACE)
+        .with_env_filter(EnvFilter::new(get_rust_log()))
+        .with_writer(LogSink { sink })
+        .try_init()
+    {
+        bail!("{}", err);
+    }
+
+    Ok(())
 }
 
 #[derive(Debug)]
