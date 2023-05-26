@@ -156,7 +156,7 @@ impl NearbyDevices {
             querying.retry = Some(Utc::now() + Duration::seconds(1));
         }
 
-        Ok(querying.into())
+        Ok((&*querying).into())
     }
 
     async fn mark_finished(&self, device_id: &DeviceId) -> Result<()> {
@@ -259,19 +259,7 @@ pub enum Connection {
     Lost,
 }
 
-// TODO Blanket implementation?
-
 impl Into<Connection> for &Querying {
-    fn into(self) -> Connection {
-        if self.is_disconnected() {
-            Connection::Lost
-        } else {
-            Connection::Connected
-        }
-    }
-}
-
-impl Into<Connection> for &mut Querying {
     fn into(self) -> Connection {
         if self.is_disconnected() {
             Connection::Lost
