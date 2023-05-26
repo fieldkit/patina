@@ -9,6 +9,9 @@
   "download": "Download",
   "upload": "Upload",
   "syncItemSubtitle": "{readings} readings.",
+  "syncProgressReadings": "Received {received} of {readings} readings.",
+  "syncWorking": "Working...",
+  "syncElapsed": "{elapsed} elapsed.",
 
   "myStationsTitle": "My Stations",
   "readyToDeploy": "Ready to deploy",

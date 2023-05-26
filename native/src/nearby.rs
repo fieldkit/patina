@@ -197,6 +197,15 @@ impl NearbyDevices {
         Ok(())
     }
 
+    pub async fn mark_busy_and_publish(
+        &self,
+        device_id: &discovery::DeviceId,
+        busy: bool,
+    ) -> Result<()> {
+        self.mark_busy(device_id, busy).await?;
+        self.publish().await
+    }
+
     pub async fn get_discovered(&self, device_id: &discovery::DeviceId) -> Option<Discovered> {
         let devices = self.devices.lock().await;
         let querying = devices.get(device_id);

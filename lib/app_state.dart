@@ -64,16 +64,16 @@ class KnownStationsModel extends ChangeNotifier {
 
     final status = transferProgress.status;
     if (status is TransferStatus_Starting) {
-      station.syncing = SyncingProgress(progress: transferProgress);
+      station.syncing = SyncingProgress(progress: null);
     }
     if (status is TransferStatus_Transferring) {
-      station.syncing = SyncingProgress(progress: transferProgress);
+      station.syncing = SyncingProgress(progress: status.field0);
     }
     if (status is TransferStatus_Completed) {
       station.syncing = null;
     }
     if (status is TransferStatus_Failed) {
-      station.syncing = SyncingProgress(progress: transferProgress);
+      station.syncing = SyncingProgress(progress: null);
     }
     notifyListeners();
   }
@@ -348,9 +348,9 @@ class PortalAccounts extends ChangeNotifier {
 }
 
 class SyncingProgress extends ChangeNotifier {
-  final TransferProgress progress;
+  final DownloadProgress? progress;
 
-  SyncingProgress({required this.progress});
+  SyncingProgress({this.progress});
 }
 
 class ModuleIdentity {

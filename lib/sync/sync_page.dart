@@ -57,6 +57,56 @@ class DataSyncPage extends StatelessWidget {
   }
 }
 
+class StationHeader extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+
+  const StationHeader({super.key, required this.title, this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    align(child) => Align(alignment: Alignment.topLeft, child: child);
+
+    const padding = EdgeInsets.symmetric(horizontal: 10, vertical: 6);
+
+    final top = align(Container(
+        padding: padding,
+        child: Text(
+          title,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
+        )));
+
+    if (subtitle == null) {
+      return top;
+    }
+
+    final bottom = align(Container(padding: padding, child: Text(subtitle!)));
+
+    return Column(children: [top, bottom]);
+  }
+}
+
+class SyncOptions extends StatelessWidget {
+  final VoidCallback onDownload;
+  final VoidCallback onUpload;
+
+  const SyncOptions({super.key, required this.onDownload, required this.onUpload});
+
+  @override
+  Widget build(BuildContext context) {
+    const padding = EdgeInsets.all(10);
+
+    pad(child) => Container(width: double.infinity, padding: padding, child: child);
+
+    final localizations = AppLocalizations.of(context)!;
+
+    return Column(children: [
+      pad(ElevatedButton(onPressed: onDownload, child: Text(localizations.download))),
+      pad(ElevatedButton(onPressed: onDownload, child: Text(localizations.download))),
+    ]);
+  }
+}
+
 class StationSyncStatus extends StatelessWidget {
   final StationModel station;
   final VoidCallback onDownload;
@@ -64,43 +114,57 @@ class StationSyncStatus extends StatelessWidget {
 
   StationConfig get config => station.config!;
 
+  bool get isSyncing => station.syncing != null;
+
   const StationSyncStatus({super.key, required this.station, required this.onDownload, required this.onUpload});
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = Text(AppLocalizations.of(context)!.syncItemSubtitle(config.data.records));
+    final localizations = AppLocalizations.of(context)!;
 
     return Container(
-        padding: const EdgeInsets.all(10),
-        child: Column(children: [
-          ListTile(
-            shape: RoundedRectangleBorder(
-              side: const BorderSide(color: Colors.grey, width: 1),
-              borderRadius: BorderRadius.circular(5),
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            border: Border.all(
+              color: const Color.fromRGBO(212, 212, 212, 1),
             ),
-            title: Container(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(config.name)),
-            subtitle: subtitle,
-            dense: false,
-            onTap: () {},
-          ),
-          buildLower(context)
+            borderRadius: const BorderRadius.all(Radius.circular(5))),
+        child: Column(children: [
+          StationHeader(title: config.name, subtitle: isSyncing ? null : localizations.syncItemSubtitle(config.data.records)),
+          isSyncing ? DownloadProgressPanel(progress: station.syncing!.progress) : SyncOptions(onDownload: onDownload, onUpload: onUpload)
         ]));
   }
+}
 
-  Widget buildLower(BuildContext context) {
-    if (station.syncing == null) {
-      return Column(children: [
-        Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: ElevatedButton(onPressed: onDownload, child: Text(AppLocalizations.of(context)!.download))),
-        Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: ElevatedButton(onPressed: onUpload, child: Text(AppLocalizations.of(context)!.upload)))
-      ]);
+class DownloadProgressPanel extends StatelessWidget {
+  final DownloadProgress? progress;
+
+  const DownloadProgressPanel({super.key, this.progress});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    padColumn(child) => Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: child);
+    padLabel(child) => Padding(padding: const EdgeInsets.symmetric(vertical: 5), child: child);
+    progressBar(value) => LinearProgressIndicator(value: value);
+
+    if (progress == null) {
+      return padColumn(Column(children: [
+        progressBar(0.0),
+        padLabel(Text(localizations.syncWorking)),
+      ]));
     }
 
-    return const Column(children: [Text("Busy")]);
+    final label = localizations.syncProgressReadings(progress!.total, progress!.received);
+    final started = DateTime.fromMillisecondsSinceEpoch(progress!.started);
+    final elapsed = DateTime.now().difference(started);
+    final subtitle = localizations.syncElapsed(elapsed.toString());
+
+    return padColumn(Column(children: [
+      progressBar(progress!.completed),
+      padLabel(Text(label)),
+      padLabel(Text(subtitle)),
+    ]));
   }
 }

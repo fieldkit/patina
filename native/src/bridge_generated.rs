@@ -176,6 +176,7 @@ impl support::IntoDartExceptPrimitive for DomainMessage {}
 impl support::IntoDart for DownloadProgress {
     fn into_dart(self) -> support::DartAbi {
         vec![
+            self.started.into_dart(),
             self.completed.into_dart(),
             self.total.into_dart(),
             self.received.into_dart(),

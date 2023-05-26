@@ -77,11 +77,13 @@ class DomainMessage with _$DomainMessage {
 }
 
 class DownloadProgress {
+  final int started;
   final double completed;
   final int total;
   final int received;
 
   const DownloadProgress({
+    required this.started,
     required this.completed,
     required this.total,
     required this.received,

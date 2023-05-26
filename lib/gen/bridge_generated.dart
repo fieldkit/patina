@@ -242,12 +242,13 @@ class NativeImpl implements Native {
 
   DownloadProgress _wire2api_download_progress(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 3)
-      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return DownloadProgress(
-      completed: _wire2api_f32(arr[0]),
-      total: _wire2api_usize(arr[1]),
-      received: _wire2api_usize(arr[2]),
+      started: _wire2api_u64(arr[0]),
+      completed: _wire2api_f32(arr[1]),
+      total: _wire2api_usize(arr[2]),
+      received: _wire2api_usize(arr[3]),
     );
   }
 

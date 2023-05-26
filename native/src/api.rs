@@ -4,6 +4,7 @@ use flutter_rust_bridge::StreamSink;
 use std::io::Write;
 use std::ops::Sub;
 use std::sync::Arc;
+use std::time::UNIX_EPOCH;
 use sync::{Server, ServerEvent};
 use thiserror::Error;
 use tokio::runtime::Runtime;
@@ -120,7 +121,7 @@ async fn handle_server_event(
     match &event {
         ServerEvent::Began(device_id) => {
             info!("{:?}", &event);
-            nearby.mark_busy(device_id, true).await.expect("!");
+            nearby.mark_busy_and_publish(device_id, true).await?;
             publish_tx
                 .send(DomainMessage::TransferProgress(TransferProgress {
                     device_id: device_id.0.to_owned(),
@@ -130,7 +131,7 @@ async fn handle_server_event(
 
             Ok(())
         }
-        ServerEvent::Progress(device_id, progress) => {
+        ServerEvent::Progress(device_id, started, progress) => {
             let publish_progress = match last_progress {
                 Some(last_progress) => {
                     tokio::time::Instant::now().sub(*last_progress) > Duration::from_millis(500)
@@ -145,13 +146,13 @@ async fn handle_server_event(
                     .send(DomainMessage::TransferProgress(TransferProgress {
                         device_id: device_id.0.to_owned(),
                         status: TransferStatus::Transferring(DownloadProgress {
+                            started: started.duration_since(UNIX_EPOCH)?.as_millis() as u64,
                             completed: total.completed,
                             total: total.total,
                             received: total.received,
                         }),
                     }))
-                    .await
-                    .expect("Transfer event error:");
+                    .await?;
 
                 *last_progress = Some(Instant::now());
             }
@@ -160,7 +161,7 @@ async fn handle_server_event(
         }
         ServerEvent::Completed(device_id) => {
             info!("{:?}", &event);
-            nearby.mark_busy(device_id, false).await.expect("!");
+            nearby.mark_busy_and_publish(device_id, false).await?;
             publish_tx
                 .send(DomainMessage::TransferProgress(TransferProgress {
                     device_id: device_id.0.to_owned(),
@@ -172,7 +173,7 @@ async fn handle_server_event(
         }
         ServerEvent::Failed(device_id) => {
             info!("{:?}", &event);
-            nearby.mark_busy(device_id, false).await.expect("!");
+            nearby.mark_busy_and_publish(device_id, false).await?;
             publish_tx
                 .send(DomainMessage::TransferProgress(TransferProgress {
                     device_id: device_id.0.to_owned(),
@@ -528,6 +529,7 @@ impl Tokens {
 
 #[derive(Debug)]
 pub struct DownloadProgress {
+    pub started: u64,
     pub completed: f32,
     pub total: usize,
     pub received: usize,
