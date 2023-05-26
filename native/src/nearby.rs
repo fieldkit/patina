@@ -1,7 +1,10 @@
 use anyhow::Result;
 use chrono::{DateTime, Duration, Utc};
 use std::{collections::HashMap, sync::Arc};
-use tokio::sync::{mpsc::Sender, Mutex};
+use tokio::sync::{
+    mpsc::{Receiver, Sender},
+    Mutex,
+};
 use tracing::*;
 
 use discovery::{DeviceId, Discovered};
@@ -21,11 +24,45 @@ pub struct NearbyDevices {
     devices: Arc<Mutex<HashMap<DeviceId, Querying>>>,
 }
 
+const ONE_SECOND: std::time::Duration = std::time::Duration::from_secs(1);
+
 impl NearbyDevices {
     pub fn new(publish_tx: Sender<BackgroundMessage>) -> Self {
         Self {
             publish_tx,
             devices: Default::default(),
+        }
+    }
+
+    pub async fn run(&self, mut rx: Receiver<Discovered>) -> Result<()> {
+        let maintain_discoveries = tokio::spawn({
+            let nearby = self.clone();
+            async move {
+                while let Some(discovered) = rx.recv().await {
+                    match nearby.discovered(discovered).await {
+                        Err(e) => warn!("Error handling discovered: {}", e),
+                        _ => {}
+                    }
+                }
+            }
+        });
+
+        let query_stations = tokio::spawn({
+            let nearby = self.clone();
+            async move {
+                loop {
+                    match nearby.schedule_queries().await {
+                        Err(e) => warn!("Error scheduling queries: {}", e),
+                        Ok(false) => tokio::time::sleep(ONE_SECOND).await,
+                        Ok(true) => {}
+                    }
+                }
+            }
+        });
+
+        tokio::select! {
+            _ = maintain_discoveries => Ok(()),
+            _ = query_stations => Ok(()),
         }
     }
 

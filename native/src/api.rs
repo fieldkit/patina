@@ -11,7 +11,7 @@ use sync::{Server, ServerEvent};
 use thiserror::Error;
 use tokio::runtime::Runtime;
 use tokio::sync::{mpsc::Sender, oneshot, Mutex};
-use tokio::time::{sleep, Duration, Instant};
+use tokio::time::{Duration, Instant};
 use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
@@ -20,8 +20,6 @@ use query::portal::{decode_token, PortalError, StatusCode, Tokens as PortalToken
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
-
-const ONE_SECOND: Duration = Duration::from_secs(1);
 
 static SDK: StdMutex<Option<Sdk>> = StdMutex::new(None);
 static RUNTIME: StdMutex<Option<Runtime>> = StdMutex::new(None);
@@ -179,38 +177,13 @@ async fn create_sdk(storage_path: String, publish_tx: Sender<DomainMessage>) -> 
 async fn background_task(nearby: NearbyDevices, server: Arc<Server>) {
     info!("bg:started");
 
-    let (tx, mut rx) = tokio::sync::mpsc::channel::<Discovered>(32);
+    let (tx, rx) = tokio::sync::mpsc::channel::<Discovered>(8);
     let discovery = Discovery::default();
-
-    let maintain_discoveries = tokio::spawn({
-        let nearby = nearby.clone();
-        async move {
-            while let Some(discovered) = rx.recv().await {
-                match nearby.discovered(discovered).await {
-                    Err(e) => warn!("Error handling discovered: {}", e),
-                    _ => {}
-                }
-            }
-        }
-    });
-
-    let query_stations = tokio::spawn({
-        async move {
-            loop {
-                match nearby.schedule_queries().await {
-                    Err(e) => warn!("Error scheduling queries: {}", e),
-                    Ok(false) => sleep(ONE_SECOND).await,
-                    Ok(true) => {}
-                }
-            }
-        }
-    });
 
     tokio::select! {
         _ = discovery.run(tx) => {},
         _ = server.run() => {},
-        _ = maintain_discoveries => {},
-        _ = query_stations => {},
+        _ = nearby.run(rx) => {},
     };
 }
 
