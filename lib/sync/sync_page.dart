@@ -146,13 +146,14 @@ class DownloadProgressPanel extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
 
     padColumn(child) => Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: child);
-    padLabel(child) => Padding(padding: const EdgeInsets.symmetric(vertical: 5), child: child);
+    padLabel(child) => Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: child);
+    padBelowProgress(child) => Padding(padding: const EdgeInsets.symmetric(vertical: 10), child: child);
     progressBar(value) => LinearProgressIndicator(value: value);
 
     if (progress == null) {
       return padColumn(Column(children: [
         progressBar(0.0),
-        padLabel(Text(localizations.syncWorking)),
+        padBelowProgress(Text(localizations.syncWorking)),
       ]));
     }
 
@@ -163,8 +164,10 @@ class DownloadProgressPanel extends StatelessWidget {
 
     return padColumn(Column(children: [
       progressBar(progress!.completed),
-      padLabel(Text(label)),
-      padLabel(Text(subtitle)),
+      padBelowProgress(Column(children: [
+        padLabel(Text(label)),
+        padLabel(Text(subtitle)),
+      ]))
     ]));
   }
 }
