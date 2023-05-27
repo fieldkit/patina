@@ -5,7 +5,7 @@ use std::{
     io::Write,
     sync::{Arc, Mutex as StdMutex},
 };
-use sync::{Server, ServerEvent};
+use sync::{Server, ServerEvent, UdpTransport};
 use thiserror::Error;
 use tokio::sync::{mpsc::Sender, oneshot, Mutex};
 use tokio::{runtime::Runtime, sync::mpsc::Receiver};
@@ -71,7 +71,7 @@ async fn create_sdk(storage_path: String, publish_tx: Sender<DomainMessage>) -> 
 
     let nearby = NearbyDevices::new(bg_tx.clone());
 
-    let server = Arc::new(Server::new());
+    let server = Arc::new(Server::new(UdpTransport::new()));
 
     let sdk = Sdk::new(
         storage_path,
@@ -91,7 +91,7 @@ async fn create_sdk(storage_path: String, publish_tx: Sender<DomainMessage>) -> 
 
 async fn background_task(
     nearby: NearbyDevices,
-    server: Arc<Server>,
+    server: Arc<Server<UdpTransport>>,
     merge: MergeAndPublishReplies,
     bg_rx: Receiver<BackgroundMessage>,
 ) {
@@ -155,7 +155,7 @@ struct Sdk {
     storage_path: String,
     db: Arc<Mutex<Db>>,
     nearby: NearbyDevices,
-    server: Arc<Server>,
+    server: Arc<Server<UdpTransport>>,
     publish_tx: Sender<DomainMessage>,
 }
 
@@ -163,7 +163,7 @@ impl Sdk {
     fn new(
         storage_path: String,
         nearby: NearbyDevices,
-        server: Arc<Server>,
+        server: Arc<Server<UdpTransport>>,
         publish_tx: Sender<DomainMessage>,
     ) -> Result<Self> {
         Ok(Self {
