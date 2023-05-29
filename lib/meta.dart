@@ -3,32 +3,39 @@ import 'package:flutter/material.dart';
 import 'gen/ffi.dart';
 
 class LocalizedModule {
+  String key;
   String name;
   AssetImage icon;
 
-  LocalizedModule({required this.name, required this.icon});
+  bool get canCalibrate => key.startsWith("modules.water.");
+
+  LocalizedModule({required this.key, required this.name, required this.icon});
 
   static LocalizedModule get(ModuleConfig module) {
     switch (module.key) {
       case "modules.water.temp":
-        return LocalizedModule(icon: const AssetImage("resources/images/icon_module_water_temp.png"), name: "Water Temperature Module");
+        return LocalizedModule(
+            key: module.key, icon: const AssetImage("resources/images/icon_module_water_temp.png"), name: "Water Temperature Module");
       case "modules.water.ph":
-        return LocalizedModule(icon: const AssetImage("resources/images/icon_module_water_ph.png"), name: "pH Module");
+        return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_water_ph.png"), name: "pH Module");
       case "modules.water.orp":
-        return LocalizedModule(icon: const AssetImage("resources/images/icon_module_water_orp.png"), name: "ORP Module");
+        return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_water_orp.png"), name: "ORP Module");
       case "modules.water.do":
-        return LocalizedModule(icon: const AssetImage("resources/images/icon_module_water_do.png"), name: "Dissolved Oxygen Module");
+        return LocalizedModule(
+            key: module.key, icon: const AssetImage("resources/images/icon_module_water_do.png"), name: "Dissolved Oxygen Module");
       case "modules.water.ec":
-        return LocalizedModule(icon: const AssetImage("resources/images/icon_module_water_ec.png"), name: "Conductivity Module");
+        return LocalizedModule(
+            key: module.key, icon: const AssetImage("resources/images/icon_module_water_ec.png"), name: "Conductivity Module");
       case "modules.weather":
-        return LocalizedModule(icon: const AssetImage("resources/images/icon_module_weather.png"), name: "Weather Module");
+        return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_weather.png"), name: "Weather Module");
       case "modules.diagnostics":
-        return LocalizedModule(icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Diagnostics Module");
+        return LocalizedModule(
+            key: module.key, icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Diagnostics Module");
       case "modules.random":
-        return LocalizedModule(icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Random Module");
+        return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Random Module");
       default:
         debugPrint("Unknown module key: ${module.key}");
-        return LocalizedModule(icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Unknown Module");
+        return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Unknown Module");
     }
   }
 }

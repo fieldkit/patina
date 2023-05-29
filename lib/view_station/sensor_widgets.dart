@@ -114,6 +114,26 @@ class ModuleInfo extends StatelessWidget {
       return SensorInfo(sensor: sensor);
     }).toList();
 
+    final Widget maybeCalibration = localized.canCalibrate
+        ? Container(
+            padding: const EdgeInsets.all(10),
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CalibrationPage(
+                        config: CalibrationPointConfig(
+                            moduleIdentity: module.identity, standardsRemaining: [Standard(4), Standard(7), Standard(10)])),
+                  ),
+                );
+              },
+              // style: ElevatedButton.styleFrom(),
+              child: Text(AppLocalizations.of(context)!.calibrateButton),
+            ))
+        : const SizedBox.shrink();
+
     return Container(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -123,23 +143,7 @@ class ModuleInfo extends StatelessWidget {
             borderRadius: const BorderRadius.all(Radius.circular(5))),
         child: Column(children: [
           ListTile(leading: Image(image: localized.icon), title: Text(localized.name), subtitle: Text(bay)),
-          Container(
-              padding: const EdgeInsets.all(10),
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CalibrationPage(
-                          config: CalibrationPointConfig(
-                              moduleIdentity: module.identity, standardsRemaining: [Standard(4), Standard(7), Standard(10)])),
-                    ),
-                  );
-                },
-                // style: ElevatedButton.styleFrom(),
-                child: Text(AppLocalizations.of(context)!.calibrateButton),
-              )),
+          maybeCalibration,
           SensorsGrid(children: sensors),
         ]));
   }
