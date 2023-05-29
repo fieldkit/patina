@@ -12,6 +12,7 @@
   "syncProgressReadings": "Received {received} of {readings} readings.",
   "syncWorking": "Working...",
   "syncElapsed": "{elapsed} elapsed.",
+  "syncPercentageComplete": "%{complete} complete.",
 
   "myStationsTitle": "My Stations",
   "readyToDeploy": "Ready to deploy",

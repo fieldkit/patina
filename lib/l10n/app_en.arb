@@ -12,6 +12,18 @@
   "syncProgressReadings": "Received {received} of {readings} readings.",
   "syncWorking": "Working...",
   "syncElapsed": "{elapsed} elapsed.",
+  "syncPercentageComplete": "{complete} complete.",
+  "@syncPercentageComplete" :{
+    "placeholders": {
+        "complete": {
+          "type": "double",
+          "format": "decimalPercentPattern",
+          "optionalParameters": {
+            "decimalDigits": 2
+          }
+        }
+      }
+  },
 
   "myStationsTitle": "My Stations",
   "readyToDeploy": "Ready to deploy",

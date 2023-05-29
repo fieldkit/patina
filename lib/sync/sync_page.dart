@@ -130,7 +130,11 @@ class StationSyncStatus extends StatelessWidget {
             ),
             borderRadius: const BorderRadius.all(Radius.circular(5))),
         child: Column(children: [
-          StationHeader(title: config.name, subtitle: isSyncing ? null : localizations.syncItemSubtitle(config.data.records)),
+          StationHeader(
+              title: config.name,
+              subtitle: isSyncing
+                  ? localizations.syncPercentageComplete(station.syncing?.progress?.completed ?? 0)
+                  : localizations.syncItemSubtitle(config.data.records)),
           isSyncing ? DownloadProgressPanel(progress: station.syncing!.progress) : SyncOptions(onDownload: onDownload, onUpload: onUpload)
         ]));
   }
