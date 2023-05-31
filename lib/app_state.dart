@@ -58,11 +58,10 @@ class KnownStationsModel extends ChangeNotifier {
 
   void applyTransferProgress(TransferProgress transferProgress) {
     final deviceId = transferProgress.deviceId;
-    debugPrint("$deviceId transfer ${transferProgress.status}");
     final station = findOrCreate(deviceId);
-    station.connected = true;
-
     final status = transferProgress.status;
+
+    station.connected = true;
     if (status is TransferStatus_Starting) {
       station.syncing = SyncingProgress(progress: null);
     }
@@ -75,6 +74,7 @@ class KnownStationsModel extends ChangeNotifier {
     if (status is TransferStatus_Failed) {
       station.syncing = SyncingProgress(progress: null);
     }
+
     notifyListeners();
   }
 

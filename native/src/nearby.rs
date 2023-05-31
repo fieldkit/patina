@@ -301,7 +301,7 @@ impl NearbyDevices {
                 };
 
                 if publish_progress {
-                    info!("{:?}", &event);
+                    info!("{:?}", &progress);
                     let total = progress.total.as_ref().unwrap();
                     publish_tx
                         .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(

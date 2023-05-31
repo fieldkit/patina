@@ -38,9 +38,9 @@ Future<void> _startNative(AppEventDispatcher dispatcher) async {
   await Future.delayed(const Duration(milliseconds: 100));
 
   await for (final e in api.startNative(storagePath: storagePath)) {
-    var display = e.toString().trim();
-    debugPrint(display);
-    developer.log(display);
+    // var display = e.toString().trim();
+    // debugPrint(display);
+    // developer.log(display);
     dispatcher.dispatch(e);
   }
 }

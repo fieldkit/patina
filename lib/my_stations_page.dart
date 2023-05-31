@@ -13,13 +13,11 @@ class StationsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("stations-tab:build");
     return Navigator(onGenerateRoute: (RouteSettings settings) {
       return MaterialPageRoute(
         settings: settings,
         builder: (context) => Consumer<KnownStationsModel>(
           builder: (context, knownStations, child) {
-            debugPrint("stations-tab:list-stations-page");
             return ListStationsPage(known: knownStations);
           },
         ),
@@ -35,8 +33,6 @@ class ListStationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("list-stations-page:build");
-
     final List<Widget> map = [const SizedBox(height: 200, child: Map())];
 
     final cards = known.stations.map((station) {
