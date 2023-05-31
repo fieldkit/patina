@@ -51,3 +51,4 @@ Cargo.lock
 pubspec.lock
 
 rustfk
+/fk-data
