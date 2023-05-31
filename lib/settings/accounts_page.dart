@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 import '../app_state.dart';
@@ -174,18 +175,26 @@ class _AccountState extends State<AccountForm> {
             ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.saveAndValidate()) {
+                  final overlay = context.loaderOverlay;
                   final messenger = ScaffoldMessenger.of(context);
                   final navigator = Navigator.of(context);
                   final email = _formKey.currentState!.value['email'];
                   final password = _formKey.currentState!.value['password'];
-                  final saved = await accounts.addOrUpdate(email, password);
-                  if (saved != null) {
-                    navigator.pop();
-                    widget.onSave(saved);
-                  } else {
-                    messenger.showSnackBar(SnackBar(
-                      content: Text(localizations.accountFormFail),
-                    ));
+                  overlay.show();
+                  try {
+                    final saved = await accounts.addOrUpdate(email, password);
+                    if (saved != null) {
+                      navigator.pop();
+                      widget.onSave(saved);
+                    } else {
+                      messenger.showSnackBar(SnackBar(
+                        content: Text(localizations.accountFormFail),
+                      ));
+                    }
+                  } catch (error) {
+                    debugPrint("$error");
+                  } finally {
+                    overlay.hide();
                   }
                 }
               },

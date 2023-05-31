@@ -31,7 +31,7 @@ class SettingsTab extends StatelessWidget {
                   ),
                   const Divider(),
                   ListTile(
-                    title: const Text("(DEV) Open Flow"),
+                    title: const Text("Open Flow"),
                     onTap: () {
                       Navigator.push(
                         context,
