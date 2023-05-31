@@ -102,7 +102,7 @@ class SyncOptions extends StatelessWidget {
 
     return Column(children: [
       pad(ElevatedButton(onPressed: onDownload, child: Text(localizations.download))),
-      pad(ElevatedButton(onPressed: onDownload, child: Text(localizations.download))),
+      pad(ElevatedButton(onPressed: onUpload, child: Text(localizations.upload))),
     ]);
   }
 }
