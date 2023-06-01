@@ -1,4 +1,4 @@
-package com.example.flutter_rust_bridge_template
+package org.fieldkit.app
 
 import io.flutter.embedding.android.FlutterActivity
 
