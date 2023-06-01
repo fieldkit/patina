@@ -327,7 +327,7 @@ pub fn start_upload(device_id: String) -> Result<TransferProgress> {
 
 fn start_runtime() -> Result<Runtime> {
     let rt = tokio::runtime::Builder::new_multi_thread()
-        .worker_threads(3)
+        .worker_threads(4)
         .enable_all()
         .thread_name("fieldkit-client")
         .build()?;

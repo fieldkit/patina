@@ -295,7 +295,7 @@ impl NearbyDevices {
                 let publish_progress = match last_progress {
                     Some(last_progress) => {
                         tokio::time::Instant::now().sub(*last_progress)
-                            > std::time::Duration::from_millis(500)
+                            > std::time::Duration::from_millis(200)
                     }
                     None => true,
                 };
