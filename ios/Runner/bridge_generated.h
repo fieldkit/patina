@@ -36,10 +36,6 @@ uintptr_t new_dart_opaque(Dart_Handle handle);
 
 intptr_t init_frb_dart_api_dl(void *obj);
 
-void wire_rust_release_mode(int64_t port_);
-
-void wire_create_log_sink(int64_t port_);
-
 void wire_start_native(int64_t port_, struct wire_uint_8_list *storage_path);
 
 void wire_get_my_stations(int64_t port_);
@@ -54,6 +50,10 @@ void wire_start_download(int64_t port_, struct wire_uint_8_list *device_id);
 
 void wire_start_upload(int64_t port_, struct wire_uint_8_list *device_id);
 
+void wire_rust_release_mode(int64_t port_);
+
+void wire_create_log_sink(int64_t port_);
+
 struct wire_Tokens *new_box_autoadd_tokens_0(void);
 
 struct wire_TransmissionToken *new_box_autoadd_transmission_token_0(void);
@@ -64,14 +64,14 @@ void free_WireSyncReturn(WireSyncReturn ptr);
 
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
-    dummy_var ^= ((int64_t) (void*) wire_rust_release_mode);
-    dummy_var ^= ((int64_t) (void*) wire_create_log_sink);
     dummy_var ^= ((int64_t) (void*) wire_start_native);
     dummy_var ^= ((int64_t) (void*) wire_get_my_stations);
     dummy_var ^= ((int64_t) (void*) wire_authenticate_portal);
     dummy_var ^= ((int64_t) (void*) wire_validate_tokens);
     dummy_var ^= ((int64_t) (void*) wire_start_download);
     dummy_var ^= ((int64_t) (void*) wire_start_upload);
+    dummy_var ^= ((int64_t) (void*) wire_rust_release_mode);
+    dummy_var ^= ((int64_t) (void*) wire_create_log_sink);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_tokens_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_transmission_token_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);

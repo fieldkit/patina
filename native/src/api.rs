@@ -447,6 +447,7 @@ pub struct DownloadProgress {
 pub enum TransferStatus {
     Starting,
     Transferring(DownloadProgress),
+    Processing,
     Completed,
     Failed,
 }

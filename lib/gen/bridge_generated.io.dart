@@ -180,34 +180,6 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _init_frb_dart_api_dl = _init_frb_dart_api_dlPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
 
-  void wire_rust_release_mode(
-    int port_,
-  ) {
-    return _wire_rust_release_mode(
-      port_,
-    );
-  }
-
-  late final _wire_rust_release_modePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_rust_release_mode');
-  late final _wire_rust_release_mode =
-      _wire_rust_release_modePtr.asFunction<void Function(int)>();
-
-  void wire_create_log_sink(
-    int port_,
-  ) {
-    return _wire_create_log_sink(
-      port_,
-    );
-  }
-
-  late final _wire_create_log_sinkPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_create_log_sink');
-  late final _wire_create_log_sink =
-      _wire_create_log_sinkPtr.asFunction<void Function(int)>();
-
   void wire_start_native(
     int port_,
     ffi.Pointer<wire_uint_8_list> storage_path,
@@ -310,6 +282,34 @@ class NativeWire implements FlutterRustBridgeWireBase {
               ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_start_upload');
   late final _wire_start_upload = _wire_start_uploadPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_rust_release_mode(
+    int port_,
+  ) {
+    return _wire_rust_release_mode(
+      port_,
+    );
+  }
+
+  late final _wire_rust_release_modePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_rust_release_mode');
+  late final _wire_rust_release_mode =
+      _wire_rust_release_modePtr.asFunction<void Function(int)>();
+
+  void wire_create_log_sink(
+    int port_,
+  ) {
+    return _wire_create_log_sink(
+      port_,
+    );
+  }
+
+  late final _wire_create_log_sinkPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_create_log_sink');
+  late final _wire_create_log_sink =
+      _wire_create_log_sinkPtr.asFunction<void Function(int)>();
 
   ffi.Pointer<wire_Tokens> new_box_autoadd_tokens_0() {
     return _new_box_autoadd_tokens_0();

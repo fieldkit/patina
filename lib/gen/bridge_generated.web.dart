@@ -71,10 +71,6 @@ external NativeWasmModule get wasmModule;
 class NativeWasmModule implements WasmModule {
   external Object /* Promise */ call([String? moduleName]);
   external NativeWasmModule bind(dynamic thisArg, String moduleName);
-  external dynamic /* void */ wire_rust_release_mode(NativePortType port_);
-
-  external dynamic /* void */ wire_create_log_sink(NativePortType port_);
-
   external dynamic /* void */ wire_start_native(
       NativePortType port_, String storage_path);
 
@@ -91,6 +87,10 @@ class NativeWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_start_upload(
       NativePortType port_, String device_id);
+
+  external dynamic /* void */ wire_rust_release_mode(NativePortType port_);
+
+  external dynamic /* void */ wire_create_log_sink(NativePortType port_);
 }
 
 // Section: WASM wire connector
@@ -98,12 +98,6 @@ class NativeWasmModule implements WasmModule {
 class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   NativeWire(FutureOr<WasmModule> module)
       : super(WasmModule.cast<NativeWasmModule>(module));
-
-  void wire_rust_release_mode(NativePortType port_) =>
-      wasmModule.wire_rust_release_mode(port_);
-
-  void wire_create_log_sink(NativePortType port_) =>
-      wasmModule.wire_create_log_sink(port_);
 
   void wire_start_native(NativePortType port_, String storage_path) =>
       wasmModule.wire_start_native(port_, storage_path);
@@ -123,4 +117,10 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
 
   void wire_start_upload(NativePortType port_, String device_id) =>
       wasmModule.wire_start_upload(port_, device_id);
+
+  void wire_rust_release_mode(NativePortType port_) =>
+      wasmModule.wire_rust_release_mode(port_);
+
+  void wire_create_log_sink(NativePortType port_) =>
+      wasmModule.wire_create_log_sink(port_);
 }

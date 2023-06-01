@@ -21,26 +21,6 @@ use std::sync::Arc;
 
 // Section: wire functions
 
-fn wire_rust_release_mode_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "rust_release_mode",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || move |task_callback| Ok(rust_release_mode()),
-    )
-}
-fn wire_create_log_sink_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "create_log_sink",
-            port: Some(port_),
-            mode: FfiCallMode::Stream,
-        },
-        move || move |task_callback| create_log_sink(task_callback.stream_sink()),
-    )
-}
 fn wire_start_native_impl(port_: MessagePort, storage_path: impl Wire2Api<String> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -119,6 +99,26 @@ fn wire_start_upload_impl(port_: MessagePort, device_id: impl Wire2Api<String> +
             let api_device_id = device_id.wire2api();
             move |task_callback| start_upload(api_device_id)
         },
+    )
+}
+fn wire_rust_release_mode_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "rust_release_mode",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(rust_release_mode()),
+    )
+}
+fn wire_create_log_sink_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "create_log_sink",
+            port: Some(port_),
+            mode: FfiCallMode::Stream,
+        },
+        move || move |task_callback| create_log_sink(task_callback.stream_sink()),
     )
 }
 // Section: wrapper structs
@@ -297,8 +297,9 @@ impl support::IntoDart for TransferStatus {
         match self {
             Self::Starting => vec![0.into_dart()],
             Self::Transferring(field0) => vec![1.into_dart(), field0.into_dart()],
-            Self::Completed => vec![2.into_dart()],
-            Self::Failed => vec![3.into_dart()],
+            Self::Processing => vec![2.into_dart()],
+            Self::Completed => vec![3.into_dart()],
+            Self::Failed => vec![4.into_dart()],
         }
         .into_dart()
     }

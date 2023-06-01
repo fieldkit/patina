@@ -2,16 +2,6 @@ use super::*;
 // Section: wire functions
 
 #[no_mangle]
-pub extern "C" fn wire_rust_release_mode(port_: i64) {
-    wire_rust_release_mode_impl(port_)
-}
-
-#[no_mangle]
-pub extern "C" fn wire_create_log_sink(port_: i64) {
-    wire_create_log_sink_impl(port_)
-}
-
-#[no_mangle]
 pub extern "C" fn wire_start_native(port_: i64, storage_path: *mut wire_uint_8_list) {
     wire_start_native_impl(port_, storage_path)
 }
@@ -43,6 +33,16 @@ pub extern "C" fn wire_start_download(port_: i64, device_id: *mut wire_uint_8_li
 #[no_mangle]
 pub extern "C" fn wire_start_upload(port_: i64, device_id: *mut wire_uint_8_list) {
     wire_start_upload_impl(port_, device_id)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_rust_release_mode(port_: i64) {
+    wire_rust_release_mode_impl(port_)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_create_log_sink(port_: i64) {
+    wire_create_log_sink_impl(port_)
 }
 
 // Section: allocate functions

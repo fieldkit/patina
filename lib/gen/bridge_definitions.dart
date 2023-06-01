@@ -14,14 +14,6 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'bridge_definitions.freezed.dart';
 
 abstract class Native {
-  Future<bool> rustReleaseMode({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kRustReleaseModeConstMeta;
-
-  Stream<String> createLogSink({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kCreateLogSinkConstMeta;
-
   Stream<DomainMessage> startNative(
       {required String storagePath, dynamic hint});
 
@@ -49,6 +41,14 @@ abstract class Native {
       {required String deviceId, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStartUploadConstMeta;
+
+  Future<bool> rustReleaseMode({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kRustReleaseModeConstMeta;
+
+  Stream<String> createLogSink({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCreateLogSinkConstMeta;
 }
 
 class BatteryInfo {
@@ -228,6 +228,7 @@ class TransferStatus with _$TransferStatus {
   const factory TransferStatus.transferring(
     DownloadProgress field0,
   ) = TransferStatus_Transferring;
+  const factory TransferStatus.processing() = TransferStatus_Processing;
   const factory TransferStatus.completed() = TransferStatus_Completed;
   const factory TransferStatus.failed() = TransferStatus_Failed;
 }

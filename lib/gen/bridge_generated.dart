@@ -20,38 +20,6 @@ class NativeImpl implements Native {
   factory NativeImpl.wasm(FutureOr<WasmModule> module) =>
       NativeImpl(module as ExternalLibrary);
   NativeImpl.raw(this._platform);
-  Future<bool> rustReleaseMode({dynamic hint}) {
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_rust_release_mode(port_),
-      parseSuccessData: _wire2api_bool,
-      constMeta: kRustReleaseModeConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kRustReleaseModeConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "rust_release_mode",
-        argNames: [],
-      );
-
-  Stream<String> createLogSink({dynamic hint}) {
-    return _platform.executeStream(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_create_log_sink(port_),
-      parseSuccessData: _wire2api_String,
-      constMeta: kCreateLogSinkConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kCreateLogSinkConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "create_log_sink",
-        argNames: [],
-      );
-
   Stream<DomainMessage> startNative(
       {required String storagePath, dynamic hint}) {
     var arg0 = _platform.api2wire_String(storagePath);
@@ -157,6 +125,38 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "start_upload",
         argNames: ["deviceId"],
+      );
+
+  Future<bool> rustReleaseMode({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_rust_release_mode(port_),
+      parseSuccessData: _wire2api_bool,
+      constMeta: kRustReleaseModeConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kRustReleaseModeConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "rust_release_mode",
+        argNames: [],
+      );
+
+  Stream<String> createLogSink({dynamic hint}) {
+    return _platform.executeStream(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_create_log_sink(port_),
+      parseSuccessData: _wire2api_String,
+      constMeta: kCreateLogSinkConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kCreateLogSinkConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "create_log_sink",
+        argNames: [],
       );
 
   void dispose() {
@@ -431,8 +431,10 @@ class NativeImpl implements Native {
           _wire2api_box_autoadd_download_progress(raw[1]),
         );
       case 2:
-        return TransferStatus_Completed();
+        return TransferStatus_Processing();
       case 3:
+        return TransferStatus_Completed();
+      case 4:
         return TransferStatus_Failed();
       default:
         throw Exception("unreachable");

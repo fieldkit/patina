@@ -291,7 +291,7 @@ impl NearbyDevices {
 
                 Ok(())
             }
-            ServerEvent::Progress(device_id, started, progress) => {
+            ServerEvent::Transferring(device_id, started, progress) => {
                 let publish_progress = match last_progress {
                     Some(last_progress) => {
                         tokio::time::Instant::now().sub(*last_progress)
@@ -319,6 +319,18 @@ impl NearbyDevices {
 
                     *last_progress = Some(Instant::now());
                 }
+
+                Ok(())
+            }
+            ServerEvent::Processing(device_id) => {
+                publish_tx
+                    .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
+                        TransferProgress {
+                            device_id: device_id.0.to_owned(),
+                            status: TransferStatus::Processing,
+                        },
+                    )))
+                    .await?;
 
                 Ok(())
             }
