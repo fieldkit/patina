@@ -86,20 +86,23 @@ class AccountsList extends StatelessWidget {
 }
 
 class AccountStatus extends StatelessWidget {
-  final PortalAccount account;
+  final Validity validity;
+  final bool active;
 
-  const AccountStatus({super.key, required this.account});
+  const AccountStatus({super.key, required this.validity, required this.active});
 
   @override
   Widget build(BuildContext context) {
-    switch (account.valid) {
+    text(value) => Container(width: double.infinity, margin: const EdgeInsets.all(5), child: Text(value));
+
+    switch (validity) {
       case Validity.unknown:
-        return const Text("Odd, not sure about this account. Bug?");
+        return ColoredBox(color: const Color.fromRGBO(250, 197, 89, 1), child: text("Odd, not sure about this account. Bug?"));
       case Validity.invalid:
-        return const Text("Something is wrong with this account.");
+        return ColoredBox(color: const Color.fromRGBO(240, 144, 141, 1), child: text("Something is wrong with this account."));
       case Validity.valid:
-        if (account.active) {
-          return const Text("This is your default account.");
+        if (active) {
+          return text("This is your default account.");
         } else {
           return const SizedBox.shrink();
         }
@@ -119,7 +122,7 @@ class AccountItem extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
 
     return BorderedListItem(header: GenericListItemHeader(title: account.email, subtitle: account.name), children: [
-      WH.align(WH.padPage(AccountStatus(account: account))),
+      WH.align(AccountStatus(validity: account.valid, active: account.active)),
       WH.align(WH.padChildrenPage([
         ElevatedButton(
             onPressed: () {
