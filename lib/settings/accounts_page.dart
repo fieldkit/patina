@@ -93,16 +93,18 @@ class AccountStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    text(value) => Container(width: double.infinity, margin: const EdgeInsets.all(5), child: Text(value));
+    final localizations = AppLocalizations.of(context)!;
+
+    text(value) => Container(width: double.infinity, margin: WH.pagePadding, child: Text(value));
 
     switch (validity) {
       case Validity.unknown:
-        return ColoredBox(color: const Color.fromRGBO(250, 197, 89, 1), child: text("Odd, not sure about this account. Bug?"));
+        return ColoredBox(color: const Color.fromRGBO(250, 197, 89, 1), child: text(localizations.accountUnknown));
       case Validity.invalid:
-        return ColoredBox(color: const Color.fromRGBO(240, 144, 141, 1), child: text("Something is wrong with this account."));
+        return ColoredBox(color: const Color.fromRGBO(240, 144, 141, 1), child: text(localizations.accountInvalid));
       case Validity.valid:
         if (active) {
-          return text("This is your default account.");
+          return text(localizations.accountDefault);
         } else {
           return const SizedBox.shrink();
         }
@@ -166,7 +168,7 @@ class _AccountState extends State<AccountForm> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.accountEditTitle),
+        title: Text(AppLocalizations.of(context)!.accountAddTitle),
       ),
       body: FormBuilder(
         key: _formKey,

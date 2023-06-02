@@ -42,12 +42,17 @@
   "settingsAccounts": "Accounts",
   "accountsTitle": "Accounts",
   "accountsAddButton": "Add",
+
+  "accountAddTitle": "Add Account",
   "accountEditTitle": "Edit Account",
   "accountEmail": "Email",
   "accountPassword": "Password",
   "accountFormFail": "Invalid email or password.",
   "accountSaveButton": "Save",
   "accountDeleteButton": "Delete",
+  "accountDefault": "This is your default account.",
+  "accountInvalid": "Something is wrong with this account.",
+  "accountUnknown": "Odd, not sure about this account. Bug?",
 
   "bayNumber": "Bay #{bay}",
   "configureButton": "Configure",
