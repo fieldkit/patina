@@ -37,7 +37,7 @@
   "waitingOnTimer": "Waiting on Timer",
   "waitingOnReading": "Waiting for Fresh Reading",
   "waitingOnForm": "Values Required",
-  "standardValue": "{value} StandardValue ({uom})",
+  "standardValue": "{value} Standard Value ({uom})",
   "oopsBugTitle": "Oops, bug?",
   "minSec": "min sec",
 
