@@ -212,7 +212,6 @@ extension PortalTransmissionTokens on TransmissionToken {
   static TransmissionToken fromJson(Map<String, dynamic> data) {
     final token = data['token'] as String;
     final url = data['url'] as String;
-
     return TransmissionToken(token: token, url: url);
   }
 }
@@ -227,7 +226,6 @@ extension PortalTokens on Tokens {
     final token = data['token'] as String;
     final transmissionData = data['transmission'] as Map<String, dynamic>;
     final transmission = PortalTransmissionTokens.fromJson(transmissionData);
-
     return Tokens(token: token, transmission: transmission);
   }
 }
@@ -253,7 +251,6 @@ class PortalAccount extends ChangeNotifier {
     final active = data['active'] as bool;
     final tokensData = data["tokens"] as Map<String, dynamic>?;
     final tokens = tokensData != null ? PortalTokens.fromJson(tokensData) : null;
-
     return PortalAccount(email: email, name: name, tokens: tokens, active: active);
   }
 
@@ -317,14 +314,14 @@ class PortalAccounts extends ChangeNotifier {
     return this;
   }
 
-  Future<PortalAccounts> save() async {
+  Future<PortalAccounts> _save() async {
     const storage = FlutterSecureStorage();
     final serialized = jsonEncode(this);
     await storage.write(key: "fk.accounts", value: serialized);
     return this;
   }
 
-  Future<PortalAccount?> authenticate(String email, String password) async {
+  Future<PortalAccount?> _authenticate(String email, String password) async {
     try {
       final authenticated = await api.authenticatePortal(email: email, password: password);
       return PortalAccount.fromAuthenticated(authenticated);
@@ -335,11 +332,11 @@ class PortalAccounts extends ChangeNotifier {
   }
 
   Future<PortalAccount?> addOrUpdate(String email, String password) async {
-    final account = await authenticate(email, password);
+    final account = await _authenticate(email, password);
     if (account != null) {
-      removeByEmail(account.email);
+      _removeByEmail(account.email);
       _accounts.add(account);
-      await save();
+      await _save();
       notifyListeners();
       return account;
     } else {
@@ -351,11 +348,11 @@ class PortalAccounts extends ChangeNotifier {
     final updated = _accounts.map((iter) => iter.withActive(account == iter)).toList();
     _accounts.clear();
     _accounts.addAll(updated);
-    await save();
+    await _save();
     notifyListeners();
   }
 
-  bool removeByEmail(String email) {
+  bool _removeByEmail(String email) {
     var filtered = _accounts.where((iter) => iter.email != email).toList();
     if (filtered.length == _accounts.length) {
       return false;
@@ -366,8 +363,8 @@ class PortalAccounts extends ChangeNotifier {
   }
 
   Future<void> delete(PortalAccount account) async {
-    removeByEmail(account.email);
-    await save();
+    _removeByEmail(account.email);
+    await _save();
     notifyListeners();
   }
 
@@ -378,14 +375,16 @@ class PortalAccounts extends ChangeNotifier {
       final tokens = iter.tokens;
       if (tokens != null) {
         try {
-          final validatedAuthentication = await api.validateTokens(tokens: tokens);
-          _accounts.add(PortalAccount.fromAuthenticated(validatedAuthentication));
+          _accounts.add(PortalAccount.fromAuthenticated(await api.validateTokens(tokens: tokens)));
         } catch (e) {
+          debugPrint("Exception validating: $e");
           _accounts.add(iter.invalid());
         }
+      } else {
+        _accounts.add(iter);
       }
     }
-    await save();
+    await _save();
     notifyListeners();
     return this;
   }
