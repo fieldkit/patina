@@ -203,59 +203,33 @@ extension Identity on ModuleConfig {
   }
 }
 
-class PortalTokens {
-  final String token;
-  final PortalTransmissionToken transmission;
-
-  const PortalTokens({required this.token, required this.transmission});
-
-  factory PortalTokens.fromNative(Tokens tokens) {
-    return PortalTokens(token: tokens.token, transmission: PortalTransmissionToken.fromNative(tokens.transmission));
-  }
-
-  factory PortalTokens.fromJson(Map<String, dynamic> data) {
-    final token = data['token'] as String;
-    final transmissionData = data['transmission'] as Map<String, dynamic>;
-    final transmission = PortalTransmissionToken.fromJson(transmissionData);
-
-    return PortalTokens(token: token, transmission: transmission);
-  }
-
-  Tokens toNative() {
-    return Tokens(token: token, transmission: transmission.toNative());
-  }
-
-  Map<String, dynamic> toJson() => {
-        'token': token,
-        'transmission': transmission.toJson(),
-      };
-}
-
-class PortalTransmissionToken {
-  final String token;
-  final String url;
-
-  const PortalTransmissionToken({required this.token, required this.url});
-
-  factory PortalTransmissionToken.fromNative(TransmissionToken transmission) {
-    return PortalTransmissionToken(token: transmission.token, url: transmission.url);
-  }
-
-  factory PortalTransmissionToken.fromJson(Map<String, dynamic> data) {
-    final token = data['token'] as String;
-    final url = data['url'] as String;
-
-    return PortalTransmissionToken(token: token, url: url);
-  }
-
-  TransmissionToken toNative() {
-    return TransmissionToken(token: token, url: url);
-  }
-
+extension PortalTransmissionTokens on TransmissionToken {
   Map<String, dynamic> toJson() => {
         'token': token,
         'url': url,
       };
+
+  static TransmissionToken fromJson(Map<String, dynamic> data) {
+    final token = data['token'] as String;
+    final url = data['url'] as String;
+
+    return TransmissionToken(token: token, url: url);
+  }
+}
+
+extension PortalTokens on Tokens {
+  Map<String, dynamic> toJson() => {
+        'token': token,
+        'transmission': transmission.toJson(),
+      };
+
+  static Tokens fromJson(Map<String, dynamic> data) {
+    final token = data['token'] as String;
+    final transmissionData = data['transmission'] as Map<String, dynamic>;
+    final transmission = PortalTransmissionTokens.fromJson(transmissionData);
+
+    return Tokens(token: token, transmission: transmission);
+  }
 }
 
 enum Validity {
@@ -267,7 +241,7 @@ enum Validity {
 class PortalAccount extends ChangeNotifier {
   final String email;
   final String name;
-  final PortalTokens? tokens;
+  final Tokens? tokens;
   final bool active;
   final Validity valid;
 
@@ -285,11 +259,7 @@ class PortalAccount extends ChangeNotifier {
 
   factory PortalAccount.fromAuthenticated(Authenticated authenticated) {
     return PortalAccount(
-        email: authenticated.email,
-        name: authenticated.name,
-        tokens: PortalTokens.fromNative(authenticated.tokens),
-        active: true,
-        valid: Validity.valid);
+        email: authenticated.email, name: authenticated.name, tokens: authenticated.tokens, active: true, valid: Validity.valid);
   }
 
   Map<String, dynamic> toJson() => {
@@ -399,7 +369,7 @@ class PortalAccounts extends ChangeNotifier {
       final tokens = iter.tokens;
       if (tokens != null) {
         try {
-          final validatedAuthentication = await api.validateTokens(tokens: tokens.toNative());
+          final validatedAuthentication = await api.validateTokens(tokens: tokens);
           _accounts.add(PortalAccount.fromAuthenticated(validatedAuthentication));
         } catch (e) {
           _accounts.add(iter.invalid());
