@@ -210,13 +210,19 @@ class PortalTransmissionToken {
       };
 }
 
+enum Validity {
+  unknown,
+  valid,
+  invalid,
+}
+
 class PortalAccount extends ChangeNotifier {
   final String email;
   final PortalTokens? tokens;
   final bool active;
-  final bool? valid;
+  final Validity valid;
 
-  PortalAccount({required this.email, required this.tokens, required this.active, this.valid});
+  PortalAccount({required this.email, required this.tokens, required this.active, this.valid = Validity.unknown});
 
   factory PortalAccount.fromJson(Map<String, dynamic> data) {
     final email = data['email'] as String;
@@ -295,7 +301,7 @@ class PortalAccounts extends ChangeNotifier {
           transmission: tokens.transmission != null
               ? PortalTransmissionToken(token: tokens.transmission!.token, url: tokens.transmission!.url)
               : null);
-      final account = PortalAccount(email: email, tokens: portalTokens, active: true, valid: true);
+      final account = PortalAccount(email: email, tokens: portalTokens, active: true, valid: Validity.valid);
       _accounts.add(account);
       await save();
       notifyListeners();
@@ -334,10 +340,13 @@ class PortalAccounts extends ChangeNotifier {
       if (tokens != null) {
         final validated = await api.validateTokens(tokens: Tokens(token: tokens.token));
         if (validated == null) {
-          _accounts.add(PortalAccount(email: iter.email, tokens: null, active: iter.active, valid: false));
+          _accounts.add(PortalAccount(email: iter.email, tokens: null, active: iter.active, valid: Validity.invalid));
         } else {
-          final portalTokens = PortalTokens(token: tokens.token, transmission: tokens.transmission);
-          _accounts.add(PortalAccount(email: iter.email, tokens: portalTokens, active: iter.active, valid: true));
+          final portalTransmission = validated.transmission != null
+              ? PortalTransmissionToken(token: validated.transmission!.token, url: validated.transmission!.url)
+              : null;
+          final portalTokens = PortalTokens(token: validated.token, transmission: portalTransmission);
+          _accounts.add(PortalAccount(email: iter.email, tokens: portalTokens, active: iter.active, valid: Validity.valid));
         }
       }
     }

@@ -14,7 +14,7 @@ use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
-use query::portal::{decode_token, PortalError, StatusCode, Tokens as PortalTokens};
+use query::portal::{DecodedToken, PortalError, StatusCode, Tokens as PortalTokens};
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
@@ -229,13 +229,17 @@ impl Sdk {
             token: tokens.token.clone(),
         })?;
 
+        let decoded = tokens.decoded()?;
+        info!(
+            "expires={:?} ({} remaining) issued={:?}",
+            decoded.issued(),
+            decoded.remaining(),
+            decoded.expires(),
+        );
+
         match client.query_ourselves().await {
-            Ok(ourselves) => {
-                info!("{:?} {:?}", tokens.refresh_token(), ourselves);
-                Ok(Some(tokens))
-            }
+            Ok(_ourselves) => Ok(Some(tokens)),
             Err(PortalError::HttpStatus(StatusCode::UNAUTHORIZED)) => {
-                warn!("refreshing tokens");
                 Ok(self.refresh_tokens(tokens).await?)
             }
             Err(e) => {
@@ -248,22 +252,20 @@ impl Sdk {
     async fn refresh_tokens(&self, tokens: Tokens) -> Result<Option<Tokens>> {
         let refresh_token = tokens.refresh_token()?;
         let client = query::portal::Client::new()?;
-        if true {
-            Ok(None)
-        } else {
-            let tokens = client
-                .use_refresh_token(&refresh_token)
-                .await?
-                .ok_or_else(|| anyhow::anyhow!("Tokens are required."))?;
-            let authenticated = client.to_authenticated(tokens.clone())?;
-            let transmission = authenticated.issue_transmission_token().await?;
-            Ok(Some(Tokens {
-                token: tokens.token,
-                transmission: Some(transmission).map(|t| TransmissionToken {
-                    token: t.token,
-                    url: t.url,
-                }),
-            }))
+        match client.use_refresh_token(&refresh_token).await {
+            Ok(Some(refreshed)) => {
+                let authenticated = client.to_authenticated(refreshed.clone())?;
+                let transmission = authenticated.issue_transmission_token().await?;
+                Ok(Some(Tokens {
+                    token: refreshed.token,
+                    transmission: Some(transmission).map(|t| TransmissionToken {
+                        token: t.token,
+                        url: t.url,
+                    }),
+                }))
+            }
+            Ok(None) => Ok(None),
+            Err(_) => Ok(Some(tokens)),
         }
     }
 
@@ -422,16 +424,20 @@ pub struct Tokens {
     pub transmission: Option<TransmissionToken>,
 }
 
+impl Tokens {
+    fn decoded(&self) -> Result<DecodedToken, PortalError> {
+        DecodedToken::decode(&self.token)
+    }
+
+    fn refresh_token(&self) -> Result<String> {
+        Ok(self.decoded()?.refresh_token)
+    }
+}
+
 #[derive(Debug)]
 pub struct TransmissionToken {
     pub token: String,
     pub url: String,
-}
-
-impl Tokens {
-    fn refresh_token(&self) -> Result<String> {
-        Ok(decode_token(&self.token)?.refresh_token)
-    }
 }
 
 #[derive(Debug)]
