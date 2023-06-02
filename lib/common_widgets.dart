@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BorderedListItem extends StatelessWidget {
   final GenericListItemHeader header;
@@ -50,4 +51,13 @@ class WH {
   static padPage(child) => Container(padding: pagePadding, child: child);
 
   static padChildrenPage(children) => Container(padding: pagePadding, child: Column(children: children));
+}
+
+class OopsBug extends StatelessWidget {
+  const OopsBug({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(AppLocalizations.of(context)!.oopsBugTitle);
+  }
 }

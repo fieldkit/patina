@@ -19,7 +19,7 @@ class CountdownTimer {
 
   bool get wasDone {
     final finallyDone = started.add(expected).add(trailing);
-    debugPrint("$started $now ${now.difference(started)} $finallyDone");
+    // debugPrint("$started $now ${now.difference(started)} $finallyDone");
     return now.isAfter(finallyDone);
   }
 
