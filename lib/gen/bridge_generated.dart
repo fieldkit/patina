@@ -21,13 +21,16 @@ class NativeImpl implements Native {
       NativeImpl(module as ExternalLibrary);
   NativeImpl.raw(this._platform);
   Stream<DomainMessage> startNative(
-      {required String storagePath, dynamic hint}) {
+      {required String storagePath,
+      required String portalBaseUrl,
+      dynamic hint}) {
     var arg0 = _platform.api2wire_String(storagePath);
+    var arg1 = _platform.api2wire_String(portalBaseUrl);
     return _platform.executeStream(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_start_native(port_, arg0),
+      callFfi: (port_) => _platform.inner.wire_start_native(port_, arg0, arg1),
       parseSuccessData: _wire2api_domain_message,
       constMeta: kStartNativeConstMeta,
-      argValues: [storagePath],
+      argValues: [storagePath, portalBaseUrl],
       hint: hint,
     ));
   }
@@ -35,7 +38,7 @@ class NativeImpl implements Native {
   FlutterRustBridgeTaskConstMeta get kStartNativeConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "start_native",
-        argNames: ["storagePath"],
+        argNames: ["storagePath", "portalBaseUrl"],
       );
 
   Future<List<StationConfig>> getMyStations({dynamic hint}) {

@@ -32,12 +32,13 @@ Future<void> _startNative(AppEventDispatcher dispatcher) async {
   });
 
   final storagePath = await _getStoragePath();
+  const portalBaseUrl = "http://192.168.0.100:8080";
 
   // This is here because the initial native logs were getting chopped off, no
   // idea why and yes this is a hack.
   await Future.delayed(const Duration(milliseconds: 100));
 
-  await for (final e in api.startNative(storagePath: storagePath)) {
+  await for (final e in api.startNative(storagePath: storagePath, portalBaseUrl: portalBaseUrl)) {
     // var display = e.toString().trim();
     // debugPrint(display);
     // developer.log(display);

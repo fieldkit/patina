@@ -21,7 +21,11 @@ use std::sync::Arc;
 
 // Section: wire functions
 
-fn wire_start_native_impl(port_: MessagePort, storage_path: impl Wire2Api<String> + UnwindSafe) {
+fn wire_start_native_impl(
+    port_: MessagePort,
+    storage_path: impl Wire2Api<String> + UnwindSafe,
+    portal_base_url: impl Wire2Api<String> + UnwindSafe,
+) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
             debug_name: "start_native",
@@ -30,7 +34,14 @@ fn wire_start_native_impl(port_: MessagePort, storage_path: impl Wire2Api<String
         },
         move || {
             let api_storage_path = storage_path.wire2api();
-            move |task_callback| start_native(task_callback.stream_sink(), api_storage_path)
+            let api_portal_base_url = portal_base_url.wire2api();
+            move |task_callback| {
+                start_native(
+                    api_storage_path,
+                    api_portal_base_url,
+                    task_callback.stream_sink(),
+                )
+            }
         },
     )
 }

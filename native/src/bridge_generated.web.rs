@@ -2,8 +2,8 @@ use super::*;
 // Section: wire functions
 
 #[wasm_bindgen]
-pub fn wire_start_native(port_: MessagePort, storage_path: String) {
-    wire_start_native_impl(port_, storage_path)
+pub fn wire_start_native(port_: MessagePort, storage_path: String, portal_base_url: String) {
+    wire_start_native_impl(port_, storage_path, portal_base_url)
 }
 
 #[wasm_bindgen]

@@ -15,7 +15,9 @@ part 'bridge_definitions.freezed.dart';
 
 abstract class Native {
   Stream<DomainMessage> startNative(
-      {required String storagePath, dynamic hint});
+      {required String storagePath,
+      required String portalBaseUrl,
+      dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStartNativeConstMeta;
 

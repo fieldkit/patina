@@ -61,7 +61,7 @@ class NativeWasmModule implements WasmModule {
   external Object /* Promise */ call([String? moduleName]);
   external NativeWasmModule bind(dynamic thisArg, String moduleName);
   external dynamic /* void */ wire_start_native(
-      NativePortType port_, String storage_path);
+      NativePortType port_, String storage_path, String portal_base_url);
 
   external dynamic /* void */ wire_get_my_stations(NativePortType port_);
 
@@ -88,8 +88,9 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   NativeWire(FutureOr<WasmModule> module)
       : super(WasmModule.cast<NativeWasmModule>(module));
 
-  void wire_start_native(NativePortType port_, String storage_path) =>
-      wasmModule.wire_start_native(port_, storage_path);
+  void wire_start_native(
+          NativePortType port_, String storage_path, String portal_base_url) =>
+      wasmModule.wire_start_native(port_, storage_path, portal_base_url);
 
   void wire_get_my_stations(NativePortType port_) =>
       wasmModule.wire_get_my_stations(port_);

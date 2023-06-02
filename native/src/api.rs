@@ -65,7 +65,11 @@ impl MergeAndPublishReplies {
     }
 }
 
-async fn create_sdk(storage_path: String, publish_tx: Sender<DomainMessage>) -> Result<Sdk> {
+async fn create_sdk(
+    storage_path: String,
+    portal_base_url: String,
+    publish_tx: Sender<DomainMessage>,
+) -> Result<Sdk> {
     info!("startup:bg");
 
     let (bg_tx, bg_rx) = tokio::sync::mpsc::channel::<BackgroundMessage>(32);
@@ -79,6 +83,7 @@ async fn create_sdk(storage_path: String, publish_tx: Sender<DomainMessage>) -> 
 
     let sdk = Sdk::new(
         storage_path,
+        portal_base_url,
         nearby.clone(),
         server.clone(),
         publish_tx.clone(),
@@ -114,12 +119,16 @@ async fn background_task(
     };
 }
 
-pub fn start_native(sink: StreamSink<DomainMessage>, storage_path: String) -> Result<()> {
+pub fn start_native(
+    storage_path: String,
+    portal_base_url: String,
+    sink: StreamSink<DomainMessage>,
+) -> Result<()> {
     info!("startup:runtime");
     let rt = start_runtime()?;
 
     let (publish_tx, mut publish_rx) = tokio::sync::mpsc::channel(20);
-    let sdk = rt.block_on(create_sdk(storage_path, publish_tx))?;
+    let sdk = rt.block_on(create_sdk(storage_path, portal_base_url, publish_tx))?;
 
     // Consider moving this to using the above channel?
     sink.add(DomainMessage::PreAccount);
@@ -157,6 +166,7 @@ pub fn start_native(sink: StreamSink<DomainMessage>, storage_path: String) -> Re
 #[allow(dead_code)]
 struct Sdk {
     storage_path: String,
+    portal_base_url: String,
     db: Arc<Mutex<Db>>,
     nearby: NearbyDevices,
     server: Arc<Server<UdpTransport, FilesRecordSink>>,
@@ -166,12 +176,14 @@ struct Sdk {
 impl Sdk {
     fn new(
         storage_path: String,
+        portal_base_url: String,
         nearby: NearbyDevices,
         server: Arc<Server<UdpTransport, FilesRecordSink>>,
         publish_tx: Sender<DomainMessage>,
     ) -> Result<Self> {
         Ok(Self {
             storage_path,
+            portal_base_url,
             db: Arc::new(Mutex::new(Db::new())),
             nearby,
             server,
@@ -206,7 +218,7 @@ impl Sdk {
     }
 
     async fn authenticate_portal(&self, email: String, password: String) -> Result<Authenticated> {
-        let client = query::portal::Client::new()?;
+        let client = query::portal::Client::new(&self.portal_base_url)?;
         let tokens = client
             .login(query::portal::LoginPayload {
                 email: email.clone(),
@@ -232,7 +244,7 @@ impl Sdk {
     }
 
     async fn validate_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
-        let client = query::portal::Client::new()?;
+        let client = query::portal::Client::new(&self.portal_base_url)?;
         let client = client.to_authenticated(PortalTokens {
             token: tokens.token.clone(),
         })?;
@@ -263,7 +275,7 @@ impl Sdk {
 
     async fn refresh_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
         let refresh_token = tokens.refresh_token()?;
-        let client = query::portal::Client::new()?;
+        let client = query::portal::Client::new(&self.portal_base_url)?;
         let refreshed = client.use_refresh_token(&refresh_token).await?;
         let authenticated = client.to_authenticated(refreshed.clone())?;
         let ourselves = authenticated.query_ourselves().await?;

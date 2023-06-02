@@ -2,8 +2,12 @@ use super::*;
 // Section: wire functions
 
 #[no_mangle]
-pub extern "C" fn wire_start_native(port_: i64, storage_path: *mut wire_uint_8_list) {
-    wire_start_native_impl(port_, storage_path)
+pub extern "C" fn wire_start_native(
+    port_: i64,
+    storage_path: *mut wire_uint_8_list,
+    portal_base_url: *mut wire_uint_8_list,
+) {
+    wire_start_native_impl(port_, storage_path, portal_base_url)
 }
 
 #[no_mangle]
