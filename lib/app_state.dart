@@ -337,6 +337,7 @@ class PortalAccounts extends ChangeNotifier {
   Future<PortalAccount?> addOrUpdate(String email, String password) async {
     final account = await authenticate(email, password);
     if (account != null) {
+      removeByEmail(account.email);
       _accounts.add(account);
       await save();
       notifyListeners();
@@ -354,10 +355,18 @@ class PortalAccounts extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> delete(PortalAccount account) async {
-    var updated = _accounts.where((iter) => iter.email != account.email).toList();
+  bool removeByEmail(String email) {
+    var filtered = _accounts.where((iter) => iter.email != email).toList();
+    if (filtered.length == _accounts.length) {
+      return false;
+    }
     _accounts.clear();
-    _accounts.addAll(updated);
+    _accounts.addAll(filtered);
+    return true;
+  }
+
+  Future<void> delete(PortalAccount account) async {
+    removeByEmail(account.email);
     await save();
     notifyListeners();
   }
