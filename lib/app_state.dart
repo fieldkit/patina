@@ -276,6 +276,8 @@ class PortalAccount extends ChangeNotifier {
 }
 
 class PortalAccounts extends ChangeNotifier {
+  static const secureStorageKey = "fk.accounts";
+
   final Native api;
   final List<PortalAccount> _accounts = List.empty(growable: true);
 
@@ -299,7 +301,7 @@ class PortalAccounts extends ChangeNotifier {
 
   Future<PortalAccounts> load() async {
     const storage = FlutterSecureStorage();
-    String? value = await storage.read(key: "fk.accounts");
+    String? value = await storage.read(key: secureStorageKey);
     if (value != null) {
       try {
         // A little messy, I know.
@@ -317,7 +319,7 @@ class PortalAccounts extends ChangeNotifier {
   Future<PortalAccounts> _save() async {
     const storage = FlutterSecureStorage();
     final serialized = jsonEncode(this);
-    await storage.write(key: "fk.accounts", value: serialized);
+    await storage.write(key: secureStorageKey, value: serialized);
     return this;
   }
 
