@@ -21,7 +21,7 @@ path = "../rustfk/libs/sync"
 [dependencies]
 anyhow = "1"
 chrono = "0.4.24"
-flutter_rust_bridge = "1.75.2"
+flutter_rust_bridge = "1.77.1"
 hex = "0.4.3"
 miette = "5.8.0"
 thiserror = "1.0.40"
