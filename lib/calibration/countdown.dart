@@ -6,11 +6,11 @@ import 'package:provider/provider.dart';
 
 class CountdownTimer {
   static const Duration period = Duration(seconds: 1);
-  static const Duration expected = Duration(seconds: 120);
   static const Duration trailing = Duration(seconds: 5);
 
   final DateTime started;
   final DateTime now = DateTime.now().toUtc();
+  final Duration expected;
   final Duration elapsed;
 
   bool get done => elapsed >= expected;
@@ -23,7 +23,7 @@ class CountdownTimer {
     return now.isAfter(finallyDone);
   }
 
-  CountdownTimer({required this.started, required this.elapsed});
+  CountdownTimer({required this.expected, required this.started, required this.elapsed});
 
   String toStringRemaining() {
     return toMinutesSecondsString([(expected - elapsed).inSeconds, 0].reduce(max));
@@ -65,19 +65,21 @@ class DisplayCountdown extends StatelessWidget {
 }
 
 class ProvideCountdown extends StatelessWidget {
+  final Duration duration;
   final Widget child;
 
-  const ProvideCountdown({super.key, required this.child});
+  const ProvideCountdown({super.key, required this.duration, required this.child});
 
   @override
   Widget build(BuildContext context) {
     final started = DateTime.now().toUtc();
     return StreamProvider(
-        initialData: CountdownTimer(started: started, elapsed: Duration.zero),
+        initialData: CountdownTimer(expected: duration, started: started, elapsed: Duration.zero),
         create: (BuildContext context) {
           return Stream<CountdownTimer>.periodic(
               CountdownTimer.period,
               (c) => CountdownTimer(
+                    expected: duration,
                     started: started,
                     elapsed: Duration(seconds: c + 1),
                   )).takeWhile((e) => !e.wasDone);

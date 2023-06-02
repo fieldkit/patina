@@ -1,3 +1,7 @@
+import 'dart:math';
+import 'dart:typed_data';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -9,6 +13,7 @@ import 'package:provider/provider.dart';
 
 import '../app_state.dart';
 import '../common_widgets.dart';
+import '../gen/fk-data.pb.dart' as proto;
 import 'countdown.dart';
 
 enum CanContinue { form, timer, staleValue, yes }
@@ -28,9 +33,11 @@ class CalibrationPage extends StatelessWidget {
         ),
         body: ChangeNotifierProvider(
             create: (context) => active,
-            child: ProvideCountdown(child: Consumer<CountdownTimer>(builder: (context, countdown, child) {
-              return CalibrationPanel(config: config, current: current ?? CurrentCalibration());
-            }))));
+            child: ProvideCountdown(
+                duration: const Duration(seconds: 1),
+                child: Consumer<CountdownTimer>(builder: (context, countdown, child) {
+                  return CalibrationPanel(config: config, current: current ?? CurrentCalibration(curveType: config.curveType));
+                }))));
   }
 }
 
@@ -51,6 +58,12 @@ class CalibrationPanel extends StatelessWidget {
 
     final nextConfig = config.popStandard();
     if (nextConfig.done) {
+      final cal = current.toDataProtocol();
+      final serialized = current.toBytes();
+
+      debugPrint("$cal");
+      debugPrint("$serialized");
+
       Navigator.popUntil(context, (route) => route.isFirst);
     } else {
       Navigator.push(
@@ -236,19 +249,86 @@ class ActiveCalibration extends ChangeNotifier {
   }
 }
 
+List<double> exponentialCurve(List<CalibrationPoint> points) {
+  /*
+  final x = points.map((p) => p.reading.uncalibrated).toList();
+  final y = points.map((p) => p.standard.value!).toList();
+
+  function calibrationFunction([a, b, c]: [number, number, number]): (v: number) => number {
+    return (t) => a + b * Math.exp(t * c);
+  }
+
+  // Pete 4/6/2022
+  const options = {
+      damping: 1.5,
+      initialValues: _.clone([1000, 1500000, -7]),
+      gradientDifference: 10e-2,
+      maxIterations: 100,
+      errorTolerance: 10e-3,
+  };
+
+  final fittedParams = levenbergMarquardt(data, calibrationFunction, options);
+  const [a, b, c] = fittedParams.parameterValues;
+  const coefficients = { a, b, c };
+  */
+
+  return [];
+}
+
+List<double> linearCurve(List<CalibrationPoint> points) {
+  final n = points.length;
+  final x = points.map((p) => p.reading.uncalibrated).toList();
+  final y = points.map((p) => p.standard.value!).toList();
+
+  final indices = List<int>.generate(n, (i) => i);
+  final xMean = x.average;
+  final yMean = y.average;
+  final numerParts = indices.map((i) => (x[i] - xMean) * (y[i] - yMean));
+  final denomParts = indices.map((i) => pow((x[i] - xMean), 2));
+  final numer = numerParts.sum;
+  final denom = denomParts.sum;
+
+  final m = numer / denom;
+  final b = yMean - m * xMean;
+
+  return [b, m];
+}
+
 class CurrentCalibration {
+  final proto.CurveType curveType;
   final List<CalibrationPoint> _points = List.empty(growable: true);
+
+  CurrentCalibration({required this.curveType});
+
+  @override
+  String toString() => _points.toString();
 
   void addPoint(CalibrationPoint point) {
     _points.add(point);
   }
 
-  @override
-  String toString() => _points.toString();
+  proto.Calibration toDataProtocol() {
+    final time = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final cps = _points
+        .map((p) =>
+            proto.CalibrationPoint(references: [p.standard.value!], uncalibrated: [p.reading.uncalibrated], factory: [p.reading.value]))
+        .toList();
+    final coefficients = calculateCoefficients();
+    return proto.Calibration(time: time, type: curveType, points: cps, coefficients: proto.CalibrationCoefficients(values: coefficients));
+  }
+
+  List<double> calculateCoefficients() {
+    return linearCurve(_points);
+  }
+
+  Uint8List toBytes() {
+    return toDataProtocol().writeToBuffer();
+  }
 }
 
 class CalibrationPointConfig {
   final ModuleIdentity moduleIdentity;
+  final proto.CurveType curveType;
   final List<Standard> standardsRemaining;
   final bool offline;
 
@@ -256,36 +336,56 @@ class CalibrationPointConfig {
 
   bool get done => standardsRemaining.isEmpty;
 
-  CalibrationPointConfig({required this.moduleIdentity, required this.standardsRemaining, this.offline = false});
+  CalibrationPointConfig({required this.moduleIdentity, required this.curveType, required this.standardsRemaining, this.offline = false});
 
   CalibrationPointConfig popStandard() {
-    return CalibrationPointConfig(moduleIdentity: moduleIdentity, standardsRemaining: standardsRemaining.skip(1).toList());
+    return CalibrationPointConfig(
+        moduleIdentity: moduleIdentity, curveType: curveType, standardsRemaining: standardsRemaining.skip(1).toList());
   }
 
-  static CalibrationPointConfig ph(ModuleIdentity moduleIdentity) =>
-      CalibrationPointConfig(moduleIdentity: moduleIdentity, standardsRemaining: [FixedStandard(4), FixedStandard(7), FixedStandard(10)]);
+  static CalibrationPointConfig waterPh(ModuleIdentity moduleIdentity) => CalibrationPointConfig(
+      moduleIdentity: moduleIdentity,
+      curveType: proto.CurveType.CURVE_LINEAR,
+      standardsRemaining: [FixedStandard(4), FixedStandard(7), FixedStandard(10)]);
 
-  static CalibrationPointConfig dissolvedOxygen(ModuleIdentity moduleIdentity) =>
-      CalibrationPointConfig(moduleIdentity: moduleIdentity, standardsRemaining: [UnknownStandard(), UnknownStandard(), UnknownStandard()]);
+  static CalibrationPointConfig waterDissolvedOxygen(ModuleIdentity moduleIdentity) => CalibrationPointConfig(
+      moduleIdentity: moduleIdentity,
+      curveType: proto.CurveType.CURVE_LINEAR,
+      standardsRemaining: [UnknownStandard(), UnknownStandard(), UnknownStandard()]);
 
-  static CalibrationPointConfig showCase(ModuleIdentity moduleIdentity) =>
-      CalibrationPointConfig(moduleIdentity: moduleIdentity, standardsRemaining: [UnknownStandard(), FixedStandard(10)]);
+  static CalibrationPointConfig waterEc(ModuleIdentity moduleIdentity) => CalibrationPointConfig(
+      moduleIdentity: moduleIdentity,
+      curveType: proto.CurveType.CURVE_EXPONENTIAL,
+      standardsRemaining: [UnknownStandard(), UnknownStandard(), UnknownStandard()]);
+
+  static CalibrationPointConfig waterTemp(ModuleIdentity moduleIdentity) => CalibrationPointConfig(
+      moduleIdentity: moduleIdentity,
+      curveType: proto.CurveType.CURVE_EXPONENTIAL,
+      standardsRemaining: [UnknownStandard(), UnknownStandard(), UnknownStandard()]);
+
+  static CalibrationPointConfig showCase(ModuleIdentity moduleIdentity) => CalibrationPointConfig(
+      moduleIdentity: moduleIdentity, curveType: proto.CurveType.CURVE_LINEAR, standardsRemaining: [UnknownStandard(), FixedStandard(10)]);
 }
 
 abstract class Standard {
   bool get acceptable;
+
+  double? get value;
 }
 
 class FixedStandard extends Standard {
-  final double value;
+  final double _value;
 
-  FixedStandard(this.value);
+  FixedStandard(this._value);
 
   @override
-  String toString() => "FixedStandard($value)";
+  String toString() => "FixedStandard($_value)";
 
   @override
   bool get acceptable => true;
+
+  @override
+  double get value => _value;
 }
 
 class UnknownStandard extends Standard {
@@ -294,18 +394,24 @@ class UnknownStandard extends Standard {
 
   @override
   bool get acceptable => false;
+
+  @override
+  double? get value => null;
 }
 
 class UserStandard extends Standard {
-  final double value;
+  final double _value;
 
-  UserStandard(this.value);
+  UserStandard(this._value);
 
   @override
-  String toString() => "UserStandard($value)";
+  String toString() => "UserStandard($_value)";
 
   @override
   bool get acceptable => true;
+
+  @override
+  double get value => _value;
 }
 
 class NumberForm extends StatefulWidget {
