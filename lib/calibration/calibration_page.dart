@@ -29,18 +29,16 @@ class CalibrationPage extends StatelessWidget {
         body: ChangeNotifierProvider(
             create: (context) => active,
             child: ProvideCountdown(child: Consumer<CountdownTimer>(builder: (context, countdown, child) {
-              return CalibrationPanel(
-                config: config,
-              );
+              return CalibrationPanel(config: config, current: current ?? CurrentCalibration());
             }))));
   }
 }
 
 class CalibrationPanel extends StatelessWidget {
-  final CurrentCalibration? current;
+  final CurrentCalibration current;
   final CalibrationPointConfig config;
 
-  const CalibrationPanel({super.key, this.current, required this.config});
+  const CalibrationPanel({super.key, required this.current, required this.config});
 
   Future<void> calibrateAndContinue(BuildContext context, SensorConfig sensor, CurrentCalibration current, ActiveCalibration active) async {
     final configured = config.standard;
@@ -95,8 +93,6 @@ class CalibrationPanel extends StatelessWidget {
     if (sensor == null) {
       return const OopsBug();
     }
-
-    final current = this.current ?? CurrentCalibration();
 
     return CalibrationWait(
         config: config,
