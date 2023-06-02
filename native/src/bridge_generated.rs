@@ -152,6 +152,18 @@ impl Wire2Api<u8> for u8 {
 
 // Section: impl IntoDart
 
+impl support::IntoDart for Authenticated {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.email.into_dart(),
+            self.name.into_dart(),
+            self.tokens.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Authenticated {}
+
 impl support::IntoDart for BatteryInfo {
     fn into_dart(self) -> support::DartAbi {
         vec![self.percentage.into_dart(), self.voltage.into_dart()].into_dart()

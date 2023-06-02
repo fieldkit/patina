@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
+import '../common_widgets.dart';
 import '../gen/ffi.dart';
 
 class DataSyncTab extends StatelessWidget {
@@ -57,35 +58,6 @@ class DataSyncPage extends StatelessWidget {
   }
 }
 
-class StationHeader extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-
-  const StationHeader({super.key, required this.title, this.subtitle});
-
-  @override
-  Widget build(BuildContext context) {
-    align(child) => Align(alignment: Alignment.topLeft, child: child);
-
-    const padding = EdgeInsets.symmetric(horizontal: 10, vertical: 6);
-
-    final top = align(Container(
-        padding: padding,
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
-        )));
-
-    if (subtitle == null) {
-      return top;
-    }
-
-    final bottom = align(Container(padding: padding, child: Text(subtitle!)));
-
-    return Column(children: [top, bottom]);
-  }
-}
-
 class SyncOptions extends StatelessWidget {
   final VoidCallback onDownload;
   final VoidCallback onUpload;
@@ -122,21 +94,14 @@ class StationSyncStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return Container(
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            border: Border.all(
-              color: const Color.fromRGBO(212, 212, 212, 1),
-            ),
-            borderRadius: const BorderRadius.all(Radius.circular(5))),
-        child: Column(children: [
-          StationHeader(
-              title: config.name,
-              subtitle: isSyncing
-                  ? localizations.syncPercentageComplete(station.syncing?.progress?.completed ?? 0)
-                  : localizations.syncItemSubtitle(config.data.records)),
-          isSyncing ? DownloadProgressPanel(progress: station.syncing!.progress) : SyncOptions(onDownload: onDownload, onUpload: onUpload)
-        ]));
+    final title = config.name;
+    final subtitle = isSyncing
+        ? localizations.syncPercentageComplete(station.syncing?.progress?.completed ?? 0)
+        : localizations.syncItemSubtitle(config.data.records);
+
+    return BorderedListItem(header: GenericListItemHeader(title: title, subtitle: subtitle), children: [
+      isSyncing ? DownloadProgressPanel(progress: station.syncing!.progress) : SyncOptions(onDownload: onDownload, onUpload: onUpload)
+    ]);
   }
 }
 

@@ -53,11 +53,6 @@ impl Wire2Api<String> for String {
     }
 }
 
-impl Wire2Api<Option<TransmissionToken>> for JsValue {
-    fn wire2api(self) -> Option<TransmissionToken> {
-        (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
-    }
-}
 impl Wire2Api<Tokens> for JsValue {
     fn wire2api(self) -> Tokens {
         let self_ = self.dyn_into::<JsArray>().unwrap();

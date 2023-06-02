@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_rust_bridge_template/common_widgets.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +27,7 @@ class AccountsPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditAccountPage(original: PortalAccount(email: "", tokens: null, active: false)),
+                      builder: (context) => EditAccountPage(original: PortalAccount(email: "", name: "", tokens: null, active: false)),
                     ),
                   );
                 },
@@ -84,6 +85,28 @@ class AccountsList extends StatelessWidget {
   }
 }
 
+class AccountStatus extends StatelessWidget {
+  final PortalAccount account;
+
+  const AccountStatus({super.key, required this.account});
+
+  @override
+  Widget build(BuildContext context) {
+    switch (account.valid) {
+      case Validity.unknown:
+        return const Text("Odd, not sure about this account. Bug?");
+      case Validity.invalid:
+        return const Text("Something is wrong with this account.");
+      case Validity.valid:
+        if (account.active) {
+          return const Text("This is your default account.");
+        } else {
+          return const SizedBox.shrink();
+        }
+    }
+  }
+}
+
 class AccountItem extends StatelessWidget {
   final PortalAccount account;
   final VoidCallback onActivate;
@@ -95,24 +118,15 @@ class AccountItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return Column(children: [
-      ListTile(
-        leading: account.active
-            ? const Icon(Icons.check)
-            : const Icon(
-                Icons.check,
-                color: Color.fromRGBO(255, 255, 255, 0), // Transparent.
-              ),
-        title: Text(account.email),
-        onTap: () {
-          onActivate();
-        },
-      ),
-      ElevatedButton(
-          onPressed: () {
-            onDelete();
-          },
-          child: Text(localizations.accountDeleteButton))
+    return BorderedListItem(header: GenericListItemHeader(title: account.email, subtitle: account.name), children: [
+      WH.align(WH.padPage(AccountStatus(account: account))),
+      WH.align(WH.padChildrenPage([
+        ElevatedButton(
+            onPressed: () {
+              onDelete();
+            },
+            child: Text(localizations.accountDeleteButton))
+      ]))
     ]);
   }
 }
@@ -216,7 +230,8 @@ class ProvideAccountsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final accounts = context.read<AppState>().portalAccounts;
     return FutureBuilder<PortalAccounts>(
-        future: accounts.load().then((a) => a.validate()),
+        future: Future.wait([accounts.load().then((a) => a.validate()), Future.delayed(const Duration(seconds: 1))])
+            .then((responses) => responses[0]),
         builder: (context, AsyncSnapshot<PortalAccounts> snapshot) {
           if (snapshot.hasData) {
             return ChangeNotifierProvider(

@@ -21,7 +21,7 @@ typedef struct wire_TransmissionToken {
 
 typedef struct wire_Tokens {
   struct wire_uint_8_list *token;
-  struct wire_TransmissionToken *transmission;
+  struct wire_TransmissionToken transmission;
 } wire_Tokens;
 
 typedef struct DartCObject *WireSyncReturn;
@@ -56,8 +56,6 @@ void wire_create_log_sink(int64_t port_);
 
 struct wire_Tokens *new_box_autoadd_tokens_0(void);
 
-struct wire_TransmissionToken *new_box_autoadd_transmission_token_0(void);
-
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
 void free_WireSyncReturn(WireSyncReturn ptr);
@@ -73,7 +71,6 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_rust_release_mode);
     dummy_var ^= ((int64_t) (void*) wire_create_log_sink);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_tokens_0);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_transmission_token_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

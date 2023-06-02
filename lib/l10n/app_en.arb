@@ -67,7 +67,7 @@
   "deployButton": "Deploy",
 
   "confirmDeleteTitle": "Delete Account",
-  "confirmDelete": "Are you sure",
+  "confirmDelete": "Are you sure?",
   "confirmYes": "Yes",
   "confirmCancel": "Cancel"
 }

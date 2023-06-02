@@ -23,12 +23,12 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kGetMyStationsConstMeta;
 
-  Future<Tokens?> authenticatePortal(
+  Future<Authenticated> authenticatePortal(
       {required String email, required String password, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kAuthenticatePortalConstMeta;
 
-  Future<Tokens?> validateTokens({required Tokens tokens, dynamic hint});
+  Future<Authenticated> validateTokens({required Tokens tokens, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kValidateTokensConstMeta;
 
@@ -49,6 +49,18 @@ abstract class Native {
   Stream<String> createLogSink({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCreateLogSinkConstMeta;
+}
+
+class Authenticated {
+  final String email;
+  final String name;
+  final Tokens tokens;
+
+  const Authenticated({
+    required this.email,
+    required this.name,
+    required this.tokens,
+  });
 }
 
 class BatteryInfo {
@@ -204,11 +216,11 @@ class StreamInfo {
 
 class Tokens {
   final String token;
-  final TransmissionToken? transmission;
+  final TransmissionToken transmission;
 
   const Tokens({
     required this.token,
-    this.transmission,
+    required this.transmission,
   });
 }
 

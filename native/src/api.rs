@@ -205,25 +205,33 @@ impl Sdk {
             .collect::<Result<Vec<_>>>()?)
     }
 
-    async fn authenticate_portal(&self, email: String, password: String) -> Result<Option<Tokens>> {
+    async fn authenticate_portal(&self, email: String, password: String) -> Result<Authenticated> {
         let client = query::portal::Client::new()?;
         let tokens = client
-            .login(query::portal::LoginPayload { email, password })
-            .await?
-            .ok_or_else(|| anyhow::anyhow!("Tokens are required."))?;
+            .login(query::portal::LoginPayload {
+                email: email.clone(),
+                password,
+            })
+            .await?;
+
         let authenticated = client.to_authenticated(tokens.clone())?;
+        let ourselves = authenticated.query_ourselves().await?;
         let transmission = authenticated.issue_transmission_token().await?;
 
-        Ok(Some(Tokens {
-            token: tokens.token,
-            transmission: Some(transmission).map(|t| TransmissionToken {
-                token: t.token,
-                url: t.url,
-            }),
-        }))
+        Ok(Authenticated {
+            name: ourselves.name,
+            email,
+            tokens: Tokens {
+                token: tokens.token,
+                transmission: TransmissionToken {
+                    token: transmission.token,
+                    url: transmission.url,
+                },
+            },
+        })
     }
 
-    async fn validate_tokens(&self, tokens: Tokens) -> Result<Option<Tokens>> {
+    async fn validate_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
         let client = query::portal::Client::new()?;
         let client = client.to_authenticated(PortalTokens {
             token: tokens.token.clone(),
@@ -238,7 +246,11 @@ impl Sdk {
         );
 
         match client.query_ourselves().await {
-            Ok(_ourselves) => Ok(Some(tokens)),
+            Ok(ourselves) => Ok(Authenticated {
+                name: ourselves.name,
+                email: ourselves.email,
+                tokens,
+            }),
             Err(PortalError::HttpStatus(StatusCode::UNAUTHORIZED)) => {
                 Ok(self.refresh_tokens(tokens).await?)
             }
@@ -249,24 +261,24 @@ impl Sdk {
         }
     }
 
-    async fn refresh_tokens(&self, tokens: Tokens) -> Result<Option<Tokens>> {
+    async fn refresh_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
         let refresh_token = tokens.refresh_token()?;
         let client = query::portal::Client::new()?;
-        match client.use_refresh_token(&refresh_token).await {
-            Ok(Some(refreshed)) => {
-                let authenticated = client.to_authenticated(refreshed.clone())?;
-                let transmission = authenticated.issue_transmission_token().await?;
-                Ok(Some(Tokens {
-                    token: refreshed.token,
-                    transmission: Some(transmission).map(|t| TransmissionToken {
-                        token: t.token,
-                        url: t.url,
-                    }),
-                }))
-            }
-            Ok(None) => Ok(None),
-            Err(_) => Ok(Some(tokens)),
-        }
+        let refreshed = client.use_refresh_token(&refresh_token).await?;
+        let authenticated = client.to_authenticated(refreshed.clone())?;
+        let ourselves = authenticated.query_ourselves().await?;
+        let transmission = authenticated.issue_transmission_token().await?;
+        Ok(Authenticated {
+            name: ourselves.name,
+            email: ourselves.email,
+            tokens: Tokens {
+                token: refreshed.token,
+                transmission: TransmissionToken {
+                    token: transmission.token,
+                    url: transmission.url,
+                },
+            },
+        })
     }
 
     async fn start_download(&self, device_id: String) -> Result<TransferProgress> {
@@ -303,13 +315,13 @@ pub fn get_my_stations() -> Result<Vec<StationConfig>> {
     Ok(with_runtime(|rt, sdk| rt.block_on(sdk.get_my_stations()))?)
 }
 
-pub fn authenticate_portal(email: String, password: String) -> Result<Option<Tokens>> {
+pub fn authenticate_portal(email: String, password: String) -> Result<Authenticated> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.authenticate_portal(email, password))
     })?)
 }
 
-pub fn validate_tokens(tokens: Tokens) -> Result<Option<Tokens>> {
+pub fn validate_tokens(tokens: Tokens) -> Result<Authenticated> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.validate_tokens(tokens))
     })?)
@@ -421,7 +433,7 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
 #[derive(Debug)]
 pub struct Tokens {
     pub token: String,
-    pub transmission: Option<TransmissionToken>,
+    pub transmission: TransmissionToken,
 }
 
 impl Tokens {
@@ -438,6 +450,13 @@ impl Tokens {
 pub struct TransmissionToken {
     pub token: String,
     pub url: String,
+}
+
+#[derive(Debug)]
+pub struct Authenticated {
+    pub email: String,
+    pub name: String,
+    pub tokens: Tokens,
 }
 
 #[derive(Debug)]

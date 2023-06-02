@@ -54,14 +54,14 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
-  Future<Tokens?> authenticatePortal(
+  Future<Authenticated> authenticatePortal(
       {required String email, required String password, dynamic hint}) {
     var arg0 = _platform.api2wire_String(email);
     var arg1 = _platform.api2wire_String(password);
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) =>
           _platform.inner.wire_authenticate_portal(port_, arg0, arg1),
-      parseSuccessData: _wire2api_opt_box_autoadd_tokens,
+      parseSuccessData: _wire2api_authenticated,
       constMeta: kAuthenticatePortalConstMeta,
       argValues: [email, password],
       hint: hint,
@@ -74,11 +74,11 @@ class NativeImpl implements Native {
         argNames: ["email", "password"],
       );
 
-  Future<Tokens?> validateTokens({required Tokens tokens, dynamic hint}) {
+  Future<Authenticated> validateTokens({required Tokens tokens, dynamic hint}) {
     var arg0 = _platform.api2wire_box_autoadd_tokens(tokens);
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) => _platform.inner.wire_validate_tokens(port_, arg0),
-      parseSuccessData: _wire2api_opt_box_autoadd_tokens,
+      parseSuccessData: _wire2api_authenticated,
       constMeta: kValidateTokensConstMeta,
       argValues: [tokens],
       hint: hint,
@@ -172,6 +172,17 @@ class NativeImpl implements Native {
     return raw as String;
   }
 
+  Authenticated _wire2api_authenticated(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return Authenticated(
+      email: _wire2api_String(arr[0]),
+      name: _wire2api_String(arr[1]),
+      tokens: _wire2api_tokens(arr[2]),
+    );
+  }
+
   BatteryInfo _wire2api_battery_info(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 2)
@@ -202,20 +213,12 @@ class NativeImpl implements Native {
     return _wire2api_station_config(raw);
   }
 
-  Tokens _wire2api_box_autoadd_tokens(dynamic raw) {
-    return _wire2api_tokens(raw);
-  }
-
   TransferProgress _wire2api_box_autoadd_transfer_progress(dynamic raw) {
     return _wire2api_transfer_progress(raw);
   }
 
   TransmissionConfig _wire2api_box_autoadd_transmission_config(dynamic raw) {
     return _wire2api_transmission_config(raw);
-  }
-
-  TransmissionToken _wire2api_box_autoadd_transmission_token(dynamic raw) {
-    return _wire2api_transmission_token(raw);
   }
 
   DomainMessage _wire2api_domain_message(dynamic raw) {
@@ -319,17 +322,9 @@ class NativeImpl implements Native {
     return raw == null ? null : _wire2api_box_autoadd_sensor_value(raw);
   }
 
-  Tokens? _wire2api_opt_box_autoadd_tokens(dynamic raw) {
-    return raw == null ? null : _wire2api_box_autoadd_tokens(raw);
-  }
-
   TransmissionConfig? _wire2api_opt_box_autoadd_transmission_config(
       dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_transmission_config(raw);
-  }
-
-  TransmissionToken? _wire2api_opt_box_autoadd_transmission_token(dynamic raw) {
-    return raw == null ? null : _wire2api_box_autoadd_transmission_token(raw);
   }
 
   SensitiveConfig _wire2api_sensitive_config(dynamic raw) {
@@ -408,7 +403,7 @@ class NativeImpl implements Native {
       throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
     return Tokens(
       token: _wire2api_String(arr[0]),
-      transmission: _wire2api_opt_box_autoadd_transmission_token(arr[1]),
+      transmission: _wire2api_transmission_token(arr[1]),
     );
   }
 
