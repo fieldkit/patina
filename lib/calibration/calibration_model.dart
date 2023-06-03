@@ -99,14 +99,16 @@ class CurrentCalibration {
     _points.add(point);
   }
 
-  proto.Calibration toDataProtocol() {
+  proto.ModuleConfiguration toDataProtocol() {
     final time = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final cps = _points
         .map((p) =>
             proto.CalibrationPoint(references: [p.standard.value!], uncalibrated: [p.reading.uncalibrated], factory: [p.reading.value]))
         .toList();
     final coefficients = calculateCoefficients();
-    return proto.Calibration(time: time, type: curveType, points: cps, coefficients: proto.CalibrationCoefficients(values: coefficients));
+    final calibration =
+        proto.Calibration(time: time, type: curveType, points: cps, coefficients: proto.CalibrationCoefficients(values: coefficients));
+    return proto.ModuleConfiguration(calibrations: [calibration]);
   }
 
   List<double> calculateCoefficients() {
