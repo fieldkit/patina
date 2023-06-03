@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_rust_bridge_template/app_state.dart';
-import 'package:flutter_rust_bridge_template/calibration/calibration_page.dart';
 import 'package:intl/intl.dart';
 
+import '../calibration/calibration_model.dart';
+import '../calibration/clear_calibration_page.dart';
 import '../gen/ffi.dart';
 import '../meta.dart';
 
