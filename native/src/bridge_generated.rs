@@ -259,6 +259,7 @@ impl support::IntoDart for ModuleConfig {
             self.module_id.into_dart(),
             self.key.into_dart(),
             self.sensors.into_dart(),
+            self.configuration.into_dart(),
         ]
         .into_dart()
     }

@@ -122,12 +122,14 @@ class ModuleConfig {
   final String moduleId;
   final String key;
   final List<SensorConfig> sensors;
+  final Uint8List? configuration;
 
   const ModuleConfig({
     required this.position,
     required this.moduleId,
     required this.key,
     required this.sensors,
+    this.configuration,
   });
 }
 

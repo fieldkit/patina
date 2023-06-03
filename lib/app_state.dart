@@ -2,8 +2,10 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_rust_bridge_template/gen/fk-data.pb.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../gen/fk-data.pb.dart' as proto;
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'dispatcher.dart';
 
@@ -407,6 +409,15 @@ class ModuleConfigurations extends ChangeNotifier {
   final KnownStationsModel knownStations;
 
   ModuleConfigurations({required this.api, required this.knownStations});
+
+  ModuleConfiguration? findModuleConfiguration(ModuleIdentity moduleIdentity) {
+    final configuration = knownStations.findModule(moduleIdentity)?.module.configuration;
+    if (configuration == null) {
+      return null;
+    }
+
+    return proto.ModuleConfiguration.fromBuffer(configuration);
+  }
 
   Future<void> clear(ModuleIdentity moduleIdentity) async {
     final mas = knownStations.findModule(moduleIdentity);

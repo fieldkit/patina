@@ -576,6 +576,7 @@ pub struct ModuleConfig {
     pub module_id: String,
     pub key: String,
     pub sensors: Vec<SensorConfig>,
+    pub configuration: Option<Vec<u8>>,
 }
 
 #[derive(Clone, Debug)]
@@ -655,6 +656,7 @@ impl TryInto<StationConfig> for StationAndConnection {
                     position: module.position,
                     module_id: module.hardware_id,
                     key: module.key.clone(),
+                    configuration: module.configuration,
                     sensors: module
                         .sensors
                         .into_iter()

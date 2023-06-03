@@ -332,13 +332,14 @@ class NativeImpl implements Native {
 
   ModuleConfig _wire2api_module_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return ModuleConfig(
       position: _wire2api_u32(arr[0]),
       moduleId: _wire2api_String(arr[1]),
       key: _wire2api_String(arr[2]),
       sensors: _wire2api_list_sensor_config(arr[3]),
+      configuration: _wire2api_opt_uint_8_list(arr[4]),
     );
   }
 
@@ -372,6 +373,10 @@ class NativeImpl implements Native {
   TransmissionConfig? _wire2api_opt_box_autoadd_transmission_config(
       dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_transmission_config(raw);
+  }
+
+  Uint8List? _wire2api_opt_uint_8_list(dynamic raw) {
+    return raw == null ? null : _wire2api_uint_8_list(raw);
   }
 
   SensitiveConfig _wire2api_sensitive_config(dynamic raw) {
