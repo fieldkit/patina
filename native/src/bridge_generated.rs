@@ -73,6 +73,44 @@ fn wire_authenticate_portal_impl(
         },
     )
 }
+fn wire_clear_calibration_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+    module: impl Wire2Api<usize> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "clear_calibration",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            let api_module = module.wire2api();
+            move |task_callback| clear_calibration(api_device_id, api_module)
+        },
+    )
+}
+fn wire_calibrate_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+    module: impl Wire2Api<usize> + UnwindSafe,
+    data: impl Wire2Api<Vec<u8>> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "calibrate",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            let api_module = module.wire2api();
+            let api_data = data.wire2api();
+            move |task_callback| calibrate(api_device_id, api_module, api_data)
+        },
+    )
+}
 fn wire_validate_tokens_impl(port_: MessagePort, tokens: impl Wire2Api<Tokens> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -161,6 +199,11 @@ impl Wire2Api<u8> for u8 {
     }
 }
 
+impl Wire2Api<usize> for usize {
+    fn wire2api(self) -> usize {
+        self
+    }
+}
 // Section: impl IntoDart
 
 impl support::IntoDart for Authenticated {

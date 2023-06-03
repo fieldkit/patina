@@ -35,6 +35,7 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
     return ans;
   }
+
 // Section: finalizer
 
 // Section: api_fill_to_wire
@@ -207,6 +208,47 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _wire_authenticate_portalPtr.asFunction<
           void Function(int, ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_clear_calibration(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> device_id,
+    int module,
+  ) {
+    return _wire_clear_calibration(
+      port_,
+      device_id,
+      module,
+    );
+  }
+
+  late final _wire_clear_calibrationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.UintPtr)>>('wire_clear_calibration');
+  late final _wire_clear_calibration = _wire_clear_calibrationPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
+
+  void wire_calibrate(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> device_id,
+    int module,
+    ffi.Pointer<wire_uint_8_list> data,
+  ) {
+    return _wire_calibrate(
+      port_,
+      device_id,
+      module,
+      data,
+    );
+  }
+
+  late final _wire_calibratePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.UintPtr, ffi.Pointer<wire_uint_8_list>)>>('wire_calibrate');
+  late final _wire_calibrate = _wire_calibratePtr.asFunction<
+      void Function(int, ffi.Pointer<wire_uint_8_list>, int,
+          ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_validate_tokens(
     int port_,

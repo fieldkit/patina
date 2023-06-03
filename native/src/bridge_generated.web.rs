@@ -17,6 +17,16 @@ pub fn wire_authenticate_portal(port_: MessagePort, email: String, password: Str
 }
 
 #[wasm_bindgen]
+pub fn wire_clear_calibration(port_: MessagePort, device_id: String, module: usize) {
+    wire_clear_calibration_impl(port_, device_id, module)
+}
+
+#[wasm_bindgen]
+pub fn wire_calibrate(port_: MessagePort, device_id: String, module: usize, data: Box<[u8]>) {
+    wire_calibrate_impl(port_, device_id, module, data)
+}
+
+#[wasm_bindgen]
 pub fn wire_validate_tokens(port_: MessagePort, tokens: JsValue) {
     wire_validate_tokens_impl(port_, tokens)
 }
@@ -89,6 +99,7 @@ impl Wire2Api<Vec<u8>> for Box<[u8]> {
         self.into_vec()
     }
 }
+
 // Section: impl Wire2Api for JsValue
 
 impl Wire2Api<String> for JsValue {
@@ -104,5 +115,10 @@ impl Wire2Api<u8> for JsValue {
 impl Wire2Api<Vec<u8>> for JsValue {
     fn wire2api(self) -> Vec<u8> {
         self.unchecked_into::<js_sys::Uint8Array>().to_vec().into()
+    }
+}
+impl Wire2Api<usize> for JsValue {
+    fn wire2api(self) -> usize {
+        self.unchecked_into_f64() as _
     }
 }

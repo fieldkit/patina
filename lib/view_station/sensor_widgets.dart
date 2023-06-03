@@ -123,7 +123,7 @@ class ModuleInfo extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CalibrationPage(config: CalibrationPointConfig.showCase(module.identity)),
+                    builder: (context) => ClearCalibrationPage(config: CalibrationPointConfig.showCase(module.identity)),
                   ),
                 );
               },

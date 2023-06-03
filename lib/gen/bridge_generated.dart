@@ -77,6 +77,50 @@ class NativeImpl implements Native {
         argNames: ["email", "password"],
       );
 
+  Future<void> clearCalibration(
+      {required String deviceId, required int module, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    var arg1 = api2wire_usize(module);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_clear_calibration(port_, arg0, arg1),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kClearCalibrationConstMeta,
+      argValues: [deviceId, module],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kClearCalibrationConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "clear_calibration",
+        argNames: ["deviceId", "module"],
+      );
+
+  Future<void> calibrate(
+      {required String deviceId,
+      required int module,
+      required Uint8List data,
+      dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    var arg1 = api2wire_usize(module);
+    var arg2 = _platform.api2wire_uint_8_list(data);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_calibrate(port_, arg0, arg1, arg2),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kCalibrateConstMeta,
+      argValues: [deviceId, module, data],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kCalibrateConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "calibrate",
+        argNames: ["deviceId", "module", "data"],
+      );
+
   Future<Authenticated> validateTokens({required Tokens tokens, dynamic hint}) {
     var arg0 = _platform.api2wire_box_autoadd_tokens(tokens);
     return _platform.executeNormal(FlutterRustBridgeTask(
@@ -474,6 +518,10 @@ class NativeImpl implements Native {
     return raw as Uint8List;
   }
 
+  void _wire2api_unit(dynamic raw) {
+    return;
+  }
+
   int _wire2api_usize(dynamic raw) {
     return castInt(raw);
   }
@@ -486,4 +534,8 @@ int api2wire_u8(int raw) {
   return raw;
 }
 
+@protected
+int api2wire_usize(int raw) {
+  return raw;
+}
 // Section: finalizer

@@ -47,6 +47,7 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   Uint8List api2wire_uint_8_list(Uint8List raw) {
     return raw;
   }
+
 // Section: finalizer
 }
 
@@ -67,6 +68,12 @@ class NativeWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_authenticate_portal(
       NativePortType port_, String email, String password);
+
+  external dynamic /* void */ wire_clear_calibration(
+      NativePortType port_, String device_id, int module);
+
+  external dynamic /* void */ wire_calibrate(
+      NativePortType port_, String device_id, int module, Uint8List data);
 
   external dynamic /* void */ wire_validate_tokens(
       NativePortType port_, List<dynamic> tokens);
@@ -98,6 +105,14 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_authenticate_portal(
           NativePortType port_, String email, String password) =>
       wasmModule.wire_authenticate_portal(port_, email, password);
+
+  void wire_clear_calibration(
+          NativePortType port_, String device_id, int module) =>
+      wasmModule.wire_clear_calibration(port_, device_id, module);
+
+  void wire_calibrate(
+          NativePortType port_, String device_id, int module, Uint8List data) =>
+      wasmModule.wire_calibrate(port_, device_id, module, data);
 
   void wire_validate_tokens(NativePortType port_, List<dynamic> tokens) =>
       wasmModule.wire_validate_tokens(port_, tokens);

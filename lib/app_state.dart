@@ -128,13 +128,13 @@ class KnownStationsModel extends ChangeNotifier {
     applyTransferProgress(progress);
   }
 
-  ModuleConfig? findModule(ModuleIdentity moduleIdentity) {
+  ModuleAndStation? findModule(ModuleIdentity moduleIdentity) {
     for (final station in stations) {
       final config = station.config;
       if (config != null) {
         for (final module in config.modules) {
           if (module.identity == moduleIdentity) {
-            return module;
+            return ModuleAndStation(config, module);
           }
         }
       }
@@ -143,16 +143,26 @@ class KnownStationsModel extends ChangeNotifier {
   }
 }
 
+class ModuleAndStation {
+  final StationConfig station;
+  final ModuleConfig module;
+
+  ModuleAndStation(this.station, this.module);
+}
+
 class AppState {
   final Native api;
   final AppEventDispatcher dispatcher;
   final KnownStationsModel knownStations;
+  final ModuleConfigurations moduleConfigurations;
   final PortalAccounts portalAccounts;
 
-  AppState._(this.api, this.dispatcher, this.knownStations, this.portalAccounts);
+  AppState._(this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
-    return AppState._(api, dispatcher, KnownStationsModel(api, dispatcher), PortalAccounts(api: api, accounts: List.empty()));
+    final knownStations = KnownStationsModel(api, dispatcher);
+    return AppState._(api, dispatcher, knownStations, ModuleConfigurations(api: api, knownStations: knownStations),
+        PortalAccounts(api: api, accounts: List.empty()));
   }
 }
 
@@ -389,5 +399,30 @@ class PortalAccounts extends ChangeNotifier {
     await _save();
     notifyListeners();
     return this;
+  }
+}
+
+class ModuleConfigurations extends ChangeNotifier {
+  final Native api;
+  final KnownStationsModel knownStations;
+
+  ModuleConfigurations({required this.api, required this.knownStations});
+
+  Future<void> clear(ModuleIdentity moduleIdentity) async {
+    final mas = knownStations.findModule(moduleIdentity);
+    if (mas != null) {
+      await api.clearCalibration(deviceId: mas.station.deviceId, module: mas.module.position);
+    } else {
+      debugPrint("unknown module identity $moduleIdentity");
+    }
+  }
+
+  Future<void> calibrate(ModuleIdentity moduleIdentity, Uint8List data) async {
+    final mas = knownStations.findModule(moduleIdentity);
+    if (mas != null) {
+      await api.calibrate(deviceId: mas.station.deviceId, module: mas.module.position, data: data);
+    } else {
+      debugPrint("unknown module identity $moduleIdentity");
+    }
   }
 }

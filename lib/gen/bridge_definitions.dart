@@ -30,6 +30,19 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kAuthenticatePortalConstMeta;
 
+  Future<void> clearCalibration(
+      {required String deviceId, required int module, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kClearCalibrationConstMeta;
+
+  Future<void> calibrate(
+      {required String deviceId,
+      required int module,
+      required Uint8List data,
+      dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCalibrateConstMeta;
+
   Future<Authenticated> validateTokens({required Tokens tokens, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kValidateTokensConstMeta;

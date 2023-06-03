@@ -293,13 +293,10 @@ impl Sdk {
         })
     }
 
-    async fn start_download(&self, device_id: String) -> Result<TransferProgress> {
+    async fn start_download(&self, device_id: DeviceId) -> Result<TransferProgress> {
         info!("{:?} start download", &device_id);
 
-        let discovered = self
-            .nearby
-            .get_discovered(&DeviceId(device_id.clone()))
-            .await;
+        let discovered = self.nearby.get_discovered(&device_id).await;
 
         if let Some(discovered) = discovered {
             self.server.sync(discovered).await?;
@@ -308,18 +305,47 @@ impl Sdk {
         }
 
         Ok(TransferProgress {
-            device_id,
+            device_id: device_id.0,
             status: TransferStatus::Starting,
         })
     }
 
-    async fn start_upload(&self, device_id: String) -> Result<TransferProgress> {
+    async fn start_upload(&self, device_id: DeviceId) -> Result<TransferProgress> {
         info!("{:?} start upload", &device_id);
 
         Ok(TransferProgress {
-            device_id,
+            device_id: device_id.0,
             status: TransferStatus::Starting,
         })
+    }
+
+    async fn get_nearby_addr(&self, device_id: &DeviceId) -> Result<Option<String>> {
+        let discovered = self.nearby.get_discovered(&device_id).await;
+        Ok(discovered.map(|d| {
+            d.http_addr
+                .map(|o| format!("{}", o))
+                .expect("Expected HTTP url")
+        }))
+    }
+
+    async fn clear_calibration(&self, device_id: DeviceId, module: usize) -> Result<()> {
+        info!("clear-calibration: {:?} {:?}", device_id, module);
+        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
+            let client = query::device::Client::new()?;
+            client.clear_calibration(&addr, module).await?;
+        }
+
+        Ok(())
+    }
+
+    async fn calibrate(&self, device_id: DeviceId, module: usize, data: Vec<u8>) -> Result<()> {
+        info!("calibrate: {:?} {:?} {:?}", device_id, module, data);
+        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
+            let client = query::device::Client::new()?;
+            client.calibrate(&addr, module, &data).await?;
+        }
+
+        Ok(())
     }
 }
 
@@ -333,6 +359,18 @@ pub fn authenticate_portal(email: String, password: String) -> Result<Authentica
     })?)
 }
 
+pub fn clear_calibration(device_id: String, module: usize) -> Result<()> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.clear_calibration(DeviceId(device_id.clone()), module))
+    })?)
+}
+
+pub fn calibrate(device_id: String, module: usize, data: Vec<u8>) -> Result<()> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.calibrate(DeviceId(device_id.clone()), module, data))
+    })?)
+}
+
 pub fn validate_tokens(tokens: Tokens) -> Result<Authenticated> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.validate_tokens(tokens))
@@ -341,13 +379,13 @@ pub fn validate_tokens(tokens: Tokens) -> Result<Authenticated> {
 
 pub fn start_download(device_id: String) -> Result<TransferProgress> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.start_download(device_id))
+        rt.block_on(sdk.start_download(DeviceId(device_id.clone())))
     })?)
 }
 
 pub fn start_upload(device_id: String) -> Result<TransferProgress> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.start_upload(device_id))
+        rt.block_on(sdk.start_upload(DeviceId(device_id.clone())))
     })?)
 }
 

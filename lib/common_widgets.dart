@@ -46,11 +46,11 @@ class GenericListItemHeader extends StatelessWidget {
 class WH {
   static const pagePadding = EdgeInsets.symmetric(horizontal: 10, vertical: 6);
 
-  static align(child) => Align(alignment: Alignment.topLeft, child: child);
+  static Align align(child) => Align(alignment: Alignment.topLeft, child: child);
 
-  static padPage(child) => Container(padding: pagePadding, child: child);
+  static Container padPage(child) => Container(padding: pagePadding, child: child);
 
-  static padChildrenPage(children) => Container(padding: pagePadding, child: Column(children: children));
+  static Container padChildrenPage(children) => Container(padding: pagePadding, child: Column(children: children));
 }
 
 class OopsBug extends StatelessWidget {

@@ -25,6 +25,25 @@ pub extern "C" fn wire_authenticate_portal(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_clear_calibration(
+    port_: i64,
+    device_id: *mut wire_uint_8_list,
+    module: usize,
+) {
+    wire_clear_calibration_impl(port_, device_id, module)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_calibrate(
+    port_: i64,
+    device_id: *mut wire_uint_8_list,
+    module: usize,
+    data: *mut wire_uint_8_list,
+) {
+    wire_calibrate_impl(port_, device_id, module, data)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_validate_tokens(port_: i64, tokens: *mut wire_Tokens) {
     wire_validate_tokens_impl(port_, tokens)
 }
@@ -106,6 +125,7 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
         }
     }
 }
+
 // Section: wire structs
 
 #[repr(C)]

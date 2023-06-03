@@ -46,6 +46,13 @@ void wire_authenticate_portal(int64_t port_,
                               struct wire_uint_8_list *email,
                               struct wire_uint_8_list *password);
 
+void wire_clear_calibration(int64_t port_, struct wire_uint_8_list *device_id, uintptr_t module);
+
+void wire_calibrate(int64_t port_,
+                    struct wire_uint_8_list *device_id,
+                    uintptr_t module,
+                    struct wire_uint_8_list *data);
+
 void wire_validate_tokens(int64_t port_, struct wire_Tokens *tokens);
 
 void wire_start_download(int64_t port_, struct wire_uint_8_list *device_id);
@@ -67,6 +74,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_start_native);
     dummy_var ^= ((int64_t) (void*) wire_get_my_stations);
     dummy_var ^= ((int64_t) (void*) wire_authenticate_portal);
+    dummy_var ^= ((int64_t) (void*) wire_clear_calibration);
+    dummy_var ^= ((int64_t) (void*) wire_calibrate);
     dummy_var ^= ((int64_t) (void*) wire_validate_tokens);
     dummy_var ^= ((int64_t) (void*) wire_start_download);
     dummy_var ^= ((int64_t) (void*) wire_start_upload);

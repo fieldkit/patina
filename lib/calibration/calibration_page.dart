@@ -18,6 +18,54 @@ import 'countdown.dart';
 
 enum CanContinue { form, timer, staleValue, yes }
 
+class ClearCalibrationPage extends StatelessWidget {
+  final CalibrationPointConfig config;
+
+  const ClearCalibrationPage({super.key, required this.config});
+
+  @override
+  Widget build(BuildContext context) {
+    final moduleConfigurations = context.read<AppState>().moduleConfigurations;
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.calibrationTitle),
+        ),
+        body: Column(
+          children: <Widget>[
+            ElevatedButton(
+                child: const Text("Clear"),
+                onPressed: () async {
+                  debugPrint("clearing calibration");
+                  final navigator = Navigator.of(context);
+                  try {
+                    await moduleConfigurations.clear(config.moduleIdentity);
+                    debugPrint("Cleared!");
+                  } catch (e) {
+                    debugPrint("Exception clearing: $e");
+                  }
+                  navigator.push(
+                    MaterialPageRoute(
+                      builder: (context) => CalibrationPage(config: config),
+                    ),
+                  );
+                }),
+            ElevatedButton(
+                child: const Text("Keep"),
+                onPressed: () {
+                  debugPrint("keeping calibration");
+                  final navigator = Navigator.of(context);
+                  navigator.push(
+                    MaterialPageRoute(
+                      builder: (context) => CalibrationPage(config: config),
+                    ),
+                  );
+                }),
+          ].map(WH.padPage).toList(),
+        ));
+  }
+}
+
 class CalibrationPage extends StatelessWidget {
   final ActiveCalibration active = ActiveCalibration();
   final CurrentCalibration? current;
@@ -48,6 +96,9 @@ class CalibrationPanel extends StatelessWidget {
   const CalibrationPanel({super.key, required this.current, required this.config});
 
   Future<void> calibrateAndContinue(BuildContext context, SensorConfig sensor, CurrentCalibration current, ActiveCalibration active) async {
+    final moduleConfigurations = context.read<AppState>().moduleConfigurations;
+    final navigator = Navigator.of(context);
+
     final configured = config.standard;
     final standard = configured.acceptable ? configured : active.userStandard();
 
@@ -61,13 +112,17 @@ class CalibrationPanel extends StatelessWidget {
       final cal = current.toDataProtocol();
       final serialized = current.toBytes();
 
-      debugPrint("$cal");
-      debugPrint("$serialized");
+      debugPrint("(calibrate) $cal");
 
-      Navigator.popUntil(context, (route) => route.isFirst);
+      try {
+        await moduleConfigurations.calibrate(config.moduleIdentity, serialized);
+      } catch (e) {
+        debugPrint("Exception calibration: $e");
+      }
+
+      navigator.popUntil((route) => route.isFirst);
     } else {
-      Navigator.push(
-        context,
+      navigator.push(
         MaterialPageRoute(
           builder: (context) => CalibrationPage(
             config: nextConfig,
@@ -101,8 +156,8 @@ class CalibrationPanel extends StatelessWidget {
     final knownStations = context.watch<KnownStationsModel>();
     final active = context.watch<ActiveCalibration>();
     final countdown = context.watch<CountdownTimer>();
-    final module = knownStations.findModule(config.moduleIdentity);
-    final sensor = module?.calibrationSensor;
+    final mas = knownStations.findModule(config.moduleIdentity);
+    final sensor = mas?.module.calibrationSensor;
     if (sensor == null) {
       return const OopsBug();
     }
