@@ -86,11 +86,16 @@ List<double> linearCurve(List<CalibrationPoint> points) {
   return [b, m];
 }
 
+enum CalibrationKind {
+  none,
+}
+
 class CurrentCalibration {
   final proto.CurveType curveType;
+  final CalibrationKind kind;
   final List<CalibrationPoint> _points = List.empty(growable: true);
 
-  CurrentCalibration({required this.curveType});
+  CurrentCalibration({required this.curveType, this.kind = CalibrationKind.none});
 
   @override
   String toString() => _points.toString();
@@ -106,8 +111,8 @@ class CurrentCalibration {
             proto.CalibrationPoint(references: [p.standard.value!], uncalibrated: [p.reading.uncalibrated], factory: [p.reading.value]))
         .toList();
     final coefficients = calculateCoefficients();
-    final calibration =
-        proto.Calibration(time: time, type: curveType, points: cps, coefficients: proto.CalibrationCoefficients(values: coefficients));
+    final calibration = proto.Calibration(
+        time: time, kind: kind.index, type: curveType, points: cps, coefficients: proto.CalibrationCoefficients(values: coefficients));
     return proto.ModuleConfiguration(calibrations: [calibration]);
   }
 
