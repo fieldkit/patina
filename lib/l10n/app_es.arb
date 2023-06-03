@@ -61,7 +61,8 @@
   "memoryUsage": "Memory",
   "deployButton": "Deploy",
 
-  "confirmDeleteTitle": "Delete Account",
+  "confirmClearCalibrationTitle": "Clear Calibration",
+  "confirmDeleteAccountTitle": "Delete Account",
   "confirmDelete": "Are you sure?",
   "confirmYes": "Yes",
   "confirmCancel": "Cancel"

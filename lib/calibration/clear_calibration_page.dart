@@ -97,6 +97,7 @@ class ClearCalibrationPage extends StatelessWidget {
     final moduleConfigurations = context.read<AppState>().moduleConfigurations;
     final configuration = moduleConfigurations.findModuleConfiguration(config.moduleIdentity);
     final calibrations = configuration?.calibrations ?? [];
+    final outerNavigator = Navigator.of(context);
 
     debugPrint("$calibrations");
 
@@ -105,37 +106,62 @@ class ClearCalibrationPage extends StatelessWidget {
           title: Text(AppLocalizations.of(context)!.calibrationTitle),
         ),
         body: Column(
-          children: <Widget>[
-            ...calibrations.map((c) => CalibrationWidget(calibration: c)),
-            ElevatedButton(
-                child: const Text("Clear"),
-                onPressed: () async {
-                  debugPrint("clearing calibration");
-                  final navigator = Navigator.of(context);
-                  try {
-                    await moduleConfigurations.clear(config.moduleIdentity);
-                    debugPrint("cleared!");
-                  } catch (e) {
-                    debugPrint("Exception clearing: $e");
-                  }
-                  navigator.push(
-                    MaterialPageRoute(
-                      builder: (context) => CalibrationPage(config: config),
-                    ),
-                  );
-                }),
-            ElevatedButton(
-                child: const Text("Keep"),
-                onPressed: () {
-                  debugPrint("keeping calibration");
-                  final navigator = Navigator.of(context);
-                  navigator.push(
-                    MaterialPageRoute(
-                      builder: (context) => CalibrationPage(config: config),
-                    ),
-                  );
-                }),
-          ].map(WH.padPage).toList(),
-        ));
+            children: <Widget>[
+          ...calibrations.map((c) => CalibrationWidget(calibration: c)),
+          Row(
+            children: [
+              ElevatedButton(
+                  child: const Text("Clear"),
+                  onPressed: () async {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          final localizations = AppLocalizations.of(context)!;
+                          final navigator = Navigator.of(context);
+
+                          return AlertDialog(
+                            title: Text(localizations.confirmClearCalibrationTitle),
+                            content: Text(localizations.confirmDelete),
+                            actions: <Widget>[
+                              TextButton(
+                                  onPressed: () {
+                                    navigator.pop();
+                                  },
+                                  child: Text(localizations.confirmCancel)),
+                              TextButton(
+                                  onPressed: () async {
+                                    navigator.pop();
+                                    try {
+                                      debugPrint("clearing calibration");
+                                      await moduleConfigurations.clear(config.moduleIdentity);
+                                      debugPrint("cleared!");
+                                      outerNavigator.push(
+                                        MaterialPageRoute(
+                                          builder: (context) => CalibrationPage(config: config),
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      debugPrint("Exception clearing: $e");
+                                    }
+                                  },
+                                  child: Text(AppLocalizations.of(context)!.confirmYes))
+                            ],
+                          );
+                        });
+                  }),
+              ElevatedButton(
+                  child: const Text("Keep"),
+                  onPressed: () {
+                    debugPrint("keeping calibration");
+                    final navigator = Navigator.of(context);
+                    navigator.push(
+                      MaterialPageRoute(
+                        builder: (context) => CalibrationPage(config: config),
+                      ),
+                    );
+                  }),
+            ].map(WH.padPage).toList(),
+          )
+        ].map(WH.padPage).toList()));
   }
 }

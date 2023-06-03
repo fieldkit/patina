@@ -16,8 +16,6 @@ class AccountsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final accounts = context.watch<PortalAccounts>();
 
-    debugPrint("accounts-page:build");
-
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.accountsTitle),
@@ -45,7 +43,7 @@ class AccountsPage extends StatelessWidget {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text(AppLocalizations.of(context)!.confirmDeleteTitle),
+                        title: Text(AppLocalizations.of(context)!.confirmDeleteAccountTitle),
                         content: Text(AppLocalizations.of(context)!.confirmDelete),
                         actions: <Widget>[
                           TextButton(
