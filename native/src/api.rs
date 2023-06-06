@@ -14,9 +14,7 @@ use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
-use query::portal::{
-    DecodedToken, PortalError, StatusCode, Tokens as PortalTokens, WantsUploadProgress,
-};
+use query::portal::{DecodedToken, PortalError, StatusCode, WantsUploadProgress};
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
@@ -243,21 +241,13 @@ impl Sdk {
         Ok(Authenticated {
             name: ourselves.name,
             email,
-            tokens: Tokens {
-                token: tokens.token,
-                transmission: TransmissionToken {
-                    token: transmission.token,
-                    url: transmission.url,
-                },
-            },
+            tokens: Tokens::from(tokens, transmission),
         })
     }
 
     async fn validate_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
         let client = query::portal::Client::new(&self.portal_base_url)?;
-        let client = client.to_authenticated(PortalTokens {
-            token: tokens.token.clone(),
-        })?;
+        let client = client.to_authenticated(tokens.clone().into())?;
 
         let decoded = tokens.decoded()?;
         info!(
@@ -293,13 +283,7 @@ impl Sdk {
         Ok(Authenticated {
             name: ourselves.name,
             email: ourselves.email,
-            tokens: Tokens {
-                token: refreshed.token,
-                transmission: TransmissionToken {
-                    token: transmission.token,
-                    url: transmission.url,
-                },
-            },
+            tokens: Tokens::from(refreshed, transmission),
         })
     }
 
@@ -324,9 +308,7 @@ impl Sdk {
         info!("{:?} start upload", &device_id);
 
         let client = query::portal::Client::new(&self.portal_base_url)?;
-        let authenticated = client.to_authenticated(query::portal::Tokens {
-            token: tokens.token,
-        })?;
+        let authenticated = client.to_authenticated(tokens.into())?;
 
         let path = PathBuf::from("/home/jlewallen/.local/share/org.fieldkit.app/fk-data/4b6af9895333464850202020ff12410c/20230605_231928.fkpb");
         authenticated
@@ -500,13 +482,23 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
     Ok(())
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Tokens {
     pub token: String,
     pub transmission: TransmissionToken,
 }
 
 impl Tokens {
+    fn from(tokens: query::portal::Tokens, transmission: query::portal::TransmissionToken) -> Self {
+        Self {
+            token: tokens.token,
+            transmission: TransmissionToken {
+                token: transmission.token,
+                url: transmission.url,
+            },
+        }
+    }
+
     fn decoded(&self) -> Result<DecodedToken, PortalError> {
         DecodedToken::decode(&self.token)
     }
@@ -516,7 +508,13 @@ impl Tokens {
     }
 }
 
-#[derive(Debug)]
+impl Into<query::portal::Tokens> for Tokens {
+    fn into(self) -> query::portal::Tokens {
+        query::portal::Tokens { token: self.token }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct TransmissionToken {
     pub token: String,
     pub url: String,
