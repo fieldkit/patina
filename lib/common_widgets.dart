@@ -51,6 +51,14 @@ class WH {
   static Container padPage(child) => Container(padding: pagePadding, child: child);
 
   static Container padChildrenPage(children) => Container(padding: pagePadding, child: Column(children: children));
+
+  static Padding padLabel(Widget child) => Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: child);
+
+  static Padding padColumn(Widget child) => Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: child);
+
+  static Padding padBelowProgress(Widget child) => Padding(padding: const EdgeInsets.symmetric(vertical: 10), child: child);
+
+  static LinearProgressIndicator progressBar(double value) => LinearProgressIndicator(value: value);
 }
 
 class OopsBug extends StatelessWidget {

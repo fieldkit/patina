@@ -307,7 +307,7 @@ impl NearbyDevices {
                         .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
                             TransferProgress {
                                 device_id: device_id.0.to_owned(),
-                                status: TransferStatus::Transferring(DownloadProgress {
+                                status: TransferStatus::Downloading(DownloadProgress {
                                     started: started.duration_since(UNIX_EPOCH)?.as_millis() as u64,
                                     completed: total.completed,
                                     total: total.total,

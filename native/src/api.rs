@@ -536,10 +536,17 @@ pub struct DownloadProgress {
 }
 
 #[derive(Debug)]
+pub struct UploadProgress {
+    pub bytes_uploaded: u64,
+    pub total_bytes: u64,
+}
+
+#[derive(Debug)]
 #[allow(dead_code)]
 pub enum TransferStatus {
     Starting,
-    Transferring(DownloadProgress),
+    Downloading(DownloadProgress),
+    Uploading(UploadProgress),
     Processing,
     Completed,
     Failed,

@@ -95,8 +95,23 @@ class StationSyncStatus extends StatelessWidget {
   StationConfig get config => station.config!;
 
   bool get isSyncing => station.syncing != null;
+  bool get isDownloading => station.syncing?.download != null;
+  bool get isUploading => station.syncing?.upload != null;
 
   const StationSyncStatus({super.key, required this.station, required this.onDownload, required this.onUpload});
+
+  Widget _progress(BuildContext context) {
+    if (isDownloading) return DownloadProgressPanel(progress: station.syncing!.download!);
+    if (isUploading) return UploadProgressPanel(progress: station.syncing!.upload!);
+    if (isSyncing) {
+      final localizations = AppLocalizations.of(context)!;
+      return WH.padColumn(Column(children: [
+        WH.progressBar(0.0),
+        WH.padBelowProgress(Text(localizations.syncWorking)),
+      ]));
+    }
+    return SyncOptions(onDownload: onDownload, onUpload: onUpload);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,47 +119,44 @@ class StationSyncStatus extends StatelessWidget {
 
     final title = config.name;
     final subtitle = isSyncing
-        ? localizations.syncPercentageComplete(station.syncing?.progress?.completed ?? 0)
+        ? localizations.syncPercentageComplete(station.syncing?.completed ?? 0)
         : localizations.syncItemSubtitle(config.data.records);
 
-    return BorderedListItem(header: GenericListItemHeader(title: title, subtitle: subtitle), children: [
-      isSyncing ? DownloadProgressPanel(progress: station.syncing!.progress) : SyncOptions(onDownload: onDownload, onUpload: onUpload)
-    ]);
+    return BorderedListItem(header: GenericListItemHeader(title: title, subtitle: subtitle), children: [_progress(context)]);
   }
 }
 
 class DownloadProgressPanel extends StatelessWidget {
-  final DownloadProgress? progress;
+  final DownloadProgress progress;
 
-  const DownloadProgressPanel({super.key, this.progress});
+  const DownloadProgressPanel({super.key, required this.progress});
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    padColumn(child) => Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: child);
-    padLabel(child) => Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: child);
-    padBelowProgress(child) => Padding(padding: const EdgeInsets.symmetric(vertical: 10), child: child);
-    progressBar(value) => LinearProgressIndicator(value: value);
-
-    if (progress == null) {
-      return padColumn(Column(children: [
-        progressBar(0.0),
-        padBelowProgress(Text(localizations.syncWorking)),
-      ]));
-    }
-
-    final label = localizations.syncProgressReadings(progress!.total, progress!.received);
-    final started = DateTime.fromMillisecondsSinceEpoch(progress!.started);
+    final label = localizations.syncProgressReadings(progress.total, progress.received);
+    final started = DateTime.fromMillisecondsSinceEpoch(progress.started);
     final elapsed = DateTime.now().difference(started);
     final subtitle = localizations.syncElapsed(elapsed.toString());
 
-    return padColumn(Column(children: [
-      progressBar(progress!.completed),
-      padBelowProgress(Column(children: [
-        padLabel(Text(label)),
-        padLabel(Text(subtitle)),
+    return WH.padColumn(Column(children: [
+      WH.progressBar(progress.completed),
+      WH.padBelowProgress(Column(children: [
+        WH.padLabel(Text(label)),
+        WH.padLabel(Text(subtitle)),
       ]))
     ]));
+  }
+}
+
+class UploadProgressPanel extends StatelessWidget {
+  final UploadProgress progress;
+
+  const UploadProgressPanel({super.key, required this.progress});
+
+  @override
+  Widget build(BuildContext context) {
+    return WH.padColumn(Column(children: [WH.progressBar(progress.completed), WH.padBelowProgress(const SizedBox.shrink())]));
   }
 }

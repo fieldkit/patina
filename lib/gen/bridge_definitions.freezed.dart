@@ -701,7 +701,8 @@ mixin _$TransferStatus {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() starting,
-    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function(DownloadProgress field0) downloading,
+    required TResult Function(UploadProgress field0) uploading,
     required TResult Function() processing,
     required TResult Function() completed,
     required TResult Function() failed,
@@ -710,7 +711,8 @@ mixin _$TransferStatus {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? starting,
-    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function(DownloadProgress field0)? downloading,
+    TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? processing,
     TResult? Function()? completed,
     TResult? Function()? failed,
@@ -719,7 +721,8 @@ mixin _$TransferStatus {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? starting,
-    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function(DownloadProgress field0)? downloading,
+    TResult Function(UploadProgress field0)? uploading,
     TResult Function()? processing,
     TResult Function()? completed,
     TResult Function()? failed,
@@ -729,7 +732,8 @@ mixin _$TransferStatus {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(TransferStatus_Starting value) starting,
-    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Downloading value) downloading,
+    required TResult Function(TransferStatus_Uploading value) uploading,
     required TResult Function(TransferStatus_Processing value) processing,
     required TResult Function(TransferStatus_Completed value) completed,
     required TResult Function(TransferStatus_Failed value) failed,
@@ -738,7 +742,8 @@ mixin _$TransferStatus {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(TransferStatus_Starting value)? starting,
-    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Downloading value)? downloading,
+    TResult? Function(TransferStatus_Uploading value)? uploading,
     TResult? Function(TransferStatus_Processing value)? processing,
     TResult? Function(TransferStatus_Completed value)? completed,
     TResult? Function(TransferStatus_Failed value)? failed,
@@ -747,7 +752,8 @@ mixin _$TransferStatus {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(TransferStatus_Starting value)? starting,
-    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Downloading value)? downloading,
+    TResult Function(TransferStatus_Uploading value)? uploading,
     TResult Function(TransferStatus_Processing value)? processing,
     TResult Function(TransferStatus_Completed value)? completed,
     TResult Function(TransferStatus_Failed value)? failed,
@@ -814,7 +820,8 @@ class _$TransferStatus_Starting implements TransferStatus_Starting {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() starting,
-    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function(DownloadProgress field0) downloading,
+    required TResult Function(UploadProgress field0) uploading,
     required TResult Function() processing,
     required TResult Function() completed,
     required TResult Function() failed,
@@ -826,7 +833,8 @@ class _$TransferStatus_Starting implements TransferStatus_Starting {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? starting,
-    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function(DownloadProgress field0)? downloading,
+    TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? processing,
     TResult? Function()? completed,
     TResult? Function()? failed,
@@ -838,7 +846,8 @@ class _$TransferStatus_Starting implements TransferStatus_Starting {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? starting,
-    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function(DownloadProgress field0)? downloading,
+    TResult Function(UploadProgress field0)? uploading,
     TResult Function()? processing,
     TResult Function()? completed,
     TResult Function()? failed,
@@ -854,7 +863,8 @@ class _$TransferStatus_Starting implements TransferStatus_Starting {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(TransferStatus_Starting value) starting,
-    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Downloading value) downloading,
+    required TResult Function(TransferStatus_Uploading value) uploading,
     required TResult Function(TransferStatus_Processing value) processing,
     required TResult Function(TransferStatus_Completed value) completed,
     required TResult Function(TransferStatus_Failed value) failed,
@@ -866,7 +876,8 @@ class _$TransferStatus_Starting implements TransferStatus_Starting {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(TransferStatus_Starting value)? starting,
-    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Downloading value)? downloading,
+    TResult? Function(TransferStatus_Uploading value)? uploading,
     TResult? Function(TransferStatus_Processing value)? processing,
     TResult? Function(TransferStatus_Completed value)? completed,
     TResult? Function(TransferStatus_Failed value)? failed,
@@ -878,7 +889,8 @@ class _$TransferStatus_Starting implements TransferStatus_Starting {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(TransferStatus_Starting value)? starting,
-    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Downloading value)? downloading,
+    TResult Function(TransferStatus_Uploading value)? uploading,
     TResult Function(TransferStatus_Processing value)? processing,
     TResult Function(TransferStatus_Completed value)? completed,
     TResult Function(TransferStatus_Failed value)? failed,
@@ -896,22 +908,22 @@ abstract class TransferStatus_Starting implements TransferStatus {
 }
 
 /// @nodoc
-abstract class _$$TransferStatus_TransferringCopyWith<$Res> {
-  factory _$$TransferStatus_TransferringCopyWith(
-          _$TransferStatus_Transferring value,
-          $Res Function(_$TransferStatus_Transferring) then) =
-      __$$TransferStatus_TransferringCopyWithImpl<$Res>;
+abstract class _$$TransferStatus_DownloadingCopyWith<$Res> {
+  factory _$$TransferStatus_DownloadingCopyWith(
+          _$TransferStatus_Downloading value,
+          $Res Function(_$TransferStatus_Downloading) then) =
+      __$$TransferStatus_DownloadingCopyWithImpl<$Res>;
   @useResult
   $Res call({DownloadProgress field0});
 }
 
 /// @nodoc
-class __$$TransferStatus_TransferringCopyWithImpl<$Res>
-    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Transferring>
-    implements _$$TransferStatus_TransferringCopyWith<$Res> {
-  __$$TransferStatus_TransferringCopyWithImpl(
-      _$TransferStatus_Transferring _value,
-      $Res Function(_$TransferStatus_Transferring) _then)
+class __$$TransferStatus_DownloadingCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Downloading>
+    implements _$$TransferStatus_DownloadingCopyWith<$Res> {
+  __$$TransferStatus_DownloadingCopyWithImpl(
+      _$TransferStatus_Downloading _value,
+      $Res Function(_$TransferStatus_Downloading) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -919,7 +931,7 @@ class __$$TransferStatus_TransferringCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$TransferStatus_Transferring(
+    return _then(_$TransferStatus_Downloading(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -930,22 +942,22 @@ class __$$TransferStatus_TransferringCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$TransferStatus_Transferring implements TransferStatus_Transferring {
-  const _$TransferStatus_Transferring(this.field0);
+class _$TransferStatus_Downloading implements TransferStatus_Downloading {
+  const _$TransferStatus_Downloading(this.field0);
 
   @override
   final DownloadProgress field0;
 
   @override
   String toString() {
-    return 'TransferStatus.transferring(field0: $field0)';
+    return 'TransferStatus.downloading(field0: $field0)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$TransferStatus_Transferring &&
+            other is _$TransferStatus_Downloading &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -955,46 +967,49 @@ class _$TransferStatus_Transferring implements TransferStatus_Transferring {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$TransferStatus_TransferringCopyWith<_$TransferStatus_Transferring>
-      get copyWith => __$$TransferStatus_TransferringCopyWithImpl<
-          _$TransferStatus_Transferring>(this, _$identity);
+  _$$TransferStatus_DownloadingCopyWith<_$TransferStatus_Downloading>
+      get copyWith => __$$TransferStatus_DownloadingCopyWithImpl<
+          _$TransferStatus_Downloading>(this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() starting,
-    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function(DownloadProgress field0) downloading,
+    required TResult Function(UploadProgress field0) uploading,
     required TResult Function() processing,
     required TResult Function() completed,
     required TResult Function() failed,
   }) {
-    return transferring(field0);
+    return downloading(field0);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? starting,
-    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function(DownloadProgress field0)? downloading,
+    TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? processing,
     TResult? Function()? completed,
     TResult? Function()? failed,
   }) {
-    return transferring?.call(field0);
+    return downloading?.call(field0);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? starting,
-    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function(DownloadProgress field0)? downloading,
+    TResult Function(UploadProgress field0)? uploading,
     TResult Function()? processing,
     TResult Function()? completed,
     TResult Function()? failed,
     required TResult orElse(),
   }) {
-    if (transferring != null) {
-      return transferring(field0);
+    if (downloading != null) {
+      return downloading(field0);
     }
     return orElse();
   }
@@ -1003,50 +1018,213 @@ class _$TransferStatus_Transferring implements TransferStatus_Transferring {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(TransferStatus_Starting value) starting,
-    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Downloading value) downloading,
+    required TResult Function(TransferStatus_Uploading value) uploading,
     required TResult Function(TransferStatus_Processing value) processing,
     required TResult Function(TransferStatus_Completed value) completed,
     required TResult Function(TransferStatus_Failed value) failed,
   }) {
-    return transferring(this);
+    return downloading(this);
   }
 
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(TransferStatus_Starting value)? starting,
-    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Downloading value)? downloading,
+    TResult? Function(TransferStatus_Uploading value)? uploading,
     TResult? Function(TransferStatus_Processing value)? processing,
     TResult? Function(TransferStatus_Completed value)? completed,
     TResult? Function(TransferStatus_Failed value)? failed,
   }) {
-    return transferring?.call(this);
+    return downloading?.call(this);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(TransferStatus_Starting value)? starting,
-    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Downloading value)? downloading,
+    TResult Function(TransferStatus_Uploading value)? uploading,
     TResult Function(TransferStatus_Processing value)? processing,
     TResult Function(TransferStatus_Completed value)? completed,
     TResult Function(TransferStatus_Failed value)? failed,
     required TResult orElse(),
   }) {
-    if (transferring != null) {
-      return transferring(this);
+    if (downloading != null) {
+      return downloading(this);
     }
     return orElse();
   }
 }
 
-abstract class TransferStatus_Transferring implements TransferStatus {
-  const factory TransferStatus_Transferring(final DownloadProgress field0) =
-      _$TransferStatus_Transferring;
+abstract class TransferStatus_Downloading implements TransferStatus {
+  const factory TransferStatus_Downloading(final DownloadProgress field0) =
+      _$TransferStatus_Downloading;
 
   DownloadProgress get field0;
   @JsonKey(ignore: true)
-  _$$TransferStatus_TransferringCopyWith<_$TransferStatus_Transferring>
+  _$$TransferStatus_DownloadingCopyWith<_$TransferStatus_Downloading>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$TransferStatus_UploadingCopyWith<$Res> {
+  factory _$$TransferStatus_UploadingCopyWith(_$TransferStatus_Uploading value,
+          $Res Function(_$TransferStatus_Uploading) then) =
+      __$$TransferStatus_UploadingCopyWithImpl<$Res>;
+  @useResult
+  $Res call({UploadProgress field0});
+}
+
+/// @nodoc
+class __$$TransferStatus_UploadingCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Uploading>
+    implements _$$TransferStatus_UploadingCopyWith<$Res> {
+  __$$TransferStatus_UploadingCopyWithImpl(_$TransferStatus_Uploading _value,
+      $Res Function(_$TransferStatus_Uploading) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$TransferStatus_Uploading(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as UploadProgress,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$TransferStatus_Uploading implements TransferStatus_Uploading {
+  const _$TransferStatus_Uploading(this.field0);
+
+  @override
+  final UploadProgress field0;
+
+  @override
+  String toString() {
+    return 'TransferStatus.uploading(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TransferStatus_Uploading &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TransferStatus_UploadingCopyWith<_$TransferStatus_Uploading>
+      get copyWith =>
+          __$$TransferStatus_UploadingCopyWithImpl<_$TransferStatus_Uploading>(
+              this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() starting,
+    required TResult Function(DownloadProgress field0) downloading,
+    required TResult Function(UploadProgress field0) uploading,
+    required TResult Function() processing,
+    required TResult Function() completed,
+    required TResult Function() failed,
+  }) {
+    return uploading(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? starting,
+    TResult? Function(DownloadProgress field0)? downloading,
+    TResult? Function(UploadProgress field0)? uploading,
+    TResult? Function()? processing,
+    TResult? Function()? completed,
+    TResult? Function()? failed,
+  }) {
+    return uploading?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? starting,
+    TResult Function(DownloadProgress field0)? downloading,
+    TResult Function(UploadProgress field0)? uploading,
+    TResult Function()? processing,
+    TResult Function()? completed,
+    TResult Function()? failed,
+    required TResult orElse(),
+  }) {
+    if (uploading != null) {
+      return uploading(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TransferStatus_Starting value) starting,
+    required TResult Function(TransferStatus_Downloading value) downloading,
+    required TResult Function(TransferStatus_Uploading value) uploading,
+    required TResult Function(TransferStatus_Processing value) processing,
+    required TResult Function(TransferStatus_Completed value) completed,
+    required TResult Function(TransferStatus_Failed value) failed,
+  }) {
+    return uploading(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TransferStatus_Starting value)? starting,
+    TResult? Function(TransferStatus_Downloading value)? downloading,
+    TResult? Function(TransferStatus_Uploading value)? uploading,
+    TResult? Function(TransferStatus_Processing value)? processing,
+    TResult? Function(TransferStatus_Completed value)? completed,
+    TResult? Function(TransferStatus_Failed value)? failed,
+  }) {
+    return uploading?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TransferStatus_Starting value)? starting,
+    TResult Function(TransferStatus_Downloading value)? downloading,
+    TResult Function(TransferStatus_Uploading value)? uploading,
+    TResult Function(TransferStatus_Processing value)? processing,
+    TResult Function(TransferStatus_Completed value)? completed,
+    TResult Function(TransferStatus_Failed value)? failed,
+    required TResult orElse(),
+  }) {
+    if (uploading != null) {
+      return uploading(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TransferStatus_Uploading implements TransferStatus {
+  const factory TransferStatus_Uploading(final UploadProgress field0) =
+      _$TransferStatus_Uploading;
+
+  UploadProgress get field0;
+  @JsonKey(ignore: true)
+  _$$TransferStatus_UploadingCopyWith<_$TransferStatus_Uploading>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -1091,7 +1269,8 @@ class _$TransferStatus_Processing implements TransferStatus_Processing {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() starting,
-    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function(DownloadProgress field0) downloading,
+    required TResult Function(UploadProgress field0) uploading,
     required TResult Function() processing,
     required TResult Function() completed,
     required TResult Function() failed,
@@ -1103,7 +1282,8 @@ class _$TransferStatus_Processing implements TransferStatus_Processing {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? starting,
-    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function(DownloadProgress field0)? downloading,
+    TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? processing,
     TResult? Function()? completed,
     TResult? Function()? failed,
@@ -1115,7 +1295,8 @@ class _$TransferStatus_Processing implements TransferStatus_Processing {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? starting,
-    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function(DownloadProgress field0)? downloading,
+    TResult Function(UploadProgress field0)? uploading,
     TResult Function()? processing,
     TResult Function()? completed,
     TResult Function()? failed,
@@ -1131,7 +1312,8 @@ class _$TransferStatus_Processing implements TransferStatus_Processing {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(TransferStatus_Starting value) starting,
-    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Downloading value) downloading,
+    required TResult Function(TransferStatus_Uploading value) uploading,
     required TResult Function(TransferStatus_Processing value) processing,
     required TResult Function(TransferStatus_Completed value) completed,
     required TResult Function(TransferStatus_Failed value) failed,
@@ -1143,7 +1325,8 @@ class _$TransferStatus_Processing implements TransferStatus_Processing {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(TransferStatus_Starting value)? starting,
-    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Downloading value)? downloading,
+    TResult? Function(TransferStatus_Uploading value)? uploading,
     TResult? Function(TransferStatus_Processing value)? processing,
     TResult? Function(TransferStatus_Completed value)? completed,
     TResult? Function(TransferStatus_Failed value)? failed,
@@ -1155,7 +1338,8 @@ class _$TransferStatus_Processing implements TransferStatus_Processing {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(TransferStatus_Starting value)? starting,
-    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Downloading value)? downloading,
+    TResult Function(TransferStatus_Uploading value)? uploading,
     TResult Function(TransferStatus_Processing value)? processing,
     TResult Function(TransferStatus_Completed value)? completed,
     TResult Function(TransferStatus_Failed value)? failed,
@@ -1212,7 +1396,8 @@ class _$TransferStatus_Completed implements TransferStatus_Completed {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() starting,
-    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function(DownloadProgress field0) downloading,
+    required TResult Function(UploadProgress field0) uploading,
     required TResult Function() processing,
     required TResult Function() completed,
     required TResult Function() failed,
@@ -1224,7 +1409,8 @@ class _$TransferStatus_Completed implements TransferStatus_Completed {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? starting,
-    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function(DownloadProgress field0)? downloading,
+    TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? processing,
     TResult? Function()? completed,
     TResult? Function()? failed,
@@ -1236,7 +1422,8 @@ class _$TransferStatus_Completed implements TransferStatus_Completed {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? starting,
-    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function(DownloadProgress field0)? downloading,
+    TResult Function(UploadProgress field0)? uploading,
     TResult Function()? processing,
     TResult Function()? completed,
     TResult Function()? failed,
@@ -1252,7 +1439,8 @@ class _$TransferStatus_Completed implements TransferStatus_Completed {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(TransferStatus_Starting value) starting,
-    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Downloading value) downloading,
+    required TResult Function(TransferStatus_Uploading value) uploading,
     required TResult Function(TransferStatus_Processing value) processing,
     required TResult Function(TransferStatus_Completed value) completed,
     required TResult Function(TransferStatus_Failed value) failed,
@@ -1264,7 +1452,8 @@ class _$TransferStatus_Completed implements TransferStatus_Completed {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(TransferStatus_Starting value)? starting,
-    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Downloading value)? downloading,
+    TResult? Function(TransferStatus_Uploading value)? uploading,
     TResult? Function(TransferStatus_Processing value)? processing,
     TResult? Function(TransferStatus_Completed value)? completed,
     TResult? Function(TransferStatus_Failed value)? failed,
@@ -1276,7 +1465,8 @@ class _$TransferStatus_Completed implements TransferStatus_Completed {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(TransferStatus_Starting value)? starting,
-    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Downloading value)? downloading,
+    TResult Function(TransferStatus_Uploading value)? uploading,
     TResult Function(TransferStatus_Processing value)? processing,
     TResult Function(TransferStatus_Completed value)? completed,
     TResult Function(TransferStatus_Failed value)? failed,
@@ -1332,7 +1522,8 @@ class _$TransferStatus_Failed implements TransferStatus_Failed {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() starting,
-    required TResult Function(DownloadProgress field0) transferring,
+    required TResult Function(DownloadProgress field0) downloading,
+    required TResult Function(UploadProgress field0) uploading,
     required TResult Function() processing,
     required TResult Function() completed,
     required TResult Function() failed,
@@ -1344,7 +1535,8 @@ class _$TransferStatus_Failed implements TransferStatus_Failed {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? starting,
-    TResult? Function(DownloadProgress field0)? transferring,
+    TResult? Function(DownloadProgress field0)? downloading,
+    TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? processing,
     TResult? Function()? completed,
     TResult? Function()? failed,
@@ -1356,7 +1548,8 @@ class _$TransferStatus_Failed implements TransferStatus_Failed {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? starting,
-    TResult Function(DownloadProgress field0)? transferring,
+    TResult Function(DownloadProgress field0)? downloading,
+    TResult Function(UploadProgress field0)? uploading,
     TResult Function()? processing,
     TResult Function()? completed,
     TResult Function()? failed,
@@ -1372,7 +1565,8 @@ class _$TransferStatus_Failed implements TransferStatus_Failed {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(TransferStatus_Starting value) starting,
-    required TResult Function(TransferStatus_Transferring value) transferring,
+    required TResult Function(TransferStatus_Downloading value) downloading,
+    required TResult Function(TransferStatus_Uploading value) uploading,
     required TResult Function(TransferStatus_Processing value) processing,
     required TResult Function(TransferStatus_Completed value) completed,
     required TResult Function(TransferStatus_Failed value) failed,
@@ -1384,7 +1578,8 @@ class _$TransferStatus_Failed implements TransferStatus_Failed {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(TransferStatus_Starting value)? starting,
-    TResult? Function(TransferStatus_Transferring value)? transferring,
+    TResult? Function(TransferStatus_Downloading value)? downloading,
+    TResult? Function(TransferStatus_Uploading value)? uploading,
     TResult? Function(TransferStatus_Processing value)? processing,
     TResult? Function(TransferStatus_Completed value)? completed,
     TResult? Function(TransferStatus_Failed value)? failed,
@@ -1396,7 +1591,8 @@ class _$TransferStatus_Failed implements TransferStatus_Failed {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(TransferStatus_Starting value)? starting,
-    TResult Function(TransferStatus_Transferring value)? transferring,
+    TResult Function(TransferStatus_Downloading value)? downloading,
+    TResult Function(TransferStatus_Uploading value)? uploading,
     TResult Function(TransferStatus_Processing value)? processing,
     TResult Function(TransferStatus_Completed value)? completed,
     TResult Function(TransferStatus_Failed value)? failed,

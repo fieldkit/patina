@@ -65,16 +65,19 @@ class KnownStationsModel extends ChangeNotifier {
 
     station.connected = true;
     if (status is TransferStatus_Starting) {
-      station.syncing = SyncingProgress(progress: null);
+      station.syncing = SyncingProgress(download: null, upload: null);
     }
-    if (status is TransferStatus_Transferring) {
-      station.syncing = SyncingProgress(progress: status.field0);
+    if (status is TransferStatus_Downloading) {
+      station.syncing = SyncingProgress(download: status.field0, upload: null);
+    }
+    if (status is TransferStatus_Uploading) {
+      station.syncing = SyncingProgress(download: null, upload: status.field0);
     }
     if (status is TransferStatus_Completed) {
       station.syncing = null;
     }
     if (status is TransferStatus_Failed) {
-      station.syncing = SyncingProgress(progress: null);
+      station.syncing = SyncingProgress(download: null, upload: null); // TODO Handle failed transfer/sync.
     }
 
     notifyListeners();
@@ -184,9 +187,26 @@ class AppEnv {
 }
 
 class SyncingProgress extends ChangeNotifier {
-  final DownloadProgress? progress;
+  final DownloadProgress? download;
+  final UploadProgress? upload;
 
-  SyncingProgress({this.progress});
+  double? get completed {
+    if (download != null) {
+      return download?.completed ?? 0;
+    }
+    if (upload != null) {
+      return upload?.completed ?? 0;
+    }
+    return null;
+  }
+
+  SyncingProgress({this.download, this.upload});
+}
+
+extension CompletedProperty on UploadProgress {
+  double get completed {
+    return bytesUploaded / totalBytes;
+  }
 }
 
 class ModuleIdentity {

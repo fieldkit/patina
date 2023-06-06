@@ -269,6 +269,10 @@ class NativeImpl implements Native {
     return _wire2api_transmission_config(raw);
   }
 
+  UploadProgress _wire2api_box_autoadd_upload_progress(dynamic raw) {
+    return _wire2api_upload_progress(raw);
+  }
+
   DomainMessage _wire2api_domain_message(dynamic raw) {
     switch (raw[0]) {
       case 0:
@@ -475,14 +479,18 @@ class NativeImpl implements Native {
       case 0:
         return TransferStatus_Starting();
       case 1:
-        return TransferStatus_Transferring(
+        return TransferStatus_Downloading(
           _wire2api_box_autoadd_download_progress(raw[1]),
         );
       case 2:
-        return TransferStatus_Processing();
+        return TransferStatus_Uploading(
+          _wire2api_box_autoadd_upload_progress(raw[1]),
+        );
       case 3:
-        return TransferStatus_Completed();
+        return TransferStatus_Processing();
       case 4:
+        return TransferStatus_Completed();
+      case 5:
         return TransferStatus_Failed();
       default:
         throw Exception("unreachable");
@@ -526,6 +534,16 @@ class NativeImpl implements Native {
 
   void _wire2api_unit(dynamic raw) {
     return;
+  }
+
+  UploadProgress _wire2api_upload_progress(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return UploadProgress(
+      bytesUploaded: _wire2api_u64(arr[0]),
+      totalBytes: _wire2api_u64(arr[1]),
+    );
   }
 
   int _wire2api_usize(dynamic raw) {

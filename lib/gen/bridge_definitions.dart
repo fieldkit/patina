@@ -254,9 +254,12 @@ class TransferProgress {
 @freezed
 class TransferStatus with _$TransferStatus {
   const factory TransferStatus.starting() = TransferStatus_Starting;
-  const factory TransferStatus.transferring(
+  const factory TransferStatus.downloading(
     DownloadProgress field0,
-  ) = TransferStatus_Transferring;
+  ) = TransferStatus_Downloading;
+  const factory TransferStatus.uploading(
+    UploadProgress field0,
+  ) = TransferStatus_Uploading;
   const factory TransferStatus.processing() = TransferStatus_Processing;
   const factory TransferStatus.completed() = TransferStatus_Completed;
   const factory TransferStatus.failed() = TransferStatus_Failed;
@@ -277,5 +280,15 @@ class TransmissionToken {
   const TransmissionToken({
     required this.token,
     required this.url,
+  });
+}
+
+class UploadProgress {
+  final int bytesUploaded;
+  final int totalBytes;
+
+  const UploadProgress({
+    required this.bytesUploaded,
+    required this.totalBytes,
   });
 }

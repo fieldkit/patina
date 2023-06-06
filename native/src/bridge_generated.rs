@@ -368,10 +368,11 @@ impl support::IntoDart for TransferStatus {
     fn into_dart(self) -> support::DartAbi {
         match self {
             Self::Starting => vec![0.into_dart()],
-            Self::Transferring(field0) => vec![1.into_dart(), field0.into_dart()],
-            Self::Processing => vec![2.into_dart()],
-            Self::Completed => vec![3.into_dart()],
-            Self::Failed => vec![4.into_dart()],
+            Self::Downloading(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::Uploading(field0) => vec![2.into_dart(), field0.into_dart()],
+            Self::Processing => vec![3.into_dart()],
+            Self::Completed => vec![4.into_dart()],
+            Self::Failed => vec![5.into_dart()],
         }
         .into_dart()
     }
@@ -390,6 +391,17 @@ impl support::IntoDart for TransmissionToken {
     }
 }
 impl support::IntoDartExceptPrimitive for TransmissionToken {}
+
+impl support::IntoDart for UploadProgress {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.bytes_uploaded.into_dart(),
+            self.total_bytes.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for UploadProgress {}
 
 // Section: executor
 
