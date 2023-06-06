@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:collection/collection.dart';
 import 'package:fk/gen/ffi.dart';
 import 'package:fk/meta.dart';
+import 'package:data/data.dart';
 
 import '../app_state.dart';
 import '../gen/fk-data.pb.dart' as proto;
@@ -42,29 +42,26 @@ class ActiveCalibration extends ChangeNotifier {
 }
 
 List<double> exponentialCurve(List<CalibrationPoint> points) {
-  /*
-  final x = points.map((p) => p.reading.uncalibrated).toList();
-  final y = points.map((p) => p.standard.value!).toList();
-
-  function calibrationFunction([a, b, c]: [number, number, number]): (v: number) => number {
-    return (t) => a + b * Math.exp(t * c);
-  }
+  ParametrizedUnaryFunction<double> fn = ParametrizedUnaryFunction.list(DataType.float, 3, (params) {
+    return (double t) {
+      return params[0] + params[1] * exp(t * params[2]);
+    };
+  });
 
   // Pete 4/6/2022
-  const options = {
-      damping: 1.5,
-      initialValues: _.clone([1000, 1500000, -7]),
+  final lm = LevenbergMarquardt(fn,
+      initialValues: [1000.0, 1500000.0, -7.0].toVector(),
       gradientDifference: 10e-2,
       maxIterations: 100,
       errorTolerance: 10e-3,
-  };
+      damping: 1.5);
 
-  final fittedParams = levenbergMarquardt(data, calibrationFunction, options);
-  const [a, b, c] = fittedParams.parameterValues;
-  const coefficients = { a, b, c };
-  */
+  final xs = points.map((p) => p.reading.uncalibrated).toVector();
+  final ys = points.map((p) => p.standard.value!).toVector();
 
-  return [];
+  final v = lm.fit(xs: xs, ys: ys);
+
+  return v.parameters;
 }
 
 List<double> linearCurve(List<CalibrationPoint> points) {
@@ -73,12 +70,12 @@ List<double> linearCurve(List<CalibrationPoint> points) {
   final y = points.map((p) => p.standard.value!).toList();
 
   final indices = List<int>.generate(n, (i) => i);
-  final xMean = x.average;
-  final yMean = y.average;
+  final xMean = x.average();
+  final yMean = y.average();
   final numerParts = indices.map((i) => (x[i] - xMean) * (y[i] - yMean));
   final denomParts = indices.map((i) => pow((x[i] - xMean), 2));
-  final numer = numerParts.sum;
-  final denom = denomParts.sum;
+  final numer = numerParts.sum();
+  final denom = denomParts.sum();
 
   final m = numer / denom;
   final b = yMean - m * xMean;
