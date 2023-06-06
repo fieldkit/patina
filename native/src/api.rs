@@ -14,7 +14,9 @@ use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
-use query::portal::{DecodedToken, PortalError, StatusCode, Tokens as PortalTokens};
+use query::portal::{
+    DecodedToken, PortalError, StatusCode, Tokens as PortalTokens, WantsUploadProgress,
+};
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
@@ -161,6 +163,14 @@ pub fn start_native(
     info!("sdk:finished");
 
     Ok(())
+}
+
+struct NoopProgress {}
+
+impl WantsUploadProgress for NoopProgress {
+    fn progress(&self, _total: u64, _uploaded: u64) -> Result<()> {
+        Ok(())
+    }
 }
 
 #[allow(dead_code)]
@@ -319,7 +329,9 @@ impl Sdk {
         })?;
 
         let path = PathBuf::from("/home/jlewallen/.local/share/org.fieldkit.app/fk-data/4b6af9895333464850202020ff12410c/20230605_231928.fkpb");
-        authenticated.upload_readings(&path).await?;
+        authenticated
+            .upload_readings(&path, NoopProgress {})
+            .await?;
 
         Ok(TransferProgress {
             device_id: device_id.0,
