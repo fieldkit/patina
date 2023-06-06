@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_rust_bridge_template/app_state.dart';
 import 'package:intl/intl.dart';
+import 'package:fk/app_state.dart';
 
 import '../calibration/calibration_model.dart';
 import '../calibration/clear_calibration_page.dart';

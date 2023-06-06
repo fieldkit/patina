@@ -2,8 +2,8 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_rust_bridge_template/gen/fk-data.pb.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fk/gen/fk-data.pb.dart';
 
 import '../gen/fk-data.pb.dart' as proto;
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';

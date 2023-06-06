@@ -3,11 +3,11 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_rust_bridge_template/settings/accounts_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:fk/settings/accounts_page.dart';
 
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'app_state.dart';

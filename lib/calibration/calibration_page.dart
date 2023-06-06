@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_rust_bridge_template/gen/ffi.dart';
-import 'package:flutter_rust_bridge_template/meta.dart';
-import 'package:flutter_rust_bridge_template/view_station/sensor_widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:fk/gen/ffi.dart';
+import 'package:fk/meta.dart';
+import 'package:fk/view_station/sensor_widgets.dart';
 
 import '../app_state.dart';
 import '../common_widgets.dart';

@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter_rust_bridge_template/gen/ffi.dart';
-import 'package:flutter_rust_bridge_template/meta.dart';
+import 'package:fk/gen/ffi.dart';
+import 'package:fk/meta.dart';
 
 import '../app_state.dart';
 import '../gen/fk-data.pb.dart' as proto;
