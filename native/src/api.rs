@@ -14,7 +14,9 @@ use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
-use query::portal::{DecodedToken, PortalError, StatusCode, WantsUploadProgress};
+use query::portal::{
+    BytesUploaded, CreatesFromBytesUploaded, DecodedToken, PortalError, StatusCode,
+};
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
@@ -91,7 +93,7 @@ async fn create_sdk(
 
     let db = sdk.open().await?;
 
-    let merge = MergeAndPublishReplies::new(db, publish_tx);
+    let merge = MergeAndPublishReplies::new(db, publish_tx.clone());
 
     tokio::spawn(async move { background_task(nearby, server, merge, bg_rx).await });
 
@@ -107,7 +109,6 @@ async fn background_task(
     info!("bg:started");
 
     let (transfer_publish, transfer_events) = tokio::sync::mpsc::channel::<ServerEvent>(32);
-
     let (discovery_tx, discovery_rx) = tokio::sync::mpsc::channel::<Discovered>(8);
     let discovery = Discovery::default();
 
@@ -163,11 +164,26 @@ pub fn start_native(
     Ok(())
 }
 
-struct NoopProgress {}
+struct ActiveUpload {
+    device_id: DeviceId,
+}
 
-impl WantsUploadProgress for NoopProgress {
-    fn progress(&self, _total: u64, _uploaded: u64) -> Result<()> {
-        Ok(())
+impl CreatesFromBytesUploaded<DomainMessage> for ActiveUpload {
+    fn from(&self, bytes: BytesUploaded) -> DomainMessage {
+        if bytes.completed() {
+            DomainMessage::TransferProgress(TransferProgress {
+                device_id: self.device_id.0.clone(),
+                status: TransferStatus::Completed,
+            })
+        } else {
+            DomainMessage::TransferProgress(TransferProgress {
+                device_id: self.device_id.0.clone(),
+                status: TransferStatus::Uploading(UploadProgress {
+                    bytes_uploaded: bytes.bytes_uploaded,
+                    total_bytes: bytes.total_bytes,
+                }),
+            })
+        }
     }
 }
 
@@ -310,13 +326,38 @@ impl Sdk {
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let authenticated = client.to_authenticated(tokens.into())?;
 
-        let path = PathBuf::from("/home/jlewallen/.local/share/org.fieldkit.app/fk-data/4b6af9895333464850202020ff12410c/20230605_231928.fkpb");
-        authenticated
-            .upload_readings(&path, NoopProgress {})
-            .await?;
+        tokio::task::spawn({
+            let publish_tx = self.publish_tx.clone();
+            let device_id = device_id.clone();
+
+            async move {
+                let path = PathBuf::from("/home/jlewallen/.local/share/org.fieldkit.app/fk-data/4b6af9895333464850202020ff12410c/20230605_231928.fkpb");
+                let res = authenticated
+                    .upload_readings(
+                        &path,
+                        publish_tx.clone(),
+                        ActiveUpload {
+                            device_id: device_id.clone(),
+                        },
+                    )
+                    .await;
+
+                let status = match res {
+                    Ok(_) => TransferStatus::Completed,
+                    Err(_) => TransferStatus::Failed,
+                };
+
+                publish_tx
+                    .send(DomainMessage::TransferProgress(TransferProgress {
+                        device_id: device_id.into(),
+                        status,
+                    }))
+                    .await
+            }
+        });
 
         Ok(TransferProgress {
-            device_id: device_id.0,
+            device_id: device_id.into(),
             status: TransferStatus::Starting,
         })
     }
