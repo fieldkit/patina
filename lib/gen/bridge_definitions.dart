@@ -53,7 +53,7 @@ abstract class Native {
   FlutterRustBridgeTaskConstMeta get kStartDownloadConstMeta;
 
   Future<TransferProgress> startUpload(
-      {required String deviceId, dynamic hint});
+      {required String deviceId, required Tokens tokens, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStartUploadConstMeta;
 

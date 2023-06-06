@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 use flutter_rust_bridge::StreamSink;
 use std::{
     io::Write,
-    path::Path,
+    path::{Path, PathBuf},
     sync::{Arc, Mutex as StdMutex},
 };
 use sync::{FilesRecordSink, Server, ServerEvent, UdpTransport};
@@ -310,8 +310,16 @@ impl Sdk {
         })
     }
 
-    async fn start_upload(&self, device_id: DeviceId) -> Result<TransferProgress> {
+    async fn start_upload(&self, device_id: DeviceId, tokens: Tokens) -> Result<TransferProgress> {
         info!("{:?} start upload", &device_id);
+
+        let client = query::portal::Client::new(&self.portal_base_url)?;
+        let authenticated = client.to_authenticated(query::portal::Tokens {
+            token: tokens.token,
+        })?;
+
+        let path = PathBuf::from("/home/jlewallen/.local/share/org.fieldkit.app/fk-data/4b6af9895333464850202020ff12410c/20230605_231928.fkpb");
+        authenticated.upload_readings(&path).await?;
 
         Ok(TransferProgress {
             device_id: device_id.0,
@@ -383,9 +391,9 @@ pub fn start_download(device_id: String) -> Result<TransferProgress> {
     })?)
 }
 
-pub fn start_upload(device_id: String) -> Result<TransferProgress> {
+pub fn start_upload(device_id: String, tokens: Tokens) -> Result<TransferProgress> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.start_upload(DeviceId(device_id.clone())))
+        rt.block_on(sdk.start_upload(DeviceId(device_id.clone()), tokens))
     })?)
 }
 

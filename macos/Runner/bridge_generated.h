@@ -57,7 +57,9 @@ void wire_validate_tokens(int64_t port_, struct wire_Tokens *tokens);
 
 void wire_start_download(int64_t port_, struct wire_uint_8_list *device_id);
 
-void wire_start_upload(int64_t port_, struct wire_uint_8_list *device_id);
+void wire_start_upload(int64_t port_,
+                       struct wire_uint_8_list *device_id,
+                       struct wire_Tokens *tokens);
 
 void wire_rust_release_mode(int64_t port_);
 

@@ -54,8 +54,12 @@ pub extern "C" fn wire_start_download(port_: i64, device_id: *mut wire_uint_8_li
 }
 
 #[no_mangle]
-pub extern "C" fn wire_start_upload(port_: i64, device_id: *mut wire_uint_8_list) {
-    wire_start_upload_impl(port_, device_id)
+pub extern "C" fn wire_start_upload(
+    port_: i64,
+    device_id: *mut wire_uint_8_list,
+    tokens: *mut wire_Tokens,
+) {
+    wire_start_upload_impl(port_, device_id, tokens)
 }
 
 #[no_mangle]

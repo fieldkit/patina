@@ -137,7 +137,11 @@ fn wire_start_download_impl(port_: MessagePort, device_id: impl Wire2Api<String>
         },
     )
 }
-fn wire_start_upload_impl(port_: MessagePort, device_id: impl Wire2Api<String> + UnwindSafe) {
+fn wire_start_upload_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+    tokens: impl Wire2Api<Tokens> + UnwindSafe,
+) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
             debug_name: "start_upload",
@@ -146,7 +150,8 @@ fn wire_start_upload_impl(port_: MessagePort, device_id: impl Wire2Api<String> +
         },
         move || {
             let api_device_id = device_id.wire2api();
-            move |task_callback| start_upload(api_device_id)
+            let api_tokens = tokens.wire2api();
+            move |task_callback| start_upload(api_device_id, api_tokens)
         },
     )
 }

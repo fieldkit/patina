@@ -82,7 +82,7 @@ class NativeWasmModule implements WasmModule {
       NativePortType port_, String device_id);
 
   external dynamic /* void */ wire_start_upload(
-      NativePortType port_, String device_id);
+      NativePortType port_, String device_id, List<dynamic> tokens);
 
   external dynamic /* void */ wire_rust_release_mode(NativePortType port_);
 
@@ -120,8 +120,9 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_start_download(NativePortType port_, String device_id) =>
       wasmModule.wire_start_download(port_, device_id);
 
-  void wire_start_upload(NativePortType port_, String device_id) =>
-      wasmModule.wire_start_upload(port_, device_id);
+  void wire_start_upload(
+          NativePortType port_, String device_id, List<dynamic> tokens) =>
+      wasmModule.wire_start_upload(port_, device_id, tokens);
 
   void wire_rust_release_mode(NativePortType port_) =>
       wasmModule.wire_rust_release_mode(port_);

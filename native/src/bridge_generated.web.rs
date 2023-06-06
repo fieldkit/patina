@@ -37,8 +37,8 @@ pub fn wire_start_download(port_: MessagePort, device_id: String) {
 }
 
 #[wasm_bindgen]
-pub fn wire_start_upload(port_: MessagePort, device_id: String) {
-    wire_start_upload_impl(port_, device_id)
+pub fn wire_start_upload(port_: MessagePort, device_id: String, tokens: JsValue) {
+    wire_start_upload_impl(port_, device_id, tokens)
 }
 
 #[wasm_bindgen]

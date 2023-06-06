@@ -114,7 +114,7 @@ class KnownStationsModel extends ChangeNotifier {
     applyTransferProgress(progress);
   }
 
-  Future<void> startUpload({required String deviceId}) async {
+  Future<void> startUpload({required String deviceId, required Tokens tokens}) async {
     final station = find(deviceId);
     if (station == null) {
       debugPrint("$deviceId station missing");
@@ -126,7 +126,7 @@ class KnownStationsModel extends ChangeNotifier {
       return;
     }
 
-    final progress = await api.startUpload(deviceId: deviceId);
+    final progress = await api.startUpload(deviceId: deviceId, tokens: tokens);
     applyTransferProgress(progress);
   }
 

@@ -13,21 +13,29 @@ class DataSyncTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Navigator(onGenerateRoute: (RouteSettings settings) {
       return MaterialPageRoute(
-        settings: settings,
-        builder: (context) => Consumer<KnownStationsModel>(
-          builder: (context, knownStations, child) {
-            return DataSyncPage(
-              known: knownStations,
-              onDownload: (station) async {
-                await knownStations.startDownload(deviceId: station.deviceId);
-              },
-              onUpload: (station) async {
-                await knownStations.startUpload(deviceId: station.deviceId);
-              },
-            );
-          },
-        ),
-      );
+          settings: settings,
+          builder: (context) => Consumer<PortalAccounts>(
+                builder: (context, portalAccounts, child) {
+                  return Consumer<KnownStationsModel>(
+                    builder: (context, knownStations, child) {
+                      return DataSyncPage(
+                        known: knownStations,
+                        onDownload: (station) async {
+                          await knownStations.startDownload(deviceId: station.deviceId);
+                        },
+                        onUpload: (station) async {
+                          final tokens = portalAccounts.accounts[0].tokens;
+                          if (tokens != null) {
+                            await knownStations.startUpload(deviceId: station.deviceId, tokens: tokens);
+                          } else {
+                            debugPrint("No tokens!");
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+              ));
     });
   }
 }

@@ -287,19 +287,22 @@ class NativeWire implements FlutterRustBridgeWireBase {
   void wire_start_upload(
     int port_,
     ffi.Pointer<wire_uint_8_list> device_id,
+    ffi.Pointer<wire_Tokens> tokens,
   ) {
     return _wire_start_upload(
       port_,
       device_id,
+      tokens,
     );
   }
 
   late final _wire_start_uploadPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_start_upload');
-  late final _wire_start_upload = _wire_start_uploadPtr
-      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_Tokens>)>>('wire_start_upload');
+  late final _wire_start_upload = _wire_start_uploadPtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_Tokens>)>();
 
   void wire_rust_release_mode(
     int port_,

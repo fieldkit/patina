@@ -157,13 +157,14 @@ class NativeImpl implements Native {
       );
 
   Future<TransferProgress> startUpload(
-      {required String deviceId, dynamic hint}) {
+      {required String deviceId, required Tokens tokens, dynamic hint}) {
     var arg0 = _platform.api2wire_String(deviceId);
+    var arg1 = _platform.api2wire_box_autoadd_tokens(tokens);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_start_upload(port_, arg0),
+      callFfi: (port_) => _platform.inner.wire_start_upload(port_, arg0, arg1),
       parseSuccessData: _wire2api_transfer_progress,
       constMeta: kStartUploadConstMeta,
-      argValues: [deviceId],
+      argValues: [deviceId, tokens],
       hint: hint,
     ));
   }
@@ -171,7 +172,7 @@ class NativeImpl implements Native {
   FlutterRustBridgeTaskConstMeta get kStartUploadConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "start_upload",
-        argNames: ["deviceId"],
+        argNames: ["deviceId", "tokens"],
       );
 
   Future<bool> rustReleaseMode({dynamic hint}) {
