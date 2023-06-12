@@ -21,7 +21,7 @@ timestamps {
                 sh "flutter clean"
                 sh "flutter build apk"
 
-                archiveArtifacts artifacts: ''
+                archiveArtifacts artifacts: 'build/app/outputs/flutter-apk/*.apk'
             }
 
             notifySuccess()
