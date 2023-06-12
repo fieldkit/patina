@@ -8,9 +8,13 @@ properties([
 timestamps {
     node ("jenkins-aws-ubuntu") {
         try {
+            def scmInfo
+
             stage ('prepare') {
                 sh "flutter --disable-telemetry"
                 sh "yes 'y' | flutter doctor --android-licenses"
+
+                scmInfo = checkout scm
 
                 dir ("rustfk") {
                     git branch: 'main', url: 'https://github.com/jlewallen/rustfk.git'    

@@ -8,7 +8,11 @@ properties([
 timestamps {
     node ("osx") {
         try {
+            def scmInfo
+
             stage ('prepare') {
+                scmInfo = checkout scm
+
                 dir ("rustfk") {
                     git branch: 'main', url: 'https://github.com/jlewallen/rustfk.git'    
                 }
