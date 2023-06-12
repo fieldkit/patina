@@ -28,7 +28,6 @@
 		33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F22044A3C60003C045 /* Assets.xcassets */; };
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
-		8A2A4A81290D889D003F8897 /* libnative_static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A2A4A80290D883A003F8897 /* libnative_static.a */; };
 		E1D88C42FBF1A5BC69B35544 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 204000D88810F0E640369F55 /* Pods_RunnerTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -46,20 +45,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 33CC111A2044C6BA0003C045;
 			remoteInfo = FLX;
-		};
-		8A2A4A7D290D883A003F8897 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A35253422866B29000EFD9C6 /* native.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = CA603EE7FF4DEAC3B2E0A336;
-			remoteInfo = "native-cdylib";
-		};
-		8A2A4A7F290D883A003F8897 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A35253422866B29000EFD9C6 /* native.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = CA60F0FEBE702969E816930C;
-			remoteInfo = "native-staticlib";
 		};
 		A352534E2866B29F00EFD9C6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -122,7 +107,7 @@
 		87A37B1153CFA364062F2B49 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		A35253422866B29000EFD9C6 /* native.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = native.xcodeproj; path = ../../native/native.xcodeproj; sourceTree = "<group>"; };
-		A352534B2866B29F00EFD9C6 /* native.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = native.xcodeproj; path = /Users/vdinh/dev/flutter_rust_bridge_template/native/native.xcodeproj; sourceTree = "<absolute>"; };
+		A352534B2866B29F00EFD9C6 /* native.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = native.xcodeproj; path = ../native/native.xcodeproj; sourceTree = "<group>"; };
 		A35253572866B2C900EFD9C6 /* bridge_generated.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bridge_generated.h; sourceTree = "<group>"; };
 		AFDF2DB62ADACA54293D9DA1 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		BFC72AA2F4CC34C49DB2868B /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -142,7 +127,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A2A4A81290D889D003F8897 /* libnative_static.a in Frameworks */,
 				2FF12FB985D9480D644669AE /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -239,15 +223,6 @@
 				0C3AEC2F3DE4A2963635589A /* Pods-RunnerTests.profile.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		8A2A4A79290D883A003F8897 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8A2A4A7E290D883A003F8897 /* native.dylib */,
-				8A2A4A80290D883A003F8897 /* libnative_static.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		A352534C2866B29F00EFD9C6 /* Products */ = {
@@ -359,10 +334,6 @@
 					ProductGroup = A352534C2866B29F00EFD9C6 /* Products */;
 					ProjectRef = A352534B2866B29F00EFD9C6 /* native.xcodeproj */;
 				},
-				{
-					ProductGroup = 8A2A4A79290D883A003F8897 /* Products */;
-					ProjectRef = A35253422866B29000EFD9C6 /* native.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -374,20 +345,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		8A2A4A7E290D883A003F8897 /* native.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = native.dylib;
-			remoteRef = 8A2A4A7D290D883A003F8897 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8A2A4A80290D883A003F8897 /* libnative_static.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libnative_static.a;
-			remoteRef = 8A2A4A7F290D883A003F8897 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		A35253532866B29F00EFD9C6 /* native.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
@@ -460,7 +417,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"$FLUTTER_ROOT\"/packages/flutter_tools/bin/macos_assemble.sh && touch Flutter/ephemeral/tripwire";
+			shellScript = "\"$FLUTTER_ROOT\"/packages/flutter_tools/bin/macos_assemble.sh && touch Flutter/ephemeral/tripwire\n";
 		};
 		CED2A93A51C4840F77E28574 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
