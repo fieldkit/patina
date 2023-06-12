@@ -1,0 +1,36 @@
+@Library('conservify') _
+
+properties([
+    disableConcurrentBuilds(),
+    buildDiscarder(logRotator(numToKeepStr: '1'))
+])
+
+timestamps {
+    node ("jenkins-aws-ubuntu") {
+        try {
+            stage ('prepare') {
+                sh "flutter --disable-telemetry"
+                sh "yes 'y' | flutter doctor --android-licenses"
+
+                git branch: 'main', url: 'https://github.com/jlewallen/patina.git'
+				
+                dir ("rustfk") {
+                    git branch: 'main', url: 'https://github.com/jlewallen/rustfk.git'    
+                }
+            }
+
+            stage ('build') {
+                sh "flutter clean"
+                sh "flutter build apk"
+
+                archiveArtifacts artifacts: ''
+            }
+
+            notifySuccess()
+        }
+        catch (Exception e) {
+            notifyFailure()
+            throw e;
+        }
+    }
+}

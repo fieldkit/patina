@@ -1,0 +1,40 @@
+@Library('conservify') _
+
+properties([
+    disableConcurrentBuilds(),
+    buildDiscarder(logRotator(numToKeepStr: '1'))
+])
+
+timestamps {
+    node ("osx") {
+        try {
+            stage ('prepare') {
+                git branch: 'main', url: 'https://github.com/jlewallen/patina.git'
+                
+                dir ("rustfk") {
+                    git branch: 'main', url: 'https://github.com/jlewallen/rustfk.git'    
+                }
+
+                withCredentials([string(credentialsId: 'osx-keychain-password', variable: 'OSX_KEYCHAIN_PASSWORD')]) {
+                    sh "security find-identity -p codesigning"
+                    sh "security list-keychains"
+                    sh "security unlock-keychain -p ${OSX_KEYCHAIN_PASSWORD} login.keychain"
+                    sh "security show-keychain-info login.keychain || true"
+                }
+            }
+
+            stage ('build') {
+                sh "flutter clean"
+                sh "flutter build ipa --export-method ad-hoc"
+
+                archiveArtifacts artifacts: 'build/ios/ipa/*'
+            }
+			
+            notifySuccess()
+        }
+        catch (Exception e) {
+            notifyFailure()
+            throw e;
+        }
+    }
+}
