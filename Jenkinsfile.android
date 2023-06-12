@@ -28,6 +28,8 @@ timestamps {
                 archiveArtifacts artifacts: 'build/app/outputs/flutter-apk/*.apk'
             }
 
+            refreshDistribution()
+
             notifySuccess()
         }
         catch (Exception e) {
