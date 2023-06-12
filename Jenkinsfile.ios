@@ -9,8 +9,6 @@ timestamps {
     node ("osx") {
         try {
             stage ('prepare') {
-                git branch: 'main', url: 'https://github.com/jlewallen/patina.git'
-                
                 dir ("rustfk") {
                     git branch: 'main', url: 'https://github.com/jlewallen/rustfk.git'    
                 }

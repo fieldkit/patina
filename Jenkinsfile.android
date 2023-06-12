@@ -12,8 +12,6 @@ timestamps {
                 sh "flutter --disable-telemetry"
                 sh "yes 'y' | flutter doctor --android-licenses"
 
-                git branch: 'main', url: 'https://github.com/jlewallen/patina.git'
-				
                 dir ("rustfk") {
                     git branch: 'main', url: 'https://github.com/jlewallen/rustfk.git'    
                 }
