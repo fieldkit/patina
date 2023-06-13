@@ -50,6 +50,9 @@ class WH {
 
   static Container padPage(child) => Container(padding: pagePadding, child: child);
 
+  static List<Widget> padButtonsRow(List<Widget> children) =>
+      children.map((c) => Padding(padding: const EdgeInsets.only(right: 10), child: c)).toList();
+
   static Container padChildrenPage(children) => Container(padding: pagePadding, child: Column(children: children));
 
   static Padding padLabel(Widget child) => Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: child);

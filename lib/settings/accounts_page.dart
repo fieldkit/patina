@@ -38,6 +38,15 @@ class AccountsPage extends StatelessWidget {
               onActivate: (account) async {
                 await accounts.activate(account);
               },
+              onLogin: (account) async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        EditAccountPage(original: PortalAccount(email: account.email, name: account.name, tokens: null, active: false)),
+                  ),
+                );
+              },
               onDelete: (account) async {
                 showDialog(
                     context: context,
@@ -69,14 +78,16 @@ class AccountsList extends StatelessWidget {
   final PortalAccounts accounts;
   final void Function(PortalAccount) onActivate;
   final void Function(PortalAccount) onDelete;
+  final void Function(PortalAccount) onLogin;
 
-  const AccountsList({super.key, required this.accounts, required this.onActivate, required this.onDelete});
+  const AccountsList({super.key, required this.accounts, required this.onActivate, required this.onDelete, required this.onLogin});
 
   @override
   Widget build(BuildContext context) {
     final items = accounts.accounts
         .map(
-          (account) => AccountItem(account: account, onActivate: () => onActivate(account), onDelete: () => onDelete(account)),
+          (account) => AccountItem(
+              account: account, onActivate: () => onActivate(account), onLogin: () => onLogin(account), onDelete: () => onDelete(account)),
         )
         .toList();
     return Column(children: items);
@@ -114,8 +125,9 @@ class AccountItem extends StatelessWidget {
   final PortalAccount account;
   final VoidCallback onActivate;
   final VoidCallback onDelete;
+  final VoidCallback onLogin;
 
-  const AccountItem({super.key, required this.account, required this.onActivate, required this.onDelete});
+  const AccountItem({super.key, required this.account, required this.onActivate, required this.onDelete, required this.onLogin});
 
   @override
   Widget build(BuildContext context) {
@@ -124,11 +136,12 @@ class AccountItem extends StatelessWidget {
     return BorderedListItem(header: GenericListItemHeader(title: account.email, subtitle: account.name), children: [
       WH.align(AccountStatus(validity: account.valid, active: account.active)),
       WH.align(WH.padChildrenPage([
-        ElevatedButton(
-            onPressed: () {
-              onDelete();
-            },
-            child: Text(localizations.accountDeleteButton))
+        Row(
+          children: WH.padButtonsRow([
+            ElevatedButton(onPressed: onDelete, child: Text(localizations.accountDeleteButton)),
+            if (account.valid != Validity.valid) ElevatedButton(onPressed: onLogin, child: Text(localizations.accountRepairButton)),
+          ]),
+        )
       ]))
     ]);
   }
@@ -141,15 +154,14 @@ class EditAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AccountForm(original: original, onSave: (account) {});
+    return AccountForm(original: original);
   }
 }
 
 class AccountForm extends StatefulWidget {
   final PortalAccount original;
-  final void Function(PortalAccount) onSave;
 
-  const AccountForm({super.key, required this.original, required this.onSave});
+  const AccountForm({super.key, required this.original});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -176,6 +188,7 @@ class _AccountState extends State<AccountForm> {
           children: [
             FormBuilderTextField(
               name: 'email',
+              initialValue: widget.original.email,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(labelText: localizations.accountEmail),
               validator: FormBuilderValidators.compose([
@@ -219,7 +232,6 @@ class _AccountState extends State<AccountForm> {
                     final saved = await accounts.addOrUpdate(email, password);
                     if (saved != null) {
                       navigator.pop();
-                      widget.onSave(saved);
                     } else {
                       messenger.showSnackBar(SnackBar(
                         content: Text(localizations.accountFormFail),

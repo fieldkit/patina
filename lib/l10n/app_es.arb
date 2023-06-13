@@ -51,6 +51,7 @@
   "accountFormFail": "Invalid email or password.",
   "accountSaveButton": "Save",
   "accountDeleteButton": "Delete",
+  "accountRepairButton": "Login",
   "accountDefault": "This is your default account.",
   "accountInvalid": "Something is wrong with this account.",
   "accountUnknown": "Odd, not sure about this account. Bug?",
