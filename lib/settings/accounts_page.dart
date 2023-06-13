@@ -158,6 +158,7 @@ class AccountForm extends StatefulWidget {
 
 class _AccountState extends State<AccountForm> {
   final _formKey = GlobalKey<FormBuilderState>();
+  bool _passwordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +176,7 @@ class _AccountState extends State<AccountForm> {
           children: [
             FormBuilderTextField(
               name: 'email',
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(labelText: localizations.accountEmail),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
@@ -183,7 +185,22 @@ class _AccountState extends State<AccountForm> {
             ),
             FormBuilderTextField(
               name: 'password',
-              decoration: InputDecoration(labelText: localizations.accountPassword),
+              keyboardType: TextInputType.visiblePassword,
+              decoration: InputDecoration(
+                labelText: localizations.accountPassword,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                    color: Theme.of(context).primaryColorDark,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _passwordVisible = !_passwordVisible;
+                    });
+                  },
+                ),
+              ),
+              obscureText: !_passwordVisible,
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
                 FormBuilderValidators.minLength(10),
