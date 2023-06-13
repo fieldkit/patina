@@ -18,6 +18,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8A8DEC752A39053A0075C62D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A35253292866B17200EFD9C6 /* native.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CA603EE7FF4DEAC3B2E0A336;
+			remoteInfo = "native-cdylib";
+		};
+		8A8DEC772A39053A0075C62D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A35253292866B17200EFD9C6 /* native.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CA60F0FEBE702969E816930C;
+			remoteInfo = "native-staticlib";
+		};
 		A35253372866B1B000EFD9C6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A35253342866B1B000EFD9C6 /* native.xcodeproj */;
@@ -90,6 +104,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8A8DEC692A39053A0075C62D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8A8DEC762A39053A0075C62D /* native.dylib */,
+				8A8DEC782A39053A0075C62D /* libnative_static.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
@@ -222,6 +245,10 @@
 					ProductGroup = A35253352866B1B000EFD9C6 /* Products */;
 					ProjectRef = A35253342866B1B000EFD9C6 /* native.xcodeproj */;
 				},
+				{
+					ProductGroup = 8A8DEC692A39053A0075C62D /* Products */;
+					ProjectRef = A35253292866B17200EFD9C6 /* native.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -231,6 +258,20 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		8A8DEC762A39053A0075C62D /* native.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = native.dylib;
+			remoteRef = 8A8DEC752A39053A0075C62D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8A8DEC782A39053A0075C62D /* libnative_static.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnative_static.a;
+			remoteRef = 8A8DEC772A39053A0075C62D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		A352533C2866B1B100EFD9C6 /* native.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
@@ -440,6 +481,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldkit.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -569,6 +612,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldkit.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -592,6 +637,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.fieldkit.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

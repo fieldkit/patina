@@ -28,6 +28,7 @@
 		33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F22044A3C60003C045 /* Assets.xcassets */; };
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
+		8A8DEC792A39054A0075C62D /* libnative_static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A35253552866B29F00EFD9C6 /* libnative_static.a */; };
 		E1D88C42FBF1A5BC69B35544 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 204000D88810F0E640369F55 /* Pods_RunnerTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +46,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 33CC111A2044C6BA0003C045;
 			remoteInfo = FLX;
+		};
+		8A8DEC6E2A39053A0075C62D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A35253422866B29000EFD9C6 /* native.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CA603EE7FF4DEAC3B2E0A336;
+			remoteInfo = "native-cdylib";
+		};
+		8A8DEC702A39053A0075C62D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A35253422866B29000EFD9C6 /* native.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CA60F0FEBE702969E816930C;
+			remoteInfo = "native-staticlib";
 		};
 		A352534E2866B29F00EFD9C6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -127,6 +142,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A8DEC792A39054A0075C62D /* libnative_static.a in Frameworks */,
 				2FF12FB985D9480D644669AE /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -223,6 +239,15 @@
 				0C3AEC2F3DE4A2963635589A /* Pods-RunnerTests.profile.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		8A8DEC672A39053A0075C62D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8A8DEC6F2A39053A0075C62D /* native.dylib */,
+				8A8DEC712A39053A0075C62D /* libnative_static.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		A352534C2866B29F00EFD9C6 /* Products */ = {
@@ -334,6 +359,10 @@
 					ProductGroup = A352534C2866B29F00EFD9C6 /* Products */;
 					ProjectRef = A352534B2866B29F00EFD9C6 /* native.xcodeproj */;
 				},
+				{
+					ProductGroup = 8A8DEC672A39053A0075C62D /* Products */;
+					ProjectRef = A35253422866B29000EFD9C6 /* native.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -345,6 +374,20 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		8A8DEC6F2A39053A0075C62D /* native.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = native.dylib;
+			remoteRef = 8A8DEC6E2A39053A0075C62D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8A8DEC712A39053A0075C62D /* libnative_static.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnative_static.a;
+			remoteRef = 8A8DEC702A39053A0075C62D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		A35253532866B29F00EFD9C6 /* native.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
@@ -620,6 +663,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -705,6 +750,8 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -751,6 +798,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
