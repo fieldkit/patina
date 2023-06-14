@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../gen/ffi.dart';
+import '../no_stations_widget.dart';
 
 class DataSyncTab extends StatelessWidget {
   const DataSyncTab({super.key});
@@ -62,7 +63,7 @@ class DataSyncPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.dataSyncTitle),
         ),
-        body: ListView(children: stations));
+        body: ListView(children: [...stations, if (stations.isEmpty) const NoStationsHelpWidget()]));
   }
 }
 

@@ -6,6 +6,7 @@ import 'gen/ffi.dart';
 
 import 'app_state.dart';
 import 'map_widget.dart';
+import 'no_stations_widget.dart';
 import 'view_station/view_station_page.dart';
 
 class StationsTab extends StatelessWidget {
@@ -47,7 +48,7 @@ class ListStationsPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.myStationsTitle),
         ),
-        body: ListView(children: map + cards));
+        body: ListView(children: [...map, ...cards, if (cards.isEmpty) const NoStationsHelpWidget()]));
   }
 }
 
@@ -60,8 +61,9 @@ class StationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var icon = Icon(Icons.aod_rounded, color: station.connected ? Colors.blue : Colors.grey);
-    var subtitle = station.busy ? Text(AppLocalizations.of(context)!.busyTransferring) : Text(AppLocalizations.of(context)!.readyToDeploy);
+    final localizations = AppLocalizations.of(context)!;
+    final icon = Icon(Icons.aod_rounded, color: station.connected ? Colors.blue : Colors.grey);
+    final subtitle = station.busy ? Text(localizations.busyTransferring) : Text(localizations.readyToDeploy);
 
     return Container(
         padding: const EdgeInsets.all(10),

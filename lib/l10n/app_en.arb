@@ -1,5 +1,9 @@
 {
   "fieldKit": "FieldKit",
+
+  "noStationsTitle": "Oops, no stations.",
+  "noStationsSeeGuide": "For help getting connected to your station, please see the [Product Guide].",
+  "productGuideUrl": "https://www.fieldkit.org/product-guide/",
   
   "stationsTab": "Stations",
   "dataSyncTab": "Data",
