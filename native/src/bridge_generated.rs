@@ -155,6 +155,22 @@ fn wire_start_upload_impl(
         },
     )
 }
+fn wire_cache_firmware_impl(
+    port_: MessagePort,
+    tokens: impl Wire2Api<Option<Tokens>> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "cache_firmware",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_tokens = tokens.wire2api();
+            move |task_callback| cache_firmware(api_tokens)
+        },
+    )
+}
 fn wire_rust_release_mode_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -239,6 +255,8 @@ impl support::IntoDart for DomainMessage {
                 vec![2.into_dart(), field0.into_dart(), field1.into_dart()]
             }
             Self::TransferProgress(field0) => vec![3.into_dart(), field0.into_dart()],
+            Self::FirmwareDownloadStatus(field0) => vec![4.into_dart(), field0.into_dart()],
+            Self::UpgradeProgress(field0) => vec![5.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }
@@ -256,6 +274,20 @@ impl support::IntoDart for DownloadProgress {
     }
 }
 impl support::IntoDartExceptPrimitive for DownloadProgress {}
+
+impl support::IntoDart for FirmwareDownloadStatus {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Checking => vec![0.into_dart()],
+            Self::Downloading(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::Offline => vec![2.into_dart()],
+            Self::Completed => vec![3.into_dart()],
+            Self::Failed => vec![4.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for FirmwareDownloadStatus {}
 
 impl support::IntoDart for ModuleConfig {
     fn into_dart(self) -> support::DartAbi {
@@ -392,6 +424,27 @@ impl support::IntoDart for TransmissionToken {
 }
 impl support::IntoDartExceptPrimitive for TransmissionToken {}
 
+impl support::IntoDart for UpgradeProgress {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.device_id.into_dart(), self.status.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for UpgradeProgress {}
+
+impl support::IntoDart for UpgradeStatus {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Starting => vec![0.into_dart()],
+            Self::Uploading(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::Restarting => vec![2.into_dart()],
+            Self::Checking => vec![3.into_dart()],
+            Self::Completed => vec![4.into_dart()],
+            Self::Failed => vec![5.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for UpgradeStatus {}
 impl support::IntoDart for UploadProgress {
     fn into_dart(self) -> support::DartAbi {
         vec![

@@ -57,6 +57,10 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kStartUploadConstMeta;
 
+  Future<FirmwareDownloadStatus> cacheFirmware({Tokens? tokens, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCacheFirmwareConstMeta;
+
   Future<bool> rustReleaseMode({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRustReleaseModeConstMeta;
@@ -101,6 +105,12 @@ class DomainMessage with _$DomainMessage {
   const factory DomainMessage.transferProgress(
     TransferProgress field0,
   ) = DomainMessage_TransferProgress;
+  const factory DomainMessage.firmwareDownloadStatus(
+    FirmwareDownloadStatus field0,
+  ) = DomainMessage_FirmwareDownloadStatus;
+  const factory DomainMessage.upgradeProgress(
+    UpgradeProgress field0,
+  ) = DomainMessage_UpgradeProgress;
 }
 
 class DownloadProgress {
@@ -115,6 +125,20 @@ class DownloadProgress {
     required this.total,
     required this.received,
   });
+}
+
+@freezed
+class FirmwareDownloadStatus with _$FirmwareDownloadStatus {
+  const factory FirmwareDownloadStatus.checking() =
+      FirmwareDownloadStatus_Checking;
+  const factory FirmwareDownloadStatus.downloading(
+    DownloadProgress field0,
+  ) = FirmwareDownloadStatus_Downloading;
+  const factory FirmwareDownloadStatus.offline() =
+      FirmwareDownloadStatus_Offline;
+  const factory FirmwareDownloadStatus.completed() =
+      FirmwareDownloadStatus_Completed;
+  const factory FirmwareDownloadStatus.failed() = FirmwareDownloadStatus_Failed;
 }
 
 class ModuleConfig {
@@ -281,6 +305,28 @@ class TransmissionToken {
     required this.token,
     required this.url,
   });
+}
+
+class UpgradeProgress {
+  final String deviceId;
+  final UpgradeStatus status;
+
+  const UpgradeProgress({
+    required this.deviceId,
+    required this.status,
+  });
+}
+
+@freezed
+class UpgradeStatus with _$UpgradeStatus {
+  const factory UpgradeStatus.starting() = UpgradeStatus_Starting;
+  const factory UpgradeStatus.uploading(
+    UploadProgress field0,
+  ) = UpgradeStatus_Uploading;
+  const factory UpgradeStatus.restarting() = UpgradeStatus_Restarting;
+  const factory UpgradeStatus.checking() = UpgradeStatus_Checking;
+  const factory UpgradeStatus.completed() = UpgradeStatus_Completed;
+  const factory UpgradeStatus.failed() = UpgradeStatus_Failed;
 }
 
 class UploadProgress {

@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{anyhow, bail, Context, Result};
 use chrono::{DateTime, Utc};
 use flutter_rust_bridge::StreamSink;
 use std::{
@@ -8,15 +8,18 @@ use std::{
 };
 use sync::{FilesRecordSink, Server, ServerEvent, UdpTransport};
 use thiserror::Error;
-use tokio::sync::{mpsc::Sender, oneshot, Mutex};
+use tokio::{
+    fs::OpenOptions,
+    io::{AsyncReadExt, AsyncWriteExt},
+    sync::{mpsc::Sender, oneshot, Mutex},
+};
 use tokio::{runtime::Runtime, sync::mpsc::Receiver};
 use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
-use query::portal::{
-    BytesUploaded, CreatesFromBytesUploaded, DecodedToken, PortalError, StatusCode,
-};
+use query::portal::{CreatesFromBytesUploaded, DecodedToken, Firmware, PortalError, StatusCode};
+use query::BytesUploaded;
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
@@ -323,10 +326,9 @@ impl Sdk {
     async fn start_upload(&self, device_id: DeviceId, tokens: Tokens) -> Result<TransferProgress> {
         info!("{:?} start upload", &device_id);
 
-        let client = query::portal::Client::new(&self.portal_base_url)?;
-        let authenticated = client.to_authenticated(tokens.into())?;
-
         tokio::task::spawn({
+            let client = query::portal::Client::new(&self.portal_base_url)?;
+            let authenticated = client.to_authenticated(tokens.into())?;
             let publish_tx = self.publish_tx.clone();
             let device_id = device_id.clone();
 
@@ -390,6 +392,116 @@ impl Sdk {
 
         Ok(())
     }
+
+    async fn cache_firmware(&self, tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> {
+        info!("cache-firmware");
+
+        if tokens.is_some() {
+            unimplemented!()
+        }
+
+        tokio::task::spawn({
+            let publish_tx = self.publish_tx.clone();
+            let portal_base_url = self.portal_base_url.clone();
+            let storage_path = self.storage_path.clone();
+
+            async move {
+                let cached = match check_cached_firmware(&storage_path).await {
+                    Ok(cached) => cached,
+                    Err(e) => {
+                        warn!("Error checking cached firmware: {:?}", e);
+
+                        let message =
+                            DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Offline);
+
+                        publish_tx
+                            .send(message)
+                            .await
+                            .expect("Error sending firmware status");
+
+                        return;
+                    }
+                };
+
+                match cache_firmware_and_json_if_newer(&portal_base_url, &storage_path, cached)
+                    .await
+                {
+                    Ok(_) => info!("TODO Check for upgrade-ability"),
+                    Err(e) => {
+                        warn!("Error caching firmware: {:?}", e);
+
+                        let message =
+                            DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Failed);
+
+                        publish_tx
+                            .send(message)
+                            .await
+                            .expect("Error sending final firmware status");
+
+                        return;
+                    }
+                };
+            }
+        });
+
+        Ok(FirmwareDownloadStatus::Checking)
+    }
+}
+
+async fn check_cached_firmware(storage_path: &str) -> Result<Option<Firmware>> {
+    let path = PathBuf::from(storage_path).join("firmware.json");
+    if tokio::fs::metadata(&path).await.is_err() {
+        return Ok(None);
+    }
+
+    let mut reading = OpenOptions::new().read(true).open(&path).await?;
+    let mut buffer = String::new();
+    reading.read_to_string(&mut buffer).await?;
+    Ok(Some(serde_json::from_str(&buffer)?))
+}
+
+async fn cache_firmware_and_json_if_newer(
+    portal_base_url: &str,
+    storage_path: &str,
+    cached: Option<Firmware>,
+) -> Result<()> {
+    let client = query::portal::Client::new(portal_base_url)?;
+    let firmwares = client.available_firmware().await?;
+    let firmware = firmwares
+        .get(0)
+        .ok_or_else(|| anyhow!("No firmware on server!"))?;
+
+    if let Some(cached) = cached {
+        if cached.etag == firmware.etag {
+            info!("Firmware already cached {:?}", cached.etag);
+            return Ok(());
+        } else {
+            info!("New firmware! {:?} (old {:?})", firmware.etag, cached.etag);
+        }
+    } else {
+        info!("No cached firmware");
+    }
+
+    let path = PathBuf::from(storage_path).join("firmware.bin");
+    client
+        .download_firmware(firmware, &path, |p| {
+            info!("Downloading firmware {:?}", p);
+            Ok(())
+        })
+        .await?;
+
+    let path = PathBuf::from(storage_path).join("firmware.json");
+    let mut writing = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(&path)
+        .await
+        .with_context(|| format!("Creating {:?}", &path))?;
+
+    writing.write_all(&serde_json::to_vec(firmware)?).await?;
+
+    Ok(())
 }
 
 pub fn get_my_stations() -> Result<Vec<StationConfig>> {
@@ -429,6 +541,12 @@ pub fn start_download(device_id: String) -> Result<TransferProgress> {
 pub fn start_upload(device_id: String, tokens: Tokens) -> Result<TransferProgress> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.start_upload(DeviceId(device_id.clone()), tokens))
+    })?)
+}
+
+pub fn cache_firmware(tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.cache_firmware(tokens))
     })?)
 }
 
@@ -594,6 +712,33 @@ pub enum TransferStatus {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
+pub enum FirmwareDownloadStatus {
+    Checking,
+    Downloading(DownloadProgress),
+    Offline,
+    Completed,
+    Failed,
+}
+
+#[derive(Debug)]
+#[allow(dead_code)]
+pub enum UpgradeStatus {
+    Starting,
+    Uploading(UploadProgress),
+    Restarting,
+    Checking,
+    Completed,
+    Failed,
+}
+
+#[derive(Debug)]
+pub struct UpgradeProgress {
+    pub device_id: String,
+    pub status: UpgradeStatus,
+}
+
+#[derive(Debug)]
 pub struct TransferProgress {
     pub device_id: String,
     pub status: TransferStatus,
@@ -605,6 +750,8 @@ pub enum DomainMessage {
     NearbyStations(Vec<NearbyStation>),
     StationRefreshed(StationConfig, Option<SensitiveConfig>),
     TransferProgress(TransferProgress),
+    FirmwareDownloadStatus(FirmwareDownloadStatus),
+    UpgradeProgress(UpgradeProgress),
 }
 
 #[derive(Clone, Debug)]

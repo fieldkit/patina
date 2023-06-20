@@ -31,6 +31,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic>? api2wire_opt_box_autoadd_tokens(Tokens? raw) {
+    return raw == null ? null : api2wire_box_autoadd_tokens(raw);
+  }
+
+  @protected
   List<dynamic> api2wire_tokens(Tokens raw) {
     return [
       api2wire_String(raw.token),
@@ -84,6 +89,9 @@ class NativeWasmModule implements WasmModule {
   external dynamic /* void */ wire_start_upload(
       NativePortType port_, String device_id, List<dynamic> tokens);
 
+  external dynamic /* void */ wire_cache_firmware(
+      NativePortType port_, List<dynamic>? tokens);
+
   external dynamic /* void */ wire_rust_release_mode(NativePortType port_);
 
   external dynamic /* void */ wire_create_log_sink(NativePortType port_);
@@ -123,6 +131,9 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_start_upload(
           NativePortType port_, String device_id, List<dynamic> tokens) =>
       wasmModule.wire_start_upload(port_, device_id, tokens);
+
+  void wire_cache_firmware(NativePortType port_, List<dynamic>? tokens) =>
+      wasmModule.wire_cache_firmware(port_, tokens);
 
   void wire_rust_release_mode(NativePortType port_) =>
       wasmModule.wire_rust_release_mode(port_);

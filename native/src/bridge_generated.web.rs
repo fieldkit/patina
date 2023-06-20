@@ -42,6 +42,11 @@ pub fn wire_start_upload(port_: MessagePort, device_id: String, tokens: JsValue)
 }
 
 #[wasm_bindgen]
+pub fn wire_cache_firmware(port_: MessagePort, tokens: JsValue) {
+    wire_cache_firmware_impl(port_, tokens)
+}
+
+#[wasm_bindgen]
 pub fn wire_rust_release_mode(port_: MessagePort) {
     wire_rust_release_mode_impl(port_)
 }
@@ -63,6 +68,11 @@ impl Wire2Api<String> for String {
     }
 }
 
+impl Wire2Api<Option<Tokens>> for JsValue {
+    fn wire2api(self) -> Option<Tokens> {
+        (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
+    }
+}
 impl Wire2Api<Tokens> for JsValue {
     fn wire2api(self) -> Tokens {
         let self_ = self.dyn_into::<JsArray>().unwrap();

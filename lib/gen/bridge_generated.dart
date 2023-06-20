@@ -175,6 +175,23 @@ class NativeImpl implements Native {
         argNames: ["deviceId", "tokens"],
       );
 
+  Future<FirmwareDownloadStatus> cacheFirmware({Tokens? tokens, dynamic hint}) {
+    var arg0 = _platform.api2wire_opt_box_autoadd_tokens(tokens);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_cache_firmware(port_, arg0),
+      parseSuccessData: _wire2api_firmware_download_status,
+      constMeta: kCacheFirmwareConstMeta,
+      argValues: [tokens],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kCacheFirmwareConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "cache_firmware",
+        argNames: ["tokens"],
+      );
+
   Future<bool> rustReleaseMode({dynamic hint}) {
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) => _platform.inner.wire_rust_release_mode(port_),
@@ -249,6 +266,11 @@ class NativeImpl implements Native {
     return _wire2api_download_progress(raw);
   }
 
+  FirmwareDownloadStatus _wire2api_box_autoadd_firmware_download_status(
+      dynamic raw) {
+    return _wire2api_firmware_download_status(raw);
+  }
+
   SensitiveConfig _wire2api_box_autoadd_sensitive_config(dynamic raw) {
     return _wire2api_sensitive_config(raw);
   }
@@ -267,6 +289,10 @@ class NativeImpl implements Native {
 
   TransmissionConfig _wire2api_box_autoadd_transmission_config(dynamic raw) {
     return _wire2api_transmission_config(raw);
+  }
+
+  UpgradeProgress _wire2api_box_autoadd_upgrade_progress(dynamic raw) {
+    return _wire2api_upgrade_progress(raw);
   }
 
   UploadProgress _wire2api_box_autoadd_upload_progress(dynamic raw) {
@@ -290,6 +316,14 @@ class NativeImpl implements Native {
         return DomainMessage_TransferProgress(
           _wire2api_box_autoadd_transfer_progress(raw[1]),
         );
+      case 4:
+        return DomainMessage_FirmwareDownloadStatus(
+          _wire2api_box_autoadd_firmware_download_status(raw[1]),
+        );
+      case 5:
+        return DomainMessage_UpgradeProgress(
+          _wire2api_box_autoadd_upgrade_progress(raw[1]),
+        );
       default:
         throw Exception("unreachable");
     }
@@ -309,6 +343,25 @@ class NativeImpl implements Native {
 
   double _wire2api_f32(dynamic raw) {
     return raw as double;
+  }
+
+  FirmwareDownloadStatus _wire2api_firmware_download_status(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return FirmwareDownloadStatus_Checking();
+      case 1:
+        return FirmwareDownloadStatus_Downloading(
+          _wire2api_box_autoadd_download_progress(raw[1]),
+        );
+      case 2:
+        return FirmwareDownloadStatus_Offline();
+      case 3:
+        return FirmwareDownloadStatus_Completed();
+      case 4:
+        return FirmwareDownloadStatus_Failed();
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   int _wire2api_i64(dynamic raw) {
@@ -534,6 +587,37 @@ class NativeImpl implements Native {
 
   void _wire2api_unit(dynamic raw) {
     return;
+  }
+
+  UpgradeProgress _wire2api_upgrade_progress(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return UpgradeProgress(
+      deviceId: _wire2api_String(arr[0]),
+      status: _wire2api_upgrade_status(arr[1]),
+    );
+  }
+
+  UpgradeStatus _wire2api_upgrade_status(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return UpgradeStatus_Starting();
+      case 1:
+        return UpgradeStatus_Uploading(
+          _wire2api_box_autoadd_upload_progress(raw[1]),
+        );
+      case 2:
+        return UpgradeStatus_Restarting();
+      case 3:
+        return UpgradeStatus_Checking();
+      case 4:
+        return UpgradeStatus_Completed();
+      case 5:
+        return UpgradeStatus_Failed();
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   UploadProgress _wire2api_upload_progress(dynamic raw) {

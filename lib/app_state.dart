@@ -84,6 +84,7 @@ class KnownStationsModel extends ChangeNotifier {
   }
 
   void _load() async {
+    await api.cacheFirmware(tokens: null);
     var stations = await api.getMyStations();
     debugPrint("(load) my-stations: $stations");
     for (var station in stations) {

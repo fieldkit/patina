@@ -30,6 +30,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_Tokens> api2wire_opt_box_autoadd_tokens(Tokens? raw) {
+    return raw == null ? ffi.nullptr : api2wire_box_autoadd_tokens(raw);
+  }
+
+  @protected
   ffi.Pointer<wire_uint_8_list> api2wire_uint_8_list(Uint8List raw) {
     final ans = inner.new_uint_8_list_0(raw.length);
     ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
@@ -43,6 +48,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   void _api_fill_to_wire_box_autoadd_tokens(
       Tokens apiObj, ffi.Pointer<wire_Tokens> wireObj) {
     _api_fill_to_wire_tokens(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_opt_box_autoadd_tokens(
+      Tokens? apiObj, ffi.Pointer<wire_Tokens> wireObj) {
+    if (apiObj != null) _api_fill_to_wire_box_autoadd_tokens(apiObj, wireObj);
   }
 
   void _api_fill_to_wire_tokens(Tokens apiObj, wire_Tokens wireObj) {
@@ -303,6 +313,23 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_start_upload = _wire_start_uploadPtr.asFunction<
       void Function(
           int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_Tokens>)>();
+
+  void wire_cache_firmware(
+    int port_,
+    ffi.Pointer<wire_Tokens> tokens,
+  ) {
+    return _wire_cache_firmware(
+      port_,
+      tokens,
+    );
+  }
+
+  late final _wire_cache_firmwarePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_Tokens>)>>('wire_cache_firmware');
+  late final _wire_cache_firmware = _wire_cache_firmwarePtr
+      .asFunction<void Function(int, ffi.Pointer<wire_Tokens>)>();
 
   void wire_rust_release_mode(
     int port_,

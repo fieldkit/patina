@@ -63,6 +63,11 @@ pub extern "C" fn wire_start_upload(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_cache_firmware(port_: i64, tokens: *mut wire_Tokens) {
+    wire_cache_firmware_impl(port_, tokens)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_rust_release_mode(port_: i64) {
     wire_rust_release_mode_impl(port_)
 }
@@ -104,6 +109,7 @@ impl Wire2Api<Tokens> for *mut wire_Tokens {
         Wire2Api::<Tokens>::wire2api(*wrap).into()
     }
 }
+
 impl Wire2Api<Tokens> for wire_Tokens {
     fn wire2api(self) -> Tokens {
         Tokens {
