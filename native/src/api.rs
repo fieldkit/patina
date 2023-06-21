@@ -507,13 +507,14 @@ impl Sdk {
             tokio::task::spawn({
                 let device_id = device_id.clone();
                 let publish_tx = self.publish_tx.clone();
+                let swap = false;
 
                 async move {
                     match client
                         .upgrade(
                             &addr,
                             &path,
-                            false,
+                            swap,
                             publish_tx.clone(),
                             ActiveFirmwareUpload {
                                 device_id: device_id.clone(),
@@ -522,21 +523,44 @@ impl Sdk {
                         .await
                     {
                         Ok(_) => {
-                            publish_tx
-                                .send(DomainMessage::UpgradeProgress(UpgradeProgress {
-                                    device_id: device_id.0.clone(),
-                                    status: UpgradeStatus::Restarting,
-                                }))
-                                .await
-                                .expect("Upgrade progress failed");
+                            if swap {
+                                publish_tx
+                                    .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                        device_id: device_id.0.clone(),
+                                        status: UpgradeStatus::Restarting,
+                                    }))
+                                    .await
+                                    .expect("Upgrade progress failed");
 
-                            publish_tx
-                                .send(DomainMessage::UpgradeProgress(UpgradeProgress {
-                                    device_id: device_id.0.clone(),
-                                    status: UpgradeStatus::Completed,
-                                }))
-                                .await
-                                .expect("Upgrade progress failed");
+                                match wait_for_station_restart(&addr).await {
+                                    Ok(_) => {
+                                        publish_tx
+                                            .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                                device_id: device_id.0.clone(),
+                                                status: UpgradeStatus::Completed,
+                                            }))
+                                            .await
+                                            .expect("Upgrade progress failed");
+                                    }
+                                    Err(_) => {
+                                        publish_tx
+                                            .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                                device_id: device_id.0.clone(),
+                                                status: UpgradeStatus::Failed,
+                                            }))
+                                            .await
+                                            .expect("Upgrade progress failed");
+                                    }
+                                }
+                            } else {
+                                publish_tx
+                                    .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                        device_id: device_id.0.clone(),
+                                        status: UpgradeStatus::Completed,
+                                    }))
+                                    .await
+                                    .expect("Upgrade progress failed");
+                            }
                         }
                         Err(_) => {
                             publish_tx
@@ -562,6 +586,23 @@ impl Sdk {
             })
         }
     }
+}
+
+async fn wait_for_station_restart(addr: &str) -> Result<()> {
+    let client = query::device::Client::new()?;
+
+    for _i in 0..30 {
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+
+        match client.query_status(addr).await {
+            Err(e) => info!("Waiting for station: {:?}", e),
+            Ok(_) => {
+                return Ok(());
+            }
+        }
+    }
+
+    Err(anyhow!("Station did not come back online."))
 }
 
 async fn check_cached_firmware(storage_path: &str) -> Result<Option<Firmware>> {
