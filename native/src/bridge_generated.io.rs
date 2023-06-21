@@ -68,6 +68,11 @@ pub extern "C" fn wire_cache_firmware(port_: i64, tokens: *mut wire_Tokens) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_upgrade_station(port_: i64, device_id: *mut wire_uint_8_list) {
+    wire_upgrade_station_impl(port_, device_id)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_rust_release_mode(port_: i64) {
     wire_rust_release_mode_impl(port_)
 }

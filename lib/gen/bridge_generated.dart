@@ -192,6 +192,24 @@ class NativeImpl implements Native {
         argNames: ["tokens"],
       );
 
+  Future<UpgradeProgress> upgradeStation(
+      {required String deviceId, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_upgrade_station(port_, arg0),
+      parseSuccessData: _wire2api_upgrade_progress,
+      constMeta: kUpgradeStationConstMeta,
+      argValues: [deviceId],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kUpgradeStationConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "upgrade_station",
+        argNames: ["deviceId"],
+      );
+
   Future<bool> rustReleaseMode({dynamic hint}) {
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) => _platform.inner.wire_rust_release_mode(port_),
@@ -610,10 +628,8 @@ class NativeImpl implements Native {
       case 2:
         return UpgradeStatus_Restarting();
       case 3:
-        return UpgradeStatus_Checking();
-      case 4:
         return UpgradeStatus_Completed();
-      case 5:
+      case 4:
         return UpgradeStatus_Failed();
       default:
         throw Exception("unreachable");

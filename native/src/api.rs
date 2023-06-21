@@ -18,8 +18,14 @@ use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
-use query::portal::{CreatesFromBytesUploaded, DecodedToken, Firmware, PortalError, StatusCode};
 use query::BytesUploaded;
+use query::{
+    portal::{
+        CreatesFromBytesDownloaded, CreatesFromBytesUploaded, DecodedToken, Firmware, PortalError,
+        StatusCode,
+    },
+    BytesDownloaded,
+};
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
@@ -186,6 +192,48 @@ impl CreatesFromBytesUploaded<DomainMessage> for ActiveUpload {
                     total_bytes: bytes.total_bytes,
                 }),
             })
+        }
+    }
+}
+
+struct ActiveFirmwareUpload {
+    device_id: DeviceId,
+}
+
+impl CreatesFromBytesUploaded<DomainMessage> for ActiveFirmwareUpload {
+    fn from(&self, bytes: BytesUploaded) -> DomainMessage {
+        if bytes.completed() {
+            DomainMessage::TransferProgress(TransferProgress {
+                device_id: self.device_id.0.clone(),
+                status: TransferStatus::Completed,
+            })
+        } else {
+            DomainMessage::TransferProgress(TransferProgress {
+                device_id: self.device_id.0.clone(),
+                status: TransferStatus::Uploading(UploadProgress {
+                    bytes_uploaded: bytes.bytes_uploaded,
+                    total_bytes: bytes.total_bytes,
+                }),
+            })
+        }
+    }
+}
+
+struct ActiveFirmwareDownload {}
+
+impl CreatesFromBytesDownloaded<DomainMessage> for ActiveFirmwareDownload {
+    fn from(&self, bytes: BytesDownloaded) -> DomainMessage {
+        if bytes.completed() {
+            DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Completed)
+        } else {
+            DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Downloading(
+                DownloadProgress {
+                    started: 0,
+                    completed: 0.0,
+                    total: bytes.total_bytes as usize,
+                    received: bytes.bytes_downloaded as usize,
+                },
+            ))
         }
     }
 }
@@ -394,8 +442,6 @@ impl Sdk {
     }
 
     async fn cache_firmware(&self, tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> {
-        info!("cache-firmware");
-
         if tokens.is_some() {
             unimplemented!()
         }
@@ -407,12 +453,11 @@ impl Sdk {
 
             async move {
                 let cached = match check_cached_firmware(&storage_path).await {
-                    Ok(cached) => cached,
                     Err(e) => {
                         warn!("Error checking cached firmware: {:?}", e);
 
                         let message =
-                            DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Offline);
+                            DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Failed);
 
                         publish_tx
                             .send(message)
@@ -421,17 +466,22 @@ impl Sdk {
 
                         return;
                     }
+                    Ok(cached) => cached,
                 };
 
-                match cache_firmware_and_json_if_newer(&portal_base_url, &storage_path, cached)
-                    .await
+                match cache_firmware_and_json_if_newer(
+                    &portal_base_url,
+                    &storage_path,
+                    cached,
+                    publish_tx.clone(),
+                )
+                .await
                 {
-                    Ok(_) => info!("TODO Check for upgrade-ability"),
                     Err(e) => {
                         warn!("Error caching firmware: {:?}", e);
 
                         let message =
-                            DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Failed);
+                            DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Offline);
 
                         publish_tx
                             .send(message)
@@ -440,11 +490,77 @@ impl Sdk {
 
                         return;
                     }
+                    Ok(_) => info!("TODO Check for upgrade-ability"),
                 };
             }
         });
 
         Ok(FirmwareDownloadStatus::Checking)
+    }
+
+    async fn upgrade_station(&self, device_id: DeviceId) -> Result<UpgradeProgress> {
+        info!("upgrade-station: {:?}", device_id);
+        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
+            let client = query::device::Client::new()?;
+            let path = PathBuf::from(&self.storage_path).join("firmware.bin");
+
+            tokio::task::spawn({
+                let device_id = device_id.clone();
+                let publish_tx = self.publish_tx.clone();
+
+                async move {
+                    match client
+                        .upgrade(
+                            &addr,
+                            &path,
+                            false,
+                            publish_tx.clone(),
+                            ActiveFirmwareUpload {
+                                device_id: device_id.clone(),
+                            },
+                        )
+                        .await
+                    {
+                        Ok(_) => {
+                            publish_tx
+                                .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                    device_id: device_id.0.clone(),
+                                    status: UpgradeStatus::Restarting,
+                                }))
+                                .await
+                                .expect("Upgrade progress failed");
+
+                            publish_tx
+                                .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                    device_id: device_id.0.clone(),
+                                    status: UpgradeStatus::Completed,
+                                }))
+                                .await
+                                .expect("Upgrade progress failed");
+                        }
+                        Err(_) => {
+                            publish_tx
+                                .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                    device_id: device_id.0.clone(),
+                                    status: UpgradeStatus::Failed,
+                                }))
+                                .await
+                                .expect("Upgrade progress failed");
+                        }
+                    }
+                }
+            });
+
+            Ok(UpgradeProgress {
+                device_id: device_id.0.clone(),
+                status: UpgradeStatus::Starting,
+            })
+        } else {
+            Ok(UpgradeProgress {
+                device_id: device_id.0.clone(),
+                status: UpgradeStatus::Failed,
+            })
+        }
     }
 }
 
@@ -464,6 +580,7 @@ async fn cache_firmware_and_json_if_newer(
     portal_base_url: &str,
     storage_path: &str,
     cached: Option<Firmware>,
+    publish_tx: Sender<DomainMessage>,
 ) -> Result<()> {
     let client = query::portal::Client::new(portal_base_url)?;
     let firmwares = client.available_firmware().await?;
@@ -484,10 +601,7 @@ async fn cache_firmware_and_json_if_newer(
 
     let path = PathBuf::from(storage_path).join("firmware.bin");
     client
-        .download_firmware(firmware, &path, |p| {
-            info!("Downloading firmware {:?}", p);
-            Ok(())
-        })
+        .download_firmware(firmware, &path, publish_tx, ActiveFirmwareDownload {})
         .await?;
 
     let path = PathBuf::from(storage_path).join("firmware.json");
@@ -547,6 +661,12 @@ pub fn start_upload(device_id: String, tokens: Tokens) -> Result<TransferProgres
 pub fn cache_firmware(tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.cache_firmware(tokens))
+    })?)
+}
+
+pub fn upgrade_station(device_id: String) -> Result<UpgradeProgress> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.upgrade_station(DeviceId(device_id.clone())))
     })?)
 }
 
@@ -727,7 +847,6 @@ pub enum UpgradeStatus {
     Starting,
     Uploading(UploadProgress),
     Restarting,
-    Checking,
     Completed,
     Failed,
 }

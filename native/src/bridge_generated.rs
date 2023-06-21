@@ -171,6 +171,19 @@ fn wire_cache_firmware_impl(
         },
     )
 }
+fn wire_upgrade_station_impl(port_: MessagePort, device_id: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "upgrade_station",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            move |task_callback| upgrade_station(api_device_id)
+        },
+    )
+}
 fn wire_rust_release_mode_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -437,9 +450,8 @@ impl support::IntoDart for UpgradeStatus {
             Self::Starting => vec![0.into_dart()],
             Self::Uploading(field0) => vec![1.into_dart(), field0.into_dart()],
             Self::Restarting => vec![2.into_dart()],
-            Self::Checking => vec![3.into_dart()],
-            Self::Completed => vec![4.into_dart()],
-            Self::Failed => vec![5.into_dart()],
+            Self::Completed => vec![3.into_dart()],
+            Self::Failed => vec![4.into_dart()],
         }
         .into_dart()
     }

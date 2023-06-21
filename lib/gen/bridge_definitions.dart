@@ -61,6 +61,11 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kCacheFirmwareConstMeta;
 
+  Future<UpgradeProgress> upgradeStation(
+      {required String deviceId, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kUpgradeStationConstMeta;
+
   Future<bool> rustReleaseMode({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRustReleaseModeConstMeta;
@@ -324,7 +329,6 @@ class UpgradeStatus with _$UpgradeStatus {
     UploadProgress field0,
   ) = UpgradeStatus_Uploading;
   const factory UpgradeStatus.restarting() = UpgradeStatus_Restarting;
-  const factory UpgradeStatus.checking() = UpgradeStatus_Checking;
   const factory UpgradeStatus.completed() = UpgradeStatus_Completed;
   const factory UpgradeStatus.failed() = UpgradeStatus_Failed;
 }

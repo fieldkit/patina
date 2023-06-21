@@ -63,6 +63,8 @@ void wire_start_upload(int64_t port_,
 
 void wire_cache_firmware(int64_t port_, struct wire_Tokens *tokens);
 
+void wire_upgrade_station(int64_t port_, struct wire_uint_8_list *device_id);
+
 void wire_rust_release_mode(int64_t port_);
 
 void wire_create_log_sink(int64_t port_);
@@ -84,6 +86,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_start_download);
     dummy_var ^= ((int64_t) (void*) wire_start_upload);
     dummy_var ^= ((int64_t) (void*) wire_cache_firmware);
+    dummy_var ^= ((int64_t) (void*) wire_upgrade_station);
     dummy_var ^= ((int64_t) (void*) wire_rust_release_mode);
     dummy_var ^= ((int64_t) (void*) wire_create_log_sink);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_tokens_0);

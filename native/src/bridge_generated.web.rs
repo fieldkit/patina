@@ -47,6 +47,11 @@ pub fn wire_cache_firmware(port_: MessagePort, tokens: JsValue) {
 }
 
 #[wasm_bindgen]
+pub fn wire_upgrade_station(port_: MessagePort, device_id: String) {
+    wire_upgrade_station_impl(port_, device_id)
+}
+
+#[wasm_bindgen]
 pub fn wire_rust_release_mode(port_: MessagePort) {
     wire_rust_release_mode_impl(port_)
 }

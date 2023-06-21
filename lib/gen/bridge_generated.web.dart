@@ -92,6 +92,9 @@ class NativeWasmModule implements WasmModule {
   external dynamic /* void */ wire_cache_firmware(
       NativePortType port_, List<dynamic>? tokens);
 
+  external dynamic /* void */ wire_upgrade_station(
+      NativePortType port_, String device_id);
+
   external dynamic /* void */ wire_rust_release_mode(NativePortType port_);
 
   external dynamic /* void */ wire_create_log_sink(NativePortType port_);
@@ -134,6 +137,9 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
 
   void wire_cache_firmware(NativePortType port_, List<dynamic>? tokens) =>
       wasmModule.wire_cache_firmware(port_, tokens);
+
+  void wire_upgrade_station(NativePortType port_, String device_id) =>
+      wasmModule.wire_upgrade_station(port_, device_id);
 
   void wire_rust_release_mode(NativePortType port_) =>
       wasmModule.wire_rust_release_mode(port_);
