@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -9,6 +10,10 @@ class Location {}
 
 Stream<Location> _monitorLocation() async* {
   yield Location();
+
+  if (Platform.isLinux) {
+    return;
+  }
 
   const LocationSettings locationSettings = LocationSettings(
     accuracy: LocationAccuracy.high,
