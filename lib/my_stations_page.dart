@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'gen/ffi.dart';
 
 import 'app_state.dart';
+import 'location_widgets.dart';
 import 'map_widget.dart';
 import 'no_stations_widget.dart';
 import 'view_station/view_station_page.dart';
@@ -19,7 +20,7 @@ class StationsTab extends StatelessWidget {
         settings: settings,
         builder: (context) => Consumer<KnownStationsModel>(
           builder: (context, knownStations, child) {
-            return ListStationsPage(known: knownStations);
+            return ProvideLocation(child: ListStationsPage(known: knownStations));
           },
         ),
       );
