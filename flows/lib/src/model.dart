@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'dart:convert';
 
@@ -13,18 +12,18 @@ class MarkdownParser implements md.NodeVisitor {
 
   @override
   void visitElementAfter(md.Element element) {
-    debugPrint('vea: ${element.tag}');
+    print('vea: ${element.tag}');
   }
 
   @override
   bool visitElementBefore(md.Element element) {
-    debugPrint('veb: ${element.tag}');
+    print('veb: ${element.tag}');
     return true;
   }
 
   @override
   void visitText(md.Text text) {
-    debugPrint('vet: ${text.textContent}');
+    print('vet: ${text.textContent}');
   }
 }
 
@@ -38,9 +37,9 @@ class Flow {
   factory Flow.fromJson(Map<String, dynamic> data) {
     final id = data['id'] as String;
     final name = data['name'] as String;
-    final showProgress = data["showProgress"] as bool;
+    final showProgress = data["showProgress"] as bool?;
 
-    return Flow(id: id, name: name, showProgress: showProgress);
+    return Flow(id: id, name: name, showProgress: showProgress ?? false);
   }
 }
 
