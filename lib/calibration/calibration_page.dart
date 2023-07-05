@@ -91,7 +91,7 @@ class CalibrationPanel extends StatelessWidget {
       if (time == null) {
         return CanContinue.staleValue;
       } else {
-        if (time.isAfter(countdown.finished)) {
+        if (countdown.isValueFresh(time)) {
           return CanContinue.yes;
         }
         return CanContinue.staleValue;
@@ -112,10 +112,12 @@ class CalibrationPanel extends StatelessWidget {
     }
 
     return CalibrationWait(
-        config: config,
-        sensor: sensor,
-        canContinue: canContinue(sensor, config.standard, active, countdown),
-        onCalibrateAndContinue: () => calibrateAndContinue(context, sensor, current, active));
+      config: config,
+      sensor: sensor,
+      canContinue: canContinue(sensor, config.standard, active, countdown),
+      onCalibrateAndContinue: () => calibrateAndContinue(context, sensor, current, active),
+      onSkipTimer: () => countdown.skip(),
+    );
   }
 }
 
@@ -123,10 +125,16 @@ class CalibrationWait extends StatelessWidget {
   final CalibrationPointConfig config;
   final SensorConfig sensor;
   final VoidCallback onCalibrateAndContinue;
+  final VoidCallback onSkipTimer;
   final CanContinue canContinue;
 
   const CalibrationWait(
-      {super.key, required this.config, required this.sensor, required this.onCalibrateAndContinue, required this.canContinue});
+      {super.key,
+      required this.config,
+      required this.sensor,
+      required this.onCalibrateAndContinue,
+      required this.canContinue,
+      required this.onSkipTimer});
 
   Widget continueWidget(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -137,7 +145,7 @@ class CalibrationWait extends StatelessWidget {
       case CanContinue.form:
         return ElevatedButton(onPressed: null, child: Text(localizations.waitingOnForm));
       case CanContinue.timer:
-        return ElevatedButton(onPressed: null, child: Text(localizations.waitingOnTimer));
+        return GestureDetector(onLongPress: onSkipTimer, child: ElevatedButton(onPressed: null, child: Text(localizations.waitingOnTimer)));
       case CanContinue.staleValue:
         return ElevatedButton(onPressed: null, child: Text(localizations.waitingOnReading));
     }
