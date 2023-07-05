@@ -62,6 +62,8 @@ dependencies:
   url_launcher: ^6.1.11
   geolocator: ^9.0.2
   async: ^2.11.0
+  calibration:
+    path: './calibration'
 
 dev_dependencies:
   flutter_test:

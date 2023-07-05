@@ -1,3 +1,4 @@
+import 'package:calibration/calibration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -49,7 +50,8 @@ class CalibrationPanel extends StatelessWidget {
     final configured = config.standard;
     final standard = configured.acceptable ? configured : active.userStandard();
 
-    current.addPoint(CalibrationPoint(standard: standard, reading: sensor.value!));
+    final reading = SensorReading(uncalibrated: sensor.value!.uncalibrated, value: sensor.value!.value);
+    current.addPoint(CalibrationPoint(standard: standard, reading: reading));
 
     debugPrint("(calibrate) calibration: $current");
     debugPrint("(calibrate) active: $active");
