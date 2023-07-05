@@ -30,7 +30,7 @@ class CalibrationPage extends StatelessWidget {
         body: ChangeNotifierProvider(
             create: (context) => active,
             child: ProvideCountdown(
-                duration: const Duration(seconds: 1),
+                duration: const Duration(seconds: 120),
                 child: Consumer<CountdownTimer>(builder: (context, countdown, child) {
                   return CalibrationPanel(config: config, current: current ?? CurrentCalibration(curveType: config.curveType));
                 }))));

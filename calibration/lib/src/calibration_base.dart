@@ -152,6 +152,20 @@ class CalibrationTemplate {
 
   static CalibrationTemplate showCase() =>
       CalibrationTemplate(curveType: CurveType.linear, standards: [UnknownStandard(), FixedStandard(10)]);
+
+  static CalibrationTemplate? forModuleKey(String key) {
+    switch (key) {
+      case "modules.water.temp":
+        return waterTemp();
+      case "modules.water.ph":
+        return waterPh();
+      case "modules.water.do":
+        return waterDissolvedOxygen();
+      case "modules.water.ec":
+        return waterEc();
+    }
+    return null;
+  }
 }
 
 enum CalibrationKind {

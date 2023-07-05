@@ -95,8 +95,8 @@ class ClearCalibrationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final moduleConfigurations = context.read<AppState>().moduleConfigurations;
-    final configuration = moduleConfigurations.findModuleConfiguration(config.moduleIdentity);
-    final calibrations = configuration?.calibrations ?? [];
+    final moduleConfiguration = moduleConfigurations.find(config.moduleIdentity);
+    final calibrations = moduleConfiguration.calibrations;
     final outerNavigator = Navigator.of(context);
 
     debugPrint("$calibrations");

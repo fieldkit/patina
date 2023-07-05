@@ -1,3 +1,4 @@
+import 'package:calibration/calibration.dart';
 import 'package:flutter/material.dart';
 
 import 'gen/ffi.dart';
@@ -7,7 +8,9 @@ class LocalizedModule {
   String name;
   AssetImage icon;
 
-  bool get canCalibrate => key.startsWith("modules.water.");
+  CalibrationTemplate? get calibrationTemplate => CalibrationTemplate.forModuleKey(key);
+
+  bool get canCalibrate => calibrationTemplate != null;
 
   LocalizedModule({required this.key, required this.name, required this.icon});
 

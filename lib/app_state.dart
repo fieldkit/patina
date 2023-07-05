@@ -169,6 +169,10 @@ class AppState {
     return AppState._(api, dispatcher, knownStations, ModuleConfigurations(api: api, knownStations: knownStations),
         PortalAccounts(api: api, accounts: List.empty()));
   }
+
+  ModuleConfiguration findModuleConfiguration(ModuleIdentity moduleIdentity) {
+    return moduleConfigurations.find(moduleIdentity);
+  }
 }
 
 class AppEnv {
@@ -424,19 +428,28 @@ class PortalAccounts extends ChangeNotifier {
   }
 }
 
+class ModuleConfiguration {
+  final proto.ModuleConfiguration? configuration;
+
+  ModuleConfiguration(this.configuration);
+
+  List<proto.Calibration> get calibrations => configuration?.calibrations ?? [];
+
+  bool get isCalibrated => calibrations.isNotEmpty;
+}
+
 class ModuleConfigurations extends ChangeNotifier {
   final Native api;
   final KnownStationsModel knownStations;
 
   ModuleConfigurations({required this.api, required this.knownStations});
 
-  proto.ModuleConfiguration? findModuleConfiguration(ModuleIdentity moduleIdentity) {
+  ModuleConfiguration find(ModuleIdentity moduleIdentity) {
     final configuration = knownStations.findModule(moduleIdentity)?.module.configuration;
     if (configuration == null) {
-      return null;
+      return ModuleConfiguration(null);
     }
-
-    return proto.ModuleConfiguration.fromBuffer(configuration);
+    return ModuleConfiguration(proto.ModuleConfiguration.fromBuffer(configuration));
   }
 
   Future<void> clear(ModuleIdentity moduleIdentity) async {

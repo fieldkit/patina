@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:fk/app_state.dart';
+import 'package:provider/provider.dart';
 
 import '../calibration/calibration_model.dart';
+import '../calibration/calibration_page.dart';
 import '../calibration/clear_calibration_page.dart';
 import '../gen/ffi.dart';
 import '../meta.dart';
@@ -108,6 +110,7 @@ class ModuleInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final moduleConfigurations = context.read<AppState>().moduleConfigurations;
     final localized = LocalizedModule.get(module);
     final bay = AppLocalizations.of(context)!.bayNumber(module.position);
 
@@ -121,10 +124,19 @@ class ModuleInfo extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
+                calibrationPage() {
+                  final config = CalibrationPointConfig.fromTemplate(module.identity, localized.calibrationTemplate!);
+                  if (moduleConfigurations.find(module.identity).isCalibrated) {
+                    return ClearCalibrationPage(config: config);
+                  } else {
+                    return CalibrationPage(config: config);
+                  }
+                }
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ClearCalibrationPage(config: CalibrationPointConfig.showCase(module.identity)),
+                    builder: (context) => calibrationPage(),
                   ),
                 );
               },
