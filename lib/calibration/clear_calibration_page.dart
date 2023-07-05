@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
 
 import '../app_state.dart';
 import '../common_widgets.dart';
-import '../gen/fk-data.pb.dart' as proto;
 import 'calibration_model.dart';
 import 'calibration_page.dart';
 

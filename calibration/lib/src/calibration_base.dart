@@ -1,6 +1,24 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:data/data.dart';
+import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
+
+enum CurveType {
+  linear,
+  exponential,
+}
+
+extension Conversion on CurveType {
+  proto.CurveType into() {
+    switch (this) {
+      case CurveType.linear:
+        return proto.CurveType.CURVE_LINEAR;
+      case CurveType.exponential:
+        return proto.CurveType.CURVE_EXPONENTIAL;
+    }
+  }
+}
 
 class SensorReading {
   final double uncalibrated;
@@ -112,4 +130,69 @@ List<double> linearCurve(List<CalibrationPoint> points) {
   final b = yMean - m * xMean;
 
   return [b, m];
+}
+
+class CalibrationTemplate {
+  final CurveType curveType;
+  final List<Standard> standards;
+
+  CalibrationTemplate({required this.curveType, required this.standards});
+
+  static CalibrationTemplate waterPh() =>
+      CalibrationTemplate(curveType: CurveType.linear, standards: [FixedStandard(4), FixedStandard(7), FixedStandard(10)]);
+
+  static CalibrationTemplate waterDissolvedOxygen() =>
+      CalibrationTemplate(curveType: CurveType.linear, standards: [UnknownStandard(), UnknownStandard(), UnknownStandard()]);
+
+  static CalibrationTemplate waterEc() =>
+      CalibrationTemplate(curveType: CurveType.exponential, standards: [UnknownStandard(), UnknownStandard(), UnknownStandard()]);
+
+  static CalibrationTemplate waterTemp() =>
+      CalibrationTemplate(curveType: CurveType.exponential, standards: [UnknownStandard(), UnknownStandard(), UnknownStandard()]);
+
+  static CalibrationTemplate showCase() =>
+      CalibrationTemplate(curveType: CurveType.linear, standards: [UnknownStandard(), FixedStandard(10)]);
+}
+
+enum CalibrationKind {
+  none,
+}
+
+class CurrentCalibration {
+  final CurveType curveType;
+  final CalibrationKind kind;
+  final List<CalibrationPoint> _points = List.empty(growable: true);
+
+  CurrentCalibration({required this.curveType, this.kind = CalibrationKind.none});
+
+  @override
+  String toString() => _points.toString();
+
+  void addPoint(CalibrationPoint point) {
+    _points.add(point);
+  }
+
+  proto.ModuleConfiguration toDataProtocol() {
+    final time = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final cps = _points
+        .map((p) =>
+            proto.CalibrationPoint(references: [p.standard.value!], uncalibrated: [p.reading.uncalibrated], factory: [p.reading.value]))
+        .toList();
+    final coefficients = calculateCoefficients();
+    final calibration = proto.Calibration(
+        time: time,
+        kind: kind.index,
+        type: curveType.into(),
+        points: cps,
+        coefficients: proto.CalibrationCoefficients(values: coefficients));
+    return proto.ModuleConfiguration(calibrations: [calibration]);
+  }
+
+  List<double> calculateCoefficients() {
+    return linearCurve(_points);
+  }
+
+  Uint8List toBytes() {
+    return toDataProtocol().writeToBuffer();
+  }
 }
