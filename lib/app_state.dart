@@ -83,7 +83,6 @@ class KnownStationsModel extends ChangeNotifier {
   }
 
   void _load() async {
-    await api.cacheFirmware(tokens: null);
     var stations = await api.getMyStations();
     debugPrint("(load) my-stations: $stations");
     for (var station in stations) {
@@ -349,6 +348,17 @@ class PortalAccounts extends ChangeNotifier {
         debugPrint("Exception loading accounts: $e");
       }
     }
+
+    if (_accounts.isEmpty) {
+      debugPrint("Checking firmware (unauthenticated)");
+      await api.cacheFirmware(tokens: null);
+    } else {
+      for (PortalAccount account in _accounts) {
+        debugPrint("Checking firmware (${account.email})");
+        await api.cacheFirmware(tokens: account.tokens);
+      }
+    }
+
     return this;
   }
 

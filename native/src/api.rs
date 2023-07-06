@@ -442,10 +442,6 @@ impl Sdk {
     }
 
     async fn cache_firmware(&self, tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> {
-        if tokens.is_some() {
-            unimplemented!()
-        }
-
         tokio::task::spawn({
             let publish_tx = self.publish_tx.clone();
             let portal_base_url = self.portal_base_url.clone();
@@ -471,6 +467,7 @@ impl Sdk {
 
                 match cache_firmware_and_json_if_newer(
                     &portal_base_url,
+                    tokens,
                     &storage_path,
                     cached,
                     publish_tx.clone(),
@@ -617,21 +614,39 @@ async fn check_cached_firmware(storage_path: &str) -> Result<Option<Firmware>> {
     Ok(Some(serde_json::from_str(&buffer)?))
 }
 
+async fn query_available_firmware(
+    client: &query::portal::Client,
+    tokens: Option<Tokens>,
+) -> Result<Vec<Firmware>> {
+    if let Some(tokens) = tokens {
+        client
+            .to_authenticated(tokens.into())?
+            .available_firmware()
+            .await
+    } else {
+        client.available_firmware().await
+    }
+}
+
 async fn cache_firmware_and_json_if_newer(
     portal_base_url: &str,
+    tokens: Option<Tokens>,
     storage_path: &str,
     cached: Option<Firmware>,
     publish_tx: Sender<DomainMessage>,
 ) -> Result<()> {
     let client = query::portal::Client::new(portal_base_url)?;
-    let firmwares = client.available_firmware().await?;
+    let firmwares = query_available_firmware(&client, tokens).await?;
     let firmware = firmwares
         .get(0)
         .ok_or_else(|| anyhow!("No firmware on server!"))?;
 
     if let Some(cached) = cached {
         if cached.etag == firmware.etag {
-            info!("Firmware already cached {:?}", cached.etag);
+            info!(
+                "Firmware already cached {:?} ({:?})",
+                cached.etag, storage_path
+            );
             return Ok(());
         } else {
             info!("New firmware! {:?} (old {:?})", firmware.etag, cached.etag);
