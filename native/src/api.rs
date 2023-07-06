@@ -602,16 +602,16 @@ async fn wait_for_station_restart(addr: &str) -> Result<()> {
     Err(anyhow!("Station did not come back online."))
 }
 
-async fn check_cached_firmware(storage_path: &str) -> Result<Option<Firmware>> {
-    let path = PathBuf::from(storage_path).join("firmware.json");
-    if tokio::fs::metadata(&path).await.is_err() {
-        return Ok(None);
+async fn check_cached_firmware(storage_path: &str) -> Result<Vec<Firmware>> {
+    let mut found = Vec::new();
+    let pattern = format!("{}/firmware*.json", storage_path);
+    for path in glob::glob(&pattern)? {
+        let mut reading = OpenOptions::new().read(true).open(&path?).await?;
+        let mut buffer = String::new();
+        reading.read_to_string(&mut buffer).await?;
+        found.push(serde_json::from_str(&buffer)?);
     }
-
-    let mut reading = OpenOptions::new().read(true).open(&path).await?;
-    let mut buffer = String::new();
-    reading.read_to_string(&mut buffer).await?;
-    Ok(Some(serde_json::from_str(&buffer)?))
+    Ok(found)
 }
 
 async fn query_available_firmware(
@@ -632,44 +632,45 @@ async fn cache_firmware_and_json_if_newer(
     portal_base_url: &str,
     tokens: Option<Tokens>,
     storage_path: &str,
-    cached: Option<Firmware>,
+    cached: Vec<Firmware>,
     publish_tx: Sender<DomainMessage>,
 ) -> Result<()> {
     let client = query::portal::Client::new(portal_base_url)?;
     let firmwares = query_available_firmware(&client, tokens).await?;
-    let firmware = firmwares
-        .get(0)
-        .ok_or_else(|| anyhow!("No firmware on server!"))?;
 
-    if let Some(cached) = cached {
-        if cached.etag == firmware.etag {
+    for firmware in firmwares.iter() {
+        let has = cached.iter().any(|f| f.etag == firmware.etag);
+        if has {
             info!(
-                "Firmware already cached {:?} ({:?})",
-                cached.etag, storage_path
+                "Firmware already cached {:?} ({})",
+                firmware.etag, storage_path
             );
-            return Ok(());
-        } else {
-            info!("New firmware! {:?} (old {:?})", firmware.etag, cached.etag);
+            continue;
         }
-    } else {
-        info!("No cached firmware");
+
+        info!("New firmware! {:?}", firmware.etag);
+
+        let path = PathBuf::from(storage_path).join(format!("firmware-{}.bin", firmware.id));
+        client
+            .download_firmware(
+                firmware,
+                &path,
+                publish_tx.clone(),
+                ActiveFirmwareDownload {},
+            )
+            .await?;
+
+        let path = PathBuf::from(storage_path).join(format!("firmware-{}.json", firmware.id));
+        let mut writing = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(&path)
+            .await
+            .with_context(|| format!("Creating {:?}", &path))?;
+
+        writing.write_all(&serde_json::to_vec(firmware)?).await?;
     }
-
-    let path = PathBuf::from(storage_path).join("firmware.bin");
-    client
-        .download_firmware(firmware, &path, publish_tx, ActiveFirmwareDownload {})
-        .await?;
-
-    let path = PathBuf::from(storage_path).join("firmware.json");
-    let mut writing = OpenOptions::new()
-        .write(true)
-        .create(true)
-        .truncate(true)
-        .open(&path)
-        .await
-        .with_context(|| format!("Creating {:?}", &path))?;
-
-    writing.write_all(&serde_json::to_vec(firmware)?).await?;
 
     Ok(())
 }
