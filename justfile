@@ -24,8 +24,8 @@ clean:
 serve *args='':
     flutter pub run flutter_rust_bridge:serve {{args}}
 
-sync:
-    cd flows && dart run example/sync.dart
+sync *args='':
+    cd flows && dart run example/sync.dart {{args}}
 
 # vim:expandtab:sw=4:ts=4
 

@@ -1,6 +1,18 @@
 import 'package:markdown/markdown.dart' as md;
 import 'dart:convert';
 
+class UnorderedListNode {}
+
+class ListItemNode {}
+
+class ParagraphNode {}
+
+class ImageNode {}
+
+class H1Node {}
+
+class H2Node {}
+
 class MarkdownParser implements md.NodeVisitor {
   void parse(String markdownContent) {
     md.Document document = md.Document(encodeHtml: false);
@@ -11,19 +23,19 @@ class MarkdownParser implements md.NodeVisitor {
   }
 
   @override
-  void visitElementAfter(md.Element element) {
-    print('vea: ${element.tag}');
-  }
-
-  @override
   bool visitElementBefore(md.Element element) {
-    print('veb: ${element.tag}');
+    print('veb: ${element.tag} ${element.attributes} ${element.children}');
     return true;
   }
 
   @override
   void visitText(md.Text text) {
     print('vet: ${text.textContent}');
+  }
+
+  @override
+  void visitElementAfter(md.Element element) {
+    print('vea: ${element.tag}');
   }
 }
 

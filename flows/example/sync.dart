@@ -3,10 +3,9 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flows/flows.dart';
 
-void main() async {
+Future<void> download(String resources) async {
   final baseUrl = "https://strapi.conservify.org";
-  final resourcesPath = "../resources/flows";
-  final file = File("../resources/flows/flows.json");
+  final file = File("$resources/flows.json");
   final query = {
     "query": '''{
           flows {
@@ -42,9 +41,34 @@ void main() async {
       for (final image in simple.images) {
         print(image.url);
         final response = await http.get(Uri.parse(baseUrl + image.url));
-        final writing = File(resourcesPath + image.url);
+        final writing = File(resources + image.url);
         await writing.writeAsBytes(response.bodyBytes);
       }
+    }
+  }
+}
+
+Future<void> test(String resources) async {
+  final file = File("$resources/flows.json");
+  final data = await file.readAsString();
+  final flows = ContentFlows.get(data);
+  for (final screen in flows.screens) {
+    for (final simple in screen.simple) {
+      final parser = MarkdownParser();
+      parser.parse(simple.body);
+    }
+  }
+}
+
+void main(List<String> args) async {
+  final resourcesPath = "../resources/flows";
+
+  for (final arg in args) {
+    if (arg == "--all") {
+      await download(resourcesPath);
+    }
+    if (arg == "--test") {
+      await test(resourcesPath);
     }
   }
 }
