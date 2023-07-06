@@ -259,6 +259,13 @@ impl support::IntoDart for BatteryInfo {
 }
 impl support::IntoDartExceptPrimitive for BatteryInfo {}
 
+impl support::IntoDart for CapabilitiesInfo {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.udp.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for CapabilitiesInfo {}
+
 impl support::IntoDart for DomainMessage {
     fn into_dart(self) -> support::DartAbi {
         match self {
@@ -270,6 +277,7 @@ impl support::IntoDart for DomainMessage {
             Self::TransferProgress(field0) => vec![3.into_dart(), field0.into_dart()],
             Self::FirmwareDownloadStatus(field0) => vec![4.into_dart(), field0.into_dart()],
             Self::UpgradeProgress(field0) => vec![5.into_dart(), field0.into_dart()],
+            Self::AvailableFirmware(field0) => vec![6.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }
@@ -301,6 +309,24 @@ impl support::IntoDart for FirmwareDownloadStatus {
     }
 }
 impl support::IntoDartExceptPrimitive for FirmwareDownloadStatus {}
+impl support::IntoDart for FirmwareInfo {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.label.into_dart(), self.time.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for FirmwareInfo {}
+
+impl support::IntoDart for LocalFirmware {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.id.into_dart(),
+            self.label.into_dart(),
+            self.time.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LocalFirmware {}
 
 impl support::IntoDart for ModuleConfig {
     fn into_dart(self) -> support::DartAbi {
@@ -376,6 +402,8 @@ impl support::IntoDart for StationConfig {
         vec![
             self.device_id.into_dart(),
             self.name.into_dart(),
+            self.firmware.into_dart(),
+            self.capabilities.into_dart(),
             self.last_seen.into_dart(),
             self.meta.into_dart(),
             self.data.into_dart(),

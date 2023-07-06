@@ -317,6 +317,15 @@ class NativeImpl implements Native {
     return _wire2api_upload_progress(raw);
   }
 
+  CapabilitiesInfo _wire2api_capabilities_info(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return CapabilitiesInfo(
+      udp: _wire2api_bool(arr[0]),
+    );
+  }
+
   DomainMessage _wire2api_domain_message(dynamic raw) {
     switch (raw[0]) {
       case 0:
@@ -341,6 +350,10 @@ class NativeImpl implements Native {
       case 5:
         return DomainMessage_UpgradeProgress(
           _wire2api_box_autoadd_upgrade_progress(raw[1]),
+        );
+      case 6:
+        return DomainMessage_AvailableFirmware(
+          _wire2api_list_local_firmware(raw[1]),
         );
       default:
         throw Exception("unreachable");
@@ -382,8 +395,22 @@ class NativeImpl implements Native {
     }
   }
 
+  FirmwareInfo _wire2api_firmware_info(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return FirmwareInfo(
+      label: _wire2api_String(arr[0]),
+      time: _wire2api_i64(arr[1]),
+    );
+  }
+
   int _wire2api_i64(dynamic raw) {
     return castInt(raw);
+  }
+
+  List<LocalFirmware> _wire2api_list_local_firmware(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_local_firmware).toList();
   }
 
   List<ModuleConfig> _wire2api_list_module_config(dynamic raw) {
@@ -404,6 +431,17 @@ class NativeImpl implements Native {
 
   List<StationConfig> _wire2api_list_station_config(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_station_config).toList();
+  }
+
+  LocalFirmware _wire2api_local_firmware(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return LocalFirmware(
+      id: _wire2api_i64(arr[0]),
+      label: _wire2api_String(arr[1]),
+      time: _wire2api_i64(arr[2]),
+    );
   }
 
   ModuleConfig _wire2api_module_config(dynamic raw) {
@@ -501,17 +539,19 @@ class NativeImpl implements Native {
 
   StationConfig _wire2api_station_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 8)
-      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
+    if (arr.length != 10)
+      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
     return StationConfig(
       deviceId: _wire2api_String(arr[0]),
       name: _wire2api_String(arr[1]),
-      lastSeen: _wire2api_Chrono_Utc(arr[2]),
-      meta: _wire2api_stream_info(arr[3]),
-      data: _wire2api_stream_info(arr[4]),
-      battery: _wire2api_battery_info(arr[5]),
-      solar: _wire2api_solar_info(arr[6]),
-      modules: _wire2api_list_module_config(arr[7]),
+      firmware: _wire2api_firmware_info(arr[2]),
+      capabilities: _wire2api_capabilities_info(arr[3]),
+      lastSeen: _wire2api_Chrono_Utc(arr[4]),
+      meta: _wire2api_stream_info(arr[5]),
+      data: _wire2api_stream_info(arr[6]),
+      battery: _wire2api_battery_info(arr[7]),
+      solar: _wire2api_solar_info(arr[8]),
+      modules: _wire2api_list_module_config(arr[9]),
     );
   }
 

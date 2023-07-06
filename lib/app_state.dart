@@ -154,19 +154,31 @@ class ModuleAndStation {
   ModuleAndStation(this.station, this.module);
 }
 
+class LocalFirmwareModel extends ChangeNotifier {
+  LocalFirmwareModel(Native api, AppEventDispatcher dispatcher) {
+    dispatcher.addListener<DomainMessage_AvailableFirmware>((availableFirmware) {
+      debugPrint("$availableFirmware");
+      notifyListeners();
+    });
+  }
+}
+
 class AppState {
   final Native api;
   final AppEventDispatcher dispatcher;
   final KnownStationsModel knownStations;
   final ModuleConfigurations moduleConfigurations;
   final PortalAccounts portalAccounts;
+  final LocalFirmwareModel firmware;
 
-  AppState._(this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts);
+  AppState._(this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts, this.firmware);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
     final knownStations = KnownStationsModel(api, dispatcher);
-    return AppState._(api, dispatcher, knownStations, ModuleConfigurations(api: api, knownStations: knownStations),
-        PortalAccounts(api: api, accounts: List.empty()));
+    final firmware = LocalFirmwareModel(api, dispatcher);
+    final moduleConfigurations = ModuleConfigurations(api: api, knownStations: knownStations);
+    final portalAccounts = PortalAccounts(api: api, accounts: List.empty());
+    return AppState._(api, dispatcher, knownStations, moduleConfigurations, portalAccounts, firmware);
   }
 
   ModuleConfiguration findModuleConfiguration(ModuleIdentity moduleIdentity) {

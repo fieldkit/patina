@@ -97,6 +97,14 @@ class BatteryInfo {
   });
 }
 
+class CapabilitiesInfo {
+  final bool udp;
+
+  const CapabilitiesInfo({
+    required this.udp,
+  });
+}
+
 @freezed
 class DomainMessage with _$DomainMessage {
   const factory DomainMessage.preAccount() = DomainMessage_PreAccount;
@@ -116,6 +124,9 @@ class DomainMessage with _$DomainMessage {
   const factory DomainMessage.upgradeProgress(
     UpgradeProgress field0,
   ) = DomainMessage_UpgradeProgress;
+  const factory DomainMessage.availableFirmware(
+    List<LocalFirmware> field0,
+  ) = DomainMessage_AvailableFirmware;
 }
 
 class DownloadProgress {
@@ -144,6 +155,28 @@ class FirmwareDownloadStatus with _$FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus.completed() =
       FirmwareDownloadStatus_Completed;
   const factory FirmwareDownloadStatus.failed() = FirmwareDownloadStatus_Failed;
+}
+
+class FirmwareInfo {
+  final String label;
+  final int time;
+
+  const FirmwareInfo({
+    required this.label,
+    required this.time,
+  });
+}
+
+class LocalFirmware {
+  final int id;
+  final String label;
+  final int time;
+
+  const LocalFirmware({
+    required this.id,
+    required this.label,
+    required this.time,
+  });
 }
 
 class ModuleConfig {
@@ -231,6 +264,8 @@ class SolarInfo {
 class StationConfig {
   final String deviceId;
   final String name;
+  final FirmwareInfo firmware;
+  final CapabilitiesInfo capabilities;
   final DateTime lastSeen;
   final StreamInfo meta;
   final StreamInfo data;
@@ -241,6 +276,8 @@ class StationConfig {
   const StationConfig({
     required this.deviceId,
     required this.name,
+    required this.firmware,
+    required this.capabilities,
     required this.lastSeen,
     required this.meta,
     required this.data,

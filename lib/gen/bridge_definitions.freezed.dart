@@ -26,6 +26,7 @@ mixin _$DomainMessage {
     required TResult Function(FirmwareDownloadStatus field0)
         firmwareDownloadStatus,
     required TResult Function(UpgradeProgress field0) upgradeProgress,
+    required TResult Function(List<LocalFirmware> field0) availableFirmware,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -37,6 +38,7 @@ mixin _$DomainMessage {
     TResult? Function(TransferProgress field0)? transferProgress,
     TResult? Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult? Function(UpgradeProgress field0)? upgradeProgress,
+    TResult? Function(List<LocalFirmware> field0)? availableFirmware,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -48,6 +50,7 @@ mixin _$DomainMessage {
     TResult Function(TransferProgress field0)? transferProgress,
     TResult Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult Function(UpgradeProgress field0)? upgradeProgress,
+    TResult Function(List<LocalFirmware> field0)? availableFirmware,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -64,6 +67,8 @@ mixin _$DomainMessage {
         firmwareDownloadStatus,
     required TResult Function(DomainMessage_UpgradeProgress value)
         upgradeProgress,
+    required TResult Function(DomainMessage_AvailableFirmware value)
+        availableFirmware,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -75,6 +80,7 @@ mixin _$DomainMessage {
     TResult? Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult? Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult? Function(DomainMessage_AvailableFirmware value)? availableFirmware,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -86,6 +92,7 @@ mixin _$DomainMessage {
     TResult Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult Function(DomainMessage_AvailableFirmware value)? availableFirmware,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -156,6 +163,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     required TResult Function(FirmwareDownloadStatus field0)
         firmwareDownloadStatus,
     required TResult Function(UpgradeProgress field0) upgradeProgress,
+    required TResult Function(List<LocalFirmware> field0) availableFirmware,
   }) {
     return preAccount();
   }
@@ -170,6 +178,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     TResult? Function(TransferProgress field0)? transferProgress,
     TResult? Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult? Function(UpgradeProgress field0)? upgradeProgress,
+    TResult? Function(List<LocalFirmware> field0)? availableFirmware,
   }) {
     return preAccount?.call();
   }
@@ -184,6 +193,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     TResult Function(TransferProgress field0)? transferProgress,
     TResult Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult Function(UpgradeProgress field0)? upgradeProgress,
+    TResult Function(List<LocalFirmware> field0)? availableFirmware,
     required TResult orElse(),
   }) {
     if (preAccount != null) {
@@ -206,6 +216,8 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
         firmwareDownloadStatus,
     required TResult Function(DomainMessage_UpgradeProgress value)
         upgradeProgress,
+    required TResult Function(DomainMessage_AvailableFirmware value)
+        availableFirmware,
   }) {
     return preAccount(this);
   }
@@ -220,6 +232,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     TResult? Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult? Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult? Function(DomainMessage_AvailableFirmware value)? availableFirmware,
   }) {
     return preAccount?.call(this);
   }
@@ -234,6 +247,7 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
     TResult Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult Function(DomainMessage_AvailableFirmware value)? availableFirmware,
     required TResult orElse(),
   }) {
     if (preAccount != null) {
@@ -329,6 +343,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     required TResult Function(FirmwareDownloadStatus field0)
         firmwareDownloadStatus,
     required TResult Function(UpgradeProgress field0) upgradeProgress,
+    required TResult Function(List<LocalFirmware> field0) availableFirmware,
   }) {
     return nearbyStations(field0);
   }
@@ -343,6 +358,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     TResult? Function(TransferProgress field0)? transferProgress,
     TResult? Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult? Function(UpgradeProgress field0)? upgradeProgress,
+    TResult? Function(List<LocalFirmware> field0)? availableFirmware,
   }) {
     return nearbyStations?.call(field0);
   }
@@ -357,6 +373,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     TResult Function(TransferProgress field0)? transferProgress,
     TResult Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult Function(UpgradeProgress field0)? upgradeProgress,
+    TResult Function(List<LocalFirmware> field0)? availableFirmware,
     required TResult orElse(),
   }) {
     if (nearbyStations != null) {
@@ -379,6 +396,8 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
         firmwareDownloadStatus,
     required TResult Function(DomainMessage_UpgradeProgress value)
         upgradeProgress,
+    required TResult Function(DomainMessage_AvailableFirmware value)
+        availableFirmware,
   }) {
     return nearbyStations(this);
   }
@@ -393,6 +412,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     TResult? Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult? Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult? Function(DomainMessage_AvailableFirmware value)? availableFirmware,
   }) {
     return nearbyStations?.call(this);
   }
@@ -407,6 +427,7 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
     TResult Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult Function(DomainMessage_AvailableFirmware value)? availableFirmware,
     required TResult orElse(),
   }) {
     if (nearbyStations != null) {
@@ -510,6 +531,7 @@ class _$DomainMessage_StationRefreshed
     required TResult Function(FirmwareDownloadStatus field0)
         firmwareDownloadStatus,
     required TResult Function(UpgradeProgress field0) upgradeProgress,
+    required TResult Function(List<LocalFirmware> field0) availableFirmware,
   }) {
     return stationRefreshed(field0, field1);
   }
@@ -524,6 +546,7 @@ class _$DomainMessage_StationRefreshed
     TResult? Function(TransferProgress field0)? transferProgress,
     TResult? Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult? Function(UpgradeProgress field0)? upgradeProgress,
+    TResult? Function(List<LocalFirmware> field0)? availableFirmware,
   }) {
     return stationRefreshed?.call(field0, field1);
   }
@@ -538,6 +561,7 @@ class _$DomainMessage_StationRefreshed
     TResult Function(TransferProgress field0)? transferProgress,
     TResult Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult Function(UpgradeProgress field0)? upgradeProgress,
+    TResult Function(List<LocalFirmware> field0)? availableFirmware,
     required TResult orElse(),
   }) {
     if (stationRefreshed != null) {
@@ -560,6 +584,8 @@ class _$DomainMessage_StationRefreshed
         firmwareDownloadStatus,
     required TResult Function(DomainMessage_UpgradeProgress value)
         upgradeProgress,
+    required TResult Function(DomainMessage_AvailableFirmware value)
+        availableFirmware,
   }) {
     return stationRefreshed(this);
   }
@@ -574,6 +600,7 @@ class _$DomainMessage_StationRefreshed
     TResult? Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult? Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult? Function(DomainMessage_AvailableFirmware value)? availableFirmware,
   }) {
     return stationRefreshed?.call(this);
   }
@@ -588,6 +615,7 @@ class _$DomainMessage_StationRefreshed
     TResult Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult Function(DomainMessage_AvailableFirmware value)? availableFirmware,
     required TResult orElse(),
   }) {
     if (stationRefreshed != null) {
@@ -684,6 +712,7 @@ class _$DomainMessage_TransferProgress
     required TResult Function(FirmwareDownloadStatus field0)
         firmwareDownloadStatus,
     required TResult Function(UpgradeProgress field0) upgradeProgress,
+    required TResult Function(List<LocalFirmware> field0) availableFirmware,
   }) {
     return transferProgress(field0);
   }
@@ -698,6 +727,7 @@ class _$DomainMessage_TransferProgress
     TResult? Function(TransferProgress field0)? transferProgress,
     TResult? Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult? Function(UpgradeProgress field0)? upgradeProgress,
+    TResult? Function(List<LocalFirmware> field0)? availableFirmware,
   }) {
     return transferProgress?.call(field0);
   }
@@ -712,6 +742,7 @@ class _$DomainMessage_TransferProgress
     TResult Function(TransferProgress field0)? transferProgress,
     TResult Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult Function(UpgradeProgress field0)? upgradeProgress,
+    TResult Function(List<LocalFirmware> field0)? availableFirmware,
     required TResult orElse(),
   }) {
     if (transferProgress != null) {
@@ -734,6 +765,8 @@ class _$DomainMessage_TransferProgress
         firmwareDownloadStatus,
     required TResult Function(DomainMessage_UpgradeProgress value)
         upgradeProgress,
+    required TResult Function(DomainMessage_AvailableFirmware value)
+        availableFirmware,
   }) {
     return transferProgress(this);
   }
@@ -748,6 +781,7 @@ class _$DomainMessage_TransferProgress
     TResult? Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult? Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult? Function(DomainMessage_AvailableFirmware value)? availableFirmware,
   }) {
     return transferProgress?.call(this);
   }
@@ -762,6 +796,7 @@ class _$DomainMessage_TransferProgress
     TResult Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult Function(DomainMessage_AvailableFirmware value)? availableFirmware,
     required TResult orElse(),
   }) {
     if (transferProgress != null) {
@@ -869,6 +904,7 @@ class _$DomainMessage_FirmwareDownloadStatus
     required TResult Function(FirmwareDownloadStatus field0)
         firmwareDownloadStatus,
     required TResult Function(UpgradeProgress field0) upgradeProgress,
+    required TResult Function(List<LocalFirmware> field0) availableFirmware,
   }) {
     return firmwareDownloadStatus(field0);
   }
@@ -883,6 +919,7 @@ class _$DomainMessage_FirmwareDownloadStatus
     TResult? Function(TransferProgress field0)? transferProgress,
     TResult? Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult? Function(UpgradeProgress field0)? upgradeProgress,
+    TResult? Function(List<LocalFirmware> field0)? availableFirmware,
   }) {
     return firmwareDownloadStatus?.call(field0);
   }
@@ -897,6 +934,7 @@ class _$DomainMessage_FirmwareDownloadStatus
     TResult Function(TransferProgress field0)? transferProgress,
     TResult Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult Function(UpgradeProgress field0)? upgradeProgress,
+    TResult Function(List<LocalFirmware> field0)? availableFirmware,
     required TResult orElse(),
   }) {
     if (firmwareDownloadStatus != null) {
@@ -919,6 +957,8 @@ class _$DomainMessage_FirmwareDownloadStatus
         firmwareDownloadStatus,
     required TResult Function(DomainMessage_UpgradeProgress value)
         upgradeProgress,
+    required TResult Function(DomainMessage_AvailableFirmware value)
+        availableFirmware,
   }) {
     return firmwareDownloadStatus(this);
   }
@@ -933,6 +973,7 @@ class _$DomainMessage_FirmwareDownloadStatus
     TResult? Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult? Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult? Function(DomainMessage_AvailableFirmware value)? availableFirmware,
   }) {
     return firmwareDownloadStatus?.call(this);
   }
@@ -947,6 +988,7 @@ class _$DomainMessage_FirmwareDownloadStatus
     TResult Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult Function(DomainMessage_AvailableFirmware value)? availableFirmware,
     required TResult orElse(),
   }) {
     if (firmwareDownloadStatus != null) {
@@ -1043,6 +1085,7 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
     required TResult Function(FirmwareDownloadStatus field0)
         firmwareDownloadStatus,
     required TResult Function(UpgradeProgress field0) upgradeProgress,
+    required TResult Function(List<LocalFirmware> field0) availableFirmware,
   }) {
     return upgradeProgress(field0);
   }
@@ -1057,6 +1100,7 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
     TResult? Function(TransferProgress field0)? transferProgress,
     TResult? Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult? Function(UpgradeProgress field0)? upgradeProgress,
+    TResult? Function(List<LocalFirmware> field0)? availableFirmware,
   }) {
     return upgradeProgress?.call(field0);
   }
@@ -1071,6 +1115,7 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
     TResult Function(TransferProgress field0)? transferProgress,
     TResult Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
     TResult Function(UpgradeProgress field0)? upgradeProgress,
+    TResult Function(List<LocalFirmware> field0)? availableFirmware,
     required TResult orElse(),
   }) {
     if (upgradeProgress != null) {
@@ -1093,6 +1138,8 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
         firmwareDownloadStatus,
     required TResult Function(DomainMessage_UpgradeProgress value)
         upgradeProgress,
+    required TResult Function(DomainMessage_AvailableFirmware value)
+        availableFirmware,
   }) {
     return upgradeProgress(this);
   }
@@ -1107,6 +1154,7 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
     TResult? Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult? Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult? Function(DomainMessage_AvailableFirmware value)? availableFirmware,
   }) {
     return upgradeProgress?.call(this);
   }
@@ -1121,6 +1169,7 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
     TResult Function(DomainMessage_FirmwareDownloadStatus value)?
         firmwareDownloadStatus,
     TResult Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult Function(DomainMessage_AvailableFirmware value)? availableFirmware,
     required TResult orElse(),
   }) {
     if (upgradeProgress != null) {
@@ -1137,6 +1186,193 @@ abstract class DomainMessage_UpgradeProgress implements DomainMessage {
   UpgradeProgress get field0;
   @JsonKey(ignore: true)
   _$$DomainMessage_UpgradeProgressCopyWith<_$DomainMessage_UpgradeProgress>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$DomainMessage_AvailableFirmwareCopyWith<$Res> {
+  factory _$$DomainMessage_AvailableFirmwareCopyWith(
+          _$DomainMessage_AvailableFirmware value,
+          $Res Function(_$DomainMessage_AvailableFirmware) then) =
+      __$$DomainMessage_AvailableFirmwareCopyWithImpl<$Res>;
+  @useResult
+  $Res call({List<LocalFirmware> field0});
+}
+
+/// @nodoc
+class __$$DomainMessage_AvailableFirmwareCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_AvailableFirmware>
+    implements _$$DomainMessage_AvailableFirmwareCopyWith<$Res> {
+  __$$DomainMessage_AvailableFirmwareCopyWithImpl(
+      _$DomainMessage_AvailableFirmware _value,
+      $Res Function(_$DomainMessage_AvailableFirmware) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$DomainMessage_AvailableFirmware(
+      null == field0
+          ? _value._field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as List<LocalFirmware>,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$DomainMessage_AvailableFirmware
+    implements DomainMessage_AvailableFirmware {
+  const _$DomainMessage_AvailableFirmware(final List<LocalFirmware> field0)
+      : _field0 = field0;
+
+  final List<LocalFirmware> _field0;
+  @override
+  List<LocalFirmware> get field0 {
+    if (_field0 is EqualUnmodifiableListView) return _field0;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_field0);
+  }
+
+  @override
+  String toString() {
+    return 'DomainMessage.availableFirmware(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DomainMessage_AvailableFirmware &&
+            const DeepCollectionEquality().equals(other._field0, _field0));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_field0));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DomainMessage_AvailableFirmwareCopyWith<_$DomainMessage_AvailableFirmware>
+      get copyWith => __$$DomainMessage_AvailableFirmwareCopyWithImpl<
+          _$DomainMessage_AvailableFirmware>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() preAccount,
+    required TResult Function(List<NearbyStation> field0) nearbyStations,
+    required TResult Function(StationConfig field0, SensitiveConfig? field1)
+        stationRefreshed,
+    required TResult Function(TransferProgress field0) transferProgress,
+    required TResult Function(FirmwareDownloadStatus field0)
+        firmwareDownloadStatus,
+    required TResult Function(UpgradeProgress field0) upgradeProgress,
+    required TResult Function(List<LocalFirmware> field0) availableFirmware,
+  }) {
+    return availableFirmware(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? preAccount,
+    TResult? Function(List<NearbyStation> field0)? nearbyStations,
+    TResult? Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
+    TResult? Function(TransferProgress field0)? transferProgress,
+    TResult? Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
+    TResult? Function(UpgradeProgress field0)? upgradeProgress,
+    TResult? Function(List<LocalFirmware> field0)? availableFirmware,
+  }) {
+    return availableFirmware?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? preAccount,
+    TResult Function(List<NearbyStation> field0)? nearbyStations,
+    TResult Function(StationConfig field0, SensitiveConfig? field1)?
+        stationRefreshed,
+    TResult Function(TransferProgress field0)? transferProgress,
+    TResult Function(FirmwareDownloadStatus field0)? firmwareDownloadStatus,
+    TResult Function(UpgradeProgress field0)? upgradeProgress,
+    TResult Function(List<LocalFirmware> field0)? availableFirmware,
+    required TResult orElse(),
+  }) {
+    if (availableFirmware != null) {
+      return availableFirmware(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(DomainMessage_PreAccount value) preAccount,
+    required TResult Function(DomainMessage_NearbyStations value)
+        nearbyStations,
+    required TResult Function(DomainMessage_StationRefreshed value)
+        stationRefreshed,
+    required TResult Function(DomainMessage_TransferProgress value)
+        transferProgress,
+    required TResult Function(DomainMessage_FirmwareDownloadStatus value)
+        firmwareDownloadStatus,
+    required TResult Function(DomainMessage_UpgradeProgress value)
+        upgradeProgress,
+    required TResult Function(DomainMessage_AvailableFirmware value)
+        availableFirmware,
+  }) {
+    return availableFirmware(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(DomainMessage_PreAccount value)? preAccount,
+    TResult? Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult? Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult? Function(DomainMessage_TransferProgress value)? transferProgress,
+    TResult? Function(DomainMessage_FirmwareDownloadStatus value)?
+        firmwareDownloadStatus,
+    TResult? Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult? Function(DomainMessage_AvailableFirmware value)? availableFirmware,
+  }) {
+    return availableFirmware?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(DomainMessage_PreAccount value)? preAccount,
+    TResult Function(DomainMessage_NearbyStations value)? nearbyStations,
+    TResult Function(DomainMessage_StationRefreshed value)? stationRefreshed,
+    TResult Function(DomainMessage_TransferProgress value)? transferProgress,
+    TResult Function(DomainMessage_FirmwareDownloadStatus value)?
+        firmwareDownloadStatus,
+    TResult Function(DomainMessage_UpgradeProgress value)? upgradeProgress,
+    TResult Function(DomainMessage_AvailableFirmware value)? availableFirmware,
+    required TResult orElse(),
+  }) {
+    if (availableFirmware != null) {
+      return availableFirmware(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class DomainMessage_AvailableFirmware implements DomainMessage {
+  const factory DomainMessage_AvailableFirmware(
+      final List<LocalFirmware> field0) = _$DomainMessage_AvailableFirmware;
+
+  List<LocalFirmware> get field0;
+  @JsonKey(ignore: true)
+  _$$DomainMessage_AvailableFirmwareCopyWith<_$DomainMessage_AvailableFirmware>
       get copyWith => throw _privateConstructorUsedError;
 }
 

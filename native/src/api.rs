@@ -611,7 +611,29 @@ async fn check_cached_firmware(storage_path: &str) -> Result<Vec<Firmware>> {
         reading.read_to_string(&mut buffer).await?;
         found.push(serde_json::from_str(&buffer)?);
     }
+
     Ok(found)
+}
+
+async fn publish_available_firmware(
+    storage_path: &str,
+    publish_tx: Sender<DomainMessage>,
+) -> Result<()> {
+    let firmware = check_cached_firmware(storage_path).await?;
+    let local = firmware
+        .into_iter()
+        .map(|f| LocalFirmware {
+            id: f.id,
+            time: f.time.timestamp_millis(),
+            label: f.version,
+        })
+        .collect();
+
+    publish_tx
+        .send(DomainMessage::AvailableFirmware(local))
+        .await?;
+
+    Ok(())
 }
 
 async fn query_available_firmware(
@@ -649,7 +671,6 @@ async fn cache_firmware_and_json_if_newer(
         }
 
         info!("New firmware! {:?}", firmware.etag);
-
         let path = PathBuf::from(storage_path).join(format!("firmware-{}.bin", firmware.id));
         client
             .download_firmware(
@@ -670,7 +691,11 @@ async fn cache_firmware_and_json_if_newer(
             .with_context(|| format!("Creating {:?}", &path))?;
 
         writing.write_all(&serde_json::to_vec(firmware)?).await?;
+
+        publish_available_firmware(storage_path, publish_tx.clone()).await?;
     }
+
+    publish_available_firmware(storage_path, publish_tx.clone()).await?;
 
     Ok(())
 }
@@ -928,6 +953,14 @@ pub enum DomainMessage {
     TransferProgress(TransferProgress),
     FirmwareDownloadStatus(FirmwareDownloadStatus),
     UpgradeProgress(UpgradeProgress),
+    AvailableFirmware(Vec<LocalFirmware>),
+}
+
+#[derive(Clone, Debug)]
+pub struct LocalFirmware {
+    pub id: i64,
+    pub label: String,
+    pub time: i64,
 }
 
 #[derive(Clone, Debug)]
