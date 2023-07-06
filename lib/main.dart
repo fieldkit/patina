@@ -32,8 +32,8 @@ Future<void> _startNative(AppEventDispatcher dispatcher) async {
   });
 
   final storagePath = await _getStoragePath();
-  const portalBaseUrl = "http://192.168.0.100:8080";
-  // const portalBaseUrl = "https://api.fieldkit.org";
+  // const portalBaseUrl = "http://192.168.0.100:8080";
+  const portalBaseUrl = "https://api.fieldkit.org";
 
   // This is here because the initial native logs were getting chopped off, no
   // idea why and yes this is a hack.
