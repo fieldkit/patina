@@ -935,12 +935,25 @@ pub struct SolarInfo {
 pub struct StationConfig {
     pub device_id: String,
     pub name: String,
+    pub firmware: FirmwareInfo,
+    pub capabilities: CapabilitiesInfo,
     pub last_seen: DateTime<Utc>,
     pub meta: StreamInfo,
     pub data: StreamInfo,
     pub battery: BatteryInfo,
     pub solar: SolarInfo,
     pub modules: Vec<ModuleConfig>,
+}
+
+#[derive(Clone, Debug)]
+pub struct CapabilitiesInfo {
+    pub udp: bool,
+}
+
+#[derive(Clone, Debug)]
+pub struct FirmwareInfo {
+    pub label: String,
+    pub time: i64,
 }
 
 #[derive(Clone, Debug)]
@@ -1007,6 +1020,11 @@ impl TryInto<StationConfig> for StationAndConnection {
             device_id: station.device_id.0.to_owned(),
             name: station.name,
             last_seen: station.last_seen,
+            capabilities: CapabilitiesInfo { udp: false },
+            firmware: FirmwareInfo {
+                label: station.firmware.label,
+                time: station.firmware.time,
+            },
             meta: StreamInfo {
                 size: station.meta.size,
                 records: station.meta.records,
