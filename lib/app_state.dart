@@ -155,9 +155,15 @@ class ModuleAndStation {
 }
 
 class LocalFirmwareModel extends ChangeNotifier {
+  final List<LocalFirmware> _firmware = [];
+
+  UnmodifiableListView<LocalFirmware> get firmware => UnmodifiableListView(_firmware);
+
   LocalFirmwareModel(Native api, AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_AvailableFirmware>((availableFirmware) {
       debugPrint("$availableFirmware");
+      _firmware.clear();
+      _firmware.addAll(availableFirmware.field0);
       notifyListeners();
     });
   }
@@ -241,13 +247,6 @@ class ModuleIdentity {
 
 extension Identity on ModuleConfig {
   ModuleIdentity get identity => ModuleIdentity(moduleId: moduleId);
-
-  SensorConfig? get calibrationSensor {
-    if (key.startsWith("modules.water")) {
-      return sensors[0];
-    }
-    return null;
-  }
 }
 
 extension PortalTransmissionTokens on TransmissionToken {

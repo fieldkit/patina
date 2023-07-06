@@ -259,3 +259,12 @@ class ActiveCalibrationStandardForm extends StatelessWidget {
     return FractionallySizedBox(widthFactor: 0.5, child: form);
   }
 }
+
+extension CalibrationSensors on ModuleConfig {
+  SensorConfig? get calibrationSensor {
+    if (key.startsWith("modules.water")) {
+      return sensors[0];
+    }
+    return null;
+  }
+}

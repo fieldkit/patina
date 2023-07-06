@@ -28,10 +28,10 @@ class _HomePageState extends State<HomePage> {
           index: _pageIndex,
           children: <Widget>[
             // Should we just push this to the top?
-            ChangeNotifierProvider(
-              create: (context) => state.knownStations,
-              child: const StationsTab(),
-            ),
+            MultiProvider(providers: [
+              ChangeNotifierProvider.value(value: state.knownStations),
+              ChangeNotifierProvider.value(value: state.firmware),
+            ], child: const StationsTab()),
             ChangeNotifierProvider(
               create: (context) => state.knownStations,
               child: const DataSyncTab(),

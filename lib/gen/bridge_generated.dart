@@ -435,12 +435,14 @@ class NativeImpl implements Native {
 
   LocalFirmware _wire2api_local_firmware(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 3)
-      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return LocalFirmware(
       id: _wire2api_i64(arr[0]),
       label: _wire2api_String(arr[1]),
       time: _wire2api_i64(arr[2]),
+      module: _wire2api_String(arr[3]),
+      profile: _wire2api_String(arr[4]),
     );
   }
 

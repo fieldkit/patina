@@ -322,6 +322,8 @@ impl support::IntoDart for LocalFirmware {
             self.id.into_dart(),
             self.label.into_dart(),
             self.time.into_dart(),
+            self.module.into_dart(),
+            self.profile.into_dart(),
         ]
         .into_dart()
     }

@@ -171,11 +171,15 @@ class LocalFirmware {
   final int id;
   final String label;
   final int time;
+  final String module;
+  final String profile;
 
   const LocalFirmware({
     required this.id,
     required this.label,
     required this.time,
+    required this.module,
+    required this.profile,
   });
 }
 

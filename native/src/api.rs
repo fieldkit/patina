@@ -619,6 +619,7 @@ async fn publish_available_firmware(
     storage_path: &str,
     publish_tx: Sender<DomainMessage>,
 ) -> Result<()> {
+    use itertools::*;
     let firmware = check_cached_firmware(storage_path).await?;
     let local = firmware
         .into_iter()
@@ -626,7 +627,11 @@ async fn publish_available_firmware(
             id: f.id,
             time: f.time.timestamp_millis(),
             label: f.version,
+            module: f.module,
+            profile: f.profile,
         })
+        .sorted_unstable_by_key(|i| i.time)
+        .rev()
         .collect();
 
     publish_tx
@@ -961,6 +966,8 @@ pub struct LocalFirmware {
     pub id: i64,
     pub label: String,
     pub time: i64,
+    pub module: String,
+    pub profile: String,
 }
 
 #[derive(Clone, Debug)]

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -61,7 +62,16 @@ class ConfigureStationPage extends StatelessWidget {
         const Divider(),
         ListTile(
           title: Text(AppLocalizations.of(context)!.settingsFirmware),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StationFirmwarePage(
+                  station: station,
+                ),
+              ),
+            );
+          },
         ),
         const Divider(),
         ListTile(
@@ -108,6 +118,34 @@ class ConfigureNetworksPage extends StatelessWidget {
         ),
         const Divider(),
       ]),
+    );
+  }
+}
+
+class StationFirmwarePage extends StatelessWidget {
+  final StationModel station;
+
+  StationConfig get config => station.config!;
+
+  const StationFirmwarePage({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    final localFirmware = context.watch<LocalFirmwareModel>();
+    final items = localFirmware.firmware.map((firmware) {
+      final time = DateTime.fromMillisecondsSinceEpoch(firmware.time);
+      final DateFormat formatter = DateFormat('yyyy-MM-dd HH:MM:SS');
+      final title = "${firmware.label} ${firmware.module}";
+      return ListTile(title: Text(title), subtitle: Text(formatter.format(time)));
+    }).toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Firmware"),
+      ),
+      body: ListView(
+        children: items,
+      ),
     );
   }
 }
