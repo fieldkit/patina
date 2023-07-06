@@ -11,21 +11,16 @@ use thiserror::Error;
 use tokio::{
     fs::OpenOptions,
     io::{AsyncReadExt, AsyncWriteExt},
+    pin,
     sync::{mpsc::Sender, oneshot, Mutex},
 };
 use tokio::{runtime::Runtime, sync::mpsc::Receiver};
+use tokio_stream::StreamExt;
 use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
-use query::BytesUploaded;
-use query::{
-    portal::{
-        CreatesFromBytesDownloaded, CreatesFromBytesUploaded, DecodedToken, Firmware, PortalError,
-        StatusCode,
-    },
-    BytesDownloaded,
-};
+use query::portal::{DecodedToken, Firmware, PortalError, StatusCode};
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
@@ -173,71 +168,6 @@ pub fn start_native(
     Ok(())
 }
 
-struct ActiveUpload {
-    device_id: DeviceId,
-}
-
-impl CreatesFromBytesUploaded<DomainMessage> for ActiveUpload {
-    fn from(&self, bytes: BytesUploaded) -> DomainMessage {
-        if bytes.completed() {
-            DomainMessage::TransferProgress(TransferProgress {
-                device_id: self.device_id.0.clone(),
-                status: TransferStatus::Completed,
-            })
-        } else {
-            DomainMessage::TransferProgress(TransferProgress {
-                device_id: self.device_id.0.clone(),
-                status: TransferStatus::Uploading(UploadProgress {
-                    bytes_uploaded: bytes.bytes_uploaded,
-                    total_bytes: bytes.total_bytes,
-                }),
-            })
-        }
-    }
-}
-
-struct ActiveFirmwareUpload {
-    device_id: DeviceId,
-}
-
-impl CreatesFromBytesUploaded<DomainMessage> for ActiveFirmwareUpload {
-    fn from(&self, bytes: BytesUploaded) -> DomainMessage {
-        if bytes.completed() {
-            DomainMessage::TransferProgress(TransferProgress {
-                device_id: self.device_id.0.clone(),
-                status: TransferStatus::Completed,
-            })
-        } else {
-            DomainMessage::TransferProgress(TransferProgress {
-                device_id: self.device_id.0.clone(),
-                status: TransferStatus::Uploading(UploadProgress {
-                    bytes_uploaded: bytes.bytes_uploaded,
-                    total_bytes: bytes.total_bytes,
-                }),
-            })
-        }
-    }
-}
-
-struct ActiveFirmwareDownload {}
-
-impl CreatesFromBytesDownloaded<DomainMessage> for ActiveFirmwareDownload {
-    fn from(&self, bytes: BytesDownloaded) -> DomainMessage {
-        if bytes.completed() {
-            DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Completed)
-        } else {
-            DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Downloading(
-                DownloadProgress {
-                    started: 0,
-                    completed: 0.0,
-                    total: bytes.total_bytes as usize,
-                    received: bytes.bytes_downloaded as usize,
-                },
-            ))
-        }
-    }
-}
-
 #[allow(dead_code)]
 struct Sdk {
     storage_path: String,
@@ -382,18 +312,28 @@ impl Sdk {
 
             async move {
                 let path = PathBuf::from("/home/jlewallen/.local/share/org.fieldkit.app/fk-data/4b6af9895333464850202020ff12410c/20230605_231928.fkpb");
-                let res = authenticated
-                    .upload_readings(
-                        &path,
-                        publish_tx.clone(),
-                        ActiveUpload {
-                            device_id: device_id.clone(),
-                        },
-                    )
-                    .await;
+                let res = authenticated.upload_readings(&path).await;
 
                 let status = match res {
-                    Ok(_) => TransferStatus::Completed,
+                    Ok(mut stream) => {
+                        while let Some(bytes) = stream.next().await {
+                            match publish_tx
+                                .send(DomainMessage::TransferProgress(TransferProgress {
+                                    device_id: device_id.clone().into(),
+                                    status: TransferStatus::Uploading(UploadProgress {
+                                        bytes_uploaded: bytes.bytes_uploaded,
+                                        total_bytes: bytes.total_bytes,
+                                    }),
+                                }))
+                                .await
+                            {
+                                Ok(_) => {}
+                                Err(e) => warn!("{:?}", e),
+                            }
+                        }
+
+                        TransferStatus::Completed
+                    }
                     Err(_) => TransferStatus::Failed,
                 };
 
@@ -507,18 +447,7 @@ impl Sdk {
                 let swap = false;
 
                 async move {
-                    match client
-                        .upgrade(
-                            &addr,
-                            &path,
-                            swap,
-                            publish_tx.clone(),
-                            ActiveFirmwareUpload {
-                                device_id: device_id.clone(),
-                            },
-                        )
-                        .await
-                    {
+                    match client.upgrade(&addr, &path, swap).await {
                         Ok(_) => {
                             if swap {
                                 publish_tx
@@ -677,14 +606,22 @@ async fn cache_firmware_and_json_if_newer(
 
         info!("New firmware! {:?}", firmware.etag);
         let path = PathBuf::from(storage_path).join(format!("firmware-{}.bin", firmware.id));
-        client
-            .download_firmware(
-                firmware,
-                &path,
-                publish_tx.clone(),
-                ActiveFirmwareDownload {},
-            )
-            .await?;
+        let stream = client.download_firmware(firmware, &path).await?;
+
+        pin!(stream);
+
+        while let Some(Ok(bytes)) = stream.next().await {
+            publish_tx
+                .send(DomainMessage::FirmwareDownloadStatus(
+                    FirmwareDownloadStatus::Downloading(DownloadProgress {
+                        started: 0,
+                        completed: 0.0,
+                        total: bytes.total_bytes as usize,
+                        received: bytes.bytes_downloaded as usize,
+                    }),
+                ))
+                .await?;
+        }
 
         let path = PathBuf::from(storage_path).join(format!("firmware-{}.json", firmware.id));
         let mut writing = OpenOptions::new()
