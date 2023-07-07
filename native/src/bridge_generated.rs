@@ -171,7 +171,11 @@ fn wire_cache_firmware_impl(
         },
     )
 }
-fn wire_upgrade_station_impl(port_: MessagePort, device_id: impl Wire2Api<String> + UnwindSafe) {
+fn wire_upgrade_station_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+    firmware: impl Wire2Api<LocalFirmware> + UnwindSafe,
+) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
             debug_name: "upgrade_station",
@@ -180,7 +184,8 @@ fn wire_upgrade_station_impl(port_: MessagePort, device_id: impl Wire2Api<String
         },
         move || {
             let api_device_id = device_id.wire2api();
-            move |task_callback| upgrade_station(api_device_id)
+            let api_firmware = firmware.wire2api();
+            move |task_callback| upgrade_station(api_device_id, api_firmware)
         },
     )
 }
@@ -224,6 +229,12 @@ where
 {
     fn wire2api(self) -> Option<T> {
         (!self.is_null()).then(|| self.wire2api())
+    }
+}
+
+impl Wire2Api<i64> for i64 {
+    fn wire2api(self) -> i64 {
+        self
     }
 }
 

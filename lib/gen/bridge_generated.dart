@@ -193,13 +193,17 @@ class NativeImpl implements Native {
       );
 
   Future<UpgradeProgress> upgradeStation(
-      {required String deviceId, dynamic hint}) {
+      {required String deviceId,
+      required LocalFirmware firmware,
+      dynamic hint}) {
     var arg0 = _platform.api2wire_String(deviceId);
+    var arg1 = _platform.api2wire_box_autoadd_local_firmware(firmware);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_upgrade_station(port_, arg0),
+      callFfi: (port_) =>
+          _platform.inner.wire_upgrade_station(port_, arg0, arg1),
       parseSuccessData: _wire2api_upgrade_progress,
       constMeta: kUpgradeStationConstMeta,
-      argValues: [deviceId],
+      argValues: [deviceId, firmware],
       hint: hint,
     ));
   }
@@ -207,7 +211,7 @@ class NativeImpl implements Native {
   FlutterRustBridgeTaskConstMeta get kUpgradeStationConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "upgrade_station",
-        argNames: ["deviceId"],
+        argNames: ["deviceId", "firmware"],
       );
 
   Future<bool> rustReleaseMode({dynamic hint}) {

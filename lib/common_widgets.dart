@@ -4,8 +4,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class BorderedListItem extends StatelessWidget {
   final GenericListItemHeader header;
   final List<Widget> children;
+  final bool expanded;
 
-  const BorderedListItem({super.key, required this.header, required this.children});
+  const BorderedListItem({super.key, required this.header, required this.children, this.expanded = true});
 
   @override
   Widget build(BuildContext context) {
@@ -16,28 +17,30 @@ class BorderedListItem extends StatelessWidget {
               color: const Color.fromRGBO(212, 212, 212, 1),
             ),
             borderRadius: const BorderRadius.all(Radius.circular(5))),
-        child: Column(children: [header, ...children]));
+        child: Column(children: [header, if (expanded) ...children]));
   }
 }
 
 class GenericListItemHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
 
-  const GenericListItemHeader({super.key, required this.title, this.subtitle});
+  const GenericListItemHeader({super.key, required this.title, this.subtitle, this.titleStyle, this.subtitleStyle});
 
   @override
   Widget build(BuildContext context) {
     final top = WH.align(WH.padPage(Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
+      style: titleStyle ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
     )));
 
     if (subtitle == null) {
       return top;
     }
 
-    final bottom = WH.align(WH.padPage(Text(subtitle!)));
+    final bottom = WH.align(WH.padPage(Text(subtitle!, style: subtitleStyle)));
 
     return Column(children: [top, bottom]);
   }

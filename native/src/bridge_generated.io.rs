@@ -68,8 +68,12 @@ pub extern "C" fn wire_cache_firmware(port_: i64, tokens: *mut wire_Tokens) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_upgrade_station(port_: i64, device_id: *mut wire_uint_8_list) {
-    wire_upgrade_station_impl(port_, device_id)
+pub extern "C" fn wire_upgrade_station(
+    port_: i64,
+    device_id: *mut wire_uint_8_list,
+    firmware: *mut wire_LocalFirmware,
+) {
+    wire_upgrade_station_impl(port_, device_id, firmware)
 }
 
 #[no_mangle]
@@ -83,6 +87,11 @@ pub extern "C" fn wire_create_log_sink(port_: i64) {
 }
 
 // Section: allocate functions
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_local_firmware_0() -> *mut wire_LocalFirmware {
+    support::new_leak_box_ptr(wire_LocalFirmware::new_with_null_ptr())
+}
 
 #[no_mangle]
 pub extern "C" fn new_box_autoadd_tokens_0() -> *mut wire_Tokens {
@@ -108,10 +117,28 @@ impl Wire2Api<String> for *mut wire_uint_8_list {
         String::from_utf8_lossy(&vec).into_owned()
     }
 }
+impl Wire2Api<LocalFirmware> for *mut wire_LocalFirmware {
+    fn wire2api(self) -> LocalFirmware {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<LocalFirmware>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<Tokens> for *mut wire_Tokens {
     fn wire2api(self) -> Tokens {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
         Wire2Api::<Tokens>::wire2api(*wrap).into()
+    }
+}
+
+impl Wire2Api<LocalFirmware> for wire_LocalFirmware {
+    fn wire2api(self) -> LocalFirmware {
+        LocalFirmware {
+            id: self.id.wire2api(),
+            label: self.label.wire2api(),
+            time: self.time.wire2api(),
+            module: self.module.wire2api(),
+            profile: self.profile.wire2api(),
+        }
     }
 }
 
@@ -145,6 +172,16 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
 
 #[repr(C)]
 #[derive(Clone)]
+pub struct wire_LocalFirmware {
+    id: i64,
+    label: *mut wire_uint_8_list,
+    time: i64,
+    module: *mut wire_uint_8_list,
+    profile: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
 pub struct wire_Tokens {
     token: *mut wire_uint_8_list,
     transmission: wire_TransmissionToken,
@@ -173,6 +210,24 @@ pub trait NewWithNullPtr {
 impl<T> NewWithNullPtr for *mut T {
     fn new_with_null_ptr() -> Self {
         std::ptr::null_mut()
+    }
+}
+
+impl NewWithNullPtr for wire_LocalFirmware {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            id: Default::default(),
+            label: core::ptr::null_mut(),
+            time: Default::default(),
+            module: core::ptr::null_mut(),
+            profile: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl Default for wire_LocalFirmware {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 

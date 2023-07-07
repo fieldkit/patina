@@ -62,7 +62,9 @@ abstract class Native {
   FlutterRustBridgeTaskConstMeta get kCacheFirmwareConstMeta;
 
   Future<UpgradeProgress> upgradeStation(
-      {required String deviceId, dynamic hint});
+      {required String deviceId,
+      required LocalFirmware firmware,
+      dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kUpgradeStationConstMeta;
 

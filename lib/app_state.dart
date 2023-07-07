@@ -154,18 +154,71 @@ class ModuleAndStation {
   ModuleAndStation(this.station, this.module);
 }
 
+class StationOperations extends ChangeNotifier {
+  final Map<String, List<Operation>> _active = {};
+
+  StationOperations({required AppEventDispatcher dispatcher}) {
+    dispatcher.addListener<DomainMessage_UpgradeProgress>((upgradeProgress) {
+      getOrCreate<UpgradeOperation>(UpgradeOperation.new, upgradeProgress.field0.deviceId).update(upgradeProgress);
+      notifyListeners();
+    });
+  }
+
+  T getOrCreate<T extends Operation>(T Function() factory, String deviceId) {
+    if (!_active.containsKey(deviceId)) {
+      _active[deviceId] = List.empty(growable: true);
+    }
+    for (final operation in _active[deviceId] ?? List.empty()) {
+      if (operation is T) {
+        // debugPrint("Have existing $T");
+        return operation;
+      }
+    }
+    debugPrint("Creating $T");
+    final operation = factory();
+    _active[deviceId]!.add(operation);
+    return operation;
+  }
+
+  List<T> getAll<T extends Operation>(String deviceId) {
+    final List<Operation> station = _active[deviceId] ?? List.empty();
+    return station.whereType<T>().toList();
+  }
+}
+
+abstract class Operation extends ChangeNotifier {
+  void update(DomainMessage message);
+}
+
+class UpgradeOperation extends Operation {
+  UpgradeStatus status = const UpgradeStatus_Starting();
+
+  @override
+  void update(DomainMessage message) {
+    if (message is DomainMessage_UpgradeProgress) {
+      status = message.field0.status;
+      notifyListeners();
+    }
+  }
+}
+
 class LocalFirmwareModel extends ChangeNotifier {
+  final Native api;
   final List<LocalFirmware> _firmware = [];
 
   UnmodifiableListView<LocalFirmware> get firmware => UnmodifiableListView(_firmware);
 
-  LocalFirmwareModel(Native api, AppEventDispatcher dispatcher) {
+  LocalFirmwareModel({required this.api, required AppEventDispatcher dispatcher}) {
     dispatcher.addListener<DomainMessage_AvailableFirmware>((availableFirmware) {
-      debugPrint("$availableFirmware");
+      // debugPrint("$availableFirmware");
       _firmware.clear();
       _firmware.addAll(availableFirmware.field0);
       notifyListeners();
     });
+  }
+
+  Future<void> upgrade(String deviceId, LocalFirmware firmware) async {
+    await api.upgradeStation(deviceId: deviceId, firmware: firmware);
   }
 }
 
@@ -176,15 +229,18 @@ class AppState {
   final ModuleConfigurations moduleConfigurations;
   final PortalAccounts portalAccounts;
   final LocalFirmwareModel firmware;
+  final StationOperations stationOperations;
 
-  AppState._(this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts, this.firmware);
+  AppState._(
+      this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts, this.firmware, this.stationOperations);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
     final knownStations = KnownStationsModel(api, dispatcher);
-    final firmware = LocalFirmwareModel(api, dispatcher);
+    final firmware = LocalFirmwareModel(api: api, dispatcher: dispatcher);
     final moduleConfigurations = ModuleConfigurations(api: api, knownStations: knownStations);
     final portalAccounts = PortalAccounts(api: api, accounts: List.empty());
-    return AppState._(api, dispatcher, knownStations, moduleConfigurations, portalAccounts, firmware);
+    final stationOperations = StationOperations(dispatcher: dispatcher);
+    return AppState._(api, dispatcher, knownStations, moduleConfigurations, portalAccounts, firmware, stationOperations);
   }
 
   ModuleConfiguration findModuleConfiguration(ModuleIdentity moduleIdentity) {

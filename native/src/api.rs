@@ -316,7 +316,7 @@ impl Sdk {
 
                 let status = match res {
                     Ok(mut stream) => {
-                        while let Some(bytes) = stream.next().await {
+                        while let Some(Ok(bytes)) = stream.next().await {
                             match publish_tx
                                 .send(DomainMessage::TransferProgress(TransferProgress {
                                     device_id: device_id.clone().into(),
@@ -334,7 +334,11 @@ impl Sdk {
 
                         TransferStatus::Completed
                     }
-                    Err(_) => TransferStatus::Failed,
+                    Err(e) => {
+                        warn!("{:?}", e);
+
+                        TransferStatus::Failed
+                    }
                 };
 
                 publish_tx
@@ -435,11 +439,16 @@ impl Sdk {
         Ok(FirmwareDownloadStatus::Checking)
     }
 
-    async fn upgrade_station(&self, device_id: DeviceId) -> Result<UpgradeProgress> {
-        info!("upgrade-station: {:?}", device_id);
+    async fn upgrade_station(
+        &self,
+        device_id: DeviceId,
+        firmware: LocalFirmware,
+    ) -> Result<UpgradeProgress> {
+        info!("upgrade-station: {:?} to {:?}", device_id, firmware);
         if let Some(addr) = self.get_nearby_addr(&device_id).await? {
             let client = query::device::Client::new()?;
-            let path = PathBuf::from(&self.storage_path).join("firmware.bin");
+            let path =
+                PathBuf::from(&self.storage_path).join(format!("firmware-{}.bin", firmware.id));
 
             tokio::task::spawn({
                 let device_id = device_id.clone();
@@ -448,7 +457,20 @@ impl Sdk {
 
                 async move {
                     match client.upgrade(&addr, &path, swap).await {
-                        Ok(_) => {
+                        Ok(mut stream) => {
+                            while let Some(Ok(bytes)) = stream.next().await {
+                                publish_tx
+                                    .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                        device_id: device_id.0.clone(),
+                                        status: UpgradeStatus::Uploading(UploadProgress {
+                                            bytes_uploaded: bytes.bytes_uploaded,
+                                            total_bytes: bytes.total_bytes,
+                                        }),
+                                    }))
+                                    .await
+                                    .expect("Upgrade progress failed");
+                            }
+
                             if swap {
                                 publish_tx
                                     .send(DomainMessage::UpgradeProgress(UpgradeProgress {
@@ -688,9 +710,9 @@ pub fn cache_firmware(tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> 
     })?)
 }
 
-pub fn upgrade_station(device_id: String) -> Result<UpgradeProgress> {
+pub fn upgrade_station(device_id: String, firmware: LocalFirmware) -> Result<UpgradeProgress> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.upgrade_station(DeviceId(device_id.clone())))
+        rt.block_on(sdk.upgrade_station(DeviceId(device_id.clone()), firmware))
     })?)
 }
 

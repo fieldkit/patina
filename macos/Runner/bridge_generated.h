@@ -24,6 +24,14 @@ typedef struct wire_Tokens {
   struct wire_TransmissionToken transmission;
 } wire_Tokens;
 
+typedef struct wire_LocalFirmware {
+  int64_t id;
+  struct wire_uint_8_list *label;
+  int64_t time;
+  struct wire_uint_8_list *module;
+  struct wire_uint_8_list *profile;
+} wire_LocalFirmware;
+
 typedef struct DartCObject *WireSyncReturn;
 
 void store_dart_post_cobject(DartPostCObjectFnType ptr);
@@ -63,11 +71,15 @@ void wire_start_upload(int64_t port_,
 
 void wire_cache_firmware(int64_t port_, struct wire_Tokens *tokens);
 
-void wire_upgrade_station(int64_t port_, struct wire_uint_8_list *device_id);
+void wire_upgrade_station(int64_t port_,
+                          struct wire_uint_8_list *device_id,
+                          struct wire_LocalFirmware *firmware);
 
 void wire_rust_release_mode(int64_t port_);
 
 void wire_create_log_sink(int64_t port_);
+
+struct wire_LocalFirmware *new_box_autoadd_local_firmware_0(void);
 
 struct wire_Tokens *new_box_autoadd_tokens_0(void);
 
@@ -89,6 +101,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_upgrade_station);
     dummy_var ^= ((int64_t) (void*) wire_rust_release_mode);
     dummy_var ^= ((int64_t) (void*) wire_create_log_sink);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_local_firmware_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_tokens_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);

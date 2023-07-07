@@ -47,8 +47,8 @@ pub fn wire_cache_firmware(port_: MessagePort, tokens: JsValue) {
 }
 
 #[wasm_bindgen]
-pub fn wire_upgrade_station(port_: MessagePort, device_id: String) {
-    wire_upgrade_station_impl(port_, device_id)
+pub fn wire_upgrade_station(port_: MessagePort, device_id: String, firmware: JsValue) {
+    wire_upgrade_station_impl(port_, device_id, firmware)
 }
 
 #[wasm_bindgen]
@@ -73,6 +73,24 @@ impl Wire2Api<String> for String {
     }
 }
 
+impl Wire2Api<LocalFirmware> for JsValue {
+    fn wire2api(self) -> LocalFirmware {
+        let self_ = self.dyn_into::<JsArray>().unwrap();
+        assert_eq!(
+            self_.length(),
+            5,
+            "Expected 5 elements, got {}",
+            self_.length()
+        );
+        LocalFirmware {
+            id: self_.get(0).wire2api(),
+            label: self_.get(1).wire2api(),
+            time: self_.get(2).wire2api(),
+            module: self_.get(3).wire2api(),
+            profile: self_.get(4).wire2api(),
+        }
+    }
+}
 impl Wire2Api<Option<Tokens>> for JsValue {
     fn wire2api(self) -> Option<Tokens> {
         (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
@@ -120,6 +138,11 @@ impl Wire2Api<Vec<u8>> for Box<[u8]> {
 impl Wire2Api<String> for JsValue {
     fn wire2api(self) -> String {
         self.as_string().expect("non-UTF-8 string, or not a string")
+    }
+}
+impl Wire2Api<i64> for JsValue {
+    fn wire2api(self) -> i64 {
+        ::std::convert::TryInto::try_into(self.dyn_into::<js_sys::BigInt>().unwrap()).unwrap()
     }
 }
 impl Wire2Api<u8> for JsValue {

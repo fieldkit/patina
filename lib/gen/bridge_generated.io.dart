@@ -23,10 +23,23 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_LocalFirmware> api2wire_box_autoadd_local_firmware(
+      LocalFirmware raw) {
+    final ptr = inner.new_box_autoadd_local_firmware_0();
+    _api_fill_to_wire_local_firmware(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_Tokens> api2wire_box_autoadd_tokens(Tokens raw) {
     final ptr = inner.new_box_autoadd_tokens_0();
     _api_fill_to_wire_tokens(raw, ptr.ref);
     return ptr;
+  }
+
+  @protected
+  int api2wire_i64(int raw) {
+    return raw;
   }
 
   @protected
@@ -45,9 +58,23 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
 
 // Section: api_fill_to_wire
 
+  void _api_fill_to_wire_box_autoadd_local_firmware(
+      LocalFirmware apiObj, ffi.Pointer<wire_LocalFirmware> wireObj) {
+    _api_fill_to_wire_local_firmware(apiObj, wireObj.ref);
+  }
+
   void _api_fill_to_wire_box_autoadd_tokens(
       Tokens apiObj, ffi.Pointer<wire_Tokens> wireObj) {
     _api_fill_to_wire_tokens(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_local_firmware(
+      LocalFirmware apiObj, wire_LocalFirmware wireObj) {
+    wireObj.id = api2wire_i64(apiObj.id);
+    wireObj.label = api2wire_String(apiObj.label);
+    wireObj.time = api2wire_i64(apiObj.time);
+    wireObj.module = api2wire_String(apiObj.module);
+    wireObj.profile = api2wire_String(apiObj.profile);
   }
 
   void _api_fill_to_wire_opt_box_autoadd_tokens(
@@ -334,19 +361,22 @@ class NativeWire implements FlutterRustBridgeWireBase {
   void wire_upgrade_station(
     int port_,
     ffi.Pointer<wire_uint_8_list> device_id,
+    ffi.Pointer<wire_LocalFirmware> firmware,
   ) {
     return _wire_upgrade_station(
       port_,
       device_id,
+      firmware,
     );
   }
 
   late final _wire_upgrade_stationPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_upgrade_station');
-  late final _wire_upgrade_station = _wire_upgrade_stationPtr
-      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_LocalFirmware>)>>('wire_upgrade_station');
+  late final _wire_upgrade_station = _wire_upgrade_stationPtr.asFunction<
+      void Function(int, ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_LocalFirmware>)>();
 
   void wire_rust_release_mode(
     int port_,
@@ -375,6 +405,17 @@ class NativeWire implements FlutterRustBridgeWireBase {
           'wire_create_log_sink');
   late final _wire_create_log_sink =
       _wire_create_log_sinkPtr.asFunction<void Function(int)>();
+
+  ffi.Pointer<wire_LocalFirmware> new_box_autoadd_local_firmware_0() {
+    return _new_box_autoadd_local_firmware_0();
+  }
+
+  late final _new_box_autoadd_local_firmware_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_LocalFirmware> Function()>>(
+          'new_box_autoadd_local_firmware_0');
+  late final _new_box_autoadd_local_firmware_0 =
+      _new_box_autoadd_local_firmware_0Ptr
+          .asFunction<ffi.Pointer<wire_LocalFirmware> Function()>();
 
   ffi.Pointer<wire_Tokens> new_box_autoadd_tokens_0() {
     return _new_box_autoadd_tokens_0();
@@ -435,6 +476,20 @@ class wire_Tokens extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> token;
 
   external wire_TransmissionToken transmission;
+}
+
+class wire_LocalFirmware extends ffi.Struct {
+  @ffi.Int64()
+  external int id;
+
+  external ffi.Pointer<wire_uint_8_list> label;
+
+  @ffi.Int64()
+  external int time;
+
+  external ffi.Pointer<wire_uint_8_list> module;
+
+  external ffi.Pointer<wire_uint_8_list> profile;
 }
 
 typedef DartPostCObjectFnType = ffi.Pointer<
