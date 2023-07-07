@@ -154,6 +154,8 @@ class ModuleAndStation {
   ModuleAndStation(this.station, this.module);
 }
 
+const String globalOperationKey = "Global";
+
 class StationOperations extends ChangeNotifier {
   final Map<String, List<Operation>> _active = {};
 
@@ -161,6 +163,13 @@ class StationOperations extends ChangeNotifier {
     dispatcher.addListener<DomainMessage_UpgradeProgress>((upgradeProgress) {
       getOrCreate<UpgradeOperation>(UpgradeOperation.new, upgradeProgress.field0.deviceId).update(upgradeProgress);
       notifyListeners();
+    });
+    dispatcher.addListener<DomainMessage_TransferProgress>((transferProgress) {
+      getOrCreate<UpgradeOperation>(UpgradeOperation.new, transferProgress.field0.deviceId).update(transferProgress);
+      notifyListeners();
+    });
+    dispatcher.addListener<DomainMessage_FirmwareDownloadStatus>((downloadProgress) {
+      // getOrCreate<UpgradeOperation>(UpgradeOperation.new, upgradeProgress.field0.deviceId).update(upgradeProgress);
     });
   }
 
@@ -190,8 +199,20 @@ abstract class Operation extends ChangeNotifier {
   void update(DomainMessage message);
 }
 
+class TransferOperation extends Operation {
+  TransferStatus status = const TransferStatus.starting();
+
+  @override
+  void update(DomainMessage message) {
+    if (message is DomainMessage_TransferProgress) {
+      status = message.field0.status;
+      notifyListeners();
+    }
+  }
+}
+
 class UpgradeOperation extends Operation {
-  UpgradeStatus status = const UpgradeStatus_Starting();
+  UpgradeStatus status = const UpgradeStatus.starting();
 
   @override
   void update(DomainMessage message) {
