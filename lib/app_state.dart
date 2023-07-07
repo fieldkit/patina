@@ -161,15 +161,17 @@ class StationOperations extends ChangeNotifier {
 
   StationOperations({required AppEventDispatcher dispatcher}) {
     dispatcher.addListener<DomainMessage_UpgradeProgress>((upgradeProgress) {
-      getOrCreate<UpgradeOperation>(UpgradeOperation.new, upgradeProgress.field0.deviceId).update(upgradeProgress);
+      getOrCreate<UpgradeOperation>(() => UpgradeOperation(upgradeProgress.field0.firmwareId), upgradeProgress.field0.deviceId)
+          .update(upgradeProgress);
       notifyListeners();
     });
     dispatcher.addListener<DomainMessage_TransferProgress>((transferProgress) {
-      getOrCreate<UpgradeOperation>(UpgradeOperation.new, transferProgress.field0.deviceId).update(transferProgress);
+      getOrCreate<TransferOperation>(TransferOperation.new, transferProgress.field0.deviceId).update(transferProgress);
       notifyListeners();
     });
     dispatcher.addListener<DomainMessage_FirmwareDownloadStatus>((downloadProgress) {
-      // getOrCreate<UpgradeOperation>(UpgradeOperation.new, upgradeProgress.field0.deviceId).update(upgradeProgress);
+      getOrCreate<FirmwareDownloadOperation>(FirmwareDownloadOperation.new, globalOperationKey).update(downloadProgress);
+      notifyListeners();
     });
   }
 
@@ -212,12 +214,28 @@ class TransferOperation extends Operation {
 }
 
 class UpgradeOperation extends Operation {
+  int firmwareId;
   UpgradeStatus status = const UpgradeStatus.starting();
+
+  UpgradeOperation(this.firmwareId);
 
   @override
   void update(DomainMessage message) {
     if (message is DomainMessage_UpgradeProgress) {
+      firmwareId = message.field0.firmwareId;
       status = message.field0.status;
+      notifyListeners();
+    }
+  }
+}
+
+class FirmwareDownloadOperation extends Operation {
+  FirmwareDownloadStatus status = const FirmwareDownloadStatus.checking();
+
+  @override
+  void update(DomainMessage message) {
+    if (message is DomainMessage_FirmwareDownloadStatus) {
+      status = message.field0;
       notifyListeners();
     }
   }
@@ -239,7 +257,7 @@ class LocalFirmwareModel extends ChangeNotifier {
   }
 
   Future<void> upgrade(String deviceId, LocalFirmware firmware) async {
-    await api.upgradeStation(deviceId: deviceId, firmware: firmware);
+    await api.upgradeStation(deviceId: deviceId, firmware: firmware, swap: true);
   }
 }
 

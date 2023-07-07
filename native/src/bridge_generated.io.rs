@@ -72,8 +72,9 @@ pub extern "C" fn wire_upgrade_station(
     port_: i64,
     device_id: *mut wire_uint_8_list,
     firmware: *mut wire_LocalFirmware,
+    swap: bool,
 ) {
-    wire_upgrade_station_impl(port_, device_id, firmware)
+    wire_upgrade_station_impl(port_, device_id, firmware, swap)
 }
 
 #[no_mangle]
@@ -117,6 +118,7 @@ impl Wire2Api<String> for *mut wire_uint_8_list {
         String::from_utf8_lossy(&vec).into_owned()
     }
 }
+
 impl Wire2Api<LocalFirmware> for *mut wire_LocalFirmware {
     fn wire2api(self) -> LocalFirmware {
         let wrap = unsafe { support::box_from_leak_ptr(self) };

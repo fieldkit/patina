@@ -64,6 +64,7 @@ abstract class Native {
   Future<UpgradeProgress> upgradeStation(
       {required String deviceId,
       required LocalFirmware firmware,
+      required bool swap,
       dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kUpgradeStationConstMeta;
@@ -357,10 +358,12 @@ class TransmissionToken {
 
 class UpgradeProgress {
   final String deviceId;
+  final int firmwareId;
   final UpgradeStatus status;
 
   const UpgradeProgress({
     required this.deviceId,
+    required this.firmwareId,
     required this.status,
   });
 }

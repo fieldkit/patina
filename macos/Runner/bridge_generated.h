@@ -73,7 +73,8 @@ void wire_cache_firmware(int64_t port_, struct wire_Tokens *tokens);
 
 void wire_upgrade_station(int64_t port_,
                           struct wire_uint_8_list *device_id,
-                          struct wire_LocalFirmware *firmware);
+                          struct wire_LocalFirmware *firmware,
+                          bool swap);
 
 void wire_rust_release_mode(int64_t port_);
 

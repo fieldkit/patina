@@ -443,6 +443,7 @@ impl Sdk {
         &self,
         device_id: DeviceId,
         firmware: LocalFirmware,
+        swap: bool,
     ) -> Result<UpgradeProgress> {
         info!("upgrade-station: {:?} to {:?}", device_id, firmware);
         if let Some(addr) = self.get_nearby_addr(&device_id).await? {
@@ -453,7 +454,6 @@ impl Sdk {
             tokio::task::spawn({
                 let device_id = device_id.clone();
                 let publish_tx = self.publish_tx.clone();
-                let swap = false;
 
                 async move {
                     match client.upgrade(&addr, &path, swap).await {
@@ -547,15 +547,18 @@ impl Sdk {
 async fn wait_for_station_restart(addr: &str) -> Result<()> {
     let client = query::device::Client::new()?;
 
-    for _i in 0..30 {
-        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+    tokio::time::sleep(std::time::Duration::from_secs(5)).await;
 
+    for _i in 0..30 {
+        info!("upgrade: Checking station");
         match client.query_status(addr).await {
-            Err(e) => info!("Waiting for station: {:?}", e),
+            Err(e) => info!("upgrade: Waiting for station: {:?}", e),
             Ok(_) => {
                 return Ok(());
             }
         }
+
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
     }
 
     Err(anyhow!("Station did not come back online."))
@@ -718,9 +721,13 @@ pub fn cache_firmware(tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> 
     })?)
 }
 
-pub fn upgrade_station(device_id: String, firmware: LocalFirmware) -> Result<UpgradeProgress> {
+pub fn upgrade_station(
+    device_id: String,
+    firmware: LocalFirmware,
+    swap: bool,
+) -> Result<UpgradeProgress> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.upgrade_station(DeviceId(device_id.clone()), firmware))
+        rt.block_on(sdk.upgrade_station(DeviceId(device_id.clone()), firmware, swap))
     })?)
 }
 

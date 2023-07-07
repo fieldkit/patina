@@ -181,10 +181,10 @@ class StationFirmwarePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final operations = context.watch<StationOperations>().getAll<UpgradeOperation>(config.deviceId);
-
     final localFirmware = context.watch<LocalFirmwareModel>();
     final items = localFirmware.firmware.where((firmware) => firmware.module == "fk-core").map((firmware) {
+      final operations =
+          context.watch<StationOperations>().getAll<UpgradeOperation>(config.deviceId).where((op) => op.firmwareId == firmware.id);
       final comparison = FirmwareComparison.compare(firmware, config.firmware);
       final title = comparison.label;
       final DateFormat formatter = DateFormat('yyyy-MM-dd HH:MM:SS');

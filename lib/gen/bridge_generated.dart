@@ -195,15 +195,17 @@ class NativeImpl implements Native {
   Future<UpgradeProgress> upgradeStation(
       {required String deviceId,
       required LocalFirmware firmware,
+      required bool swap,
       dynamic hint}) {
     var arg0 = _platform.api2wire_String(deviceId);
     var arg1 = _platform.api2wire_box_autoadd_local_firmware(firmware);
+    var arg2 = swap;
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) =>
-          _platform.inner.wire_upgrade_station(port_, arg0, arg1),
+          _platform.inner.wire_upgrade_station(port_, arg0, arg1, arg2),
       parseSuccessData: _wire2api_upgrade_progress,
       constMeta: kUpgradeStationConstMeta,
-      argValues: [deviceId, firmware],
+      argValues: [deviceId, firmware, swap],
       hint: hint,
     ));
   }
@@ -211,7 +213,7 @@ class NativeImpl implements Native {
   FlutterRustBridgeTaskConstMeta get kUpgradeStationConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "upgrade_station",
-        argNames: ["deviceId", "firmware"],
+        argNames: ["deviceId", "firmware", "swap"],
       );
 
   Future<bool> rustReleaseMode({dynamic hint}) {
@@ -655,11 +657,12 @@ class NativeImpl implements Native {
 
   UpgradeProgress _wire2api_upgrade_progress(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
     return UpgradeProgress(
       deviceId: _wire2api_String(arr[0]),
-      status: _wire2api_upgrade_status(arr[1]),
+      firmwareId: _wire2api_i64(arr[1]),
+      status: _wire2api_upgrade_status(arr[2]),
     );
   }
 
@@ -698,6 +701,11 @@ class NativeImpl implements Native {
 }
 
 // Section: api2wire
+
+@protected
+bool api2wire_bool(bool raw) {
+  return raw;
+}
 
 @protected
 int api2wire_u8(int raw) {

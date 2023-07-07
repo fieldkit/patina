@@ -175,6 +175,7 @@ fn wire_upgrade_station_impl(
     port_: MessagePort,
     device_id: impl Wire2Api<String> + UnwindSafe,
     firmware: impl Wire2Api<LocalFirmware> + UnwindSafe,
+    swap: impl Wire2Api<bool> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -185,7 +186,8 @@ fn wire_upgrade_station_impl(
         move || {
             let api_device_id = device_id.wire2api();
             let api_firmware = firmware.wire2api();
-            move |task_callback| upgrade_station(api_device_id, api_firmware)
+            let api_swap = swap.wire2api();
+            move |task_callback| upgrade_station(api_device_id, api_firmware, api_swap)
         },
     )
 }
@@ -229,6 +231,12 @@ where
 {
     fn wire2api(self) -> Option<T> {
         (!self.is_null()).then(|| self.wire2api())
+    }
+}
+
+impl Wire2Api<bool> for bool {
+    fn wire2api(self) -> bool {
+        self
     }
 }
 
@@ -480,7 +488,12 @@ impl support::IntoDartExceptPrimitive for TransmissionToken {}
 
 impl support::IntoDart for UpgradeProgress {
     fn into_dart(self) -> support::DartAbi {
-        vec![self.device_id.into_dart(), self.status.into_dart()].into_dart()
+        vec![
+            self.device_id.into_dart(),
+            self.firmware_id.into_dart(),
+            self.status.into_dart(),
+        ]
+        .into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for UpgradeProgress {}

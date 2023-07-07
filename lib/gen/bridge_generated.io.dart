@@ -362,21 +362,26 @@ class NativeWire implements FlutterRustBridgeWireBase {
     int port_,
     ffi.Pointer<wire_uint_8_list> device_id,
     ffi.Pointer<wire_LocalFirmware> firmware,
+    bool swap,
   ) {
     return _wire_upgrade_station(
       port_,
       device_id,
       firmware,
+      swap,
     );
   }
 
   late final _wire_upgrade_stationPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_LocalFirmware>)>>('wire_upgrade_station');
+          ffi.Void Function(
+              ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_LocalFirmware>,
+              ffi.Bool)>>('wire_upgrade_station');
   late final _wire_upgrade_station = _wire_upgrade_stationPtr.asFunction<
       void Function(int, ffi.Pointer<wire_uint_8_list>,
-          ffi.Pointer<wire_LocalFirmware>)>();
+          ffi.Pointer<wire_LocalFirmware>, bool)>();
 
   void wire_rust_release_mode(
     int port_,

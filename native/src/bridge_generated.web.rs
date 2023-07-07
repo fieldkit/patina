@@ -47,8 +47,8 @@ pub fn wire_cache_firmware(port_: MessagePort, tokens: JsValue) {
 }
 
 #[wasm_bindgen]
-pub fn wire_upgrade_station(port_: MessagePort, device_id: String, firmware: JsValue) {
-    wire_upgrade_station_impl(port_, device_id, firmware)
+pub fn wire_upgrade_station(port_: MessagePort, device_id: String, firmware: JsValue, swap: bool) {
+    wire_upgrade_station_impl(port_, device_id, firmware, swap)
 }
 
 #[wasm_bindgen]
@@ -138,6 +138,11 @@ impl Wire2Api<Vec<u8>> for Box<[u8]> {
 impl Wire2Api<String> for JsValue {
     fn wire2api(self) -> String {
         self.as_string().expect("non-UTF-8 string, or not a string")
+    }
+}
+impl Wire2Api<bool> for JsValue {
+    fn wire2api(self) -> bool {
+        self.is_truthy()
     }
 }
 impl Wire2Api<i64> for JsValue {
