@@ -44,6 +44,14 @@
   "settingsLora": "LoRa",
   "settingsAutomaticUpload": "Automatic Upload",
 
+  "firmwareTitle": "Firmware",
+  "firmwareUpgrade": "Upgrade",
+  "firmwareStarting": "Starting...",
+  "firmwareUploading": "Uploading...",
+  "firmwareRestarting": "Restarting...",
+  "firmwareCompleted": "Completed",
+  "firmwareFailed": "Failed!",
+
   "settingsAccounts": "Accounts",
   "accountsTitle": "Accounts",
   "accountsAddButton": "Add",

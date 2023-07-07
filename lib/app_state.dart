@@ -181,7 +181,6 @@ class StationOperations extends ChangeNotifier {
     }
     for (final operation in _active[deviceId] ?? List.empty()) {
       if (operation is T) {
-        // debugPrint("Have existing $T");
         return operation;
       }
     }
@@ -199,6 +198,10 @@ class StationOperations extends ChangeNotifier {
 
 abstract class Operation extends ChangeNotifier {
   void update(DomainMessage message);
+
+  bool get done;
+
+  bool get busy => !done;
 }
 
 class TransferOperation extends Operation {
@@ -210,6 +213,24 @@ class TransferOperation extends Operation {
       status = message.field0.status;
       notifyListeners();
     }
+  }
+
+  @override
+  bool get done => status is TransferStatus_Completed || status is TransferStatus_Failed;
+}
+
+class FirmwareComparison {
+  final String label;
+  final DateTime time;
+  final DateTime otherTime;
+  final bool newer;
+
+  FirmwareComparison({required this.label, required this.time, required this.otherTime, required this.newer});
+
+  factory FirmwareComparison.compare(LocalFirmware local, FirmwareInfo station) {
+    final other = DateTime.fromMillisecondsSinceEpoch(station.time * 1000);
+    final time = DateTime.fromMillisecondsSinceEpoch(local.time);
+    return FirmwareComparison(label: local.label, time: time, otherTime: other, newer: time.isAfter(other));
   }
 }
 
@@ -227,6 +248,9 @@ class UpgradeOperation extends Operation {
       notifyListeners();
     }
   }
+
+  @override
+  bool get done => status is UpgradeStatus_Completed || status is UpgradeStatus_Failed;
 }
 
 class FirmwareDownloadOperation extends Operation {
@@ -239,17 +263,19 @@ class FirmwareDownloadOperation extends Operation {
       notifyListeners();
     }
   }
+
+  @override
+  bool get done => status is FirmwareDownloadStatus_Completed || status is FirmwareDownloadStatus_Failed;
 }
 
-class LocalFirmwareModel extends ChangeNotifier {
+class AvailableFirmwareModel extends ChangeNotifier {
   final Native api;
   final List<LocalFirmware> _firmware = [];
 
   UnmodifiableListView<LocalFirmware> get firmware => UnmodifiableListView(_firmware);
 
-  LocalFirmwareModel({required this.api, required AppEventDispatcher dispatcher}) {
+  AvailableFirmwareModel({required this.api, required AppEventDispatcher dispatcher}) {
     dispatcher.addListener<DomainMessage_AvailableFirmware>((availableFirmware) {
-      // debugPrint("$availableFirmware");
       _firmware.clear();
       _firmware.addAll(availableFirmware.field0);
       notifyListeners();
@@ -264,21 +290,21 @@ class LocalFirmwareModel extends ChangeNotifier {
 class AppState {
   final Native api;
   final AppEventDispatcher dispatcher;
+  final AvailableFirmwareModel firmware;
+  final StationOperations stationOperations;
   final KnownStationsModel knownStations;
   final ModuleConfigurations moduleConfigurations;
   final PortalAccounts portalAccounts;
-  final LocalFirmwareModel firmware;
-  final StationOperations stationOperations;
 
   AppState._(
       this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts, this.firmware, this.stationOperations);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
+    final stationOperations = StationOperations(dispatcher: dispatcher);
+    final firmware = AvailableFirmwareModel(api: api, dispatcher: dispatcher);
     final knownStations = KnownStationsModel(api, dispatcher);
-    final firmware = LocalFirmwareModel(api: api, dispatcher: dispatcher);
     final moduleConfigurations = ModuleConfigurations(api: api, knownStations: knownStations);
     final portalAccounts = PortalAccounts(api: api, accounts: List.empty());
-    final stationOperations = StationOperations(dispatcher: dispatcher);
     return AppState._(api, dispatcher, knownStations, moduleConfigurations, portalAccounts, firmware, stationOperations);
   }
 
