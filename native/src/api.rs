@@ -462,6 +462,7 @@ impl Sdk {
                                 publish_tx
                                     .send(DomainMessage::UpgradeProgress(UpgradeProgress {
                                         device_id: device_id.0.clone(),
+                                        firmware_id: firmware.id,
                                         status: UpgradeStatus::Uploading(UploadProgress {
                                             bytes_uploaded: bytes.bytes_uploaded,
                                             total_bytes: bytes.total_bytes,
@@ -475,6 +476,7 @@ impl Sdk {
                                 publish_tx
                                     .send(DomainMessage::UpgradeProgress(UpgradeProgress {
                                         device_id: device_id.0.clone(),
+                                        firmware_id: firmware.id,
                                         status: UpgradeStatus::Restarting,
                                     }))
                                     .await
@@ -485,6 +487,7 @@ impl Sdk {
                                         publish_tx
                                             .send(DomainMessage::UpgradeProgress(UpgradeProgress {
                                                 device_id: device_id.0.clone(),
+                                                firmware_id: firmware.id,
                                                 status: UpgradeStatus::Completed,
                                             }))
                                             .await
@@ -494,6 +497,7 @@ impl Sdk {
                                         publish_tx
                                             .send(DomainMessage::UpgradeProgress(UpgradeProgress {
                                                 device_id: device_id.0.clone(),
+                                                firmware_id: firmware.id,
                                                 status: UpgradeStatus::Failed,
                                             }))
                                             .await
@@ -504,6 +508,7 @@ impl Sdk {
                                 publish_tx
                                     .send(DomainMessage::UpgradeProgress(UpgradeProgress {
                                         device_id: device_id.0.clone(),
+                                        firmware_id: firmware.id,
                                         status: UpgradeStatus::Completed,
                                     }))
                                     .await
@@ -514,6 +519,7 @@ impl Sdk {
                             publish_tx
                                 .send(DomainMessage::UpgradeProgress(UpgradeProgress {
                                     device_id: device_id.0.clone(),
+                                    firmware_id: firmware.id,
                                     status: UpgradeStatus::Failed,
                                 }))
                                 .await
@@ -525,11 +531,13 @@ impl Sdk {
 
             Ok(UpgradeProgress {
                 device_id: device_id.0.clone(),
+                firmware_id: firmware.id,
                 status: UpgradeStatus::Starting,
             })
         } else {
             Ok(UpgradeProgress {
                 device_id: device_id.0.clone(),
+                firmware_id: firmware.id,
                 status: UpgradeStatus::Failed,
             })
         }
@@ -900,6 +908,7 @@ pub enum UpgradeStatus {
 #[derive(Debug)]
 pub struct UpgradeProgress {
     pub device_id: String,
+    pub firmware_id: i64,
     pub status: UpgradeStatus,
 }
 
