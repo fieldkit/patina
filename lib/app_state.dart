@@ -50,7 +50,11 @@ class KnownStationsModel extends ChangeNotifier {
       notifyListeners();
     });
 
-    dispatcher.addListener<DomainMessage_TransferProgress>((transferProgress) {
+    dispatcher.addListener<DomainMessage_DownloadProgress>((transferProgress) {
+      applyTransferProgress(transferProgress.field0);
+    });
+
+    dispatcher.addListener<DomainMessage_UploadProgress>((transferProgress) {
       applyTransferProgress(transferProgress.field0);
     });
 
@@ -67,10 +71,10 @@ class KnownStationsModel extends ChangeNotifier {
       station.syncing = SyncingProgress(download: null, upload: null);
     }
     if (status is TransferStatus_Downloading) {
-      station.syncing = SyncingProgress(download: status.field0, upload: null);
+      station.syncing = SyncingProgress(download: DownloadOperation(status: status), upload: null);
     }
     if (status is TransferStatus_Uploading) {
-      station.syncing = SyncingProgress(download: null, upload: status.field0);
+      station.syncing = SyncingProgress(download: null, upload: UploadOperation(status: status));
     }
     if (status is TransferStatus_Completed) {
       station.syncing = null;
@@ -165,8 +169,12 @@ class StationOperations extends ChangeNotifier {
           .update(upgradeProgress);
       notifyListeners();
     });
-    dispatcher.addListener<DomainMessage_TransferProgress>((transferProgress) {
-      getOrCreate<TransferOperation>(TransferOperation.new, transferProgress.field0.deviceId).update(transferProgress);
+    dispatcher.addListener<DomainMessage_DownloadProgress>((transferProgress) {
+      getOrCreate<TransferOperation>(DownloadOperation.new, transferProgress.field0.deviceId).update(transferProgress);
+      notifyListeners();
+    });
+    dispatcher.addListener<DomainMessage_UploadProgress>((transferProgress) {
+      getOrCreate<TransferOperation>(UploadOperation.new, transferProgress.field0.deviceId).update(transferProgress);
       notifyListeners();
     });
     dispatcher.addListener<DomainMessage_FirmwareDownloadStatus>((downloadProgress) {
@@ -204,12 +212,18 @@ abstract class Operation extends ChangeNotifier {
   bool get busy => !done;
 }
 
-class TransferOperation extends Operation {
-  TransferStatus status = const TransferStatus.starting();
+abstract class TransferOperation extends Operation {
+  TransferStatus status;
+
+  TransferOperation({this.status = const TransferStatus.starting()});
 
   @override
   void update(DomainMessage message) {
-    if (message is DomainMessage_TransferProgress) {
+    if (message is DomainMessage_DownloadProgress) {
+      status = message.field0.status;
+      notifyListeners();
+    }
+    if (message is DomainMessage_UploadProgress) {
       status = message.field0.status;
       notifyListeners();
     }
@@ -217,6 +231,34 @@ class TransferOperation extends Operation {
 
   @override
   bool get done => status is TransferStatus_Completed || status is TransferStatus_Failed;
+
+  double get completed {
+    final status = this.status;
+    if (status is TransferStatus_Uploading) {
+      return status.field0.bytesUploaded / status.field0.totalBytes;
+    }
+    if (status is TransferStatus_Downloading) {
+      return status.field0.received / status.field0.total;
+    }
+    if (status is TransferStatus_Completed) {
+      return 0.0;
+    }
+    return 0.0;
+  }
+}
+
+class DownloadOperation extends TransferOperation {
+  DownloadOperation({super.status = const TransferStatus.starting()});
+
+  TransferStatus_Downloading? get _downloading => status as TransferStatus_Downloading;
+
+  int get received => _downloading?.field0.received ?? 0;
+  int get total => _downloading?.field0.total ?? 0;
+  int get started => _downloading?.field0.started ?? 0;
+}
+
+class UploadOperation extends TransferOperation {
+  UploadOperation({super.status = const TransferStatus.starting()});
 }
 
 class FirmwareComparison {
@@ -329,8 +371,8 @@ class AppEnv {
 }
 
 class SyncingProgress extends ChangeNotifier {
-  final DownloadProgress? download;
-  final UploadProgress? upload;
+  final DownloadOperation? download;
+  final UploadOperation? upload;
 
   double? get completed {
     if (download != null) {

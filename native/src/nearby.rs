@@ -281,7 +281,7 @@ impl NearbyDevices {
                 info!("{:?}", &event);
                 self.mark_busy_and_publish(device_id, true).await?;
                 publish_tx
-                    .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
+                    .send(BackgroundMessage::Domain(DomainMessage::DownloadProgress(
                         TransferProgress {
                             device_id: device_id.0.to_owned(),
                             status: TransferStatus::Starting,
@@ -304,7 +304,7 @@ impl NearbyDevices {
                     info!("{:?}", &progress);
                     let total = progress.total.as_ref().unwrap();
                     publish_tx
-                        .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
+                        .send(BackgroundMessage::Domain(DomainMessage::DownloadProgress(
                             TransferProgress {
                                 device_id: device_id.0.to_owned(),
                                 status: TransferStatus::Downloading(DownloadProgress {
@@ -324,7 +324,7 @@ impl NearbyDevices {
             }
             ServerEvent::Processing(device_id) => {
                 publish_tx
-                    .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
+                    .send(BackgroundMessage::Domain(DomainMessage::DownloadProgress(
                         TransferProgress {
                             device_id: device_id.0.to_owned(),
                             status: TransferStatus::Processing,
@@ -338,7 +338,7 @@ impl NearbyDevices {
                 info!("{:?}", &event);
                 self.mark_busy_and_publish(device_id, false).await?;
                 publish_tx
-                    .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
+                    .send(BackgroundMessage::Domain(DomainMessage::DownloadProgress(
                         TransferProgress {
                             device_id: device_id.0.to_owned(),
                             status: TransferStatus::Completed,
@@ -352,7 +352,7 @@ impl NearbyDevices {
                 info!("{:?}", &event);
                 self.mark_busy_and_publish(device_id, false).await?;
                 publish_tx
-                    .send(BackgroundMessage::Domain(DomainMessage::TransferProgress(
+                    .send(BackgroundMessage::Domain(DomainMessage::DownloadProgress(
                         TransferProgress {
                             device_id: device_id.0.to_owned(),
                             status: TransferStatus::Failed,

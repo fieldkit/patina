@@ -346,18 +346,22 @@ class NativeImpl implements Native {
           _wire2api_opt_box_autoadd_sensitive_config(raw[2]),
         );
       case 3:
-        return DomainMessage_TransferProgress(
+        return DomainMessage_UploadProgress(
           _wire2api_box_autoadd_transfer_progress(raw[1]),
         );
       case 4:
+        return DomainMessage_DownloadProgress(
+          _wire2api_box_autoadd_transfer_progress(raw[1]),
+        );
+      case 5:
         return DomainMessage_FirmwareDownloadStatus(
           _wire2api_box_autoadd_firmware_download_status(raw[1]),
         );
-      case 5:
+      case 6:
         return DomainMessage_UpgradeProgress(
           _wire2api_box_autoadd_upgrade_progress(raw[1]),
         );
-      case 6:
+      case 7:
         return DomainMessage_AvailableFirmware(
           _wire2api_list_local_firmware(raw[1]),
         );

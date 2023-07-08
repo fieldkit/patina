@@ -126,7 +126,7 @@ class StationSyncStatus extends StatelessWidget {
 }
 
 class DownloadProgressPanel extends StatelessWidget {
-  final DownloadProgress progress;
+  final DownloadOperation progress;
 
   const DownloadProgressPanel({super.key, required this.progress});
 
@@ -150,7 +150,7 @@ class DownloadProgressPanel extends StatelessWidget {
 }
 
 class UploadProgressPanel extends StatelessWidget {
-  final UploadProgress progress;
+  final UploadOperation progress;
 
   const UploadProgressPanel({super.key, required this.progress});
 

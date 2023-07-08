@@ -118,9 +118,12 @@ class DomainMessage with _$DomainMessage {
     StationConfig field0, [
     SensitiveConfig? field1,
   ]) = DomainMessage_StationRefreshed;
-  const factory DomainMessage.transferProgress(
+  const factory DomainMessage.uploadProgress(
     TransferProgress field0,
-  ) = DomainMessage_TransferProgress;
+  ) = DomainMessage_UploadProgress;
+  const factory DomainMessage.downloadProgress(
+    TransferProgress field0,
+  ) = DomainMessage_DownloadProgress;
   const factory DomainMessage.firmwareDownloadStatus(
     FirmwareDownloadStatus field0,
   ) = DomainMessage_FirmwareDownloadStatus;

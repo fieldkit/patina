@@ -318,7 +318,7 @@ impl Sdk {
                     Ok(mut stream) => {
                         while let Some(Ok(bytes)) = stream.next().await {
                             match publish_tx
-                                .send(DomainMessage::TransferProgress(TransferProgress {
+                                .send(DomainMessage::UploadProgress(TransferProgress {
                                     device_id: device_id.clone().into(),
                                     status: TransferStatus::Uploading(UploadProgress {
                                         bytes_uploaded: bytes.bytes_uploaded,
@@ -342,7 +342,7 @@ impl Sdk {
                 };
 
                 publish_tx
-                    .send(DomainMessage::TransferProgress(TransferProgress {
+                    .send(DomainMessage::UploadProgress(TransferProgress {
                         device_id: device_id.into(),
                         status,
                     }))
@@ -930,7 +930,8 @@ pub enum DomainMessage {
     PreAccount,
     NearbyStations(Vec<NearbyStation>),
     StationRefreshed(StationConfig, Option<SensitiveConfig>),
-    TransferProgress(TransferProgress),
+    UploadProgress(TransferProgress),
+    DownloadProgress(TransferProgress),
     FirmwareDownloadStatus(FirmwareDownloadStatus),
     UpgradeProgress(UpgradeProgress),
     AvailableFirmware(Vec<LocalFirmware>),
