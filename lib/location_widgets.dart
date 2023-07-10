@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:async/async.dart';
 
@@ -15,6 +15,7 @@ Stream<Location> _monitorLocation() async* {
     return;
   }
 
+  /*
   const LocationSettings locationSettings = LocationSettings(
     accuracy: LocationAccuracy.high,
     distanceFilter: 100,
@@ -46,6 +47,7 @@ Stream<Location> _monitorLocation() async* {
       });
     }
   });
+  */
 }
 
 class RequestLocationPermissions extends StatelessWidget {
