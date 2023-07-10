@@ -60,7 +60,7 @@ dependencies:
   data: ^0.11.0
   test: ^1.24.1
   url_launcher: ^6.1.11
-# geolocator: ^9.0.2
+  geolocator: ^9.0.2
   async: ^2.11.0
   calibration:
     path: './calibration'
