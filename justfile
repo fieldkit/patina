@@ -1,7 +1,11 @@
-default: gen lint
+default: setup
 
-gen:
+setup:
     flutter pub get
+    cd calibration && flutter pub get
+    cd flows && flutter pub get
+
+gen: setup
     flutter_rust_bridge_codegen \
         -r native/src/api.rs \
         -d lib/gen/bridge_generated.dart \
