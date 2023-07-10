@@ -22,7 +22,8 @@ timestamps {
             }
 
             stage ('build') {
-                sh "rm -rf ~/.gradle/caches /svr0/home/ubuntu/.gradle/caches"
+                sh "cp ~/.gradle/gradle.properties /tmp && rm -rf ~/.gradle && mkdir -p ~/.gradle && cp /tmp/gradle.properties ~/.gradle"
+
                 sh "flutter clean"
                 sh "flutter build apk"
 
