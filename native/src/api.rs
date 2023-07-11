@@ -972,7 +972,6 @@ pub struct StationConfig {
     pub device_id: String,
     pub name: String,
     pub firmware: FirmwareInfo,
-    pub capabilities: CapabilitiesInfo,
     pub last_seen: DateTime<Utc>,
     pub meta: StreamInfo,
     pub data: StreamInfo,
@@ -1079,7 +1078,6 @@ impl TryInto<StationConfig> for StationAndConnection {
             device_id: station.device_id.0.to_owned(),
             name: station.name,
             last_seen: station.last_seen,
-            capabilities: CapabilitiesInfo { udp: false },
             firmware: FirmwareInfo {
                 label: station.firmware.label,
                 time: station.firmware.time,

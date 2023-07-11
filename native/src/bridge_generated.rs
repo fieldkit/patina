@@ -278,13 +278,6 @@ impl support::IntoDart for BatteryInfo {
 }
 impl support::IntoDartExceptPrimitive for BatteryInfo {}
 
-impl support::IntoDart for CapabilitiesInfo {
-    fn into_dart(self) -> support::DartAbi {
-        vec![self.udp.into_dart()].into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for CapabilitiesInfo {}
-
 impl support::IntoDart for DeviceCapabilities {
     fn into_dart(self) -> support::DartAbi {
         vec![self.udp.into_dart()].into_dart()
@@ -437,7 +430,6 @@ impl support::IntoDart for StationConfig {
             self.device_id.into_dart(),
             self.name.into_dart(),
             self.firmware.into_dart(),
-            self.capabilities.into_dart(),
             self.last_seen.into_dart(),
             self.meta.into_dart(),
             self.data.into_dart(),

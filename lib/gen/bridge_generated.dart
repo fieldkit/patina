@@ -323,15 +323,6 @@ class NativeImpl implements Native {
     return _wire2api_upload_progress(raw);
   }
 
-  CapabilitiesInfo _wire2api_capabilities_info(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 1)
-      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
-    return CapabilitiesInfo(
-      udp: _wire2api_bool(arr[0]),
-    );
-  }
-
   DeviceCapabilities _wire2api_device_capabilities(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 1)
@@ -561,19 +552,18 @@ class NativeImpl implements Native {
 
   StationConfig _wire2api_station_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 10)
-      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
+    if (arr.length != 9)
+      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
     return StationConfig(
       deviceId: _wire2api_String(arr[0]),
       name: _wire2api_String(arr[1]),
       firmware: _wire2api_firmware_info(arr[2]),
-      capabilities: _wire2api_capabilities_info(arr[3]),
-      lastSeen: _wire2api_Chrono_Utc(arr[4]),
-      meta: _wire2api_stream_info(arr[5]),
-      data: _wire2api_stream_info(arr[6]),
-      battery: _wire2api_battery_info(arr[7]),
-      solar: _wire2api_solar_info(arr[8]),
-      modules: _wire2api_list_module_config(arr[9]),
+      lastSeen: _wire2api_Chrono_Utc(arr[3]),
+      meta: _wire2api_stream_info(arr[4]),
+      data: _wire2api_stream_info(arr[5]),
+      battery: _wire2api_battery_info(arr[6]),
+      solar: _wire2api_solar_info(arr[7]),
+      modules: _wire2api_list_module_config(arr[8]),
     );
   }
 

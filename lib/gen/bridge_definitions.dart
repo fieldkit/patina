@@ -100,14 +100,6 @@ class BatteryInfo {
   });
 }
 
-class CapabilitiesInfo {
-  final bool udp;
-
-  const CapabilitiesInfo({
-    required this.udp,
-  });
-}
-
 class DeviceCapabilities {
   final bool udp;
 
@@ -285,7 +277,6 @@ class StationConfig {
   final String deviceId;
   final String name;
   final FirmwareInfo firmware;
-  final CapabilitiesInfo capabilities;
   final DateTime lastSeen;
   final StreamInfo meta;
   final StreamInfo data;
@@ -297,7 +288,6 @@ class StationConfig {
     required this.deviceId,
     required this.name,
     required this.firmware,
-    required this.capabilities,
     required this.lastSeen,
     required this.meta,
     required this.data,
