@@ -2,6 +2,7 @@
 
 properties([
     disableConcurrentBuilds(),
+    pipelineTriggers([githubPush()]),
     buildDiscarder(logRotator(numToKeepStr: '5'))
 ])
 
