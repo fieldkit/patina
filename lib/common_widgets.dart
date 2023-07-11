@@ -4,9 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class BorderedListItem extends StatelessWidget {
   final GenericListItemHeader header;
   final List<Widget> children;
-  final bool expanded;
 
-  const BorderedListItem({super.key, required this.header, required this.children, this.expanded = true});
+  const BorderedListItem({super.key, required this.header, required this.children});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,35 @@ class BorderedListItem extends StatelessWidget {
               color: const Color.fromRGBO(212, 212, 212, 1),
             ),
             borderRadius: const BorderRadius.all(Radius.circular(5))),
-        child: Column(children: [header, if (expanded) ...children]));
+        child: Column(children: [header, ...children]));
+  }
+}
+
+class ExpandableBorderedListItem extends StatefulWidget {
+  final GenericListItemHeader header;
+  final List<Widget> children;
+  final bool expanded;
+
+  const ExpandableBorderedListItem({super.key, required this.header, required this.children, required this.expanded});
+
+  @override
+  State<StatefulWidget> createState() => _ExpandableBorderedListItemState();
+}
+
+class _ExpandableBorderedListItemState extends State<ExpandableBorderedListItem> {
+  bool? _expanded;
+
+  bool get expanded => _expanded ?? widget.expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: () {
+          setState(() {
+            _expanded = !expanded;
+          });
+        },
+        child: BorderedListItem(header: widget.header, children: [if (expanded) ...widget.children]));
   }
 }
 

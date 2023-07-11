@@ -186,7 +186,7 @@ class FirmwareItem extends StatelessWidget {
 
     pad(child) => Container(width: double.infinity, padding: const EdgeInsets.all(10), child: child);
 
-    return BorderedListItem(
+    return ExpandableBorderedListItem(
         header: header(),
         expanded: comparison.newer,
         children: [
