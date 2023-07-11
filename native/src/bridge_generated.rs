@@ -285,6 +285,13 @@ impl support::IntoDart for CapabilitiesInfo {
 }
 impl support::IntoDartExceptPrimitive for CapabilitiesInfo {}
 
+impl support::IntoDart for DeviceCapabilities {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.udp.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for DeviceCapabilities {}
+
 impl support::IntoDart for DomainMessage {
     fn into_dart(self) -> support::DartAbi {
         match self {
@@ -315,6 +322,18 @@ impl support::IntoDart for DownloadProgress {
     }
 }
 impl support::IntoDartExceptPrimitive for DownloadProgress {}
+
+impl support::IntoDart for EphemeralConfig {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.transmission.into_dart(),
+            self.networks.into_dart(),
+            self.capabilities.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for EphemeralConfig {}
 
 impl support::IntoDart for FirmwareDownloadStatus {
     fn into_dart(self) -> support::DartAbi {
@@ -377,13 +396,6 @@ impl support::IntoDart for NetworkConfig {
     }
 }
 impl support::IntoDartExceptPrimitive for NetworkConfig {}
-
-impl support::IntoDart for SensitiveConfig {
-    fn into_dart(self) -> support::DartAbi {
-        vec![self.transmission.into_dart(), self.networks.into_dart()].into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for SensitiveConfig {}
 
 impl support::IntoDart for SensorConfig {
     fn into_dart(self) -> support::DartAbi {

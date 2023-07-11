@@ -6,6 +6,7 @@ import '../app_state.dart';
 import '../common_widgets.dart';
 import '../gen/ffi.dart';
 import '../no_stations_widget.dart';
+import '../view_station/configure_station.dart';
 
 class DataSyncTab extends StatelessWidget {
   const DataSyncTab({super.key});
@@ -86,6 +87,34 @@ class SyncOptions extends StatelessWidget {
   }
 }
 
+class UpgradeRequiredWidget extends StatelessWidget {
+  final StationModel station;
+
+  StationConfig get config => station.config!;
+
+  const UpgradeRequiredWidget({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return WH.padPage(Column(children: [
+      WH.align(Text(localizations.syncUpgradeRequiredMessage)),
+      WH.align(WH.vertical(ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StationFirmwarePage(
+                  station: station,
+                ),
+              ),
+            );
+          },
+          child: Text(localizations.syncManageFirmware))))
+    ]));
+  }
+}
+
 class StationSyncStatus extends StatelessWidget {
   final StationModel station;
   final VoidCallback onDownload;
@@ -109,7 +138,10 @@ class StationSyncStatus extends StatelessWidget {
         WH.padBelowProgress(Text(localizations.syncWorking)),
       ]));
     }
-    return SyncOptions(onDownload: onDownload, onUpload: onUpload);
+    if (station.ephemeral?.capabilities.udp ?? false) {
+      return SyncOptions(onDownload: onDownload, onUpload: onUpload);
+    }
+    return UpgradeRequiredWidget(station: station);
   }
 
   @override

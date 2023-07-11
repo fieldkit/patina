@@ -290,13 +290,13 @@ class NativeImpl implements Native {
     return _wire2api_download_progress(raw);
   }
 
+  EphemeralConfig _wire2api_box_autoadd_ephemeral_config(dynamic raw) {
+    return _wire2api_ephemeral_config(raw);
+  }
+
   FirmwareDownloadStatus _wire2api_box_autoadd_firmware_download_status(
       dynamic raw) {
     return _wire2api_firmware_download_status(raw);
-  }
-
-  SensitiveConfig _wire2api_box_autoadd_sensitive_config(dynamic raw) {
-    return _wire2api_sensitive_config(raw);
   }
 
   SensorValue _wire2api_box_autoadd_sensor_value(dynamic raw) {
@@ -332,6 +332,15 @@ class NativeImpl implements Native {
     );
   }
 
+  DeviceCapabilities _wire2api_device_capabilities(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return DeviceCapabilities(
+      udp: _wire2api_bool(arr[0]),
+    );
+  }
+
   DomainMessage _wire2api_domain_message(dynamic raw) {
     switch (raw[0]) {
       case 0:
@@ -343,7 +352,7 @@ class NativeImpl implements Native {
       case 2:
         return DomainMessage_StationRefreshed(
           _wire2api_box_autoadd_station_config(raw[1]),
-          _wire2api_opt_box_autoadd_sensitive_config(raw[2]),
+          _wire2api_opt_box_autoadd_ephemeral_config(raw[2]),
         );
       case 3:
         return DomainMessage_UploadProgress(
@@ -379,6 +388,17 @@ class NativeImpl implements Native {
       completed: _wire2api_f32(arr[1]),
       total: _wire2api_usize(arr[2]),
       received: _wire2api_usize(arr[3]),
+    );
+  }
+
+  EphemeralConfig _wire2api_ephemeral_config(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return EphemeralConfig(
+      transmission: _wire2api_opt_box_autoadd_transmission_config(arr[0]),
+      networks: _wire2api_list_network_config(arr[1]),
+      capabilities: _wire2api_device_capabilities(arr[2]),
     );
   }
 
@@ -488,8 +508,8 @@ class NativeImpl implements Native {
     );
   }
 
-  SensitiveConfig? _wire2api_opt_box_autoadd_sensitive_config(dynamic raw) {
-    return raw == null ? null : _wire2api_box_autoadd_sensitive_config(raw);
+  EphemeralConfig? _wire2api_opt_box_autoadd_ephemeral_config(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_ephemeral_config(raw);
   }
 
   SensorValue? _wire2api_opt_box_autoadd_sensor_value(dynamic raw) {
@@ -503,16 +523,6 @@ class NativeImpl implements Native {
 
   Uint8List? _wire2api_opt_uint_8_list(dynamic raw) {
     return raw == null ? null : _wire2api_uint_8_list(raw);
-  }
-
-  SensitiveConfig _wire2api_sensitive_config(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-    return SensitiveConfig(
-      transmission: _wire2api_opt_box_autoadd_transmission_config(arr[0]),
-      networks: _wire2api_list_network_config(arr[1]),
-    );
   }
 
   SensorConfig _wire2api_sensor_config(dynamic raw) {

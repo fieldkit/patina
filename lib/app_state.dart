@@ -11,6 +11,7 @@ import 'dispatcher.dart';
 class StationModel {
   final String deviceId;
   StationConfig? config;
+  EphemeralConfig? ephemeral;
   SyncingProgress? syncing;
   bool connected;
   bool busy;
@@ -46,6 +47,7 @@ class KnownStationsModel extends ChangeNotifier {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) {
       final station = findOrCreate(refreshed.field0.deviceId);
       station.config = refreshed.field0;
+      station.ephemeral = refreshed.field1;
       station.connected = true;
       notifyListeners();
     });

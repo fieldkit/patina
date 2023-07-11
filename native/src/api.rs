@@ -20,7 +20,10 @@ use tracing::*;
 use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
-use query::portal::{DecodedToken, Firmware, PortalError, StatusCode};
+use query::{
+    device::HttpReply,
+    portal::{DecodedToken, Firmware, PortalError, StatusCode},
+};
 use store::Db;
 
 use crate::nearby::{BackgroundMessage, Connection, NearbyDevices};
@@ -44,8 +47,9 @@ impl MergeAndPublishReplies {
             BackgroundMessage::StationReply(device_id, reply) => {
                 let station = {
                     let db = self.db.lock().await;
-                    db.merge_reply(store::DeviceId(device_id.0), reply)?
+                    db.merge_reply(store::DeviceId(device_id.0), reply.clone())?
                 };
+
                 Ok(self
                     .publish_tx
                     .send(DomainMessage::StationRefreshed(
@@ -54,7 +58,7 @@ impl MergeAndPublishReplies {
                             connection: Some(Connection::Connected),
                         }
                         .try_into()?,
-                        None,
+                        Some(reply.try_into()?),
                     ))
                     .await?)
             }
@@ -929,7 +933,7 @@ pub struct TransferProgress {
 pub enum DomainMessage {
     PreAccount,
     NearbyStations(Vec<NearbyStation>),
-    StationRefreshed(StationConfig, Option<SensitiveConfig>),
+    StationRefreshed(StationConfig, Option<EphemeralConfig>),
     UploadProgress(TransferProgress),
     DownloadProgress(TransferProgress),
     FirmwareDownloadStatus(FirmwareDownloadStatus),
@@ -1021,9 +1025,32 @@ pub struct NearbyStation {
 }
 
 #[derive(Clone, Debug)]
-pub struct SensitiveConfig {
+pub struct EphemeralConfig {
     pub transmission: Option<TransmissionConfig>,
     pub networks: Vec<NetworkConfig>,
+    pub capabilities: DeviceCapabilities,
+}
+
+#[derive(Clone, Debug)]
+pub struct DeviceCapabilities {
+    pub udp: bool,
+}
+
+impl TryInto<EphemeralConfig> for HttpReply {
+    type Error = SdkMappingError;
+
+    fn try_into(self) -> std::result::Result<EphemeralConfig, Self::Error> {
+        Ok(EphemeralConfig {
+            transmission: None,
+            networks: Vec::new(),
+            capabilities: DeviceCapabilities {
+                udp: self
+                    .network_settings
+                    .map(|s| s.supports_udp)
+                    .unwrap_or(false),
+            },
+        })
+    }
 }
 
 #[derive(Clone, Debug)]

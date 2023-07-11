@@ -108,6 +108,14 @@ class CapabilitiesInfo {
   });
 }
 
+class DeviceCapabilities {
+  final bool udp;
+
+  const DeviceCapabilities({
+    required this.udp,
+  });
+}
+
 @freezed
 class DomainMessage with _$DomainMessage {
   const factory DomainMessage.preAccount() = DomainMessage_PreAccount;
@@ -116,7 +124,7 @@ class DomainMessage with _$DomainMessage {
   ) = DomainMessage_NearbyStations;
   const factory DomainMessage.stationRefreshed(
     StationConfig field0, [
-    SensitiveConfig? field1,
+    EphemeralConfig? field1,
   ]) = DomainMessage_StationRefreshed;
   const factory DomainMessage.uploadProgress(
     TransferProgress field0,
@@ -146,6 +154,18 @@ class DownloadProgress {
     required this.completed,
     required this.total,
     required this.received,
+  });
+}
+
+class EphemeralConfig {
+  final TransmissionConfig? transmission;
+  final List<NetworkConfig> networks;
+  final DeviceCapabilities capabilities;
+
+  const EphemeralConfig({
+    this.transmission,
+    required this.networks,
+    required this.capabilities,
   });
 }
 
@@ -220,16 +240,6 @@ class NetworkConfig {
 
   const NetworkConfig({
     required this.ssid,
-  });
-}
-
-class SensitiveConfig {
-  final TransmissionConfig? transmission;
-  final List<NetworkConfig> networks;
-
-  const SensitiveConfig({
-    this.transmission,
-    required this.networks,
   });
 }
 

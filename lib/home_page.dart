@@ -33,10 +33,11 @@ class _HomePageState extends State<HomePage> {
               ChangeNotifierProvider.value(value: state.firmware),
               ChangeNotifierProvider.value(value: state.stationOperations),
             ], child: const StationsTab()),
-            ChangeNotifierProvider(
-              create: (context) => state.knownStations,
-              child: const DataSyncTab(),
-            ),
+            MultiProvider(providers: [
+              ChangeNotifierProvider.value(value: state.knownStations),
+              ChangeNotifierProvider.value(value: state.firmware),
+              ChangeNotifierProvider.value(value: state.stationOperations),
+            ], child: const DataSyncTab()),
             const SettingsTab(),
           ],
         ),

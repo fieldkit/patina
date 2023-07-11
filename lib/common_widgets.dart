@@ -49,9 +49,13 @@ class GenericListItemHeader extends StatelessWidget {
 class WH {
   static const pagePadding = EdgeInsets.symmetric(horizontal: 10, vertical: 6);
 
-  static Align align(child) => Align(alignment: Alignment.topLeft, child: child);
+  static Align align(Widget child) => Align(alignment: Alignment.topLeft, child: child);
 
-  static Container padPage(child) => Container(padding: pagePadding, child: child);
+  static Padding around(Widget child) => Padding(padding: pagePadding, child: child);
+
+  static Padding vertical(Widget child) => Padding(padding: const EdgeInsets.symmetric(vertical: 10), child: child);
+
+  static Container padPage(Widget child) => Container(padding: pagePadding, child: child);
 
   static List<Widget> padButtonsRow(List<Widget> children) =>
       children.map((c) => Padding(padding: const EdgeInsets.only(right: 10), child: c)).toList();

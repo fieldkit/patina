@@ -17,6 +17,8 @@
   "syncWorking": "Working...",
   "syncElapsed": "{elapsed} elapsed.",
   "syncPercentageComplete": "%{complete} complete.",
+  "syncUpgradeRequiredMessage": "An upgrade is required to sync data from this station.",
+  "syncManageFirmware": "Manage Firmware",
 
   "myStationsTitle": "My Stations",
   "readyToDeploy": "Ready to deploy",
