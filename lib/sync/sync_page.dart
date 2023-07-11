@@ -6,7 +6,7 @@ import '../app_state.dart';
 import '../common_widgets.dart';
 import '../gen/ffi.dart';
 import '../no_stations_widget.dart';
-import '../view_station/configure_station.dart';
+import '../view_station/firmware_page.dart';
 
 class DataSyncTab extends StatelessWidget {
   const DataSyncTab({super.key});
