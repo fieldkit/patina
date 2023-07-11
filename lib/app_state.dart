@@ -39,7 +39,7 @@ class KnownStationsModel extends ChangeNotifier {
       for (var station in _stations.values) {
         final nearby = byDeviceId[station.deviceId];
         station.connected = nearby != null;
-        station.busy = nearby?.busy;
+        station.busy = nearby?.busy ?? false;
       }
       notifyListeners();
     });

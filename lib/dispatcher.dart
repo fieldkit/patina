@@ -13,7 +13,7 @@ class AppEventDispatcher {
           listener.callback(m);
         }
       } catch (err) {
-        debugPrint("Failed to push event: $err $listener");
+        debugPrint("Failed to push $m: $err ($listener)");
       }
     }
   }
@@ -27,8 +27,7 @@ class AppEventDispatcher {
   }
 
   void removeListener<T>(Function(T) callback) {
-    _listeners.removeWhere(
-        (listener) => listener.callbackHashCode == callback.hashCode);
+    _listeners.removeWhere((listener) => listener.callbackHashCode == callback.hashCode);
   }
 }
 
