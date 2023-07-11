@@ -455,6 +455,10 @@ impl Sdk {
             let path =
                 PathBuf::from(&self.storage_path).join(format!("firmware-{}.bin", firmware.id));
 
+            let nearby = self.nearby.clone();
+
+            nearby.mark_busy(&device_id, true).await?;
+
             tokio::task::spawn({
                 let device_id = device_id.clone();
                 let publish_tx = self.publish_tx.clone();
@@ -518,6 +522,11 @@ impl Sdk {
                                     .await
                                     .expect("Upgrade progress failed");
                             }
+
+                            nearby
+                                .mark_busy(&device_id, false)
+                                .await
+                                .expect("Mark busy failed");
                         }
                         Err(_) => {
                             publish_tx
@@ -528,6 +537,11 @@ impl Sdk {
                                 }))
                                 .await
                                 .expect("Upgrade progress failed");
+
+                            nearby
+                                .mark_busy(&device_id, false)
+                                .await
+                                .expect("Mark busy failed");
                         }
                     }
                 }

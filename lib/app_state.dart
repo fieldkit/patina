@@ -68,7 +68,6 @@ class KnownStationsModel extends ChangeNotifier {
     final station = findOrCreate(deviceId);
     final status = transferProgress.status;
 
-    station.connected = true;
     if (status is TransferStatus_Starting) {
       station.syncing = SyncingProgress(download: null, upload: null);
     }
@@ -82,8 +81,10 @@ class KnownStationsModel extends ChangeNotifier {
       station.syncing = null;
     }
     if (status is TransferStatus_Failed) {
-      station.syncing = SyncingProgress(download: null, upload: null); // TODO Handle failed transfer/sync.
+      station.syncing = SyncingProgress(download: null, upload: null);
     }
+
+    station.connected = true;
 
     notifyListeners();
   }
