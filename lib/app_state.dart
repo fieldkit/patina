@@ -328,7 +328,7 @@ class AvailableFirmwareModel extends ChangeNotifier {
   }
 
   Future<void> upgrade(String deviceId, LocalFirmware firmware) async {
-    await api.upgradeStation(deviceId: deviceId, firmware: firmware, swap: true);
+    await api.upgradeStation(deviceId: deviceId, firmware: firmware, swap: false);
   }
 }
 
