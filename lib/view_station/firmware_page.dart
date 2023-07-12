@@ -97,7 +97,7 @@ class StationFirmwarePage extends StatelessWidget {
         .map((firmware) => FirmwareItem(
             comparison: FirmwareComparison.compare(firmware, config.firmware),
             operations: operations.where((op) => op.firmwareId == firmware.id).toList(),
-            canUpgrade: operations.where((op) => op.busy).isEmpty,
+            canUpgrade: station.connected && !station.busy && operations.where((op) => op.busy).isEmpty,
             onUpgrade: () async {
               await availableFirmware.upgrade(config.deviceId, firmware);
             }))
