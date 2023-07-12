@@ -15,16 +15,11 @@ class StationsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(onGenerateRoute: (RouteSettings settings) {
-      return MaterialPageRoute(
-        settings: settings,
-        builder: (context) => Consumer<KnownStationsModel>(
-          builder: (context, knownStations, child) {
-            return ProvideLocation(child: ListStationsPage(known: knownStations));
-          },
-        ),
-      );
-    });
+    return Consumer<KnownStationsModel>(
+      builder: (context, knownStations, child) {
+        return ProvideLocation(child: ListStationsPage(known: knownStations));
+      },
+    );
   }
 }
 

@@ -15,6 +15,10 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+final GlobalKey<NavigatorState> stationsNavigatorKey = GlobalKey();
+final GlobalKey<NavigatorState> dataNavigatorKey = GlobalKey();
+final GlobalKey<NavigatorState> settingsNavigatorKey = GlobalKey();
+
 class _HomePageState extends State<HomePage> {
   int _pageIndex = 0;
 
@@ -28,17 +32,37 @@ class _HomePageState extends State<HomePage> {
           index: _pageIndex,
           children: <Widget>[
             // Should we just push this to the top?
-            MultiProvider(providers: [
-              ChangeNotifierProvider.value(value: state.knownStations),
-              ChangeNotifierProvider.value(value: state.firmware),
-              ChangeNotifierProvider.value(value: state.stationOperations),
-            ], child: const StationsTab()),
-            MultiProvider(providers: [
-              ChangeNotifierProvider.value(value: state.knownStations),
-              ChangeNotifierProvider.value(value: state.firmware),
-              ChangeNotifierProvider.value(value: state.stationOperations),
-            ], child: const DataSyncTab()),
-            const SettingsTab(),
+            MultiProvider(
+                providers: [
+                  ChangeNotifierProvider.value(value: state.knownStations),
+                  ChangeNotifierProvider.value(value: state.firmware),
+                  ChangeNotifierProvider.value(value: state.stationOperations),
+                ],
+                child: Navigator(
+                    key: stationsNavigatorKey,
+                    onGenerateRoute: (RouteSettings settings) {
+                      return MaterialPageRoute(settings: settings, builder: (context) => const StationsTab());
+                    })),
+            MultiProvider(
+                providers: [
+                  ChangeNotifierProvider.value(value: state.knownStations),
+                  ChangeNotifierProvider.value(value: state.firmware),
+                  ChangeNotifierProvider.value(value: state.stationOperations),
+                ],
+                child: Navigator(
+                    key: dataNavigatorKey,
+                    onGenerateRoute: (RouteSettings settings) {
+                      return MaterialPageRoute(settings: settings, builder: (context) => const DataSyncTab());
+                    })),
+            Navigator(
+                key: settingsNavigatorKey,
+                onGenerateRoute: (RouteSettings settings) {
+                  return MaterialPageRoute(
+                      settings: settings,
+                      builder: (BuildContext context) {
+                        return const SettingsTab();
+                      });
+                })
           ],
         ),
       ),
@@ -60,11 +84,23 @@ class _HomePageState extends State<HomePage> {
         ],
         currentIndex: _pageIndex,
         onTap: (int index) {
-          setState(
-            () {
-              _pageIndex = index;
-            },
-          );
+          final navigator = Navigator.of(context);
+          debugPrint("home-page: Tap $index $navigator");
+          if (_pageIndex == index) {
+            final List<GlobalKey<NavigatorState>> keys = [stationsNavigatorKey, dataNavigatorKey, settingsNavigatorKey];
+            final NavigatorState? navigator = keys[index].currentState;
+            if (navigator != null) {
+              while (navigator.canPop()) {
+                navigator.pop();
+              }
+            }
+          } else {
+            setState(
+              () {
+                _pageIndex = index;
+              },
+            );
+          }
         },
       ),
     );

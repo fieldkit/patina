@@ -9,41 +9,35 @@ class SettingsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(onGenerateRoute: (RouteSettings settings) {
-      return MaterialPageRoute(
-          settings: settings,
-          builder: (BuildContext context) {
-            return Scaffold(
-                appBar: AppBar(
-                  title: Text(AppLocalizations.of(context)!.settingsTitle),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.settingsTitle),
+        ),
+        body: ListView(children: [
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.settingsAccounts),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AccountsPage(),
                 ),
-                body: ListView(children: [
-                  ListTile(
-                    title: Text(AppLocalizations.of(context)!.settingsAccounts),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AccountsPage(),
-                        ),
-                      );
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    title: const Text("Open Flow"),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ProvideContentFlowsWidget(child: QuickFlow(start: StartFlow(name: "onboarding"))),
-                        ),
-                      );
-                    },
-                  ),
-                  const Divider(),
-                ]));
-          });
-    });
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            title: const Text("Open Flow"),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProvideContentFlowsWidget(child: QuickFlow(start: StartFlow(name: "onboarding"))),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+        ]));
   }
 }
