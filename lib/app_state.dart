@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:uuid/uuid.dart';
 import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
 
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
@@ -14,6 +15,8 @@ class StationModel {
   EphemeralConfig? ephemeral;
   SyncingProgress? syncing;
   bool connected;
+
+  FirmwareInfo? get firmware => null;
 
   StationModel({
     required this.deviceId,
@@ -337,17 +340,76 @@ class AvailableFirmwareModel extends ChangeNotifier {
   }
 }
 
+var uuid = const Uuid();
+
+abstract class Task {
+  final String key_ = uuid.v1();
+
+  String get key => key_;
+}
+
+class UpgradeTaskFactory extends ChangeNotifier {
+  final AvailableFirmwareModel availableFirmware;
+  final KnownStationsModel knownStations;
+  final List<UpgradeTask> tasks = List.empty(growable: true);
+
+  UpgradeTaskFactory({required this.availableFirmware, required this.knownStations}) {
+    availableFirmware.addListener(() {
+      debugPrint("tasks: firmware");
+      tasks.clear();
+      tasks.addAll(create());
+      notifyListeners();
+    });
+
+    knownStations.addListener(() {
+      debugPrint("tasks: stations");
+      tasks.clear();
+      tasks.addAll(create());
+      notifyListeners();
+    });
+  }
+
+  List<UpgradeTask> create() {
+    final List<UpgradeTask> tasks = List.empty(growable: true);
+    for (final station in knownStations.stations) {
+      for (final local in availableFirmware.firmware) {
+        final firmware = station.firmware;
+        if (firmware != null) {
+          final comparison = FirmwareComparison.compare(local, firmware);
+          debugPrint("$station $local $comparison");
+          tasks.add(UpgradeTask(station: station, comparison: comparison));
+        }
+      }
+    }
+    return tasks;
+  }
+}
+
+class UpgradeTask extends Task {
+  final StationModel station;
+  final FirmwareComparison comparison;
+
+  UpgradeTask({required this.station, required this.comparison});
+}
+
+class TasksModel extends ChangeNotifier {
+  TasksModel({required AvailableFirmwareModel availableFirmware, required KnownStationsModel knownStations}) {
+    UpgradeTaskFactory(availableFirmware: availableFirmware, knownStations: knownStations).addListener(notifyListeners);
+  }
+}
+
 class AppState {
   final Native api;
   final AppEventDispatcher dispatcher;
   final AvailableFirmwareModel firmware;
-  final StationOperations stationOperations;
   final KnownStationsModel knownStations;
+  final StationOperations stationOperations;
   final ModuleConfigurations moduleConfigurations;
   final PortalAccounts portalAccounts;
+  final TasksModel tasks;
 
-  AppState._(
-      this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts, this.firmware, this.stationOperations);
+  AppState._(this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts, this.firmware,
+      this.stationOperations, this.tasks);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
     final stationOperations = StationOperations(dispatcher: dispatcher);
@@ -355,7 +417,8 @@ class AppState {
     final knownStations = KnownStationsModel(api, dispatcher);
     final moduleConfigurations = ModuleConfigurations(api: api, knownStations: knownStations);
     final portalAccounts = PortalAccounts(api: api, accounts: List.empty());
-    return AppState._(api, dispatcher, knownStations, moduleConfigurations, portalAccounts, firmware, stationOperations);
+    final tasks = TasksModel(availableFirmware: firmware, knownStations: knownStations);
+    return AppState._(api, dispatcher, knownStations, moduleConfigurations, portalAccounts, firmware, stationOperations, tasks);
   }
 
   ModuleConfiguration findModuleConfiguration(ModuleIdentity moduleIdentity) {

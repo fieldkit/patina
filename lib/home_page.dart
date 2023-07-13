@@ -37,6 +37,7 @@ class _HomePageState extends State<HomePage> {
                   ChangeNotifierProvider.value(value: state.knownStations),
                   ChangeNotifierProvider.value(value: state.firmware),
                   ChangeNotifierProvider.value(value: state.stationOperations),
+                  ChangeNotifierProvider.value(value: state.tasks),
                 ],
                 child: Navigator(
                     key: stationsNavigatorKey,
