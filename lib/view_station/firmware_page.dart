@@ -90,14 +90,16 @@ class StationFirmwarePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final operations = context.watch<StationOperations>().getAll<UpgradeOperation>(config.deviceId);
+    final stationOps = context.watch<StationOperations>();
+    final busy = stationOps.isBusy(config.deviceId);
+    final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
     final availableFirmware = context.watch<AvailableFirmwareModel>();
     final items = availableFirmware.firmware
         .where((firmware) => firmware.module == "fk-core")
         .map((firmware) => FirmwareItem(
             comparison: FirmwareComparison.compare(firmware, config.firmware),
             operations: operations.where((op) => op.firmwareId == firmware.id).toList(),
-            canUpgrade: station.connected && !station.busy && operations.where((op) => op.busy).isEmpty,
+            canUpgrade: station.connected && !busy && operations.where((op) => op.busy).isEmpty,
             onUpgrade: () async {
               await availableFirmware.upgrade(config.deviceId, firmware);
             }))

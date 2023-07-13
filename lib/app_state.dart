@@ -14,13 +14,11 @@ class StationModel {
   EphemeralConfig? ephemeral;
   SyncingProgress? syncing;
   bool connected;
-  bool busy;
 
   StationModel({
     required this.deviceId,
     this.config,
     this.connected = false,
-    this.busy = false,
   });
 }
 
@@ -39,7 +37,6 @@ class KnownStationsModel extends ChangeNotifier {
       for (var station in _stations.values) {
         final nearby = byDeviceId[station.deviceId];
         station.connected = nearby != null;
-        station.busy = nearby?.busy ?? false;
       }
       notifyListeners();
     });
@@ -208,6 +205,10 @@ class StationOperations extends ChangeNotifier {
 
   List<T> getBusy<T extends Operation>(String deviceId) {
     return getAll<T>(deviceId).where((op) => !op.done).toList();
+  }
+
+  bool isBusy(String deviceId) {
+    return getBusy<Operation>(deviceId).isNotEmpty;
   }
 }
 
