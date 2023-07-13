@@ -33,7 +33,10 @@
 
   "myStationsTitle": "My Stations",
   "readyToDeploy": "Ready to deploy",
-  "busyTransferring": "Transferring...",
+  "busyWorking": "Busy...",
+  "busyUploading": "Uploading...",
+  "busyDownloading": "Downloading...",
+  "busyUpgrading": "Upgrading...",
   "contacting": "Contacting...",
   "unknownStationTitle": "Unknown Station",
   "backButtonTitle": "Back",

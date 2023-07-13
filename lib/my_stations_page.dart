@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+import 'common_widgets.dart';
 import 'gen/ffi.dart';
 
 import 'app_state.dart';
@@ -48,6 +49,28 @@ class ListStationsPage extends StatelessWidget {
   }
 }
 
+class TinyOperation extends StatelessWidget {
+  final Operation operation;
+
+  const TinyOperation({super.key, required this.operation});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final op = operation;
+    if (op is UploadOperation) {
+      return WH.align(WH.padPage(Text(localizations.busyUploading)));
+    }
+    if (op is DownloadOperation) {
+      return WH.align(WH.padPage(Text(localizations.busyDownloading)));
+    }
+    if (op is UpgradeOperation) {
+      return WH.align(WH.padPage(Text(localizations.busyUpgrading)));
+    }
+    return WH.align(WH.padPage(Text(localizations.busyWorking)));
+  }
+}
+
 class StationCard extends StatelessWidget {
   final StationModel station;
 
@@ -57,30 +80,37 @@ class StationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final operations = context.watch<StationOperations>().getBusy<Operation>(config.deviceId);
     final localizations = AppLocalizations.of(context)!;
     final icon = Icon(Icons.aod_rounded, color: station.connected ? Colors.blue : Colors.grey);
-    final subtitle = station.busy ? Text(localizations.busyTransferring) : Text(localizations.readyToDeploy);
+    final tinyOperations = operations.map((op) => TinyOperation(operation: op)).toList();
+    final subtitle = operations.isEmpty ? Text(localizations.readyToDeploy) : Text(localizations.busyWorking);
 
     return Container(
         padding: const EdgeInsets.all(10),
-        child: ListTile(
-          shape: RoundedRectangleBorder(
-            side: const BorderSide(color: Colors.grey, width: 1),
-            borderRadius: BorderRadius.circular(5),
-          ),
-          title: Container(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(config.name)),
-          subtitle: subtitle,
-          trailing: icon,
-          dense: false,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ViewStationRoute(deviceId: station.deviceId),
+        child: Container(
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color.fromRGBO(212, 212, 212, 1),
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(5))),
+            child: Column(children: [
+              ListTile(
+                title: Container(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(config.name)),
+                subtitle: Container(padding: const EdgeInsets.only(bottom: 8), child: subtitle),
+                trailing: icon,
+                dense: false,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ViewStationRoute(deviceId: station.deviceId),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ));
+              if (tinyOperations.isNotEmpty) Container(padding: const EdgeInsets.all(6), child: Column(children: tinyOperations))
+            ])));
   }
 }
 

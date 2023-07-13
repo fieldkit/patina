@@ -53,15 +53,19 @@ class GenericListItemHeader extends StatelessWidget {
   final String? subtitle;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
+  final Icon? trailing;
+  final VoidCallback? onTap;
 
-  const GenericListItemHeader({super.key, required this.title, this.subtitle, this.titleStyle, this.subtitleStyle});
+  const GenericListItemHeader(
+      {super.key, required this.title, this.subtitle, this.titleStyle, this.subtitleStyle, this.trailing, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final top = WH.align(WH.padPage(Text(
-      title,
-      style: titleStyle ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
-    )));
+    final maybeTrailing = trailing;
+    final top = WH.align(WH.padPage(Row(children: [
+      Text(title, style: titleStyle ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
+      if (maybeTrailing != null) maybeTrailing
+    ])));
 
     if (subtitle == null) {
       return top;

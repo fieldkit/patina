@@ -205,6 +205,10 @@ class StationOperations extends ChangeNotifier {
     final List<Operation> station = _active[deviceId] ?? List.empty();
     return station.whereType<T>().toList();
   }
+
+  List<T> getBusy<T extends Operation>(String deviceId) {
+    return getAll<T>(deviceId).where((op) => !op.done).toList();
+  }
 }
 
 abstract class Operation extends ChangeNotifier {
