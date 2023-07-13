@@ -298,6 +298,7 @@ impl support::IntoDart for DomainMessage {
             Self::FirmwareDownloadStatus(field0) => vec![5.into_dart(), field0.into_dart()],
             Self::UpgradeProgress(field0) => vec![6.into_dart(), field0.into_dart()],
             Self::AvailableFirmware(field0) => vec![7.into_dart(), field0.into_dart()],
+            Self::RecordArchives(field0) => vec![8.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }
@@ -389,6 +390,13 @@ impl support::IntoDart for NetworkConfig {
     }
 }
 impl support::IntoDartExceptPrimitive for NetworkConfig {}
+
+impl support::IntoDart for RecordArchive {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.device_id.into_dart(), self.path.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for RecordArchive {}
 
 impl support::IntoDart for SensorConfig {
     fn into_dart(self) -> support::DartAbi {

@@ -365,6 +365,10 @@ class NativeImpl implements Native {
         return DomainMessage_AvailableFirmware(
           _wire2api_list_local_firmware(raw[1]),
         );
+      case 8:
+        return DomainMessage_RecordArchives(
+          _wire2api_list_record_archive(raw[1]),
+        );
       default:
         throw Exception("unreachable");
     }
@@ -446,6 +450,10 @@ class NativeImpl implements Native {
     return (raw as List<dynamic>).map(_wire2api_network_config).toList();
   }
 
+  List<RecordArchive> _wire2api_list_record_archive(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_record_archive).toList();
+  }
+
   List<SensorConfig> _wire2api_list_sensor_config(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_sensor_config).toList();
   }
@@ -514,6 +522,16 @@ class NativeImpl implements Native {
 
   Uint8List? _wire2api_opt_uint_8_list(dynamic raw) {
     return raw == null ? null : _wire2api_uint_8_list(raw);
+  }
+
+  RecordArchive _wire2api_record_archive(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return RecordArchive(
+      deviceId: _wire2api_String(arr[0]),
+      path: _wire2api_String(arr[1]),
+    );
   }
 
   SensorConfig _wire2api_sensor_config(dynamic raw) {

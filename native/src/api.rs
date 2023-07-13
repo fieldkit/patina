@@ -988,6 +988,12 @@ pub struct TransferProgress {
 }
 
 #[derive(Debug)]
+pub struct RecordArchive {
+    pub device_id: String,
+    pub path: String,
+}
+
+#[derive(Debug)]
 pub enum DomainMessage {
     PreAccount,
     NearbyStations(Vec<NearbyStation>),
@@ -997,6 +1003,7 @@ pub enum DomainMessage {
     FirmwareDownloadStatus(FirmwareDownloadStatus),
     UpgradeProgress(UpgradeProgress),
     AvailableFirmware(Vec<LocalFirmware>),
+    RecordArchives(Vec<RecordArchive>),
 }
 
 #[derive(Clone, Debug)]

@@ -133,6 +133,9 @@ class DomainMessage with _$DomainMessage {
   const factory DomainMessage.availableFirmware(
     List<LocalFirmware> field0,
   ) = DomainMessage_AvailableFirmware;
+  const factory DomainMessage.recordArchives(
+    List<RecordArchive> field0,
+  ) = DomainMessage_RecordArchives;
 }
 
 class DownloadProgress {
@@ -232,6 +235,16 @@ class NetworkConfig {
 
   const NetworkConfig({
     required this.ssid,
+  });
+}
+
+class RecordArchive {
+  final String deviceId;
+  final String path;
+
+  const RecordArchive({
+    required this.deviceId,
+    required this.path,
   });
 }
 

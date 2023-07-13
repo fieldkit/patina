@@ -15,7 +15,7 @@ use discovery::{DeviceId, Discovered};
 use query::device::HttpReply;
 
 use crate::api::{
-    DomainMessage, DownloadProgress, NearbyStation, TransferProgress, TransferStatus,
+    DomainMessage, DownloadProgress, NearbyStation, RecordArchive, TransferProgress, TransferStatus,
 };
 
 #[derive(Debug)]
@@ -357,6 +357,23 @@ impl NearbyDevices {
                             device_id: device_id.0.to_owned(),
                             status: TransferStatus::Failed,
                         },
+                    )))
+                    .await?;
+
+                Ok(())
+            }
+            ServerEvent::Available(files) => {
+                info!("{:?}", files);
+                let files = files
+                    .iter()
+                    .map(|f| RecordArchive {
+                        device_id: f.device_id.clone(),
+                        path: f.path.clone(),
+                    })
+                    .collect();
+                publish_tx
+                    .send(BackgroundMessage::Domain(DomainMessage::RecordArchives(
+                        files,
                     )))
                     .await?;
 
