@@ -71,6 +71,7 @@ dependencies:
       url: https://github.com/fieldkit/data-protocol.git
       path: dart
   logger: ^1.4.0
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -105,6 +106,7 @@ flutter:
 
   # This is NOT recursive by default.
   assets:
+  - .env
   - resources/
   - resources/images/
   - resources/images/art/

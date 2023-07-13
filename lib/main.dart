@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -31,15 +32,21 @@ Future<void> _startNative(AppEventDispatcher dispatcher) async {
     developer.log(display);
   });
 
+  await dotenv.load(fileName: ".env");
+
   final storagePath = await _getStoragePath();
-  // const portalBaseUrl = "http://192.168.0.100:8080";
-  const portalBaseUrl = "https://api.fieldkit.org";
+  final portalBaseUrl = dotenv.env["FK_PORTAL_URL"] ?? "https://api.fieldkit.org";
+
+  debugPrint("Portal: $portalBaseUrl");
 
   // This is here because the initial native logs were getting chopped off, no
   // idea why and yes this is a hack.
   await Future.delayed(const Duration(milliseconds: 100));
 
-  await for (final e in api.startNative(storagePath: storagePath, portalBaseUrl: portalBaseUrl)) {
+  await for (final e in api.startNative(
+    storagePath: storagePath,
+    portalBaseUrl: portalBaseUrl,
+  )) {
     // var display = e.toString().trim();
     // debugPrint(display);
     // developer.log(display);
