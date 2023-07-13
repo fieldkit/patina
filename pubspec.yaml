@@ -70,6 +70,7 @@ dependencies:
     git:
       url: https://github.com/fieldkit/data-protocol.git
       path: dart
+  logger: ^1.4.0
 
 dev_dependencies:
   flutter_test:
