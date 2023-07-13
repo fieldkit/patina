@@ -72,7 +72,7 @@ class FirmwareItem extends StatelessWidget {
 
     return ExpandableBorderedListItem(
         header: header(),
-        expanded: comparison.newer,
+        expanded: comparison.newer || operations.isNotEmpty,
         children: [
           ElevatedButton(onPressed: canUpgrade ? onUpgrade : null, child: Text(localizations.firmwareUpgrade)),
           ...operations.map((operation) => UpgradeProgressWidget(operation: operation))
