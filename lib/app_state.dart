@@ -784,6 +784,9 @@ class PortalAccounts extends ChangeNotifier {
   }
 
   PortalAccount? getAccountForDevice(String deviceId) {
+    if (_accounts.isEmpty) {
+      return null;
+    }
     return _accounts[0];
   }
 }
