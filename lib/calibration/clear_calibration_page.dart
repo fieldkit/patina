@@ -5,6 +5,7 @@ import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
 
 import '../app_state.dart';
 import '../common_widgets.dart';
+import '../diagnostics.dart';
 import 'calibration_model.dart';
 import 'calibration_page.dart';
 
@@ -99,7 +100,7 @@ class ClearCalibrationPage extends StatelessWidget {
     final calibrations = moduleConfiguration.calibrations;
     final outerNavigator = Navigator.of(context);
 
-    debugPrint("$calibrations");
+    Loggers.cal.i("$calibrations");
 
     return Scaffold(
         appBar: AppBar(
@@ -132,16 +133,16 @@ class ClearCalibrationPage extends StatelessWidget {
                                   onPressed: () async {
                                     navigator.pop();
                                     try {
-                                      debugPrint("clearing calibration");
+                                      Loggers.cal.i("clearing calibration");
                                       await moduleConfigurations.clear(config.moduleIdentity);
-                                      debugPrint("cleared!");
+                                      Loggers.cal.i("cleared!");
                                       outerNavigator.push(
                                         MaterialPageRoute(
                                           builder: (context) => CalibrationPage(config: config),
                                         ),
                                       );
                                     } catch (e) {
-                                      debugPrint("Exception clearing: $e");
+                                      Loggers.cal.e("Exception clearing: $e");
                                     }
                                   },
                                   child: Text(AppLocalizations.of(context)!.confirmYes))
@@ -150,9 +151,9 @@ class ClearCalibrationPage extends StatelessWidget {
                         });
                   }),
               ElevatedButton(
-                  child: const Text("Keep"),
+                  child: const Text("Keep"), // TODO l10n
                   onPressed: () {
-                    debugPrint("keeping calibration");
+                    Loggers.cal.i("keeping calibration");
                     final navigator = Navigator.of(context);
                     navigator.push(
                       MaterialPageRoute(

@@ -8,6 +8,7 @@ import 'package:fk/view_station/sensor_widgets.dart';
 
 import '../app_state.dart';
 import '../common_widgets.dart';
+import '../diagnostics.dart';
 import 'calibration_model.dart';
 import 'countdown.dart';
 import 'number_form.dart';
@@ -53,20 +54,20 @@ class CalibrationPanel extends StatelessWidget {
     final reading = SensorReading(uncalibrated: sensor.value!.uncalibrated, value: sensor.value!.value);
     current.addPoint(CalibrationPoint(standard: standard, reading: reading));
 
-    debugPrint("(calibrate) calibration: $current");
-    debugPrint("(calibrate) active: $active");
+    Loggers.cal.i("(calibrate) calibration: $current");
+    Loggers.cal.i("(calibrate) active: $active");
 
     final nextConfig = config.popStandard();
     if (nextConfig.done) {
       final cal = current.toDataProtocol();
       final serialized = current.toBytes();
 
-      debugPrint("(calibrate) $cal");
+      Loggers.cal.i("(calibrate) $cal");
 
       try {
         await moduleConfigurations.calibrate(config.moduleIdentity, serialized);
       } catch (e) {
-        debugPrint("Exception calibration: $e");
+        Loggers.cal.e("Exception calibration: $e");
       }
 
       navigator.popUntil((route) => route.isFirst);
@@ -248,7 +249,7 @@ class ActiveCalibrationStandardForm extends StatelessWidget {
   Widget build(BuildContext context) {
     final activeCalibration = context.watch<ActiveCalibration>();
 
-    debugPrint("active = $activeCalibration");
+    Loggers.cal.i("active = $activeCalibration");
 
     final form = NumberForm(
       original: activeCalibration.standard,

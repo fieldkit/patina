@@ -1,6 +1,7 @@
 import 'package:calibration/calibration.dart';
 import 'package:flutter/material.dart';
 
+import 'diagnostics.dart';
 import 'gen/ffi.dart';
 
 class LocalizedModule {
@@ -37,7 +38,7 @@ class LocalizedModule {
       case "modules.random":
         return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Random Module");
       default:
-        debugPrint("Unknown module key: ${module.key}");
+        Loggers.main.e("Unknown module key: ${module.key}");
         return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Unknown Module");
     }
   }
@@ -117,7 +118,7 @@ class LocalizedSensor {
       case "modules.random.random_8":
         return LocalizedSensor(name: "Random 8", uom: sensor.calibratedUom);
       default:
-        debugPrint("Unknown sensor key: ${sensor.fullKey}");
+        Loggers.main.e("Unknown sensor key: ${sensor.fullKey}");
         return LocalizedSensor(name: sensor.fullKey, uom: sensor.calibratedUom);
     }
   }

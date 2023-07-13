@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
 
+import 'diagnostics.dart';
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'dispatcher.dart';
 
@@ -90,7 +91,7 @@ class KnownStationsModel extends ChangeNotifier {
 
   void _load() async {
     var stations = await api.getMyStations();
-    debugPrint("(load) my-stations: $stations");
+    Loggers.state.i("(load) my-stations: $stations");
     for (var station in stations) {
       findOrCreate(station.deviceId).config = station;
     }
@@ -109,12 +110,12 @@ class KnownStationsModel extends ChangeNotifier {
   Future<void> startDownload({required String deviceId}) async {
     final station = find(deviceId);
     if (station == null) {
-      debugPrint("$deviceId station missing");
+      Loggers.state.w("$deviceId station missing");
       return;
     }
 
     if (station.syncing != null) {
-      debugPrint("$deviceId already syncing");
+      Loggers.state.w("$deviceId already syncing");
       return;
     }
 
@@ -125,12 +126,12 @@ class KnownStationsModel extends ChangeNotifier {
   Future<void> startUpload({required String deviceId, required Tokens tokens, required List<RecordArchive> files}) async {
     final station = find(deviceId);
     if (station == null) {
-      debugPrint("$deviceId station missing");
+      Loggers.state.w("$deviceId station missing");
       return;
     }
 
     if (station.syncing != null) {
-      debugPrint("$deviceId already syncing");
+      Loggers.state.w("$deviceId already syncing");
       return;
     }
 
@@ -194,7 +195,7 @@ class StationOperations extends ChangeNotifier {
         return operation;
       }
     }
-    debugPrint("Creating $T");
+    Loggers.state.i("Creating $T");
     final operation = factory();
     _active[deviceId]!.add(operation);
     return operation;
@@ -403,7 +404,7 @@ class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
         for (final local in availableFirmware.firmware) {
           final comparison = FirmwareComparison.compare(local, firmware);
           if (comparison.newer) {
-            debugPrint("UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
+            Loggers.state.i("UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
             tasks.add(UpgradeTask(station: station, comparison: comparison));
             break;
           }
@@ -690,16 +691,16 @@ class PortalAccounts extends ChangeNotifier {
         _accounts.addAll(loaded.accounts);
         notifyListeners();
       } catch (e) {
-        debugPrint("Exception loading accounts: $e");
+        Loggers.state.e("Exception loading accounts: $e");
       }
     }
 
     if (_accounts.isEmpty) {
-      debugPrint("Checking firmware (unauthenticated)");
+      Loggers.state.w("Checking firmware (unauthenticated)");
       await api.cacheFirmware(tokens: null);
     } else {
       for (PortalAccount account in _accounts) {
-        debugPrint("Checking firmware (${account.email})");
+        Loggers.state.i("Checking firmware (${account.email})");
         await api.cacheFirmware(tokens: account.tokens);
       }
     }
@@ -719,7 +720,7 @@ class PortalAccounts extends ChangeNotifier {
       final authenticated = await api.authenticatePortal(email: email, password: password);
       return PortalAccount.fromAuthenticated(authenticated);
     } catch (e) {
-      debugPrint("Exception authenticating: $e");
+      Loggers.state.e("Exception authenticating: $e");
       return null;
     }
   }
@@ -770,7 +771,7 @@ class PortalAccounts extends ChangeNotifier {
         try {
           _accounts.add(PortalAccount.fromAuthenticated(await api.validateTokens(tokens: tokens)));
         } catch (e) {
-          debugPrint("Exception validating: $e");
+          Loggers.state.e("Exception validating: $e");
           _accounts.add(iter.invalid());
         }
       } else {
@@ -816,7 +817,7 @@ class ModuleConfigurations extends ChangeNotifier {
     if (mas != null) {
       await api.clearCalibration(deviceId: mas.station.deviceId, module: mas.module.position);
     } else {
-      debugPrint("unknown module identity $moduleIdentity");
+      Loggers.state.e("Unknown module identity $moduleIdentity");
     }
   }
 
@@ -825,7 +826,7 @@ class ModuleConfigurations extends ChangeNotifier {
     if (mas != null) {
       await api.calibrate(deviceId: mas.station.deviceId, module: mas.module.position, data: data);
     } else {
-      debugPrint("unknown module identity $moduleIdentity");
+      Loggers.state.e("Unknown module identity $moduleIdentity");
     }
   }
 }

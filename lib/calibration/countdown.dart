@@ -4,6 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../diagnostics.dart';
+
 class CountdownTimer {
   static const Duration period = Duration(seconds: 1);
   static const Duration trailing = Duration(seconds: 5);
@@ -20,7 +22,6 @@ class CountdownTimer {
 
   bool get wasDone {
     final finallyDone = started.add(expected).add(trailing);
-    // debugPrint("$started $now ${now.difference(started)} $finallyDone");
     return now.isAfter(finallyDone);
   }
 
@@ -38,7 +39,7 @@ class CountdownTimer {
 
   void skip() {
     if (!skipped) {
-      debugPrint("timer: skipped");
+      Loggers.cal.i("timer: skipped");
       skipped = true;
     }
   }

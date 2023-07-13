@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import 'diagnostics.dart';
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 
 /// Global event dispatcher. All components are supposed to dispatch their events via this class.
@@ -13,7 +14,7 @@ class AppEventDispatcher {
           listener.callback(m);
         }
       } catch (err) {
-        debugPrint("Failed to push $m: $err ($listener)");
+        Loggers.main.e("Failed to push $m: $err ($listener)");
       }
     }
   }

@@ -2,6 +2,8 @@ import 'package:flows/flows.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../diagnostics.dart';
+
 class StartFlow {
   final String name;
 
@@ -44,7 +46,7 @@ class ProvideContentFlowsWidget extends StatelessWidget {
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             final flows = ContentFlows.get(snapshot.data!);
-            debugPrint("flows:ready $flows");
+            Loggers.ui.i("flows:ready $flows");
             return Provider<ContentFlows>(
               create: (context) => flows,
               dispose: (context, value) => {},
@@ -68,7 +70,7 @@ class FlowWidget extends StatelessWidget {
 
   @override
   Widget build(context) {
-    debugPrint("screen: $screen");
+    Loggers.ui.i("screen: $screen");
     return Scaffold(
         appBar: AppBar(
           title: const Text('Flow'),

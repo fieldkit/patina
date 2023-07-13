@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
+import 'package:fk/diagnostics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -15,6 +16,8 @@ import 'app_state.dart';
 import 'dispatcher.dart';
 import 'home_page.dart';
 
+final logger = Loggers.main;
+
 Future<String> _getStoragePath() async {
   const fromEnv = String.fromEnvironment('FK_APP_SUPPORT_PATH');
   if (fromEnv.isNotEmpty) {
@@ -28,8 +31,7 @@ Future<String> _getStoragePath() async {
 Future<void> _startNative(AppEventDispatcher dispatcher) async {
   api.createLogSink().listen((logRow) {
     var display = logRow.trim();
-    debugPrint(display);
-    developer.log(display);
+    Loggers.native.i(display);
   });
 
   await dotenv.load(fileName: ".env");
@@ -37,7 +39,7 @@ Future<void> _startNative(AppEventDispatcher dispatcher) async {
   final storagePath = await _getStoragePath();
   final portalBaseUrl = dotenv.env["FK_PORTAL_URL"] ?? "https://api.fieldkit.org";
 
-  debugPrint("Portal: $portalBaseUrl");
+  logger.i("Portal: $portalBaseUrl");
 
   // This is here because the initial native logs were getting chopped off, no
   // idea why and yes this is a hack.
@@ -47,9 +49,7 @@ Future<void> _startNative(AppEventDispatcher dispatcher) async {
     storagePath: storagePath,
     portalBaseUrl: portalBaseUrl,
   )) {
-    // var display = e.toString().trim();
-    // debugPrint(display);
-    // developer.log(display);
+    Loggers.sdkMessages.v("$e");
     dispatcher.dispatch(e);
   }
 }
@@ -70,7 +70,7 @@ Future<AppEnv> initializeCurrentEnv(AppEventDispatcher dispatcher) async {
     try {
       await _startNative(dispatcher);
     } catch (err, stack) {
-      debugPrint('Native module error: $err $stack');
+      logger.e('Native module error: $err $stack');
     } finally {
       dispatcher.removeListener(listener);
     }
@@ -138,7 +138,7 @@ void main() async {
 
   var env = await initializeCurrentEnv(AppEventDispatcher());
 
-  debugPrint("initialized: $env");
+  logger.i("Initialized: $env");
 
   runApp(OurApp(env: env));
 }

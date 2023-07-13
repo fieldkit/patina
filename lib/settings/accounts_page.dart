@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:fk/common_widgets.dart';
 
 import '../app_state.dart';
+import '../diagnostics.dart';
 import '../splash_screen.dart';
 
 class AccountsPage extends StatelessWidget {
@@ -238,7 +239,7 @@ class _AccountState extends State<AccountForm> {
                       ));
                     }
                   } catch (error) {
-                    debugPrint("$error");
+                    Loggers.portal.e("$error");
                   } finally {
                     overlay.hide();
                   }

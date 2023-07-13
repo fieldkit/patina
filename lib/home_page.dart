@@ -86,8 +86,6 @@ class _HomePageState extends State<HomePage> {
         ],
         currentIndex: _pageIndex,
         onTap: (int index) {
-          final navigator = Navigator.of(context);
-          debugPrint("home-page: Tap $index $navigator");
           if (_pageIndex == index) {
             final List<GlobalKey<NavigatorState>> keys = [stationsNavigatorKey, dataNavigatorKey, settingsNavigatorKey];
             final NavigatorState? navigator = keys[index].currentState;

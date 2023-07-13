@@ -6,6 +6,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:async/async.dart';
 
+import 'diagnostics.dart';
+
 class Location {}
 
 Stream<Location> _monitorLocation() async* {
@@ -23,26 +25,26 @@ Stream<Location> _monitorLocation() async* {
   // final initialStatus = Stream.value(await Geolocator.isLocationServiceEnabled() ? ServiceStatus.enabled : ServiceStatus.disabled);
   final serviceStatusStream = StreamGroup.merge([Geolocator.getServiceStatusStream()]);
   serviceStatusStream.listen((ServiceStatus status) async {
-    debugPrint("location: $status");
+    Loggers.ui.i("location: $status");
     if (status == ServiceStatus.enabled) {
       var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
-        debugPrint("location: requesting permission");
+        Loggers.ui.i("location: requesting permission");
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          debugPrint("location: denid");
+          Loggers.ui.i("location: denid");
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        debugPrint("location: denied forever");
+        Loggers.ui.i("location: denied forever");
         return;
       }
 
       final positionStream = Geolocator.getPositionStream(locationSettings: locationSettings);
       positionStream.listen((Position position) async {
-        debugPrint("location: $position");
+        Loggers.ui.i("location: $position");
       });
     }
   });
