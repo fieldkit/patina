@@ -347,6 +347,30 @@ abstract class Task {
   String get key => key_;
 }
 
+class DeployTaskFactory extends ChangeNotifier {
+  final KnownStationsModel knownStations;
+  final List<DeployTask> tasks = List.empty(growable: true);
+
+  DeployTaskFactory({required this.knownStations}) {
+    knownStations.addListener(() {
+      tasks.clear();
+      tasks.addAll(create());
+      notifyListeners();
+    });
+  }
+
+  List<DeployTask> create() {
+    final List<DeployTask> tasks = List.empty(growable: true);
+    return tasks;
+  }
+}
+
+class DeployTask extends Task {
+  final StationModel station;
+
+  DeployTask({required this.station});
+}
+
 class UpgradeTaskFactory extends ChangeNotifier {
   final AvailableFirmwareModel availableFirmware;
   final KnownStationsModel knownStations;
@@ -391,6 +415,7 @@ class UpgradeTask extends Task {
 
 class TasksModel extends ChangeNotifier {
   TasksModel({required AvailableFirmwareModel availableFirmware, required KnownStationsModel knownStations}) {
+    DeployTaskFactory(knownStations: knownStations).addListener(notifyListeners);
     UpgradeTaskFactory(availableFirmware: availableFirmware, knownStations: knownStations).addListener(notifyListeners);
   }
 }
