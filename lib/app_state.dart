@@ -14,9 +14,8 @@ class StationModel {
   StationConfig? config;
   EphemeralConfig? ephemeral;
   SyncingProgress? syncing;
+  FirmwareInfo? get firmware => config?.firmware;
   bool connected;
-
-  FirmwareInfo? get firmware => null;
 
   StationModel({
     required this.deviceId,
@@ -354,30 +353,28 @@ class UpgradeTaskFactory extends ChangeNotifier {
   final List<UpgradeTask> tasks = List.empty(growable: true);
 
   UpgradeTaskFactory({required this.availableFirmware, required this.knownStations}) {
-    availableFirmware.addListener(() {
-      debugPrint("tasks: firmware");
+    listener() {
       tasks.clear();
       tasks.addAll(create());
       notifyListeners();
-    });
+    }
 
-    knownStations.addListener(() {
-      debugPrint("tasks: stations");
-      tasks.clear();
-      tasks.addAll(create());
-      notifyListeners();
-    });
+    availableFirmware.addListener(listener);
+    knownStations.addListener(listener);
   }
 
   List<UpgradeTask> create() {
     final List<UpgradeTask> tasks = List.empty(growable: true);
     for (final station in knownStations.stations) {
-      for (final local in availableFirmware.firmware) {
-        final firmware = station.firmware;
-        if (firmware != null) {
+      final firmware = station.firmware;
+      if (firmware != null) {
+        for (final local in availableFirmware.firmware) {
           final comparison = FirmwareComparison.compare(local, firmware);
-          debugPrint("$station $local $comparison");
-          tasks.add(UpgradeTask(station: station, comparison: comparison));
+          if (comparison.newer) {
+            debugPrint("UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
+            tasks.add(UpgradeTask(station: station, comparison: comparison));
+            break;
+          }
         }
       }
     }
