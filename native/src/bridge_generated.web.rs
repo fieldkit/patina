@@ -37,8 +37,8 @@ pub fn wire_start_download(port_: MessagePort, device_id: String) {
 }
 
 #[wasm_bindgen]
-pub fn wire_start_upload(port_: MessagePort, device_id: String, tokens: JsValue) {
-    wire_start_upload_impl(port_, device_id, tokens)
+pub fn wire_start_upload(port_: MessagePort, device_id: String, tokens: JsValue, files: JsValue) {
+    wire_start_upload_impl(port_, device_id, tokens, files)
 }
 
 #[wasm_bindgen]
@@ -73,6 +73,15 @@ impl Wire2Api<String> for String {
     }
 }
 
+impl Wire2Api<Vec<RecordArchive>> for JsValue {
+    fn wire2api(self) -> Vec<RecordArchive> {
+        self.dyn_into::<JsArray>()
+            .unwrap()
+            .iter()
+            .map(Wire2Api::wire2api)
+            .collect()
+    }
+}
 impl Wire2Api<LocalFirmware> for JsValue {
     fn wire2api(self) -> LocalFirmware {
         let self_ = self.dyn_into::<JsArray>().unwrap();
@@ -94,6 +103,21 @@ impl Wire2Api<LocalFirmware> for JsValue {
 impl Wire2Api<Option<Tokens>> for JsValue {
     fn wire2api(self) -> Option<Tokens> {
         (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
+    }
+}
+impl Wire2Api<RecordArchive> for JsValue {
+    fn wire2api(self) -> RecordArchive {
+        let self_ = self.dyn_into::<JsArray>().unwrap();
+        assert_eq!(
+            self_.length(),
+            2,
+            "Expected 2 elements, got {}",
+            self_.length()
+        );
+        RecordArchive {
+            device_id: self_.get(0).wire2api(),
+            path: self_.get(1).wire2api(),
+        }
     }
 }
 impl Wire2Api<Tokens> for JsValue {

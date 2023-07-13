@@ -141,6 +141,7 @@ fn wire_start_upload_impl(
     port_: MessagePort,
     device_id: impl Wire2Api<String> + UnwindSafe,
     tokens: impl Wire2Api<Tokens> + UnwindSafe,
+    files: impl Wire2Api<Vec<RecordArchive>> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -151,7 +152,8 @@ fn wire_start_upload_impl(
         move || {
             let api_device_id = device_id.wire2api();
             let api_tokens = tokens.wire2api();
-            move |task_callback| start_upload(api_device_id, api_tokens)
+            let api_files = files.wire2api();
+            move |task_callback| start_upload(api_device_id, api_tokens, api_files)
         },
     )
 }

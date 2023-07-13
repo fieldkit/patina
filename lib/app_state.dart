@@ -1,6 +1,6 @@
-import 'dart:collection';
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:uuid/uuid.dart';
@@ -122,7 +122,7 @@ class KnownStationsModel extends ChangeNotifier {
     applyTransferProgress(progress);
   }
 
-  Future<void> startUpload({required String deviceId, required Tokens tokens}) async {
+  Future<void> startUpload({required String deviceId, required Tokens tokens, required List<RecordArchive> files}) async {
     final station = find(deviceId);
     if (station == null) {
       debugPrint("$deviceId station missing");
@@ -134,7 +134,7 @@ class KnownStationsModel extends ChangeNotifier {
       return;
     }
 
-    final progress = await api.startUpload(deviceId: deviceId, tokens: tokens);
+    final progress = await api.startUpload(deviceId: deviceId, tokens: tokens, files: files);
     applyTransferProgress(progress);
   }
 
@@ -347,14 +347,23 @@ abstract class Task {
   String get key => key_;
 }
 
-class DeployTaskFactory extends ChangeNotifier {
+abstract class TaskFactory<M> extends ChangeNotifier {
+  final List<M> _tasks = List.empty(growable: true);
+
+  List<M> get tasks => List.unmodifiable(_tasks);
+
+  List<T> getAll<T extends Task>(String deviceId) {
+    return tasks.whereType<T>().toList();
+  }
+}
+
+class DeployTaskFactory extends TaskFactory<DeployTask> {
   final KnownStationsModel knownStations;
-  final List<DeployTask> tasks = List.empty(growable: true);
 
   DeployTaskFactory({required this.knownStations}) {
     knownStations.addListener(() {
-      tasks.clear();
-      tasks.addAll(create());
+      _tasks.clear();
+      _tasks.addAll(create());
       notifyListeners();
     });
   }
@@ -371,15 +380,14 @@ class DeployTask extends Task {
   DeployTask({required this.station});
 }
 
-class UpgradeTaskFactory extends ChangeNotifier {
+class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
   final AvailableFirmwareModel availableFirmware;
   final KnownStationsModel knownStations;
-  final List<UpgradeTask> tasks = List.empty(growable: true);
 
   UpgradeTaskFactory({required this.availableFirmware, required this.knownStations}) {
     listener() {
-      tasks.clear();
-      tasks.addAll(create());
+      _tasks.clear();
+      _tasks.addAll(create());
       notifyListeners();
     }
 
@@ -413,10 +421,75 @@ class UpgradeTask extends Task {
   UpgradeTask({required this.station, required this.comparison});
 }
 
+class UploadTaskFactory extends TaskFactory<UploadTask> {
+  final PortalAccounts portalAccounts;
+  List<RecordArchive> _archives = List.empty();
+
+  UploadTaskFactory({required this.portalAccounts, required AppEventDispatcher dispatcher}) {
+    portalAccounts.addListener(() {
+      _tasks.clear();
+      _tasks.addAll(create());
+      notifyListeners();
+    });
+
+    dispatcher.addListener<DomainMessage_RecordArchives>((archives) {
+      _archives = archives.field0;
+      _tasks.clear();
+      _tasks.addAll(create());
+      notifyListeners();
+    });
+  }
+
+  List<UploadTask> create() {
+    final List<UploadTask> tasks = List.empty(growable: true);
+    final byId = _archives.groupListsBy((a) => a.deviceId);
+    for (final entry in byId.entries) {
+      final tokens = portalAccounts.getAccountForDevice(entry.key)?.tokens;
+      if (tokens != null) {
+        tasks.add(UploadTask(deviceId: entry.key, files: entry.value, tokens: tokens));
+      }
+    }
+    return tasks;
+  }
+}
+
+class UploadTask extends Task {
+  final String deviceId;
+  final List<RecordArchive> files;
+  final Tokens tokens;
+
+  UploadTask({required this.deviceId, required this.files, required this.tokens});
+}
+
 class TasksModel extends ChangeNotifier {
-  TasksModel({required AvailableFirmwareModel availableFirmware, required KnownStationsModel knownStations}) {
-    DeployTaskFactory(knownStations: knownStations).addListener(notifyListeners);
-    UpgradeTaskFactory(availableFirmware: availableFirmware, knownStations: knownStations).addListener(notifyListeners);
+  final List<TaskFactory> factories = List.empty(growable: true);
+
+  TasksModel(
+      {required AvailableFirmwareModel availableFirmware,
+      required KnownStationsModel knownStations,
+      required PortalAccounts portalAccounts,
+      required AppEventDispatcher dispatcher}) {
+    factories.add(DeployTaskFactory(knownStations: knownStations));
+    factories.add(UploadTaskFactory(portalAccounts: portalAccounts, dispatcher: dispatcher));
+    factories.add(UpgradeTaskFactory(availableFirmware: availableFirmware, knownStations: knownStations));
+    for (final TaskFactory f in factories) {
+      f.addListener(notifyListeners);
+    }
+  }
+
+  List<T> getAll<T extends Task>(String deviceId) {
+    return factories.map((f) => f.getAll<T>(deviceId)).flattened.toList();
+  }
+
+  T? getMaybeOne<T extends Task>(String deviceId) {
+    final all = getAll<T>(deviceId);
+    if (all.length > 1) {
+      throw ArgumentError("Excepted one and only one Task");
+    }
+    if (all.length == 1) {
+      return all[0];
+    }
+    return null;
   }
 }
 
@@ -439,7 +512,12 @@ class AppState {
     final knownStations = KnownStationsModel(api, dispatcher);
     final moduleConfigurations = ModuleConfigurations(api: api, knownStations: knownStations);
     final portalAccounts = PortalAccounts(api: api, accounts: List.empty());
-    final tasks = TasksModel(availableFirmware: firmware, knownStations: knownStations);
+    final tasks = TasksModel(
+      availableFirmware: firmware,
+      knownStations: knownStations,
+      portalAccounts: portalAccounts,
+      dispatcher: dispatcher,
+    );
     return AppState._(api, dispatcher, knownStations, moduleConfigurations, portalAccounts, firmware, stationOperations, tasks);
   }
 
@@ -702,6 +780,10 @@ class PortalAccounts extends ChangeNotifier {
     await _save();
     notifyListeners();
     return this;
+  }
+
+  PortalAccount? getAccountForDevice(String deviceId) {
+    return _accounts[0];
   }
 }
 

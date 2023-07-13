@@ -157,14 +157,19 @@ class NativeImpl implements Native {
       );
 
   Future<TransferProgress> startUpload(
-      {required String deviceId, required Tokens tokens, dynamic hint}) {
+      {required String deviceId,
+      required Tokens tokens,
+      required List<RecordArchive> files,
+      dynamic hint}) {
     var arg0 = _platform.api2wire_String(deviceId);
     var arg1 = _platform.api2wire_box_autoadd_tokens(tokens);
+    var arg2 = _platform.api2wire_list_record_archive(files);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_start_upload(port_, arg0, arg1),
+      callFfi: (port_) =>
+          _platform.inner.wire_start_upload(port_, arg0, arg1, arg2),
       parseSuccessData: _wire2api_transfer_progress,
       constMeta: kStartUploadConstMeta,
-      argValues: [deviceId, tokens],
+      argValues: [deviceId, tokens, files],
       hint: hint,
     ));
   }
@@ -172,7 +177,7 @@ class NativeImpl implements Native {
   FlutterRustBridgeTaskConstMeta get kStartUploadConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "start_upload",
-        argNames: ["deviceId", "tokens"],
+        argNames: ["deviceId", "tokens", "files"],
       );
 
   Future<FirmwareDownloadStatus> cacheFirmware({Tokens? tokens, dynamic hint}) {

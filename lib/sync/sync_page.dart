@@ -13,26 +13,17 @@ class DataSyncTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<PortalAccounts>(
-      builder: (context, portalAccounts, child) {
-        return Consumer<KnownStationsModel>(
-          builder: (context, knownStations, child) {
-            return DataSyncPage(
-              known: knownStations,
-              onDownload: (station) async {
-                await knownStations.startDownload(deviceId: station.deviceId);
-              },
-              onUpload: (station) async {
-                final tokens = portalAccounts.accounts[0].tokens;
-                if (tokens != null) {
-                  await knownStations.startUpload(deviceId: station.deviceId, tokens: tokens);
-                } else {
-                  debugPrint("No tokens!");
-                }
-              },
-            );
-          },
-        );
+    final KnownStationsModel knownStations = context.watch<KnownStationsModel>();
+    final TasksModel tasks = context.watch<TasksModel>();
+
+    return DataSyncPage(
+      known: knownStations,
+      tasks: tasks,
+      onDownload: (station) async {
+        await knownStations.startDownload(deviceId: station.deviceId);
+      },
+      onUpload: (task) async {
+        await knownStations.startUpload(deviceId: task.deviceId, tokens: task.tokens, files: task.files);
       },
     );
   }
@@ -40,21 +31,22 @@ class DataSyncTab extends StatelessWidget {
 
 class DataSyncPage extends StatelessWidget {
   final KnownStationsModel known;
+  final TasksModel tasks;
   final void Function(StationModel) onDownload;
-  final void Function(StationModel) onUpload;
+  final void Function(UploadTask) onUpload;
 
-  const DataSyncPage({super.key, required this.known, required this.onDownload, required this.onUpload});
+  const DataSyncPage({super.key, required this.known, required this.tasks, required this.onDownload, required this.onUpload});
 
   @override
   Widget build(BuildContext context) {
-    final stations = known.stations
-        .where((station) => station.config != null)
-        .map((station) => StationSyncStatus(
-              station: station,
-              onDownload: () => onDownload(station),
-              onUpload: () => onUpload(station),
-            ))
-        .toList();
+    final stations = known.stations.where((station) => station.config != null).map((station) {
+      final uploadTask = tasks.getMaybeOne<UploadTask>(station.deviceId);
+      return StationSyncStatus(
+        station: station,
+        onDownload: () => onDownload(station),
+        onUpload: uploadTask != null ? () => onUpload(uploadTask) : null,
+      );
+    }).toList();
 
     return Scaffold(
         appBar: AppBar(
@@ -65,8 +57,8 @@ class DataSyncPage extends StatelessWidget {
 }
 
 class SyncOptions extends StatelessWidget {
-  final VoidCallback onDownload;
-  final VoidCallback onUpload;
+  final VoidCallback? onDownload;
+  final VoidCallback? onUpload;
 
   const SyncOptions({super.key, required this.onDownload, required this.onUpload});
 
@@ -113,8 +105,8 @@ class UpgradeRequiredWidget extends StatelessWidget {
 
 class StationSyncStatus extends StatelessWidget {
   final StationModel station;
-  final VoidCallback onDownload;
-  final VoidCallback onUpload;
+  final VoidCallback? onDownload;
+  final VoidCallback? onUpload;
 
   StationConfig get config => station.config!;
 

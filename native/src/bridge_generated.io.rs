@@ -58,8 +58,9 @@ pub extern "C" fn wire_start_upload(
     port_: i64,
     device_id: *mut wire_uint_8_list,
     tokens: *mut wire_Tokens,
+    files: *mut wire_list_record_archive,
 ) {
-    wire_start_upload_impl(port_, device_id, tokens)
+    wire_start_upload_impl(port_, device_id, tokens, files)
 }
 
 #[no_mangle]
@@ -100,6 +101,15 @@ pub extern "C" fn new_box_autoadd_tokens_0() -> *mut wire_Tokens {
 }
 
 #[no_mangle]
+pub extern "C" fn new_list_record_archive_0(len: i32) -> *mut wire_list_record_archive {
+    let wrap = wire_list_record_archive {
+        ptr: support::new_leak_vec_ptr(<wire_RecordArchive>::new_with_null_ptr(), len),
+        len,
+    };
+    support::new_leak_box_ptr(wrap)
+}
+
+#[no_mangle]
 pub extern "C" fn new_uint_8_list_0(len: i32) -> *mut wire_uint_8_list {
     let ans = wire_uint_8_list {
         ptr: support::new_leak_vec_ptr(Default::default(), len),
@@ -132,6 +142,15 @@ impl Wire2Api<Tokens> for *mut wire_Tokens {
     }
 }
 
+impl Wire2Api<Vec<RecordArchive>> for *mut wire_list_record_archive {
+    fn wire2api(self) -> Vec<RecordArchive> {
+        let vec = unsafe {
+            let wrap = support::box_from_leak_ptr(self);
+            support::vec_from_leak_ptr(wrap.ptr, wrap.len)
+        };
+        vec.into_iter().map(Wire2Api::wire2api).collect()
+    }
+}
 impl Wire2Api<LocalFirmware> for wire_LocalFirmware {
     fn wire2api(self) -> LocalFirmware {
         LocalFirmware {
@@ -144,6 +163,14 @@ impl Wire2Api<LocalFirmware> for wire_LocalFirmware {
     }
 }
 
+impl Wire2Api<RecordArchive> for wire_RecordArchive {
+    fn wire2api(self) -> RecordArchive {
+        RecordArchive {
+            device_id: self.device_id.wire2api(),
+            path: self.path.wire2api(),
+        }
+    }
+}
 impl Wire2Api<Tokens> for wire_Tokens {
     fn wire2api(self) -> Tokens {
         Tokens {
@@ -174,12 +201,26 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
 
 #[repr(C)]
 #[derive(Clone)]
+pub struct wire_list_record_archive {
+    ptr: *mut wire_RecordArchive,
+    len: i32,
+}
+
+#[repr(C)]
+#[derive(Clone)]
 pub struct wire_LocalFirmware {
     id: i64,
     label: *mut wire_uint_8_list,
     time: i64,
     module: *mut wire_uint_8_list,
     profile: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_RecordArchive {
+    device_id: *mut wire_uint_8_list,
+    path: *mut wire_uint_8_list,
 }
 
 #[repr(C)]
@@ -228,6 +269,21 @@ impl NewWithNullPtr for wire_LocalFirmware {
 }
 
 impl Default for wire_LocalFirmware {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
+impl NewWithNullPtr for wire_RecordArchive {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            device_id: core::ptr::null_mut(),
+            path: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl Default for wire_RecordArchive {
     fn default() -> Self {
         Self::new_with_null_ptr()
     }

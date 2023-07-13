@@ -43,6 +43,16 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_list_record_archive> api2wire_list_record_archive(
+      List<RecordArchive> raw) {
+    final ans = inner.new_list_record_archive_0(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      _api_fill_to_wire_record_archive(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
   ffi.Pointer<wire_Tokens> api2wire_opt_box_autoadd_tokens(Tokens? raw) {
     return raw == null ? ffi.nullptr : api2wire_box_autoadd_tokens(raw);
   }
@@ -80,6 +90,12 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   void _api_fill_to_wire_opt_box_autoadd_tokens(
       Tokens? apiObj, ffi.Pointer<wire_Tokens> wireObj) {
     if (apiObj != null) _api_fill_to_wire_box_autoadd_tokens(apiObj, wireObj);
+  }
+
+  void _api_fill_to_wire_record_archive(
+      RecordArchive apiObj, wire_RecordArchive wireObj) {
+    wireObj.device_id = api2wire_String(apiObj.deviceId);
+    wireObj.path = api2wire_String(apiObj.path);
   }
 
   void _api_fill_to_wire_tokens(Tokens apiObj, wire_Tokens wireObj) {
@@ -325,21 +341,26 @@ class NativeWire implements FlutterRustBridgeWireBase {
     int port_,
     ffi.Pointer<wire_uint_8_list> device_id,
     ffi.Pointer<wire_Tokens> tokens,
+    ffi.Pointer<wire_list_record_archive> files,
   ) {
     return _wire_start_upload(
       port_,
       device_id,
       tokens,
+      files,
     );
   }
 
   late final _wire_start_uploadPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_Tokens>)>>('wire_start_upload');
+          ffi.Void Function(
+              ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_Tokens>,
+              ffi.Pointer<wire_list_record_archive>)>>('wire_start_upload');
   late final _wire_start_upload = _wire_start_uploadPtr.asFunction<
-      void Function(
-          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_Tokens>)>();
+      void Function(int, ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_Tokens>, ffi.Pointer<wire_list_record_archive>)>();
 
   void wire_cache_firmware(
     int port_,
@@ -432,6 +453,21 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_tokens_0 = _new_box_autoadd_tokens_0Ptr
       .asFunction<ffi.Pointer<wire_Tokens> Function()>();
 
+  ffi.Pointer<wire_list_record_archive> new_list_record_archive_0(
+    int len,
+  ) {
+    return _new_list_record_archive_0(
+      len,
+    );
+  }
+
+  late final _new_list_record_archive_0Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_list_record_archive> Function(
+              ffi.Int32)>>('new_list_record_archive_0');
+  late final _new_list_record_archive_0 = _new_list_record_archive_0Ptr
+      .asFunction<ffi.Pointer<wire_list_record_archive> Function(int)>();
+
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
   ) {
@@ -481,6 +517,19 @@ class wire_Tokens extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> token;
 
   external wire_TransmissionToken transmission;
+}
+
+class wire_RecordArchive extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> device_id;
+
+  external ffi.Pointer<wire_uint_8_list> path;
+}
+
+class wire_list_record_archive extends ffi.Struct {
+  external ffi.Pointer<wire_RecordArchive> ptr;
+
+  @ffi.Int32()
+  external int len;
 }
 
 class wire_LocalFirmware extends ffi.Struct {

@@ -41,6 +41,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic> api2wire_list_record_archive(List<RecordArchive> raw) {
+    return raw.map(api2wire_record_archive).toList();
+  }
+
+  @protected
   List<dynamic> api2wire_local_firmware(LocalFirmware raw) {
     return [
       api2wire_i64(raw.id),
@@ -54,6 +59,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   @protected
   List<dynamic>? api2wire_opt_box_autoadd_tokens(Tokens? raw) {
     return raw == null ? null : api2wire_box_autoadd_tokens(raw);
+  }
+
+  @protected
+  List<dynamic> api2wire_record_archive(RecordArchive raw) {
+    return [api2wire_String(raw.deviceId), api2wire_String(raw.path)];
   }
 
   @protected
@@ -107,8 +117,8 @@ class NativeWasmModule implements WasmModule {
   external dynamic /* void */ wire_start_download(
       NativePortType port_, String device_id);
 
-  external dynamic /* void */ wire_start_upload(
-      NativePortType port_, String device_id, List<dynamic> tokens);
+  external dynamic /* void */ wire_start_upload(NativePortType port_,
+      String device_id, List<dynamic> tokens, List<dynamic> files);
 
   external dynamic /* void */ wire_cache_firmware(
       NativePortType port_, List<dynamic>? tokens);
@@ -152,9 +162,9 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_start_download(NativePortType port_, String device_id) =>
       wasmModule.wire_start_download(port_, device_id);
 
-  void wire_start_upload(
-          NativePortType port_, String device_id, List<dynamic> tokens) =>
-      wasmModule.wire_start_upload(port_, device_id, tokens);
+  void wire_start_upload(NativePortType port_, String device_id,
+          List<dynamic> tokens, List<dynamic> files) =>
+      wasmModule.wire_start_upload(port_, device_id, tokens, files);
 
   void wire_cache_firmware(NativePortType port_, List<dynamic>? tokens) =>
       wasmModule.wire_cache_firmware(port_, tokens);

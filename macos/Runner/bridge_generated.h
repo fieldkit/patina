@@ -24,6 +24,16 @@ typedef struct wire_Tokens {
   struct wire_TransmissionToken transmission;
 } wire_Tokens;
 
+typedef struct wire_RecordArchive {
+  struct wire_uint_8_list *device_id;
+  struct wire_uint_8_list *path;
+} wire_RecordArchive;
+
+typedef struct wire_list_record_archive {
+  struct wire_RecordArchive *ptr;
+  int32_t len;
+} wire_list_record_archive;
+
 typedef struct wire_LocalFirmware {
   int64_t id;
   struct wire_uint_8_list *label;
@@ -67,7 +77,8 @@ void wire_start_download(int64_t port_, struct wire_uint_8_list *device_id);
 
 void wire_start_upload(int64_t port_,
                        struct wire_uint_8_list *device_id,
-                       struct wire_Tokens *tokens);
+                       struct wire_Tokens *tokens,
+                       struct wire_list_record_archive *files);
 
 void wire_cache_firmware(int64_t port_, struct wire_Tokens *tokens);
 
@@ -83,6 +94,8 @@ void wire_create_log_sink(int64_t port_);
 struct wire_LocalFirmware *new_box_autoadd_local_firmware_0(void);
 
 struct wire_Tokens *new_box_autoadd_tokens_0(void);
+
+struct wire_list_record_archive *new_list_record_archive_0(int32_t len);
 
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
@@ -104,6 +117,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_create_log_sink);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_local_firmware_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_tokens_0);
+    dummy_var ^= ((int64_t) (void*) new_list_record_archive_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

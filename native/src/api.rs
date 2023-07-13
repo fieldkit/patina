@@ -305,7 +305,12 @@ impl Sdk {
         })
     }
 
-    async fn start_upload(&self, device_id: DeviceId, tokens: Tokens) -> Result<TransferProgress> {
+    async fn start_upload(
+        &self,
+        device_id: DeviceId,
+        tokens: Tokens,
+        files: Vec<RecordArchive>,
+    ) -> Result<TransferProgress> {
         info!("{:?} start upload", &device_id);
 
         tokio::task::spawn({
@@ -315,42 +320,46 @@ impl Sdk {
             let device_id = device_id.clone();
 
             async move {
-                let path = PathBuf::from("/home/jlewallen/.local/share/org.fieldkit.app/fk-data/4b6af9895333464850202020ff12410c/20230605_231928.fkpb");
-                let res = authenticated.upload_readings(&path).await;
+                for file in files.into_iter() {
+                    let res = authenticated
+                        .upload_readings(&PathBuf::from(file.path))
+                        .await;
 
-                let status = match res {
-                    Ok(mut stream) => {
-                        while let Some(Ok(bytes)) = stream.next().await {
-                            match publish_tx
-                                .send(DomainMessage::UploadProgress(TransferProgress {
-                                    device_id: device_id.clone().into(),
-                                    status: TransferStatus::Uploading(UploadProgress {
-                                        bytes_uploaded: bytes.bytes_uploaded,
-                                        total_bytes: bytes.total_bytes,
-                                    }),
-                                }))
-                                .await
-                            {
-                                Ok(_) => {}
-                                Err(e) => warn!("{:?}", e),
+                    let status = match res {
+                        Ok(mut stream) => {
+                            while let Some(Ok(bytes)) = stream.next().await {
+                                match publish_tx
+                                    .send(DomainMessage::UploadProgress(TransferProgress {
+                                        device_id: device_id.clone().into(),
+                                        status: TransferStatus::Uploading(UploadProgress {
+                                            bytes_uploaded: bytes.bytes_uploaded,
+                                            total_bytes: bytes.total_bytes,
+                                        }),
+                                    }))
+                                    .await
+                                {
+                                    Ok(_) => {}
+                                    Err(e) => warn!("{:?}", e),
+                                }
                             }
+
+                            TransferStatus::Completed
                         }
+                        Err(e) => {
+                            warn!("{:?}", e);
 
-                        TransferStatus::Completed
-                    }
-                    Err(e) => {
-                        warn!("{:?}", e);
+                            TransferStatus::Failed
+                        }
+                    };
 
-                        TransferStatus::Failed
-                    }
-                };
-
-                publish_tx
-                    .send(DomainMessage::UploadProgress(TransferProgress {
-                        device_id: device_id.into(),
-                        status,
-                    }))
-                    .await
+                    publish_tx
+                        .send(DomainMessage::UploadProgress(TransferProgress {
+                            device_id: device_id.clone().into(),
+                            status,
+                        }))
+                        .await
+                        .expect("Publish failed")
+                }
             }
         });
 
@@ -771,9 +780,13 @@ pub fn start_download(device_id: String) -> Result<TransferProgress> {
     })?)
 }
 
-pub fn start_upload(device_id: String, tokens: Tokens) -> Result<TransferProgress> {
+pub fn start_upload(
+    device_id: String,
+    tokens: Tokens,
+    files: Vec<RecordArchive>,
+) -> Result<TransferProgress> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.start_upload(DeviceId(device_id.clone()), tokens))
+        rt.block_on(sdk.start_upload(DeviceId(device_id.clone()), tokens, files))
     })?)
 }
 
