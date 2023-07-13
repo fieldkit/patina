@@ -450,73 +450,40 @@ impl Sdk {
         swap: bool,
     ) -> Result<UpgradeProgress> {
         info!("upgrade-station: {:?} to {:?}", device_id, firmware);
-        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
-            let client = query::device::Client::new()?;
-            let path =
-                PathBuf::from(&self.storage_path).join(format!("firmware-{}.bin", firmware.id));
+        match self.get_nearby_addr(&device_id).await? {
+            Some(addr) => {
+                let client = query::device::Client::new()?;
+                let path =
+                    PathBuf::from(&self.storage_path).join(format!("firmware-{}.bin", firmware.id));
 
-            let nearby = self.nearby.clone();
+                let nearby = self.nearby.clone();
 
-            nearby.mark_busy(&device_id, true).await?;
+                nearby.mark_busy(&device_id, true).await?;
 
-            tokio::task::spawn({
-                let device_id = device_id.clone();
-                let publish_tx = self.publish_tx.clone();
+                tokio::task::spawn({
+                    let device_id = device_id.clone();
+                    let publish_tx = self.publish_tx.clone();
 
-                async move {
-                    match client.upgrade(&addr, &path, swap).await {
-                        Ok(mut stream) => {
-                            let mut failed = false;
+                    async move {
+                        match client.upgrade(&addr, &path, swap).await {
+                            Ok(mut stream) => {
+                                let mut failed = false;
 
-                            while let Some(res) = stream.next().await {
-                                match res {
-                                    Ok(bytes) => {
-                                        publish_tx
-                                            .send(DomainMessage::UpgradeProgress(UpgradeProgress {
-                                                device_id: device_id.0.clone(),
-                                                firmware_id: firmware.id,
-                                                status: UpgradeStatus::Uploading(UploadProgress {
-                                                    bytes_uploaded: bytes.bytes_uploaded,
-                                                    total_bytes: bytes.total_bytes,
-                                                }),
-                                            }))
-                                            .await
-                                            .expect("Upgrade progress failed");
-                                    }
-                                    Err(_) => {
-                                        publish_tx
-                                            .send(DomainMessage::UpgradeProgress(UpgradeProgress {
-                                                device_id: device_id.0.clone(),
-                                                firmware_id: firmware.id,
-                                                status: UpgradeStatus::Failed,
-                                            }))
-                                            .await
-                                            .expect("Upgrade progress failed");
-
-                                        failed = true;
-                                    }
-                                }
-                            }
-
-                            if !failed {
-                                if swap {
-                                    publish_tx
-                                        .send(DomainMessage::UpgradeProgress(UpgradeProgress {
-                                            device_id: device_id.0.clone(),
-                                            firmware_id: firmware.id,
-                                            status: UpgradeStatus::Restarting,
-                                        }))
-                                        .await
-                                        .expect("Upgrade progress failed");
-
-                                    match wait_for_station_restart(&addr).await {
-                                        Ok(_) => {
+                                while let Some(res) = stream.next().await {
+                                    match res {
+                                        Ok(bytes) => {
                                             publish_tx
                                                 .send(DomainMessage::UpgradeProgress(
                                                     UpgradeProgress {
                                                         device_id: device_id.0.clone(),
                                                         firmware_id: firmware.id,
-                                                        status: UpgradeStatus::Completed,
+                                                        status: UpgradeStatus::Uploading(
+                                                            UploadProgress {
+                                                                bytes_uploaded: bytes
+                                                                    .bytes_uploaded,
+                                                                total_bytes: bytes.total_bytes,
+                                                            },
+                                                        ),
                                                     },
                                                 ))
                                                 .await
@@ -533,55 +500,108 @@ impl Sdk {
                                                 ))
                                                 .await
                                                 .expect("Upgrade progress failed");
+
+                                            failed = true;
                                         }
                                     }
-                                } else {
-                                    publish_tx
-                                        .send(DomainMessage::UpgradeProgress(UpgradeProgress {
-                                            device_id: device_id.0.clone(),
-                                            firmware_id: firmware.id,
-                                            status: UpgradeStatus::Completed,
-                                        }))
-                                        .await
-                                        .expect("Upgrade progress failed");
                                 }
+
+                                if !failed {
+                                    if swap {
+                                        publish_tx
+                                            .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                                device_id: device_id.0.clone(),
+                                                firmware_id: firmware.id,
+                                                status: UpgradeStatus::Restarting,
+                                            }))
+                                            .await
+                                            .expect("Upgrade progress failed");
+
+                                        match wait_for_station_restart(&addr).await {
+                                            Ok(_) => {
+                                                publish_tx
+                                                    .send(DomainMessage::UpgradeProgress(
+                                                        UpgradeProgress {
+                                                            device_id: device_id.0.clone(),
+                                                            firmware_id: firmware.id,
+                                                            status: UpgradeStatus::Completed,
+                                                        },
+                                                    ))
+                                                    .await
+                                                    .expect("Upgrade progress failed");
+                                            }
+                                            Err(_) => {
+                                                publish_tx
+                                                    .send(DomainMessage::UpgradeProgress(
+                                                        UpgradeProgress {
+                                                            device_id: device_id.0.clone(),
+                                                            firmware_id: firmware.id,
+                                                            status: UpgradeStatus::Failed,
+                                                        },
+                                                    ))
+                                                    .await
+                                                    .expect("Upgrade progress failed");
+                                            }
+                                        }
+                                    } else {
+                                        publish_tx
+                                            .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                                device_id: device_id.0.clone(),
+                                                firmware_id: firmware.id,
+                                                status: UpgradeStatus::Completed,
+                                            }))
+                                            .await
+                                            .expect("Upgrade progress failed");
+                                    }
+                                }
+
+                                nearby
+                                    .mark_busy(&device_id, false)
+                                    .await
+                                    .expect("Mark busy failed");
                             }
+                            Err(e) => {
+                                warn!("Error: {:?}", e);
 
-                            nearby
-                                .mark_busy(&device_id, false)
-                                .await
-                                .expect("Mark busy failed");
-                        }
-                        Err(_) => {
-                            publish_tx
-                                .send(DomainMessage::UpgradeProgress(UpgradeProgress {
-                                    device_id: device_id.0.clone(),
-                                    firmware_id: firmware.id,
-                                    status: UpgradeStatus::Failed,
-                                }))
-                                .await
-                                .expect("Upgrade progress failed");
+                                publish_tx
+                                    .send(DomainMessage::UpgradeProgress(UpgradeProgress {
+                                        device_id: device_id.0.clone(),
+                                        firmware_id: firmware.id,
+                                        status: UpgradeStatus::Failed,
+                                    }))
+                                    .await
+                                    .expect("Upgrade progress failed");
 
-                            nearby
-                                .mark_busy(&device_id, false)
-                                .await
-                                .expect("Mark busy failed");
+                                nearby
+                                    .mark_busy(&device_id, false)
+                                    .await
+                                    .expect("Mark busy failed");
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            Ok(UpgradeProgress {
-                device_id: device_id.0.clone(),
-                firmware_id: firmware.id,
-                status: UpgradeStatus::Starting,
-            })
-        } else {
-            Ok(UpgradeProgress {
-                device_id: device_id.0.clone(),
-                firmware_id: firmware.id,
-                status: UpgradeStatus::Failed,
-            })
+                Ok(UpgradeProgress {
+                    device_id: device_id.0.clone(),
+                    firmware_id: firmware.id,
+                    status: UpgradeStatus::Starting,
+                })
+            }
+            None => {
+                warn!("No nearby for station!");
+
+                Ok(UpgradeProgress {
+                    device_id: device_id.0.clone(),
+                    firmware_id: firmware.id,
+                    status: UpgradeStatus::Failed,
+                })
+            } /*
+              Err(e) => Ok(UpgradeProgress {
+                  device_id: device_id.0.clone(),
+                  firmware_id: firmware.id,
+                  status: UpgradeStatus::Failed,
+              }),
+              */
         }
     }
 }
