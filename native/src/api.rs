@@ -321,6 +321,8 @@ impl Sdk {
 
             async move {
                 for file in files.into_iter() {
+                    info!("{:?} uploading", &file);
+
                     let res = authenticated
                         .upload_readings(&PathBuf::from(file.path))
                         .await;
@@ -339,14 +341,14 @@ impl Sdk {
                                     .await
                                 {
                                     Ok(_) => {}
-                                    Err(e) => warn!("{:?}", e),
+                                    Err(e) => warn!("Publish failed: {:?}", e),
                                 }
                             }
 
                             TransferStatus::Completed
                         }
                         Err(e) => {
-                            warn!("{:?}", e);
+                            warn!("Upload failed: {:?}", e);
 
                             TransferStatus::Failed
                         }
