@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import 'diagnostics.dart';
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 

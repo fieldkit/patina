@@ -31,7 +31,7 @@ Future<String> _getStoragePath() async {
 Future<void> _startNative(AppEventDispatcher dispatcher) async {
   api.createLogSink().listen((logRow) {
     var display = logRow.trim();
-    Loggers.native.i(display);
+    Loggers.bridge.i(display);
   });
 
   await dotenv.load(fileName: ".env");

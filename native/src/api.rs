@@ -446,7 +446,7 @@ impl Sdk {
 
                         return;
                     }
-                    Ok(_) => info!("TODO Check for upgrade-ability"),
+                    Ok(_) => {}
                 };
             }
         });

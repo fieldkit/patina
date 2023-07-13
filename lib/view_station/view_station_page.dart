@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
-import '../diagnostics.dart';
 import '../gen/ffi.dart';
 
 import '../app_state.dart';
@@ -18,10 +17,8 @@ class ViewStationRoute extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Loggers.ui.i("view-station-route:build");
     return Consumer<KnownStationsModel>(
       builder: (context, knownStations, child) {
-        Loggers.ui.i("view-station-route:build-children");
         var station = knownStations.find(deviceId);
         if (station == null) {
           return const NoSuchStationPage();
