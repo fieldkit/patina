@@ -14,10 +14,12 @@ class DataSyncTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final KnownStationsModel knownStations = context.watch<KnownStationsModel>();
+    final StationOperations stationOperations = context.watch<StationOperations>();
     final TasksModel tasks = context.watch<TasksModel>();
 
     return DataSyncPage(
       known: knownStations,
+      stationOperations: stationOperations,
       tasks: tasks,
       onDownload: (station) async {
         await knownStations.startDownload(deviceId: station.deviceId);
@@ -32,19 +34,27 @@ class DataSyncTab extends StatelessWidget {
 class DataSyncPage extends StatelessWidget {
   final KnownStationsModel known;
   final TasksModel tasks;
+  final StationOperations stationOperations;
   final void Function(StationModel) onDownload;
   final void Function(UploadTask) onUpload;
 
-  const DataSyncPage({super.key, required this.known, required this.tasks, required this.onDownload, required this.onUpload});
+  const DataSyncPage(
+      {super.key,
+      required this.known,
+      required this.tasks,
+      required this.stationOperations,
+      required this.onDownload,
+      required this.onUpload});
 
   @override
   Widget build(BuildContext context) {
     final stations = known.stations.where((station) => station.config != null).map((station) {
       final uploadTask = tasks.getMaybeOne<UploadTask>(station.deviceId);
+      final busy = stationOperations.isBusy(station.deviceId);
       return StationSyncStatus(
         station: station,
-        onDownload: () => onDownload(station),
-        onUpload: uploadTask != null ? () => onUpload(uploadTask) : null,
+        onDownload: busy ? null : () => onDownload(station),
+        onUpload: (!busy && uploadTask != null) ? () => onUpload(uploadTask) : null,
       );
     }).toList();
 
