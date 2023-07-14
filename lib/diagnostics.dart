@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:logger/logger.dart';
 
 class NoneFilter extends LogFilter {
@@ -20,21 +22,34 @@ class AddLoggerName extends LogPrinter {
 
 final devNull = Logger(filter: NoneFilter());
 
-Logger create(String name) {
+Logger create(File file, String name) {
   return Logger(
     filter: null,
     printer: AddLoggerName(SimplePrinter(), name),
-    output: null,
+    output: MultiOutput([
+      ConsoleOutput(),
+      FileOutput(file: file),
+    ]),
   );
 }
 
 class Loggers {
-  static final Logger _main = create("main");
-  static final Logger _bridge = create("bridge");
-  static final Logger _state = create("state");
-  static final Logger _cal = create("cal");
-  static final Logger _ui = create("ui");
-  static final Logger _portal = create("portal");
+  static Logger _main = devNull;
+  static Logger _bridge = devNull;
+  static Logger _state = devNull;
+  static Logger _cal = devNull;
+  static Logger _ui = devNull;
+  static Logger _portal = devNull;
+
+  static void initialize(String logsPath) {
+    final File file = File("$logsPath/logs.txt");
+    _main = create(file, "main");
+    _bridge = create(file, "bridge");
+    _state = create(file, "state");
+    _cal = create(file, "cal");
+    _ui = create(file, "ui");
+    _portal = create(file, "portal");
+  }
 
   static Logger get main => _main;
   static Logger get bridge => _bridge;

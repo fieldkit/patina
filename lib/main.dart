@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer' as developer;
 
 import 'package:fk/diagnostics.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +18,8 @@ import 'home_page.dart';
 final logger = Loggers.main;
 
 Future<String> _getStoragePath() async {
-  const fromEnv = String.fromEnvironment('FK_APP_SUPPORT_PATH');
-  if (fromEnv.isNotEmpty) {
+  final fromEnv = dotenv.env['FK_APP_SUPPORT_PATH'];
+  if (fromEnv != null) {
     return fromEnv;
   }
 
@@ -28,33 +27,50 @@ Future<String> _getStoragePath() async {
   return location.path;
 }
 
-Future<void> _startNative(AppEventDispatcher dispatcher) async {
+Future<void> _startNative(Configuration config, AppEventDispatcher dispatcher) async {
   api.createLogSink().listen((logRow) {
     var display = logRow.trim();
     Loggers.bridge.i(display);
   });
-
-  await dotenv.load(fileName: ".env");
-
-  final storagePath = await _getStoragePath();
-  final portalBaseUrl = dotenv.env["FK_PORTAL_URL"] ?? "https://api.fieldkit.org";
-
-  logger.i("Portal: $portalBaseUrl");
 
   // This is here because the initial native logs were getting chopped off, no
   // idea why and yes this is a hack.
   await Future.delayed(const Duration(milliseconds: 100));
 
   await for (final e in api.startNative(
-    storagePath: storagePath,
-    portalBaseUrl: portalBaseUrl,
+    storagePath: config.storagePath,
+    portalBaseUrl: config.portalBaseUrl,
   )) {
     Loggers.sdkMessages.v("$e");
     dispatcher.dispatch(e);
   }
 }
 
-Future<AppEnv> initializeCurrentEnv(AppEventDispatcher dispatcher) async {
+class Configuration {
+  final String storagePath;
+  final String portalBaseUrl;
+
+  Configuration({
+    required this.storagePath,
+    required this.portalBaseUrl,
+  });
+}
+
+Future<Configuration> _loadConfiguration() async {
+  await dotenv.load(fileName: ".env");
+
+  final storagePath = await _getStoragePath();
+  final portalBaseUrl = dotenv.env['FK_PORTAL_URL'] ?? "https://api.fieldkit.org";
+
+  return Configuration(storagePath: storagePath, portalBaseUrl: portalBaseUrl);
+}
+
+Future<AppEnv> initializeCurrentEnv(Configuration config, AppEventDispatcher dispatcher) async {
+  Loggers.initialize(config.storagePath);
+
+  logger.i("Storage: ${config.storagePath}");
+  logger.i("Portal: ${config.portalBaseUrl}");
+
   final completer = Completer<AppEnv>();
 
   void listener(DomainMessage e) {
@@ -68,7 +84,7 @@ Future<AppEnv> initializeCurrentEnv(AppEventDispatcher dispatcher) async {
 
   void run() async {
     try {
-      await _startNative(dispatcher);
+      await _startNative(config, dispatcher);
     } catch (err, stack) {
       logger.e('Native module error: $err $stack');
     } finally {
@@ -95,7 +111,6 @@ class _OurAppState extends State<OurApp> {
   @override
   void initState() {
     super.initState();
-    developer.log("app-state:initialize");
   }
 
   @override
@@ -136,7 +151,9 @@ void main() async {
   // is only available once that binding has been initialized.'
   WidgetsFlutterBinding.ensureInitialized();
 
-  var env = await initializeCurrentEnv(AppEventDispatcher());
+  final config = await _loadConfiguration();
+
+  final env = await initializeCurrentEnv(config, AppEventDispatcher());
 
   logger.i("Initialized: $env");
 
