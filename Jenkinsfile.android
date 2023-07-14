@@ -25,6 +25,7 @@ timestamps {
             stage ('build') {
                 sh "cp ~/.gradle/gradle.properties /tmp && rm -rf ~/.gradle && mkdir -p ~/.gradle && cp /tmp/gradle.properties ~/.gradle"
 
+                sh "touch .env"
                 sh "flutter clean"
                 sh "flutter build apk"
 
