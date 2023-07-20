@@ -40,6 +40,7 @@ class Loggers {
   static Logger _cal = devNull;
   static Logger _ui = devNull;
   static Logger _portal = devNull;
+  static Logger _markDown = devNull;
 
   static void initialize(String logsPath) {
     final File file = File("$logsPath/logs.txt");
@@ -49,6 +50,7 @@ class Loggers {
     _cal = create(file, "cal");
     _ui = create(file, "ui");
     _portal = create(file, "portal");
+    _markDown = create(file, "mark-down");
   }
 
   static Logger get main => _main;
@@ -58,4 +60,5 @@ class Loggers {
   static Logger get cal => _cal;
   static Logger get ui => _ui;
   static Logger get portal => _portal;
+  static Logger get markDown => _markDown;
 }

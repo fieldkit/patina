@@ -38,7 +38,7 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
 
   @override
   bool visitElementBefore(md.Element element) {
-    logger?.d("BEGIN ${element.tag}");
+    logger?.v("BEGIN ${element.tag}");
 
     switch (element.tag) {
       case "p":
@@ -91,14 +91,15 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
 
   @override
   void visitElementAfter(md.Element element) {
-    logger?.d("  END ${element.tag}");
+    logger?.v("  END ${element.tag}");
 
     final builder = builders.isEmpty ? null : builders.removeLast();
     final widget = builder?.build();
     if (builder != null && widget != null) {
+      logger?.i("created $widget");
+
       final children = builder.children();
       assert(children.isEmpty, "tag '${element.tag}' still has unused children: $children");
-
       if (builders.isEmpty) {
         parsed.add(widget);
       } else {
@@ -108,17 +109,18 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
   }
 }
 
-class OkBuilder extends Builder<bool> {
+class OkBuilder extends Builder<String> {
+  final String name;
   final bool getChildren;
 
-  OkBuilder({this.getChildren = false});
+  OkBuilder({required this.name, this.getChildren = false});
 
   @override
-  bool build() {
+  String build() {
     if (getChildren) {
       children();
     }
-    return true;
+    return name;
   }
 }
 
@@ -135,31 +137,31 @@ class MarkdownVerifyParser extends MarkdownParser {
 
   @override
   Builder header({required int depth}) {
-    return OkBuilder(getChildren: true);
+    return OkBuilder(name: "header depth=$depth", getChildren: true);
   }
 
   @override
   Builder paragraph() {
-    return OkBuilder(getChildren: true);
+    return OkBuilder(name: "paragraph", getChildren: true);
   }
 
   @override
   Builder image({required List<int> indices, required String? sizing, required String alt}) {
-    return OkBuilder();
+    return OkBuilder(name: "image indices=$indices alt=$alt sizing=$sizing");
   }
 
   @override
   Builder link({required String href}) {
-    return OkBuilder();
+    return OkBuilder(name: "link href=$href");
   }
 
   @override
   Builder listItem() {
-    return OkBuilder();
+    return OkBuilder(name: "list-item");
   }
 
   @override
   Builder unordered() {
-    return OkBuilder(getChildren: true);
+    return OkBuilder(name: "unordered", getChildren: true);
   }
 }

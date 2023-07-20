@@ -3,6 +3,8 @@ import 'package:flutter/material.dart' show Widget, StatelessWidget, BuildContex
 import 'package:markdown/markdown.dart' as md;
 
 class MarkdownWidgetParser extends MarkdownParser<Widget> {
+  MarkdownWidgetParser({super.logger});
+
   MarkdownRootWidget parse(String markdownContent) {
     md.Document document = md.Document(encodeHtml: false);
     List<String> lines = markdownContent.split('\n');

@@ -68,7 +68,7 @@ class FlowSimpleScreenWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MarkdownWidgetParser().parse(screen.body);
+    return MarkdownWidgetParser(logger: Loggers.markDown).parse(screen.body);
   }
 }
 
