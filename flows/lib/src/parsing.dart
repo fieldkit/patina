@@ -1,17 +1,17 @@
 import 'package:markdown/markdown.dart' as md;
 import 'package:logger/logger.dart';
 
-abstract class Builder<T> {
-  final List<T> _children = List.empty(growable: true);
+abstract class Builder<T, C> {
+  final List<C> _children = List.empty(growable: true);
   String? text;
 
   T build();
 
-  void addChild(T child) {
+  void addChild(C child) {
     _children.add(child);
   }
 
-  List<T> children() {
+  List<C> children() {
     final popped = [..._children];
     _children.clear();
     return popped;
@@ -25,16 +25,31 @@ abstract class Builder<T> {
 abstract class MarkdownParser<T> implements md.NodeVisitor {
   final Logger? logger;
   final List<T> parsed = List.empty(growable: true);
-  List<Builder<T>> builders = List.empty(growable: true);
+  List<Builder<T, T>> builders = List.empty(growable: true);
 
   MarkdownParser({this.logger});
 
-  Builder<T> paragraph();
-  Builder<T> header({required int depth});
-  Builder<T> image({required List<int> indices, required String? sizing, required String alt});
-  Builder<T> link({required String href});
-  Builder<T> unordered();
-  Builder<T> listItem();
+  Builder<T, T> paragraph();
+  Builder<T, T> header({required int depth});
+  Builder<T, T> image({required List<int> indices, required String? sizing, required String alt});
+  Builder<T, T> link({required String href});
+  Builder<T, T> unordered();
+  Builder<T, T> listItem();
+  Builder<T, T> table();
+  Builder<T, T> tableHead();
+  Builder<T, T> tableBody();
+  Builder<T, T> tableRow();
+  Builder<T, T> tableHeaderCell();
+  Builder<T, T> tableCell();
+
+  List<T> parseString(String markdownContent) {
+    md.Document document = md.Document(blockSyntaxes: [md.TableSyntax()], encodeHtml: false);
+    List<String> lines = markdownContent.split('\n');
+    for (md.Node node in document.parseLines(lines)) {
+      node.accept(this);
+    }
+    return parsed;
+  }
 
   @override
   bool visitElementBefore(md.Element element) {
@@ -77,6 +92,24 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
       case "li":
         builders.add(listItem());
         break;
+      case "table":
+        builders.add(table());
+        break;
+      case "thead":
+        builders.add(tableHead());
+        break;
+      case "tbody":
+        builders.add(tableBody());
+        break;
+      case "tr":
+        builders.add(tableRow());
+        break;
+      case "th":
+        builders.add(tableHeaderCell());
+        break;
+      case "td":
+        builders.add(tableCell());
+        break;
       default:
         assert(false, "unexpected tag: ${element.tag}");
     }
@@ -103,13 +136,14 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
       if (builders.isEmpty) {
         parsed.add(widget);
       } else {
+        logger?.i("appending to ${builders.last}");
         builders.last.addChild(widget);
       }
     }
   }
 }
 
-class OkBuilder extends Builder<String> {
+class OkBuilder extends Builder<String, String> {
   final String name;
   final bool getChildren;
 
@@ -128,11 +162,7 @@ class MarkdownVerifyParser extends MarkdownParser {
   MarkdownVerifyParser({super.logger});
 
   void parse(String markdownContent) {
-    md.Document document = md.Document(encodeHtml: false);
-    List<String> lines = markdownContent.split('\n');
-    for (md.Node node in document.parseLines(lines)) {
-      node.accept(this);
-    }
+    parseString(markdownContent);
   }
 
   @override
@@ -163,5 +193,35 @@ class MarkdownVerifyParser extends MarkdownParser {
   @override
   Builder unordered() {
     return OkBuilder(name: "unordered", getChildren: true);
+  }
+
+  @override
+  Builder table() {
+    return OkBuilder(name: "table", getChildren: true);
+  }
+
+  @override
+  Builder tableHead() {
+    return OkBuilder(name: "table head", getChildren: true);
+  }
+
+  @override
+  Builder tableBody() {
+    return OkBuilder(name: "table body", getChildren: true);
+  }
+
+  @override
+  Builder tableRow() {
+    return OkBuilder(name: "table row", getChildren: true);
+  }
+
+  @override
+  Builder tableHeaderCell() {
+    return OkBuilder(name: "table header cell", getChildren: true);
+  }
+
+  @override
+  Builder tableCell() {
+    return OkBuilder(name: "table cell", getChildren: true);
   }
 }
