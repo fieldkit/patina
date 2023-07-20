@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flows/flows.dart';
 import 'package:logger/logger.dart';
 
-Future<void> download(String resources) async {
+Future<void> download(Logger logger, String resources) async {
   final baseUrl = "https://strapi.conservify.org";
   final file = File("$resources/flows.json");
   final query = {
@@ -32,7 +32,7 @@ Future<void> download(String resources) async {
       }'''
   };
 
-  final logger = Logger(printer: SimplePrinter());
+  logger.i("downloading json");
 
   final response = await http.post(Uri.parse("$baseUrl/graphql"), body: json.encode(query), headers: {"Content-Type": "application/json"});
   await file.writeAsBytes(response.bodyBytes);
@@ -42,7 +42,8 @@ Future<void> download(String resources) async {
   for (final screen in flows.screens) {
     for (final simple in screen.simple) {
       for (final image in simple.images) {
-        logger.i(image.url);
+        logger.i("downloading ${image.url}");
+
         final response = await http.get(Uri.parse(baseUrl + image.url));
         final writing = File(resources + image.url);
         await writing.writeAsBytes(response.bodyBytes);
@@ -51,8 +52,7 @@ Future<void> download(String resources) async {
   }
 }
 
-Future<void> test(String resources) async {
-  final logger = Logger(printer: SimplePrinter());
+Future<void> test(Logger logger, String resources) async {
   final file = File("$resources/flows.json");
   final data = await file.readAsString();
   final flows = ContentFlows.get(data);
@@ -65,14 +65,15 @@ Future<void> test(String resources) async {
 }
 
 void main(List<String> args) async {
+  final logger = Logger(printer: SimplePrinter());
   final resourcesPath = "../resources/flows";
 
   for (final arg in args) {
-    if (arg == "--all") {
-      await download(resourcesPath);
+    if (arg == "--sync") {
+      await download(logger, resourcesPath);
     }
     if (arg == "--test") {
-      await test(resourcesPath);
+      await test(logger, resourcesPath);
     }
   }
 }

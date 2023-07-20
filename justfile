@@ -28,11 +28,11 @@ clean:
 test:
     cd flows && dart run --enable-asserts example/sync.dart --test
 
+sync:
+    cd flows && dart run --enable-asserts example/sync.dart --sync
+
 serve *args='':
     flutter pub run flutter_rust_bridge:serve {{args}}
-
-sync *args='':
-    cd flows && dart run example/sync.dart {{args}}
 
 # vim:expandtab:sw=4:ts=4
 
