@@ -90,9 +90,9 @@ class FlowScreenWidget extends StatelessWidget {
         ),
         body: Column(children: [
           IndexedStack(children: screen.simple.map((simple) => FlowSimpleScreenWidget(screen: simple)).toList()),
-          if (onForward != null) ElevatedButton(onPressed: onForward, child: const Text("Continue")),
-          if (screen.skip != null) ElevatedButton(onPressed: onSkip, child: const Text("Skip")),
-          if (screen.guideTitle != null) ElevatedButton(onPressed: onGuide, child: const Text("Guide")),
+          ElevatedButton(onPressed: onForward, child: Text(screen.forward)),
+          if (screen.skip != null) ElevatedButton(onPressed: onSkip, child: Text(screen.skip!)),
+          if (screen.guideTitle != null) ElevatedButton(onPressed: onGuide, child: Text(screen.guideTitle!)),
         ]));
   }
 }

@@ -54,7 +54,7 @@ class Header {
 
   factory Header.fromJson(Map<String, dynamic> data) {
     final title = data['title'] as String;
-    final subtitle = data['subtitle'] as String?;
+    final subtitle = coerceEmptyStringsToNull(data['subtitle'] as String?);
 
     return Header(title: title, subtitle: subtitle);
   }
@@ -87,9 +87,9 @@ class Screen {
     final name = data["name"] as String;
     final locale = data["locale"] as String;
     final forward = data["forward"] as String;
-    final skip = data["skip"] as String?;
-    final guideTitle = data["guideTItle"] as String?;
-    final guideUrl = data["guideUrl"] as String?;
+    final skip = coerceEmptyStringsToNull(data["skip"] as String?);
+    final guideTitle = coerceEmptyStringsToNull(data["guideTItle"] as String?);
+    final guideUrl = coerceEmptyStringsToNull(data["guideUrl"] as String?);
     final headerData = data["header"] as Map<String, dynamic>?;
     final header = headerData != null ? Header.fromJson(headerData) : null;
     final simpleData = data["simple"] as List<dynamic>?;
@@ -124,4 +124,11 @@ class ContentFlows {
 
     return ContentFlows(flows: flows, screens: screens);
   }
+}
+
+String? coerceEmptyStringsToNull(String? source) {
+  if (source != null && source.isEmpty) {
+    return null;
+  }
+  return source;
 }
