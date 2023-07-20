@@ -4,3 +4,4 @@
 library;
 
 export 'src/model.dart';
+export 'src/parsing.dart';

@@ -215,7 +215,7 @@ impl NearbyDevices {
 
     async fn mark_retry(&self, device_id: &DeviceId) -> Result<Connection> {
         let mut devices = self.devices.lock().await;
-        let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
+        let querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
         querying.failures += 1;
         if !querying.is_disconnected() {
             querying.retry = Some(Utc::now() + Duration::seconds(1));
@@ -226,7 +226,7 @@ impl NearbyDevices {
 
     async fn mark_finished(&self, device_id: &DeviceId) -> Result<()> {
         let mut devices = self.devices.lock().await;
-        let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
+        let querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
         querying.finished = Some(Utc::now());
         querying.failures = 0;
 
@@ -254,7 +254,7 @@ impl NearbyDevices {
 
     pub async fn mark_busy(&self, device_id: &DeviceId, busy: bool) -> Result<()> {
         let mut devices = self.devices.lock().await;
-        let mut querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
+        let querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
         querying.busy = busy;
         Ok(())
     }

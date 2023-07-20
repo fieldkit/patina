@@ -1,80 +1,183 @@
 import 'package:flows/flows.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/material.dart' show Widget, StatelessWidget, BuildContext, Text, Column;
+import 'package:markdown/markdown.dart' as md;
 
-import '../diagnostics.dart';
-
-class StartFlow {
-  final String name;
-
-  const StartFlow({required this.name});
-}
-
-class QuickFlow extends StatefulWidget {
-  final StartFlow start;
-
-  const QuickFlow({super.key, required this.start});
+class MarkdownWidgetParser extends MarkdownParser<Widget> {
+  MarkdownRootWidget parse(String markdownContent) {
+    md.Document document = md.Document(encodeHtml: false);
+    List<String> lines = markdownContent.split('\n');
+    for (md.Node node in document.parseLines(lines)) {
+      node.accept(this);
+    }
+    return MarkdownRootWidget(children: parsed);
+  }
 
   @override
-  // ignore: library_private_types_in_public_api
-  _QuickFlowState createState() => _QuickFlowState();
+  Builder<Widget> header({required int depth}) {
+    return _HeaderBuilder(depth: depth);
+  }
+
+  @override
+  Builder<Widget> paragraph() {
+    return _ParagraphBuilder();
+  }
+
+  @override
+  Builder<Widget> image({required List<int> indices, required String? sizing, required String alt}) {
+    return _ImageBuilder(indices: indices, sizing: sizing, alt: alt);
+  }
+
+  @override
+  Builder<Widget> link({required String href}) {
+    return _LinkBuilder(href: href);
+  }
+
+  @override
+  Builder<Widget> unordered() {
+    return _UnorderedBuilder();
+  }
+
+  @override
+  Builder<Widget> listItem() {
+    return _ListItemBuilder();
+  }
 }
 
-class _QuickFlowState extends State<QuickFlow> {
+class MarkdownRootWidget extends StatelessWidget {
+  final List<Widget> children;
+
+  const MarkdownRootWidget({super.key, required this.children});
+
   @override
   Widget build(BuildContext context) {
-    final flows = context.read<ContentFlows>();
-    final screen = flows.screens[0];
-    return FlowWidget(
-      screen: screen,
-      onForward: () => {},
-      onSkip: () => {},
-      onGuide: () => {},
-    );
+    return Column(children: children);
   }
 }
 
-class ProvideContentFlowsWidget extends StatelessWidget {
-  final Widget child;
+class MarkdownHeaderWidget extends StatelessWidget {
+  final String text;
+  final int depth;
+  final List<Widget> children;
 
-  const ProvideContentFlowsWidget({super.key, required this.child});
+  const MarkdownHeaderWidget({super.key, required this.text, required this.depth, required this.children});
 
   @override
-  Widget build(context) {
-    return FutureBuilder<String>(
-        future: DefaultAssetBundle.of(context).loadString("resources/flows/flows.json"),
-        builder: (context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.hasData) {
-            final flows = ContentFlows.get(snapshot.data!);
-            Loggers.ui.i("flows:ready $flows");
-            return Provider<ContentFlows>(
-              create: (context) => flows,
-              dispose: (context, value) => {},
-              lazy: false,
-              child: child,
-            );
-          } else {
-            return const CircularProgressIndicator();
-          }
-        });
+  Widget build(BuildContext context) {
+    return Text(text);
   }
 }
 
-class FlowWidget extends StatelessWidget {
-  final Screen screen;
-  final VoidCallback? onForward;
-  final VoidCallback? onSkip;
-  final VoidCallback? onGuide;
+class MarkdownParagraphWidget extends StatelessWidget {
+  final String text;
+  final List<Widget> children;
 
-  const FlowWidget({super.key, required this.screen, this.onForward, this.onSkip, this.onGuide});
+  const MarkdownParagraphWidget({super.key, required this.text, required this.children});
 
   @override
-  Widget build(context) {
-    Loggers.ui.i("screen: $screen");
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Flow'),
-        ),
-        body: const Column(children: [Text("OK")]));
+  Widget build(BuildContext context) {
+    return Text(text);
+  }
+}
+
+class MarkdownImageWidget extends StatelessWidget {
+  final List<int> indices;
+  final String? sizing;
+  final String alt;
+
+  const MarkdownImageWidget({super.key, required this.indices, this.sizing, required this.alt});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text("IMAGE");
+  }
+}
+
+class MarkdownLinkWidget extends StatelessWidget {
+  final String text;
+  final String href;
+
+  const MarkdownLinkWidget({super.key, required this.text, required this.href});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text("LINK");
+  }
+}
+
+class MarkdownUnorderedWidget extends StatelessWidget {
+  final List<Widget> children;
+
+  const MarkdownUnorderedWidget({super.key, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text("UNORDERED");
+  }
+}
+
+class MarkdownListItemWidget extends StatelessWidget {
+  final String text;
+
+  const MarkdownListItemWidget({super.key, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text("LIST ITEM");
+  }
+}
+
+class _HeaderBuilder extends Builder<MarkdownHeaderWidget> {
+  final int depth;
+
+  _HeaderBuilder({required this.depth});
+
+  @override
+  MarkdownHeaderWidget build() {
+    return MarkdownHeaderWidget(text: text ?? "", depth: depth, children: children());
+  }
+}
+
+class _ParagraphBuilder extends Builder<MarkdownParagraphWidget> {
+  @override
+  MarkdownParagraphWidget build() {
+    return MarkdownParagraphWidget(text: text ?? "", children: children());
+  }
+}
+
+class _ImageBuilder extends Builder<MarkdownImageWidget> {
+  final List<int> indices;
+  final String? sizing;
+  final String alt;
+
+  _ImageBuilder({required this.sizing, required this.alt, required this.indices});
+
+  @override
+  MarkdownImageWidget build() {
+    return MarkdownImageWidget(indices: indices, sizing: sizing, alt: alt);
+  }
+}
+
+class _LinkBuilder extends Builder<MarkdownLinkWidget> {
+  final String href;
+
+  _LinkBuilder({required this.href});
+
+  @override
+  MarkdownLinkWidget build() {
+    return MarkdownLinkWidget(text: text ?? "", href: href);
+  }
+}
+
+class _UnorderedBuilder extends Builder<MarkdownUnorderedWidget> {
+  @override
+  MarkdownUnorderedWidget build() {
+    return MarkdownUnorderedWidget(children: children());
+  }
+}
+
+class _ListItemBuilder extends Builder<MarkdownListItemWidget> {
+  @override
+  MarkdownListItemWidget build() {
+    return MarkdownListItemWidget(text: text ?? "");
   }
 }

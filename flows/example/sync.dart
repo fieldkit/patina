@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flows/flows.dart';
+import 'package:logger/logger.dart';
 
 Future<void> download(String resources) async {
   final baseUrl = "https://strapi.conservify.org";
@@ -31,6 +32,8 @@ Future<void> download(String resources) async {
       }'''
   };
 
+  final logger = Logger(printer: SimplePrinter());
+
   final response = await http.post(Uri.parse("$baseUrl/graphql"), body: json.encode(query), headers: {"Content-Type": "application/json"});
   await file.writeAsString(response.body);
   final data = await file.readAsString();
@@ -39,7 +42,7 @@ Future<void> download(String resources) async {
   for (final screen in flows.screens) {
     for (final simple in screen.simple) {
       for (final image in simple.images) {
-        print(image.url);
+        logger.i(image.url);
         final response = await http.get(Uri.parse(baseUrl + image.url));
         final writing = File(resources + image.url);
         await writing.writeAsBytes(response.bodyBytes);
@@ -49,12 +52,13 @@ Future<void> download(String resources) async {
 }
 
 Future<void> test(String resources) async {
+  final logger = Logger(printer: SimplePrinter());
   final file = File("$resources/flows.json");
   final data = await file.readAsString();
   final flows = ContentFlows.get(data);
   for (final screen in flows.screens) {
     for (final simple in screen.simple) {
-      final parser = MarkdownParser();
+      final parser = MarkdownVerifyParser(logger: logger);
       parser.parse(simple.body);
     }
   }

@@ -25,6 +25,9 @@ clean:
     flutter clean
     cd native && cargo clean
 
+test:
+    cd flows && dart run --enable-asserts example/sync.dart --test
+
 serve *args='':
     flutter pub run flutter_rust_bridge:serve {{args}}
 
