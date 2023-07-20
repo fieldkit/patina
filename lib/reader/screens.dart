@@ -22,15 +22,26 @@ class QuickFlow extends StatefulWidget {
 }
 
 class _QuickFlowState extends State<QuickFlow> {
+  int index = 0;
+
   @override
   Widget build(BuildContext context) {
     final flows = context.read<ContentFlows>();
-    final screen = flows.screens[0];
+    final screen = flows.screens[index];
     return FlowScreenWidget(
       screen: screen,
-      onForward: () => {},
-      onSkip: () => {},
-      onGuide: () => {},
+      onForward: () {
+        Loggers.ui.i("forward");
+        setState(() {
+          index += 1;
+        });
+      },
+      onSkip: () {
+        Loggers.ui.i("skip");
+      },
+      onGuide: () {
+        Loggers.ui.i("guide");
+      },
     );
   }
 }
@@ -61,17 +72,6 @@ class ProvideContentFlowsWidget extends StatelessWidget {
   }
 }
 
-class FlowSimpleScreenWidget extends StatelessWidget {
-  final Simple screen;
-
-  const FlowSimpleScreenWidget({super.key, required this.screen});
-
-  @override
-  Widget build(BuildContext context) {
-    return MarkdownWidgetParser(logger: Loggers.markDown).parse(screen.body);
-  }
-}
-
 class FlowScreenWidget extends StatelessWidget {
   final Screen screen;
   final VoidCallback? onForward;
@@ -88,6 +88,22 @@ class FlowScreenWidget extends StatelessWidget {
         appBar: AppBar(
           title: Text(screen.header?.title ?? ""),
         ),
-        body: IndexedStack(children: screen.simple.map((simple) => FlowSimpleScreenWidget(screen: simple)).toList()));
+        body: Column(children: [
+          IndexedStack(children: screen.simple.map((simple) => FlowSimpleScreenWidget(screen: simple)).toList()),
+          if (onForward != null) ElevatedButton(onPressed: onForward, child: const Text("Continue")),
+          if (screen.skip != null) ElevatedButton(onPressed: onSkip, child: const Text("Skip")),
+          if (screen.guideTitle != null) ElevatedButton(onPressed: onGuide, child: const Text("Guide")),
+        ]));
+  }
+}
+
+class FlowSimpleScreenWidget extends StatelessWidget {
+  final Simple screen;
+
+  const FlowSimpleScreenWidget({super.key, required this.screen});
+
+  @override
+  Widget build(BuildContext context) {
+    return MarkdownWidgetParser(logger: Loggers.markDown).parse(screen.body);
   }
 }
