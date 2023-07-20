@@ -35,7 +35,7 @@ Future<void> download(String resources) async {
   final logger = Logger(printer: SimplePrinter());
 
   final response = await http.post(Uri.parse("$baseUrl/graphql"), body: json.encode(query), headers: {"Content-Type": "application/json"});
-  await file.writeAsString(response.body);
+  await file.writeAsBytes(response.bodyBytes);
   final data = await file.readAsString();
   final flows = ContentFlows.get(data);
 
