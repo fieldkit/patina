@@ -4,8 +4,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
 import '../common_widgets.dart';
+import '../diagnostics.dart';
 import '../gen/ffi.dart';
 import '../no_stations_widget.dart';
+import '../settings/accounts_page.dart';
 import '../view_station/firmware_page.dart';
 
 class DataSyncTab extends StatelessWidget {
@@ -31,6 +33,41 @@ class DataSyncTab extends StatelessWidget {
   }
 }
 
+class MessageAndButton extends StatelessWidget {
+  final String message;
+  final String button;
+  final VoidCallback? onPressed;
+
+  const MessageAndButton({super.key, required this.message, required this.button, this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      WH.align(Text(message)),
+      WH.align(WH.vertical(ElevatedButton(onPressed: onPressed, child: Text(button)))),
+    ]);
+  }
+}
+
+class LoginRequiredWidget extends StatelessWidget {
+  const LoginRequiredWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return WH.padPage(MessageAndButton(
+        button: "Login",
+        message: "To upload data you need to login.",
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AccountsPage(),
+            ),
+          );
+        }));
+  }
+}
+
 class DataSyncPage extends StatelessWidget {
   final KnownStationsModel known;
   final TasksModel tasks;
@@ -48,9 +85,12 @@ class DataSyncPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loginTasks = tasks.getAll<LoginTask>();
+
     final stations = known.stations.where((station) => station.config != null).map((station) {
       final uploadTask = tasks.getMaybeOne<UploadTask>(station.deviceId);
       final busy = stationOperations.isBusy(station.deviceId);
+      Loggers.ui.i("data-sync: busy=$busy uploadTask=$uploadTask loginTasks=$loginTasks");
       return StationSyncStatus(
         station: station,
         onDownload: busy ? null : () => onDownload(station),
@@ -62,7 +102,11 @@ class DataSyncPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.dataSyncTitle),
         ),
-        body: ListView(children: [...stations, if (stations.isEmpty) const NoStationsHelpWidget()]));
+        body: ListView(children: [
+          if (loginTasks.isNotEmpty) const LoginRequiredWidget(),
+          if (stations.isEmpty) const NoStationsHelpWidget(),
+          ...stations,
+        ]));
   }
 }
 
@@ -95,21 +139,19 @@ class UpgradeRequiredWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return WH.padPage(Column(children: [
-      WH.align(Text(localizations.syncUpgradeRequiredMessage)),
-      WH.align(WH.vertical(ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => StationFirmwarePage(
-                  station: station,
-                ),
+    return WH.padPage(MessageAndButton(
+        message: localizations.syncUpgradeRequiredMessage,
+        button: localizations.syncManageFirmware,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StationFirmwarePage(
+                station: station,
               ),
-            );
-          },
-          child: Text(localizations.syncManageFirmware))))
-    ]));
+            ),
+          );
+        }));
   }
 }
 

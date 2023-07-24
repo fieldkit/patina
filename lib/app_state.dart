@@ -353,7 +353,7 @@ abstract class TaskFactory<M> extends ChangeNotifier {
 
   List<M> get tasks => List.unmodifiable(_tasks);
 
-  List<T> getAll<T extends Task>(String deviceId) {
+  List<T> getAll<T extends Task>() {
     return tasks.whereType<T>().toList();
   }
 }
@@ -462,6 +462,24 @@ class UploadTask extends Task {
   UploadTask({required this.deviceId, required this.files, required this.tokens});
 }
 
+class LoginTask extends Task {
+  LoginTask();
+}
+
+class LoginTaskFactory extends TaskFactory<LoginTask> {
+  final PortalAccounts portalAccounts;
+
+  LoginTaskFactory({required this.portalAccounts}) {
+    portalAccounts.addListener(() {
+      _tasks.clear();
+      if (!portalAccounts.hasAnyTokens()) {
+        _tasks.add(LoginTask());
+      }
+      notifyListeners();
+    });
+  }
+}
+
 class TasksModel extends ChangeNotifier {
   final List<TaskFactory> factories = List.empty(growable: true);
 
@@ -470,6 +488,7 @@ class TasksModel extends ChangeNotifier {
       required KnownStationsModel knownStations,
       required PortalAccounts portalAccounts,
       required AppEventDispatcher dispatcher}) {
+    factories.add(LoginTaskFactory(portalAccounts: portalAccounts));
     factories.add(DeployTaskFactory(knownStations: knownStations));
     factories.add(UploadTaskFactory(portalAccounts: portalAccounts, dispatcher: dispatcher));
     factories.add(UpgradeTaskFactory(availableFirmware: availableFirmware, knownStations: knownStations));
@@ -478,12 +497,16 @@ class TasksModel extends ChangeNotifier {
     }
   }
 
-  List<T> getAll<T extends Task>(String deviceId) {
-    return factories.map((f) => f.getAll<T>(deviceId)).flattened.toList();
+  List<T> getAll<T extends Task>() {
+    return factories.map((f) => f.getAll<T>()).flattened.toList();
+  }
+
+  List<T> getAllFor<T extends Task>(String deviceId) {
+    return factories.map((f) => f.getAll<T>()).flattened.toList();
   }
 
   T? getMaybeOne<T extends Task>(String deviceId) {
-    final all = getAll<T>(deviceId);
+    final all = getAllFor<T>(deviceId);
     if (all.length > 1) {
       throw ArgumentError("Excepted one and only one Task");
     }
@@ -788,6 +811,11 @@ class PortalAccounts extends ChangeNotifier {
       return null;
     }
     return _accounts[0];
+  }
+
+  bool hasAnyTokens() {
+    final maybeTokens = _accounts.map((e) => e.tokens).where((e) => e != null).firstOrNull;
+    return maybeTokens != null;
   }
 }
 
