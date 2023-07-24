@@ -57,7 +57,7 @@ class Configuration {
 }
 
 Future<Configuration> _loadConfiguration() async {
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env", isOptional: true);
 
   final storagePath = await _getStoragePath();
   final portalBaseUrl = dotenv.env['FK_PORTAL_URL'] ?? "https://api.fieldkit.org";
