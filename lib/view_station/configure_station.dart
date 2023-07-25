@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
+import '../common_widgets.dart';
+import '../diagnostics.dart';
 import '../gen/ffi.dart';
 import '../unknown_station_page.dart';
 
@@ -165,11 +167,32 @@ class ConfigureAutomaticUploadPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final StationConfiguration configuration = context.watch<AppState>().configuration;
+
+    Loggers.ui.i("station $station $config");
+
+    final enabled = station.ephemeral?.transmission?.enabled ?? false;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(config.name),
       ),
-      body: const Column(children: []),
+      body: WH.padPage(Column(children: [
+        if (!enabled)
+          WH.align(WH.vertical(ElevatedButton(
+              onPressed: () async {
+                Loggers.ui.i("wifi-upload:enable");
+                await configuration.enableWifiUploading(station.deviceId);
+              },
+              child: const Text("Enable")))),
+        if (enabled)
+          WH.align(WH.vertical(ElevatedButton(
+              onPressed: () async {
+                Loggers.ui.i("wifi-upload:disable");
+                await configuration.disableWifiUploading(station.deviceId);
+              },
+              child: const Text("Disable"))))
+      ])),
     );
   }
 }

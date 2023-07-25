@@ -17,6 +17,11 @@ pub fn wire_authenticate_portal(port_: MessagePort, email: String, password: Str
 }
 
 #[wasm_bindgen]
+pub fn wire_configure_wifi_transmission(port_: MessagePort, device_id: String, config: JsValue) {
+    wire_configure_wifi_transmission_impl(port_, device_id, config)
+}
+
+#[wasm_bindgen]
 pub fn wire_clear_calibration(port_: MessagePort, device_id: String, module: usize) {
     wire_clear_calibration_impl(port_, device_id, module)
 }
@@ -157,6 +162,20 @@ impl Wire2Api<Vec<u8>> for Box<[u8]> {
     }
 }
 
+impl Wire2Api<WifiTransmissionConfig> for JsValue {
+    fn wire2api(self) -> WifiTransmissionConfig {
+        let self_ = self.dyn_into::<JsArray>().unwrap();
+        assert_eq!(
+            self_.length(),
+            1,
+            "Expected 1 elements, got {}",
+            self_.length()
+        );
+        WifiTransmissionConfig {
+            tokens: self_.get(0).wire2api(),
+        }
+    }
+}
 // Section: impl Wire2Api for JsValue
 
 impl Wire2Api<String> for JsValue {

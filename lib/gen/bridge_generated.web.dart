@@ -36,6 +36,12 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic> api2wire_box_autoadd_wifi_transmission_config(
+      WifiTransmissionConfig raw) {
+    return api2wire_wifi_transmission_config(raw);
+  }
+
+  @protected
   Object api2wire_i64(int raw) {
     return castNativeBigInt(raw);
   }
@@ -84,6 +90,10 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
     return raw;
   }
 
+  @protected
+  List<dynamic> api2wire_wifi_transmission_config(WifiTransmissionConfig raw) {
+    return [api2wire_opt_box_autoadd_tokens(raw.tokens)];
+  }
 // Section: finalizer
 }
 
@@ -104,6 +114,9 @@ class NativeWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_authenticate_portal(
       NativePortType port_, String email, String password);
+
+  external dynamic /* void */ wire_configure_wifi_transmission(
+      NativePortType port_, String device_id, List<dynamic> config);
 
   external dynamic /* void */ wire_clear_calibration(
       NativePortType port_, String device_id, int module);
@@ -147,6 +160,10 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_authenticate_portal(
           NativePortType port_, String email, String password) =>
       wasmModule.wire_authenticate_portal(port_, email, password);
+
+  void wire_configure_wifi_transmission(
+          NativePortType port_, String device_id, List<dynamic> config) =>
+      wasmModule.wire_configure_wifi_transmission(port_, device_id, config);
 
   void wire_clear_calibration(
           NativePortType port_, String device_id, int module) =>

@@ -340,6 +340,27 @@ class AvailableFirmwareModel extends ChangeNotifier {
   }
 }
 
+class StationConfiguration extends ChangeNotifier {
+  final Native api;
+  final PortalAccounts portalAccounts;
+
+  StationConfiguration({required this.api, required this.portalAccounts});
+
+  Future<void> enableWifiUploading(String deviceId) async {
+    final account = portalAccounts.getAccountForDevice(deviceId);
+    if (account == null) {
+      Loggers.state.i("No account for device $deviceId (hasAny: ${portalAccounts.hasAnyTokens()})");
+      return;
+    }
+
+    await api.configureWifiTransmission(deviceId: deviceId, config: WifiTransmissionConfig(tokens: account.tokens));
+  }
+
+  Future<void> disableWifiUploading(String deviceId) async {
+    await api.configureWifiTransmission(deviceId: deviceId, config: const WifiTransmissionConfig(tokens: null));
+  }
+}
+
 var uuid = const Uuid();
 
 abstract class Task {
@@ -521,6 +542,7 @@ class AppState {
   final Native api;
   final AppEventDispatcher dispatcher;
   final AvailableFirmwareModel firmware;
+  final StationConfiguration configuration;
   final KnownStationsModel knownStations;
   final StationOperations stationOperations;
   final ModuleConfigurations moduleConfigurations;
@@ -528,7 +550,7 @@ class AppState {
   final TasksModel tasks;
 
   AppState._(this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts, this.firmware,
-      this.stationOperations, this.tasks);
+      this.stationOperations, this.tasks, this.configuration);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
     final stationOperations = StationOperations(dispatcher: dispatcher);
@@ -542,7 +564,18 @@ class AppState {
       portalAccounts: portalAccounts,
       dispatcher: dispatcher,
     );
-    return AppState._(api, dispatcher, knownStations, moduleConfigurations, portalAccounts, firmware, stationOperations, tasks);
+    final configurations = StationConfiguration(api: api, portalAccounts: portalAccounts);
+    return AppState._(
+      api,
+      dispatcher,
+      knownStations,
+      moduleConfigurations,
+      portalAccounts,
+      firmware,
+      stationOperations,
+      tasks,
+      configurations,
+    );
   }
 
   ModuleConfiguration findModuleConfiguration(ModuleIdentity moduleIdentity) {
@@ -710,6 +743,9 @@ class PortalAccounts extends ChangeNotifier {
       try {
         // A little messy, I know.
         final loaded = PortalAccounts.fromJson(api, jsonDecode(value));
+        for (final account in loaded.accounts) {
+          Loggers.state.v("Account email=${account.email} url=${account.tokens?.transmission.url} #devonly");
+        }
         _accounts.clear();
         _accounts.addAll(loaded.accounts);
         notifyListeners();

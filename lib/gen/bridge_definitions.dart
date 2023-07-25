@@ -30,6 +30,13 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kAuthenticatePortalConstMeta;
 
+  Future<void> configureWifiTransmission(
+      {required String deviceId,
+      required WifiTransmissionConfig config,
+      dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kConfigureWifiTransmissionConstMeta;
+
   Future<void> clearCalibration(
       {required String deviceId, required int module, dynamic hint});
 
@@ -405,5 +412,13 @@ class UploadProgress {
   const UploadProgress({
     required this.bytesUploaded,
     required this.totalBytes,
+  });
+}
+
+class WifiTransmissionConfig {
+  final Tokens? tokens;
+
+  const WifiTransmissionConfig({
+    this.tokens,
   });
 }

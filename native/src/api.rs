@@ -21,7 +21,7 @@ use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
 use query::{
-    device::HttpReply,
+    device::{self, HttpReply},
     portal::{DecodedToken, Firmware, PortalError, StatusCode},
 };
 use store::Db;
@@ -378,6 +378,21 @@ impl Sdk {
                 .map(|o| format!("{}", o))
                 .expect("Expected HTTP url")
         }))
+    }
+
+    async fn configure_wifi_transmission(
+        &self,
+        device_id: DeviceId,
+        config: WifiTransmissionConfig,
+    ) -> Result<()> {
+        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
+            let client = query::device::Client::new()?;
+            client
+                .configure_wifi_transmission(&addr, config.into())
+                .await?;
+        }
+
+        Ok(())
     }
 
     async fn clear_calibration(&self, device_id: DeviceId, module: usize) -> Result<()> {
@@ -758,6 +773,15 @@ pub fn authenticate_portal(email: String, password: String) -> Result<Authentica
     })?)
 }
 
+pub fn configure_wifi_transmission(
+    device_id: String,
+    config: WifiTransmissionConfig,
+) -> Result<()> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.configure_wifi_transmission(DeviceId(device_id.clone()), config))
+    })?)
+}
+
 pub fn clear_calibration(device_id: String, module: usize) -> Result<()> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.clear_calibration(DeviceId(device_id.clone()), module))
@@ -897,6 +921,23 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
     }
 
     Ok(())
+}
+
+#[derive(Clone, Debug)]
+pub struct WifiTransmissionConfig {
+    pub tokens: Option<Tokens>,
+}
+
+impl Into<device::ConfigureWifiTransmission> for WifiTransmissionConfig {
+    fn into(self) -> device::ConfigureWifiTransmission {
+        self.tokens
+            .map(|t| device::ConfigureWifiTransmission {
+                enabled: true,
+                token: Some(t.transmission.token.clone()),
+                url: Some(t.transmission.url.clone()),
+            })
+            .unwrap_or(device::ConfigureWifiTransmission::default())
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -1119,15 +1160,22 @@ impl TryInto<EphemeralConfig> for HttpReply {
     type Error = SdkMappingError;
 
     fn try_into(self) -> std::result::Result<EphemeralConfig, Self::Error> {
+        let transmission = self
+            .transmission
+            .map(|t| t.wifi)
+            .flatten()
+            .map(|_| TransmissionConfig { enabled: true });
+
+        let capabilities = DeviceCapabilities {
+            udp: self
+                .network_settings
+                .map(|s| s.supports_udp)
+                .unwrap_or(false),
+        };
         Ok(EphemeralConfig {
-            transmission: None,
+            transmission,
             networks: Vec::new(),
-            capabilities: DeviceCapabilities {
-                udp: self
-                    .network_settings
-                    .map(|s| s.supports_udp)
-                    .unwrap_or(false),
-            },
+            capabilities,
         })
     }
 }

@@ -25,6 +25,15 @@ pub extern "C" fn wire_authenticate_portal(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_configure_wifi_transmission(
+    port_: i64,
+    device_id: *mut wire_uint_8_list,
+    config: *mut wire_WifiTransmissionConfig,
+) {
+    wire_configure_wifi_transmission_impl(port_, device_id, config)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_clear_calibration(
     port_: i64,
     device_id: *mut wire_uint_8_list,
@@ -101,6 +110,11 @@ pub extern "C" fn new_box_autoadd_tokens_0() -> *mut wire_Tokens {
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_wifi_transmission_config_0() -> *mut wire_WifiTransmissionConfig {
+    support::new_leak_box_ptr(wire_WifiTransmissionConfig::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_list_record_archive_0(len: i32) -> *mut wire_list_record_archive {
     let wrap = wire_list_record_archive {
         ptr: support::new_leak_vec_ptr(<wire_RecordArchive>::new_with_null_ptr(), len),
@@ -139,6 +153,12 @@ impl Wire2Api<Tokens> for *mut wire_Tokens {
     fn wire2api(self) -> Tokens {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
         Wire2Api::<Tokens>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<WifiTransmissionConfig> for *mut wire_WifiTransmissionConfig {
+    fn wire2api(self) -> WifiTransmissionConfig {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<WifiTransmissionConfig>::wire2api(*wrap).into()
     }
 }
 
@@ -197,6 +217,13 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
     }
 }
 
+impl Wire2Api<WifiTransmissionConfig> for wire_WifiTransmissionConfig {
+    fn wire2api(self) -> WifiTransmissionConfig {
+        WifiTransmissionConfig {
+            tokens: self.tokens.wire2api(),
+        }
+    }
+}
 // Section: wire structs
 
 #[repr(C)]
@@ -242,6 +269,12 @@ pub struct wire_TransmissionToken {
 pub struct wire_uint_8_list {
     ptr: *mut u8,
     len: i32,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_WifiTransmissionConfig {
+    tokens: *mut wire_Tokens,
 }
 
 // Section: impl NewWithNullPtr
@@ -314,6 +347,20 @@ impl NewWithNullPtr for wire_TransmissionToken {
 }
 
 impl Default for wire_TransmissionToken {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
+impl NewWithNullPtr for wire_WifiTransmissionConfig {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            tokens: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl Default for wire_WifiTransmissionConfig {
     fn default() -> Self {
         Self::new_with_null_ptr()
     }

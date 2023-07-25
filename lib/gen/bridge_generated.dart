@@ -77,6 +77,28 @@ class NativeImpl implements Native {
         argNames: ["email", "password"],
       );
 
+  Future<void> configureWifiTransmission(
+      {required String deviceId,
+      required WifiTransmissionConfig config,
+      dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    var arg1 = _platform.api2wire_box_autoadd_wifi_transmission_config(config);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_configure_wifi_transmission(port_, arg0, arg1),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kConfigureWifiTransmissionConstMeta,
+      argValues: [deviceId, config],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kConfigureWifiTransmissionConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "configure_wifi_transmission",
+        argNames: ["deviceId", "config"],
+      );
+
   Future<void> clearCalibration(
       {required String deviceId, required int module, dynamic hint}) {
     var arg0 = _platform.api2wire_String(deviceId);
@@ -743,4 +765,5 @@ int api2wire_u8(int raw) {
 int api2wire_usize(int raw) {
   return raw;
 }
+
 // Section: finalizer

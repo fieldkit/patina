@@ -73,6 +73,24 @@ fn wire_authenticate_portal_impl(
         },
     )
 }
+fn wire_configure_wifi_transmission_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+    config: impl Wire2Api<WifiTransmissionConfig> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "configure_wifi_transmission",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            let api_config = config.wire2api();
+            move |task_callback| configure_wifi_transmission(api_device_id, api_config)
+        },
+    )
+}
 fn wire_clear_calibration_impl(
     port_: MessagePort,
     device_id: impl Wire2Api<String> + UnwindSafe,
@@ -259,6 +277,7 @@ impl Wire2Api<usize> for usize {
         self
     }
 }
+
 // Section: impl IntoDart
 
 impl support::IntoDart for Authenticated {
