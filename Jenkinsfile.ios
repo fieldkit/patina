@@ -27,7 +27,7 @@ timestamps {
             }
 
             stage ('build') {
-                sh "touch .env"
+                sh "echo '# Defaults' > .env"
                 sh "flutter clean"
                 sh "flutter build ipa --export-method ad-hoc"
 
