@@ -88,6 +88,10 @@ class CalibrationPanel extends StatelessWidget {
       return CanContinue.form;
     }
     if (countdown.done) {
+      final sensorTime = sensor.value?.time;
+      final untilOrAfter = (sensorTime != null) ? countdown.finished.difference(sensorTime) : null;
+      Loggers.cal.i(
+          "elapsed=${countdown.elapsed} skipped=${countdown.skipped} untilOrAfter=$untilOrAfter sensor-time=$sensorTime sensor-cal=${sensor.value?.value} sensor-uncal=${sensor.value?.uncalibrated}");
       final time = sensor.value?.time;
       if (time == null) {
         return CanContinue.staleValue;

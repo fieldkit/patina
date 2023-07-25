@@ -1165,13 +1165,13 @@ impl TryInto<EphemeralConfig> for HttpReply {
             .map(|t| t.wifi)
             .flatten()
             .map(|_| TransmissionConfig { enabled: true });
-
         let capabilities = DeviceCapabilities {
             udp: self
                 .network_settings
                 .map(|s| s.supports_udp)
                 .unwrap_or(false),
         };
+
         Ok(EphemeralConfig {
             transmission,
             networks: Vec::new(),
