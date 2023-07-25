@@ -44,11 +44,13 @@ class ConfigureStationPage extends StatelessWidget {
         title: Text(config.name),
       ),
       body: ListView(children: [
-        ListTile(
-          title: Text(AppLocalizations.of(context)!.settingsGeneral),
-          onTap: () {},
-        ),
+        /*
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.settingsGeneral),
+            onTap: () {},
+          ),
         const Divider(),
+        */
         ListTile(
           title: Text(AppLocalizations.of(context)!.settingsNetwork),
           onTap: () {
@@ -63,6 +65,8 @@ class ConfigureStationPage extends StatelessWidget {
           },
         ),
         const Divider(),
+        ConfigureAutomaticUploadListItem(station: station),
+        const Divider(),
         ListTile(
           title: Text(AppLocalizations.of(context)!.settingsFirmware),
           onTap: () {
@@ -76,12 +80,14 @@ class ConfigureStationPage extends StatelessWidget {
             );
           },
         ),
+        /*
         const Divider(),
         ListTile(
           title: Text(AppLocalizations.of(context)!.settingsModules),
           onTap: () {},
         ),
         const Divider(),
+        */
       ]),
     );
   }
@@ -125,6 +131,29 @@ class ConfigureNetworksPage extends StatelessWidget {
   }
 }
 
+class ConfigureAutomaticUploadListItem extends StatelessWidget {
+  final StationModel station;
+
+  const ConfigureAutomaticUploadListItem({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.settingsAutomaticUpload),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConfigureAutomaticUploadPage(
+              station: station,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
 class ConfigureWiFiPage extends StatelessWidget {
   final StationModel station;
 
@@ -139,19 +168,7 @@ class ConfigureWiFiPage extends StatelessWidget {
         title: Text(config.name),
       ),
       body: ListView(children: [
-        ListTile(
-          title: Text(AppLocalizations.of(context)!.settingsAutomaticUpload),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ConfigureAutomaticUploadPage(
-                  station: station,
-                ),
-              ),
-            );
-          },
-        ),
+        ConfigureAutomaticUploadListItem(station: station),
         const Divider(),
       ]),
     );
