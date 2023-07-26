@@ -1,4 +1,5 @@
 use anyhow::Result;
+use base64::Engine;
 use chrono::{DateTime, Duration, Utc};
 use std::{collections::HashMap, ops::Sub, sync::Arc, time::UNIX_EPOCH};
 use sync::ServerEvent;
@@ -12,7 +13,7 @@ use tokio::{
 use tracing::*;
 
 use discovery::{DeviceId, Discovered};
-use query::device::HttpReply;
+use query::device::{HttpReply, RawAndDecoded};
 
 use crate::api::{
     DomainMessage, DownloadProgress, NearbyStation, RecordArchive, TransferProgress, TransferStatus,
@@ -21,7 +22,7 @@ use crate::api::{
 #[derive(Debug)]
 pub enum BackgroundMessage {
     Domain(DomainMessage),
-    StationReply(DeviceId, HttpReply),
+    StationReply(DeviceId, HttpReply, String),
 }
 
 #[derive(Clone)]
@@ -236,18 +237,24 @@ impl NearbyDevices {
     async fn mark_finished_and_publish_reply(
         &self,
         device_id: &DeviceId,
-        status: HttpReply,
+        status: RawAndDecoded<HttpReply>,
     ) -> Result<()> {
         self.mark_finished(device_id).await?;
 
+        use base64::engine::general_purpose::STANDARD;
+
         self.publish_tx
-            .send(BackgroundMessage::StationReply(device_id.clone(), status))
+            .send(BackgroundMessage::StationReply(
+                device_id.clone(),
+                status.decoded,
+                STANDARD.encode(status.bytes),
+            ))
             .await?;
 
         Ok(())
     }
 
-    async fn query_station(&self, querying: &Querying) -> Result<HttpReply> {
+    async fn query_station(&self, querying: &Querying) -> Result<RawAndDecoded<HttpReply>> {
         let client = query::device::Client::new()?;
         Ok(client.query_readings(&querying.http_addr).await?)
     }

@@ -44,7 +44,7 @@ impl MergeAndPublishReplies {
     async fn handle_background_message(&self, bg: BackgroundMessage) -> Result<()> {
         match bg {
             BackgroundMessage::Domain(message) => Ok(self.publish_tx.send(message).await?),
-            BackgroundMessage::StationReply(device_id, reply) => {
+            BackgroundMessage::StationReply(device_id, reply, raw) => {
                 let station = {
                     let db = self.db.lock().await;
                     db.merge_reply(store::DeviceId(device_id.0), reply.clone())?
@@ -59,6 +59,7 @@ impl MergeAndPublishReplies {
                         }
                         .try_into()?,
                         Some(reply.try_into()?),
+                        raw,
                     ))
                     .await?)
             }
@@ -244,6 +245,19 @@ impl Sdk {
             email,
             tokens: Tokens::from(tokens, transmission),
         })
+    }
+
+    async fn add_or_update_station_in_portal(
+        &self,
+        tokens: Tokens,
+        station: AddOrUpdatePortalStation,
+    ) -> Result<()> {
+        let client = query::portal::Client::new(&self.portal_base_url)?;
+        let authenticated = client.to_authenticated(tokens.into())?;
+
+        authenticated.add_or_update_station(station.into()).await?;
+
+        Ok(())
     }
 
     async fn validate_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
@@ -621,13 +635,7 @@ impl Sdk {
                     firmware_id: firmware.id,
                     status: UpgradeStatus::Failed,
                 })
-            } /*
-              Err(e) => Ok(UpgradeProgress {
-                  device_id: device_id.0.clone(),
-                  firmware_id: firmware.id,
-                  status: UpgradeStatus::Failed,
-              }),
-              */
+            }
         }
     }
 }
@@ -770,6 +778,15 @@ pub fn get_my_stations() -> Result<Vec<StationConfig>> {
 pub fn authenticate_portal(email: String, password: String) -> Result<Authenticated> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.authenticate_portal(email, password))
+    })?)
+}
+
+pub fn add_or_update_station_in_portal(
+    tokens: Tokens,
+    station: AddOrUpdatePortalStation,
+) -> Result<()> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.add_or_update_station_in_portal(tokens, station))
     })?)
 }
 
@@ -941,6 +958,25 @@ impl Into<device::ConfigureWifiTransmission> for WifiTransmissionConfig {
 }
 
 #[derive(Clone, Debug)]
+pub struct AddOrUpdatePortalStation {
+    pub name: String,
+    pub device_id: String,
+    pub location_name: String,
+    pub status_pb: String,
+}
+
+impl Into<query::portal::AddStation> for AddOrUpdatePortalStation {
+    fn into(self) -> query::portal::AddStation {
+        query::portal::AddStation {
+            name: self.name,
+            device_id: self.device_id,
+            location_name: self.location_name,
+            status_pb: self.status_pb,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct Tokens {
     pub token: String,
     pub transmission: TransmissionToken,
@@ -1053,7 +1089,7 @@ pub struct RecordArchive {
 pub enum DomainMessage {
     PreAccount,
     NearbyStations(Vec<NearbyStation>),
-    StationRefreshed(StationConfig, Option<EphemeralConfig>),
+    StationRefreshed(StationConfig, Option<EphemeralConfig>, String),
     UploadProgress(TransferProgress),
     DownloadProgress(TransferProgress),
     FirmwareDownloadStatus(FirmwareDownloadStatus),

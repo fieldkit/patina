@@ -25,6 +25,29 @@ class StationModel {
   });
 }
 
+class UpdatePortal {
+  UpdatePortal(Native api, PortalAccounts portalAccounts, AppEventDispatcher dispatcher) {
+    dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) async {
+      final deviceId = refreshed.field0.deviceId;
+      Loggers.main.i("$deviceId refreshed");
+      final account = portalAccounts.getAccountForDevice(deviceId);
+      final tokens = account?.tokens;
+      if (tokens != null) {
+        final name = refreshed.field0.name;
+        try {
+          await api.addOrUpdateStationInPortal(
+              tokens: tokens,
+              station: AddOrUpdatePortalStation(name: name, deviceId: deviceId, locationName: "", statusPb: refreshed.field2));
+        } catch (e) {
+          Loggers.main.i("Add or update portal error: $e");
+        }
+      } else {
+        // TODO Warn user about lack of updates due to logged out.
+      }
+    });
+  }
+}
+
 class KnownStationsModel extends ChangeNotifier {
   final Map<String, StationModel> _stations = {};
 
@@ -548,9 +571,10 @@ class AppState {
   final ModuleConfigurations moduleConfigurations;
   final PortalAccounts portalAccounts;
   final TasksModel tasks;
+  final UpdatePortal updatePortal;
 
   AppState._(this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts, this.firmware,
-      this.stationOperations, this.tasks, this.configuration);
+      this.stationOperations, this.tasks, this.configuration, this.updatePortal);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
     final stationOperations = StationOperations(dispatcher: dispatcher);
@@ -565,6 +589,7 @@ class AppState {
       dispatcher: dispatcher,
     );
     final configurations = StationConfiguration(api: api, portalAccounts: portalAccounts);
+    final updatePortal = UpdatePortal(api, portalAccounts, dispatcher);
     return AppState._(
       api,
       dispatcher,
@@ -575,6 +600,7 @@ class AppState {
       stationOperations,
       tasks,
       configurations,
+      updatePortal,
     );
   }
 
@@ -754,14 +780,18 @@ class PortalAccounts extends ChangeNotifier {
       }
     }
 
-    if (_accounts.isEmpty) {
-      Loggers.state.w("Checking firmware (unauthenticated)");
-      await api.cacheFirmware(tokens: null);
-    } else {
-      for (PortalAccount account in _accounts) {
-        Loggers.state.i("Checking firmware (${account.email})");
-        await api.cacheFirmware(tokens: account.tokens);
+    try {
+      if (_accounts.isEmpty) {
+        Loggers.state.w("Checking firmware (unauthenticated)");
+        await api.cacheFirmware(tokens: null);
+      } else {
+        for (PortalAccount account in _accounts) {
+          Loggers.state.i("Checking firmware (${account.email})");
+          await api.cacheFirmware(tokens: account.tokens);
+        }
       }
+    } catch (e) {
+      Loggers.main.i("Firmware update error: $e");
     }
 
     return this;

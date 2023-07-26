@@ -25,6 +25,15 @@ pub extern "C" fn wire_authenticate_portal(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_add_or_update_station_in_portal(
+    port_: i64,
+    tokens: *mut wire_Tokens,
+    station: *mut wire_AddOrUpdatePortalStation,
+) {
+    wire_add_or_update_station_in_portal_impl(port_, tokens, station)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_configure_wifi_transmission(
     port_: i64,
     device_id: *mut wire_uint_8_list,
@@ -100,6 +109,12 @@ pub extern "C" fn wire_create_log_sink(port_: i64) {
 // Section: allocate functions
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_add_or_update_portal_station_0(
+) -> *mut wire_AddOrUpdatePortalStation {
+    support::new_leak_box_ptr(wire_AddOrUpdatePortalStation::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_box_autoadd_local_firmware_0() -> *mut wire_LocalFirmware {
     support::new_leak_box_ptr(wire_LocalFirmware::new_with_null_ptr())
 }
@@ -142,7 +157,23 @@ impl Wire2Api<String> for *mut wire_uint_8_list {
         String::from_utf8_lossy(&vec).into_owned()
     }
 }
+impl Wire2Api<AddOrUpdatePortalStation> for wire_AddOrUpdatePortalStation {
+    fn wire2api(self) -> AddOrUpdatePortalStation {
+        AddOrUpdatePortalStation {
+            name: self.name.wire2api(),
+            device_id: self.device_id.wire2api(),
+            location_name: self.location_name.wire2api(),
+            status_pb: self.status_pb.wire2api(),
+        }
+    }
+}
 
+impl Wire2Api<AddOrUpdatePortalStation> for *mut wire_AddOrUpdatePortalStation {
+    fn wire2api(self) -> AddOrUpdatePortalStation {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<AddOrUpdatePortalStation>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<LocalFirmware> for *mut wire_LocalFirmware {
     fn wire2api(self) -> LocalFirmware {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -228,6 +259,15 @@ impl Wire2Api<WifiTransmissionConfig> for wire_WifiTransmissionConfig {
 
 #[repr(C)]
 #[derive(Clone)]
+pub struct wire_AddOrUpdatePortalStation {
+    name: *mut wire_uint_8_list,
+    device_id: *mut wire_uint_8_list,
+    location_name: *mut wire_uint_8_list,
+    status_pb: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
 pub struct wire_list_record_archive {
     ptr: *mut wire_RecordArchive,
     len: i32,
@@ -286,6 +326,23 @@ pub trait NewWithNullPtr {
 impl<T> NewWithNullPtr for *mut T {
     fn new_with_null_ptr() -> Self {
         std::ptr::null_mut()
+    }
+}
+
+impl NewWithNullPtr for wire_AddOrUpdatePortalStation {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            name: core::ptr::null_mut(),
+            device_id: core::ptr::null_mut(),
+            location_name: core::ptr::null_mut(),
+            status_pb: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl Default for wire_AddOrUpdatePortalStation {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
     }
 }
 

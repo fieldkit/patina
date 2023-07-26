@@ -77,6 +77,29 @@ class NativeImpl implements Native {
         argNames: ["email", "password"],
       );
 
+  Future<void> addOrUpdateStationInPortal(
+      {required Tokens tokens,
+      required AddOrUpdatePortalStation station,
+      dynamic hint}) {
+    var arg0 = _platform.api2wire_box_autoadd_tokens(tokens);
+    var arg1 =
+        _platform.api2wire_box_autoadd_add_or_update_portal_station(station);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner
+          .wire_add_or_update_station_in_portal(port_, arg0, arg1),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kAddOrUpdateStationInPortalConstMeta,
+      argValues: [tokens, station],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kAddOrUpdateStationInPortalConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "add_or_update_station_in_portal",
+        argNames: ["tokens", "station"],
+      );
+
   Future<void> configureWifiTransmission(
       {required String deviceId,
       required WifiTransmissionConfig config,
@@ -371,6 +394,7 @@ class NativeImpl implements Native {
         return DomainMessage_StationRefreshed(
           _wire2api_box_autoadd_station_config(raw[1]),
           _wire2api_opt_box_autoadd_ephemeral_config(raw[2]),
+          _wire2api_String(raw[3]),
         );
       case 3:
         return DomainMessage_UploadProgress(

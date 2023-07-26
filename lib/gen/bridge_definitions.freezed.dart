@@ -20,7 +20,8 @@ mixin _$DomainMessage {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0, EphemeralConfig? field1)
+    required TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)
         stationRefreshed,
     required TResult Function(TransferProgress field0) uploadProgress,
     required TResult Function(TransferProgress field0) downloadProgress,
@@ -35,7 +36,8 @@ mixin _$DomainMessage {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult? Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult? Function(TransferProgress field0)? uploadProgress,
     TResult? Function(TransferProgress field0)? downloadProgress,
@@ -49,7 +51,8 @@ mixin _$DomainMessage {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult Function(TransferProgress field0)? uploadProgress,
     TResult Function(TransferProgress field0)? downloadProgress,
@@ -171,7 +174,8 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0, EphemeralConfig? field1)
+    required TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)
         stationRefreshed,
     required TResult Function(TransferProgress field0) uploadProgress,
     required TResult Function(TransferProgress field0) downloadProgress,
@@ -189,7 +193,8 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult? Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult? Function(TransferProgress field0)? uploadProgress,
     TResult? Function(TransferProgress field0)? downloadProgress,
@@ -206,7 +211,8 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult Function(TransferProgress field0)? uploadProgress,
     TResult Function(TransferProgress field0)? downloadProgress,
@@ -365,7 +371,8 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0, EphemeralConfig? field1)
+    required TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)
         stationRefreshed,
     required TResult Function(TransferProgress field0) uploadProgress,
     required TResult Function(TransferProgress field0) downloadProgress,
@@ -383,7 +390,8 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult? Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult? Function(TransferProgress field0)? uploadProgress,
     TResult? Function(TransferProgress field0)? downloadProgress,
@@ -400,7 +408,8 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult Function(TransferProgress field0)? uploadProgress,
     TResult Function(TransferProgress field0)? downloadProgress,
@@ -496,7 +505,7 @@ abstract class _$$DomainMessage_StationRefreshedCopyWith<$Res> {
           $Res Function(_$DomainMessage_StationRefreshed) then) =
       __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>;
   @useResult
-  $Res call({StationConfig field0, EphemeralConfig? field1});
+  $Res call({StationConfig field0, EphemeralConfig? field1, String field2});
 }
 
 /// @nodoc
@@ -513,6 +522,7 @@ class __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
     Object? field1 = freezed,
+    Object? field2 = null,
   }) {
     return _then(_$DomainMessage_StationRefreshed(
       null == field0
@@ -523,6 +533,10 @@ class __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>
           ? _value.field1
           : field1 // ignore: cast_nullable_to_non_nullable
               as EphemeralConfig?,
+      null == field2
+          ? _value.field2
+          : field2 // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -531,16 +545,18 @@ class __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>
 
 class _$DomainMessage_StationRefreshed
     implements DomainMessage_StationRefreshed {
-  const _$DomainMessage_StationRefreshed(this.field0, [this.field1]);
+  const _$DomainMessage_StationRefreshed(this.field0, this.field1, this.field2);
 
   @override
   final StationConfig field0;
   @override
   final EphemeralConfig? field1;
+  @override
+  final String field2;
 
   @override
   String toString() {
-    return 'DomainMessage.stationRefreshed(field0: $field0, field1: $field1)';
+    return 'DomainMessage.stationRefreshed(field0: $field0, field1: $field1, field2: $field2)';
   }
 
   @override
@@ -549,11 +565,12 @@ class _$DomainMessage_StationRefreshed
         (other.runtimeType == runtimeType &&
             other is _$DomainMessage_StationRefreshed &&
             (identical(other.field0, field0) || other.field0 == field0) &&
-            (identical(other.field1, field1) || other.field1 == field1));
+            (identical(other.field1, field1) || other.field1 == field1) &&
+            (identical(other.field2, field2) || other.field2 == field2));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0, field1);
+  int get hashCode => Object.hash(runtimeType, field0, field1, field2);
 
   @JsonKey(ignore: true)
   @override
@@ -567,7 +584,8 @@ class _$DomainMessage_StationRefreshed
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0, EphemeralConfig? field1)
+    required TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)
         stationRefreshed,
     required TResult Function(TransferProgress field0) uploadProgress,
     required TResult Function(TransferProgress field0) downloadProgress,
@@ -577,7 +595,7 @@ class _$DomainMessage_StationRefreshed
     required TResult Function(List<LocalFirmware> field0) availableFirmware,
     required TResult Function(List<RecordArchive> field0) recordArchives,
   }) {
-    return stationRefreshed(field0, field1);
+    return stationRefreshed(field0, field1, field2);
   }
 
   @override
@@ -585,7 +603,8 @@ class _$DomainMessage_StationRefreshed
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult? Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult? Function(TransferProgress field0)? uploadProgress,
     TResult? Function(TransferProgress field0)? downloadProgress,
@@ -594,7 +613,7 @@ class _$DomainMessage_StationRefreshed
     TResult? Function(List<LocalFirmware> field0)? availableFirmware,
     TResult? Function(List<RecordArchive> field0)? recordArchives,
   }) {
-    return stationRefreshed?.call(field0, field1);
+    return stationRefreshed?.call(field0, field1, field2);
   }
 
   @override
@@ -602,7 +621,8 @@ class _$DomainMessage_StationRefreshed
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult Function(TransferProgress field0)? uploadProgress,
     TResult Function(TransferProgress field0)? downloadProgress,
@@ -613,7 +633,7 @@ class _$DomainMessage_StationRefreshed
     required TResult orElse(),
   }) {
     if (stationRefreshed != null) {
-      return stationRefreshed(field0, field1);
+      return stationRefreshed(field0, field1, field2);
     }
     return orElse();
   }
@@ -682,11 +702,14 @@ class _$DomainMessage_StationRefreshed
 }
 
 abstract class DomainMessage_StationRefreshed implements DomainMessage {
-  const factory DomainMessage_StationRefreshed(final StationConfig field0,
-      [final EphemeralConfig? field1]) = _$DomainMessage_StationRefreshed;
+  const factory DomainMessage_StationRefreshed(
+      final StationConfig field0,
+      final EphemeralConfig? field1,
+      final String field2) = _$DomainMessage_StationRefreshed;
 
   StationConfig get field0;
   EphemeralConfig? get field1;
+  String get field2;
   @JsonKey(ignore: true)
   _$$DomainMessage_StationRefreshedCopyWith<_$DomainMessage_StationRefreshed>
       get copyWith => throw _privateConstructorUsedError;
@@ -761,7 +784,8 @@ class _$DomainMessage_UploadProgress implements DomainMessage_UploadProgress {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0, EphemeralConfig? field1)
+    required TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)
         stationRefreshed,
     required TResult Function(TransferProgress field0) uploadProgress,
     required TResult Function(TransferProgress field0) downloadProgress,
@@ -779,7 +803,8 @@ class _$DomainMessage_UploadProgress implements DomainMessage_UploadProgress {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult? Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult? Function(TransferProgress field0)? uploadProgress,
     TResult? Function(TransferProgress field0)? downloadProgress,
@@ -796,7 +821,8 @@ class _$DomainMessage_UploadProgress implements DomainMessage_UploadProgress {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult Function(TransferProgress field0)? uploadProgress,
     TResult Function(TransferProgress field0)? downloadProgress,
@@ -955,7 +981,8 @@ class _$DomainMessage_DownloadProgress
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0, EphemeralConfig? field1)
+    required TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)
         stationRefreshed,
     required TResult Function(TransferProgress field0) uploadProgress,
     required TResult Function(TransferProgress field0) downloadProgress,
@@ -973,7 +1000,8 @@ class _$DomainMessage_DownloadProgress
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult? Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult? Function(TransferProgress field0)? uploadProgress,
     TResult? Function(TransferProgress field0)? downloadProgress,
@@ -990,7 +1018,8 @@ class _$DomainMessage_DownloadProgress
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult Function(TransferProgress field0)? uploadProgress,
     TResult Function(TransferProgress field0)? downloadProgress,
@@ -1161,7 +1190,8 @@ class _$DomainMessage_FirmwareDownloadStatus
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0, EphemeralConfig? field1)
+    required TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)
         stationRefreshed,
     required TResult Function(TransferProgress field0) uploadProgress,
     required TResult Function(TransferProgress field0) downloadProgress,
@@ -1179,7 +1209,8 @@ class _$DomainMessage_FirmwareDownloadStatus
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult? Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult? Function(TransferProgress field0)? uploadProgress,
     TResult? Function(TransferProgress field0)? downloadProgress,
@@ -1196,7 +1227,8 @@ class _$DomainMessage_FirmwareDownloadStatus
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult Function(TransferProgress field0)? uploadProgress,
     TResult Function(TransferProgress field0)? downloadProgress,
@@ -1356,7 +1388,8 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0, EphemeralConfig? field1)
+    required TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)
         stationRefreshed,
     required TResult Function(TransferProgress field0) uploadProgress,
     required TResult Function(TransferProgress field0) downloadProgress,
@@ -1374,7 +1407,8 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult? Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult? Function(TransferProgress field0)? uploadProgress,
     TResult? Function(TransferProgress field0)? downloadProgress,
@@ -1391,7 +1425,8 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult Function(TransferProgress field0)? uploadProgress,
     TResult Function(TransferProgress field0)? downloadProgress,
@@ -1557,7 +1592,8 @@ class _$DomainMessage_AvailableFirmware
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0, EphemeralConfig? field1)
+    required TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)
         stationRefreshed,
     required TResult Function(TransferProgress field0) uploadProgress,
     required TResult Function(TransferProgress field0) downloadProgress,
@@ -1575,7 +1611,8 @@ class _$DomainMessage_AvailableFirmware
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult? Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult? Function(TransferProgress field0)? uploadProgress,
     TResult? Function(TransferProgress field0)? downloadProgress,
@@ -1592,7 +1629,8 @@ class _$DomainMessage_AvailableFirmware
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult Function(TransferProgress field0)? uploadProgress,
     TResult Function(TransferProgress field0)? downloadProgress,
@@ -1757,7 +1795,8 @@ class _$DomainMessage_RecordArchives implements DomainMessage_RecordArchives {
   TResult when<TResult extends Object?>({
     required TResult Function() preAccount,
     required TResult Function(List<NearbyStation> field0) nearbyStations,
-    required TResult Function(StationConfig field0, EphemeralConfig? field1)
+    required TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)
         stationRefreshed,
     required TResult Function(TransferProgress field0) uploadProgress,
     required TResult Function(TransferProgress field0) downloadProgress,
@@ -1775,7 +1814,8 @@ class _$DomainMessage_RecordArchives implements DomainMessage_RecordArchives {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? preAccount,
     TResult? Function(List<NearbyStation> field0)? nearbyStations,
-    TResult? Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult? Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult? Function(TransferProgress field0)? uploadProgress,
     TResult? Function(TransferProgress field0)? downloadProgress,
@@ -1792,7 +1832,8 @@ class _$DomainMessage_RecordArchives implements DomainMessage_RecordArchives {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? preAccount,
     TResult Function(List<NearbyStation> field0)? nearbyStations,
-    TResult Function(StationConfig field0, EphemeralConfig? field1)?
+    TResult Function(
+            StationConfig field0, EphemeralConfig? field1, String field2)?
         stationRefreshed,
     TResult Function(TransferProgress field0)? uploadProgress,
     TResult Function(TransferProgress field0)? downloadProgress,

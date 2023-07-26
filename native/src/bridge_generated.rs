@@ -73,6 +73,24 @@ fn wire_authenticate_portal_impl(
         },
     )
 }
+fn wire_add_or_update_station_in_portal_impl(
+    port_: MessagePort,
+    tokens: impl Wire2Api<Tokens> + UnwindSafe,
+    station: impl Wire2Api<AddOrUpdatePortalStation> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "add_or_update_station_in_portal",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_tokens = tokens.wire2api();
+            let api_station = station.wire2api();
+            move |task_callback| add_or_update_station_in_portal(api_tokens, api_station)
+        },
+    )
+}
 fn wire_configure_wifi_transmission_impl(
     port_: MessagePort,
     device_id: impl Wire2Api<String> + UnwindSafe,
@@ -311,9 +329,12 @@ impl support::IntoDart for DomainMessage {
         match self {
             Self::PreAccount => vec![0.into_dart()],
             Self::NearbyStations(field0) => vec![1.into_dart(), field0.into_dart()],
-            Self::StationRefreshed(field0, field1) => {
-                vec![2.into_dart(), field0.into_dart(), field1.into_dart()]
-            }
+            Self::StationRefreshed(field0, field1, field2) => vec![
+                2.into_dart(),
+                field0.into_dart(),
+                field1.into_dart(),
+                field2.into_dart(),
+            ],
             Self::UploadProgress(field0) => vec![3.into_dart(), field0.into_dart()],
             Self::DownloadProgress(field0) => vec![4.into_dart(), field0.into_dart()],
             Self::FirmwareDownloadStatus(field0) => vec![5.into_dart(), field0.into_dart()],

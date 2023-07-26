@@ -17,6 +17,11 @@ pub fn wire_authenticate_portal(port_: MessagePort, email: String, password: Str
 }
 
 #[wasm_bindgen]
+pub fn wire_add_or_update_station_in_portal(port_: MessagePort, tokens: JsValue, station: JsValue) {
+    wire_add_or_update_station_in_portal_impl(port_, tokens, station)
+}
+
+#[wasm_bindgen]
 pub fn wire_configure_wifi_transmission(port_: MessagePort, device_id: String, config: JsValue) {
     wire_configure_wifi_transmission_impl(port_, device_id, config)
 }
@@ -75,6 +80,23 @@ pub fn wire_create_log_sink(port_: MessagePort) {
 impl Wire2Api<String> for String {
     fn wire2api(self) -> String {
         self
+    }
+}
+impl Wire2Api<AddOrUpdatePortalStation> for JsValue {
+    fn wire2api(self) -> AddOrUpdatePortalStation {
+        let self_ = self.dyn_into::<JsArray>().unwrap();
+        assert_eq!(
+            self_.length(),
+            4,
+            "Expected 4 elements, got {}",
+            self_.length()
+        );
+        AddOrUpdatePortalStation {
+            name: self_.get(0).wire2api(),
+            device_id: self_.get(1).wire2api(),
+            location_name: self_.get(2).wire2api(),
+            status_pb: self_.get(3).wire2api(),
+        }
     }
 }
 

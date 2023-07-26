@@ -23,6 +23,15 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_AddOrUpdatePortalStation>
+      api2wire_box_autoadd_add_or_update_portal_station(
+          AddOrUpdatePortalStation raw) {
+    final ptr = inner.new_box_autoadd_add_or_update_portal_station_0();
+    _api_fill_to_wire_add_or_update_portal_station(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_LocalFirmware> api2wire_box_autoadd_local_firmware(
       LocalFirmware raw) {
     final ptr = inner.new_box_autoadd_local_firmware_0();
@@ -76,6 +85,20 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
 // Section: finalizer
 
 // Section: api_fill_to_wire
+
+  void _api_fill_to_wire_add_or_update_portal_station(
+      AddOrUpdatePortalStation apiObj, wire_AddOrUpdatePortalStation wireObj) {
+    wireObj.name = api2wire_String(apiObj.name);
+    wireObj.device_id = api2wire_String(apiObj.deviceId);
+    wireObj.location_name = api2wire_String(apiObj.locationName);
+    wireObj.status_pb = api2wire_String(apiObj.statusPb);
+  }
+
+  void _api_fill_to_wire_box_autoadd_add_or_update_portal_station(
+      AddOrUpdatePortalStation apiObj,
+      ffi.Pointer<wire_AddOrUpdatePortalStation> wireObj) {
+    _api_fill_to_wire_add_or_update_portal_station(apiObj, wireObj.ref);
+  }
 
   void _api_fill_to_wire_box_autoadd_local_firmware(
       LocalFirmware apiObj, ffi.Pointer<wire_LocalFirmware> wireObj) {
@@ -282,6 +305,28 @@ class NativeWire implements FlutterRustBridgeWireBase {
           void Function(int, ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_add_or_update_station_in_portal(
+    int port_,
+    ffi.Pointer<wire_Tokens> tokens,
+    ffi.Pointer<wire_AddOrUpdatePortalStation> station,
+  ) {
+    return _wire_add_or_update_station_in_portal(
+      port_,
+      tokens,
+      station,
+    );
+  }
+
+  late final _wire_add_or_update_station_in_portalPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Int64, ffi.Pointer<wire_Tokens>,
+                  ffi.Pointer<wire_AddOrUpdatePortalStation>)>>(
+      'wire_add_or_update_station_in_portal');
+  late final _wire_add_or_update_station_in_portal =
+      _wire_add_or_update_station_in_portalPtr.asFunction<
+          void Function(int, ffi.Pointer<wire_Tokens>,
+              ffi.Pointer<wire_AddOrUpdatePortalStation>)>();
+
   void wire_configure_wifi_transmission(
     int port_,
     ffi.Pointer<wire_uint_8_list> device_id,
@@ -474,6 +519,19 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_create_log_sink =
       _wire_create_log_sinkPtr.asFunction<void Function(int)>();
 
+  ffi.Pointer<wire_AddOrUpdatePortalStation>
+      new_box_autoadd_add_or_update_portal_station_0() {
+    return _new_box_autoadd_add_or_update_portal_station_0();
+  }
+
+  late final _new_box_autoadd_add_or_update_portal_station_0Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_AddOrUpdatePortalStation>
+              Function()>>('new_box_autoadd_add_or_update_portal_station_0');
+  late final _new_box_autoadd_add_or_update_portal_station_0 =
+      _new_box_autoadd_add_or_update_portal_station_0Ptr
+          .asFunction<ffi.Pointer<wire_AddOrUpdatePortalStation> Function()>();
+
   ffi.Pointer<wire_LocalFirmware> new_box_autoadd_local_firmware_0() {
     return _new_box_autoadd_local_firmware_0();
   }
@@ -572,6 +630,16 @@ class wire_Tokens extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> token;
 
   external wire_TransmissionToken transmission;
+}
+
+class wire_AddOrUpdatePortalStation extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> name;
+
+  external ffi.Pointer<wire_uint_8_list> device_id;
+
+  external ffi.Pointer<wire_uint_8_list> location_name;
+
+  external ffi.Pointer<wire_uint_8_list> status_pb;
 }
 
 class wire_WifiTransmissionConfig extends ffi.Struct {

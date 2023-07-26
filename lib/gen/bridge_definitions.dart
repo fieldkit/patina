@@ -30,6 +30,13 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kAuthenticatePortalConstMeta;
 
+  Future<void> addOrUpdateStationInPortal(
+      {required Tokens tokens,
+      required AddOrUpdatePortalStation station,
+      dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kAddOrUpdateStationInPortalConstMeta;
+
   Future<void> configureWifiTransmission(
       {required String deviceId,
       required WifiTransmissionConfig config,
@@ -88,6 +95,20 @@ abstract class Native {
   FlutterRustBridgeTaskConstMeta get kCreateLogSinkConstMeta;
 }
 
+class AddOrUpdatePortalStation {
+  final String name;
+  final String deviceId;
+  final String locationName;
+  final String statusPb;
+
+  const AddOrUpdatePortalStation({
+    required this.name,
+    required this.deviceId,
+    required this.locationName,
+    required this.statusPb,
+  });
+}
+
 class Authenticated {
   final String email;
   final String name;
@@ -125,9 +146,10 @@ class DomainMessage with _$DomainMessage {
     List<NearbyStation> field0,
   ) = DomainMessage_NearbyStations;
   const factory DomainMessage.stationRefreshed(
-    StationConfig field0, [
+    StationConfig field0,
     EphemeralConfig? field1,
-  ]) = DomainMessage_StationRefreshed;
+    String field2,
+  ) = DomainMessage_StationRefreshed;
   const factory DomainMessage.uploadProgress(
     TransferProgress field0,
   ) = DomainMessage_UploadProgress;
