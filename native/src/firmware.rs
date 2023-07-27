@@ -16,10 +16,10 @@ use crate::nearby::NearbyDevices;
 use super::api::*;
 
 pub struct CheckForAndCacheFirmware {
-    pub portal_base_url: String,
-    pub storage_path: String,
-    pub publish_tx: Sender<DomainMessage>,
-    pub tokens: Option<Tokens>,
+    portal_base_url: String,
+    storage_path: String,
+    publish_tx: Sender<DomainMessage>,
+    tokens: Option<Tokens>,
 }
 
 impl CheckForAndCacheFirmware {
@@ -28,9 +28,11 @@ impl CheckForAndCacheFirmware {
             Err(e) => {
                 warn!("Error checking cached firmware: {:?}", e);
 
-                let message = DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Failed);
-
-                self.publish_tx.send(message).await?;
+                self.publish_tx
+                    .send(DomainMessage::FirmwareDownloadStatus(
+                        FirmwareDownloadStatus::Failed,
+                    ))
+                    .await?;
 
                 return Ok(());
             }
@@ -38,21 +40,22 @@ impl CheckForAndCacheFirmware {
         };
 
         match cache_firmware_and_json_if_newer(
+            self.publish_tx.clone(),
+            &self.storage_path,
             &self.portal_base_url,
             self.tokens.clone(),
-            &self.storage_path,
             cached,
-            self.publish_tx.clone(),
         )
         .await
         {
             Err(e) => {
                 warn!("Error caching firmware: {:?}", e);
 
-                let message =
-                    DomainMessage::FirmwareDownloadStatus(FirmwareDownloadStatus::Offline);
-
-                self.publish_tx.send(message).await?;
+                self.publish_tx
+                    .send(DomainMessage::FirmwareDownloadStatus(
+                        FirmwareDownloadStatus::Offline,
+                    ))
+                    .await?;
 
                 return Ok(());
             }
@@ -286,11 +289,11 @@ async fn query_available_firmware(
 }
 
 async fn cache_firmware_and_json_if_newer(
-    portal_base_url: &str,
-    tokens: Option<Tokens>,
-    storage_path: &str,
-    cached: Vec<Firmware>,
     publish_tx: Sender<DomainMessage>,
+    portal_base_url: &str,
+    storage_path: &str,
+    tokens: Option<Tokens>,
+    cached: Vec<Firmware>,
 ) -> Result<()> {
     let client = query::portal::Client::new(portal_base_url)?;
     let firmwares = query_available_firmware(&client, tokens).await?;
