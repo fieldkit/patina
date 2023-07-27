@@ -30,7 +30,7 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kAuthenticatePortalConstMeta;
 
-  Future<void> addOrUpdateStationInPortal(
+  Future<int?> addOrUpdateStationInPortal(
       {required Tokens tokens,
       required AddOrUpdatePortalStation station,
       dynamic hint});

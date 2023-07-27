@@ -77,7 +77,7 @@ class NativeImpl implements Native {
         argNames: ["email", "password"],
       );
 
-  Future<void> addOrUpdateStationInPortal(
+  Future<int?> addOrUpdateStationInPortal(
       {required Tokens tokens,
       required AddOrUpdatePortalStation station,
       dynamic hint}) {
@@ -87,7 +87,7 @@ class NativeImpl implements Native {
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) => _platform.inner
           .wire_add_or_update_station_in_portal(port_, arg0, arg1),
-      parseSuccessData: _wire2api_unit,
+      parseSuccessData: _wire2api_opt_box_autoadd_u32,
       constMeta: kAddOrUpdateStationInPortalConstMeta,
       argValues: [tokens, station],
       hint: hint,
@@ -365,6 +365,10 @@ class NativeImpl implements Native {
     return _wire2api_transmission_config(raw);
   }
 
+  int _wire2api_box_autoadd_u32(dynamic raw) {
+    return raw as int;
+  }
+
   UpgradeProgress _wire2api_box_autoadd_upgrade_progress(dynamic raw) {
     return _wire2api_upgrade_progress(raw);
   }
@@ -569,6 +573,10 @@ class NativeImpl implements Native {
   TransmissionConfig? _wire2api_opt_box_autoadd_transmission_config(
       dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_transmission_config(raw);
+  }
+
+  int? _wire2api_opt_box_autoadd_u32(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_u32(raw);
   }
 
   Uint8List? _wire2api_opt_uint_8_list(dynamic raw) {

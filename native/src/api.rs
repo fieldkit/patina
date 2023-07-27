@@ -246,13 +246,14 @@ impl Sdk {
         &self,
         tokens: Tokens,
         station: AddOrUpdatePortalStation,
-    ) -> Result<()> {
+    ) -> Result<Option<u32>> {
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let authenticated = client.to_authenticated(tokens.into())?;
 
-        authenticated.add_or_update_station(station.into()).await?;
-
-        Ok(())
+        Ok(authenticated
+            .add_or_update_station(station.into())
+            .await?
+            .map(|s| s.id))
     }
 
     async fn validate_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
@@ -482,7 +483,7 @@ pub fn authenticate_portal(email: String, password: String) -> Result<Authentica
 pub fn add_or_update_station_in_portal(
     tokens: Tokens,
     station: AddOrUpdatePortalStation,
-) -> Result<()> {
+) -> Result<Option<u32>> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.add_or_update_station_in_portal(tokens, station))
     })?)

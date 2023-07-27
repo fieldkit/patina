@@ -29,20 +29,25 @@ class UpdatePortal {
   UpdatePortal(Native api, PortalAccounts portalAccounts, AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) async {
       final deviceId = refreshed.field0.deviceId;
-      Loggers.main.i("$deviceId refreshed");
       final account = portalAccounts.getAccountForDevice(deviceId);
       final tokens = account?.tokens;
       if (tokens != null) {
         final name = refreshed.field0.name;
         try {
-          await api.addOrUpdateStationInPortal(
+          final idIfOk = await api.addOrUpdateStationInPortal(
               tokens: tokens,
               station: AddOrUpdatePortalStation(name: name, deviceId: deviceId, locationName: "", statusPb: refreshed.field2));
+          if (idIfOk == null) {
+            Loggers.main.w("$deviceId permissions-conflict");
+          } else {
+            Loggers.main.i("$deviceId refreshed portal-id=$idIfOk");
+          }
         } catch (e) {
           Loggers.main.i("Add or update portal error: $e");
         }
       } else {
         // TODO Warn user about lack of updates due to logged out.
+        Loggers.main.w("$deviceId need-auth");
       }
     });
   }
