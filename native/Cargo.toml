@@ -33,3 +33,6 @@ tokio = { version = "1.28.0", features = ["full"] }
 tokio-stream = { version = "0.1.14", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+
+[dev-dependencies]
+flutter_rust_bridge_macros = "=1.77.1"
