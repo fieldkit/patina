@@ -106,7 +106,6 @@ flutter:
 
   # This is NOT recursive by default.
   assets:
-  - .env
   - resources/
   - resources/images/
   - resources/images/art/
