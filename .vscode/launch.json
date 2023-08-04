@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        
+
+        {
+            "name": "Flutter (Linux)",
+            "program": "lib/main.dart",
+            "deviceId": "linux",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Flutter (Web)",
+            "program": "lib/main.dart",
+            "deviceId": "chrome",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Flutter (Android)",
+            "program": "lib/main.dart",
+            "deviceId": "flutter-tester",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}
