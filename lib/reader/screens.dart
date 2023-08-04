@@ -126,7 +126,7 @@ class FlowScreenWidget extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontFamily: 'Avenir',
-                      fontSize: 18.0,
+                      fontSize: 15.0,
                       color: Colors.grey[850], // Dark gray
                       letterSpacing: 0.1,
                     ),
