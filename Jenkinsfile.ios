@@ -15,7 +15,7 @@ timestamps {
                 scmInfo = checkout scm
 
                 dir ("rustfk") {
-                    git branch: 'main', url: 'https://github.com/jlewallen/rustfk.git'    
+                    git branch: 'main', url: 'https://github.com/fieldkit/rustfk.git'    
                 }
 
                 withCredentials([string(credentialsId: 'osx-keychain-password', variable: 'OSX_KEYCHAIN_PASSWORD')]) {
