@@ -157,7 +157,7 @@ class _OurAppState extends State<OurApp> {
               titleTextStyle: TextStyle(
                 color: Color.fromARGB(255, 48, 44, 44), 
                 fontWeight: FontWeight.w500,
-                fontSize: 20,
+                fontSize: 17,
               ),
               shape: Border(
                 bottom: BorderSide(
