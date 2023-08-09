@@ -205,7 +205,7 @@ class _FlowImagesWidgetState extends State<FlowImagesWidget> {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      widget.screen.images[_currentIndex].url,
+      'resources/flows/${widget.screen.images[_currentIndex].url}',
       fit: BoxFit.cover,
     );
   }
