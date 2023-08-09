@@ -183,14 +183,30 @@ class _FlowImagesWidgetState extends State<FlowImagesWidget> {
   Timer? _timer;
 
   @override
+  void didUpdateWidget(FlowImagesWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if the 'screen' property has been updated
+    if (oldWidget.screen != widget.screen) {
+      // If it has, reset _currentIndex to 0
+      setState(() {
+        _currentIndex = 0;
+      });
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
 
     _timer = Timer.periodic(
-      const Duration(seconds: 3), // Change duration if needed
+      const Duration(seconds: 3),
       (timer) {
         setState(() {
-          _currentIndex = (_currentIndex + 1) % widget.screen.images.length;
+          if (widget.screen.images.isEmpty) { // Check if the images list is empty
+            _currentIndex = 0; // Reset the index if there are no images
+          } else {
+            _currentIndex = (_currentIndex + 1) % widget.screen.images.length; // Rotate within the range of the list
+          }
         });
       },
     );
