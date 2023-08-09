@@ -1,1 +1,1107 @@
-{"data":{"flows":[{"id":"1","name":"onboarding","show_progress":true},{"id":"2","name":"deploy","show_progress":true},{"id":"3","name":"calibration","show_progress":false},{"id":"4","name":"examples","show_progress":false}],"screens":[{"id":"1","name":"OLD_onboarding.01","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Do you have everything?\nCheck that you have all necessary parts to assemble your FieldKit station.\n\n| LEFT           | RIGHT      |\n|----------------|------------|\n| A) Upper Board       | F) FieldKit Case    |\n| B) Lower Board      | G) Cable Plate Pack     |\n| C) Module Base         | H) Screw Packs    |\n| D) Module Board(s)         | I) Micro-USB Cable   |\n| E) Battery        |  |","images":[{"url":"/uploads/TI_1_A_e65b535bb2.png"},{"url":"/uploads/TI_18_9cfa25c5fc.png"}],"logo":null}]},{"id":"2","name":"onboarding.05","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Combine Upper and Lower Boards\nIf not already assembled, combine your Upper Board and Lower Board. Be sure to line up the pin headers and sockets. Then press them together firmly.","images":[{"url":"/uploads/TI_2_A_112a78f350.jpg"},{"url":"/uploads/TI_19_23d1c3d3b8.png"},{"url":"/uploads/TI_2_B_9b35a3f7e6.jpg"}],"logo":null}]},{"id":"3","name":"onboarding.06","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Attach Module Base\nAttach the combined Upper and Lower Boards to the Module Base. You now have your FieldKit Core.","images":[{"url":"/uploads/TI_3_A_e2c8ce7917.png"},{"url":"/uploads/TI_3_B_128f1f4de9.png"}],"logo":null}]},{"id":"4","name":"onboarding.07","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Attach Module Boards\nAttach your individual Module Boards to the Module Base, and secure with Module Board Screws.\n\n## Use caution to avoid bending the Module Base pins, and make sure the pins never touch each other, as it could damage the board.","images":[{"url":"/uploads/TI_4_A_e9dc955a94.jpg"},{"url":"/uploads/TI_4_B_8d208f1547.jpg"}],"logo":null}]},{"id":"5","name":"onboarding.08","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Secure Inside Case\nPlace your assembled components inside the Case. Secure with Core to Case Screws to minimize movement and risk of damage.\n\n## You'll have to temporarily lift off the Upper Board to reach one of the screw holes in the Lower Board.","images":[{"url":"/uploads/TI_5_A_ccf0984f18.png"},{"url":"/uploads/TI_5_B_920a8e61b4.png"},{"url":"/uploads/TI_20_e6fe720726.png"}],"logo":null}]},{"id":"6","name":"onboarding.09","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Attach Battery\nInsert the Battery cable to the top left of the Upper Board where it says “BATTERY”.\n\n## Important: Before inserting, double check you've got it right. Inserting cables into the wrong sockets can permanently damage your FieldKit.","images":[{"url":"/uploads/TI_6_A_501dfaea02.png"},{"url":"/uploads/TI_6_B_6405844cdc.png"}],"logo":null}]},{"id":"7","name":"onboarding.10","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Attach Button\nInsert the Button cable to the top right of the Upper Board where it says “BTN”.\n\n## Important: Before inserting, double check you've got it right. Inserting cables into the wrong sockets can permanently damage your FieldKit.","images":[{"url":"/uploads/TI_7_A_836b705122.png"},{"url":"/uploads/TI_7_B_4470d5694e.png"}],"logo":null}]},{"id":"8","name":"onboarding.13","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Assemble Cable Plate\nAdd the cables and inserts into the glands. Screw them into the Cable Plate.\n\n## Note: Cable Plate assembly depends on your sensor and power configuration, and can be pretty involved. Visit [the product guide](https://fieldkit.org/Product-Guide/Set-Up-Station/#Assemble-Cable-Plate) for detailed instructions.","images":[{"url":"/uploads/TI_21_1c7cdf7182.png"},{"url":"/uploads/TI_22_89ef0f77bf.png"},{"url":"/uploads/TI_23_f4df431734.png"}],"logo":null}]},{"id":"9","name":"onboarding.11","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Plug in Micro-USB Cable\nPlug in the Micro-USB cable to an external power source to charge  the Battery.","images":[{"url":"/uploads/TI_8_A_5c71cc37f2.png"},{"url":"/uploads/TI_8_B_1bf06a1115.png"}],"logo":null}]},{"id":"10","name":"onboarding.14","locale":"en_US","forward":"Complete Station Assembly","skip":"","guide_title":"View Product Guide for setup instructions","guide_url":"https://www.fieldkit.org/product-guide/set-up-station/","header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Attach Cable Plate to Case\nOnce you've attached your cables, inserts and glands to the Cable Plate, screw your Cable Plate onto your Case using Cable Plate Screws. \n\n## Ensure that the gasket is pressed into the groove to form a snug fit for optimum weather protection. ","images":[{"url":"/uploads/TI_24_6362509d17.png"},{"url":"/uploads/TI_25_80accf62d1.png"}],"logo":null}]},{"id":"11","name":"onboarding.12","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":""},"simple":[{"body":"# Switch On and Leave Station to Charge\nFlip the switch to the “ON” position. Leave Micro-USB cable plugged in until the battery reads fully charged.","images":[{"url":"/uploads/TI_15_A_NEW_x2_9759453cc0.png"},{"url":"/uploads/TI_15_B_NEW_x2_05f6fd4bb9.png"},{"url":"/uploads/TI_8_B_f3f2eaff13.png"}],"logo":null}]},{"id":"17","name":"onboarding.weather.03","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Weather"},"simple":[{"body":"# Connect Rain Gauge\n\nTurn over the Weather Sensor Board, and insert the RJ11 jack from the Rain Gauge into the slot on the Weather Sensor Board marked “RAIN.”","images":[{"url":"/uploads/TI_32_ea3474ae96.png"},{"url":"/uploads/TI_33_ba502858a1.png"}],"logo":null}]},{"id":"18","name":"onboarding.weather.04","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Weather"},"simple":[{"body":"# Connect Anemometer and Wind Vane\n\nInsert the RJ11 jack from the Wind Vane into the slot on the Weather Sensor Board marked “WIND.” Insert the RJ11 jack from the Anemometer into the Wind Vane so that they are connected.","images":[{"url":"/uploads/TI_34_41fc0b20bb.png"},{"url":"/uploads/TI_35_77a7e23703.png"},{"url":"/uploads/TI_63_8e5ec859d8.png"}],"logo":null}]},{"id":"19","name":"onboarding.weather.05","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Weather"},"simple":[{"body":"# Place Stevenson Screen\n\nInsert the Weather Sensor Board into the Stevenson Screen. Attach the enclosed board to the Arm.","images":[{"url":"/uploads/TI_36_9cae5fda4b.png"},{"url":"/uploads/TI_37_d407eb532d.png"},{"url":"/uploads/TI_64_69d61032ed.png"}],"logo":null}]},{"id":"20","name":"onboarding.weather.06","locale":"en_US","forward":"Complete Setup","skip":"","guide_title":"Need more help? View Product Guide","guide_url":"https://www.fieldkit.org/product-guide/set-up-station/#weather-module-setup","header":{"title":"Set Up","subtitle":"Weather"},"simple":[{"body":"# Attach to Station\n\nMake sure that the other end of the CAT5 cable is securely inserted into the Weather Module Board.\n\n## Visit FieldKit.Org/Product-Guide/Set-Up-Station/#Weather-Module-Setup for instructions on positioning instruments, managing cables and exploring mounting solutions. ","images":[{"url":"/uploads/TI_38_5c371cef29.png"},{"url":"/uploads/TI_39_bdd7faffff.png"},{"url":"/uploads/TI_65_2d924591e9.png"}],"logo":null}]},{"id":"21","name":"onboarding.water.ph.01","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"pH"},"simple":[{"body":"# Do you have everything?\n\nCollect the pH Probe.\n## The pH Module Board should already be attached to your station.\n\n## Before calibrating, examine your module board and probe cable for a CAL ID decal. All probe and module pairs that have the same CAL ID printed on them have been calibrated together in the lab and will not require calibration before use. If you have multiple probes of the same type, match the CAL ID number on the probe cable and the module board when setting up the station.","images":[{"url":"/uploads/TI_41_ee59861b57.png"},{"url":"/uploads/TI_40_c5a6a2624f.png"}],"logo":null}]},{"id":"22","name":"onboarding.water.ph.02","locale":"en_US","forward":"Calibrate Sensors","skip":"","guide_title":"Need more help? View Product Guide","guide_url":"https://www.fieldkit.org/product-guide/set-up-station//#pH-module-setup","header":{"title":"Set Up","subtitle":"pH"},"simple":[{"body":"# Attach to Station\n\nScrew the pH Probe cable into the pH Module Board.","images":[{"url":"/uploads/TI_42_c6bf2633fc.png"},{"url":"/uploads/TI_43_e9486a789f.png"}],"logo":null}]},{"id":"24","name":"onboarding.water.ec.01","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Conductivity"},"simple":[{"body":"# Do you have everything?\nCollect the Conductivity Probe.\n\n## The Conductivity Module Board should already be attached to your station.\n\n## Before calibrating, examine your module board and probe cable for a CAL ID decal. All probe and module pairs that have the same CAL ID printed on them have been calibrated together in the lab and will not require calibration before use. If you have multiple probes of the same type, match the CAL ID number on the probe cable and the module board when setting up the station.","images":[{"url":"/uploads/TI_44_d448775f78.png"},{"url":"/uploads/TI_45_0771d4aa64.png"}],"logo":null}]},{"id":"25","name":"onboarding.water.ec.02","locale":"en_US","forward":"Calibrate Sensors","skip":"","guide_title":"Need more help? View Product Guide ","guide_url":"https://www.fieldkit.org/product-guide/set-up-station/#conductivity-module-setup","header":{"title":"Set Up","subtitle":"Conductivity"},"simple":[{"body":"# Attach to Station\n\nScrew the Conductivity Probe cable into the Conductivity Module Board.","images":[{"url":"/uploads/TI_46_249a8d8dd5.png"},{"url":"/uploads/TI_47_cb0eafa7a6.png"}],"logo":null}]},{"id":"26","name":"onboarding.water.dox.01","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Dissolved Oxygen"},"simple":[{"body":"# Do you have everything?\nCollect the Dissolved Oxygen Probe.\n\n## The Dissolved Oxygen Module Board should already be attached to your station.\n\n## Before calibrating, examine your module board and probe cable for a CAL ID decal. All probe and module pairs that have the same CAL ID printed on them have been calibrated together in the lab and will not require calibration before use. If you have multiple probes of the same type, match the CAL ID number on the probe cable and the module board when setting up the station.","images":[{"url":"/uploads/TI_48_764d104c39.png"},{"url":"/uploads/TI_49_769c7512f4.png"}],"logo":null}]},{"id":"27","name":"onboarding.water.dox.02","locale":"en_US","forward":"Calibrate Sensors","skip":"","guide_title":"Need more help? View Product Guide","guide_url":"https://www.fieldkit.org/product-guide/set-up-station/#dissolved-oxygen-module-setup","header":{"title":"Set Up","subtitle":"Dissolved Oxygen"},"simple":[{"body":"# Attach to Station\nScrew the Dissolved Oxygen Probe cable into the Dissolved Oxygen Module Board.","images":[{"url":"/uploads/TI_50_8834adfd6d.png"},{"url":"/uploads/TI_51_7245d5bf10.png"}],"logo":null}]},{"id":"29","name":"onboarding.water.temp.01","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Water Temperature"},"simple":[{"body":"# Do you have everything?\n\nCollect the Water Temperature Probe.\n\n## The Water Temperature Module Board should already be attached to your station.\n\n## Before calibrating, examine your module board and probe cable for a CAL ID decal. All probe and module pairs that have the same CAL ID printed on them have been calibrated together in the lab and will not require calibration before use. If you have multiple probes of the same type, match the CAL ID number on the probe cable and the module board when setting up the station.","images":[{"url":"/uploads/TI_52_6bd200df41.png"},{"url":"/uploads/TI_53_bf0f0b3bd8.png"}],"logo":null}]},{"id":"30","name":"onboarding.water.temp.02","locale":"en_US","forward":"Complete Setup","skip":"","guide_title":"Need more help? View Product Guide","guide_url":"https://www.fieldkit.org/product-guide/set-up-station/#water-temperature-module-setup","header":{"title":"Set Up","subtitle":"Water Temperature"},"simple":[{"body":"# Attach to Station\n\nScrew the Water Temperature Probe cable into the Water Temperature Module Board.","images":[{"url":"/uploads/TI_54_144e3748ce.png"},{"url":"/uploads/TI_55_66606bdf84.png"}],"logo":null}]},{"id":"31","name":"onboarding.distance.01","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Distance"},"simple":[{"body":"# Do you have everything?\nCollect the Distance Pack:\n\nA) CAT5 Cable\nB) Distance Sensor Board\nC) Ultrasonic Rangefinder     \n\n## The Distance Module Board should already be attached to your station.","images":[{"url":"/uploads/TI_56_69c1d0dd93.png"},{"url":"/uploads/TI_57_7fc02a0769.png"}],"logo":null}]},{"id":"32","name":"onboarding.distance.02","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Distance"},"simple":[{"body":"# Insert CAT5 Cable\nInsert one end of the CAT5 cable. Make sure you insert it the right way round.","images":[{"url":"/uploads/TI_58_8615906cb3.png"},{"url":"/uploads/TI_59_224561592e.png"},{"url":"/uploads/TI_60_ad8e7789c5.png"}],"logo":null}]},{"id":"33","name":"onboarding.distance.03","locale":"en_US","forward":"Complete Setup","skip":"","guide_title":"Need more help? View Product Guide","guide_url":"https://www.fieldkit.org/product-guide/set-up-station","header":{"title":"Set Up","subtitle":"Distance"},"simple":[{"body":"# Attach to Station\nMake sure that the other end of the CAT5 cable is securely inserted into the Distance Module Board.","images":[{"url":"/uploads/TI_61_d487cfcc1b.png"},{"url":"/uploads/TI_62_9036f44b11.png"}],"logo":null}]},{"id":"34","name":"onboarding.weather.01","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Weather"},"simple":[{"body":"# Do you have everything?\n\nCollect the Weather Pack:\n\n| LEFT           | RIGHT      |\n|----------------|------------|\n| 1. Stevenson Screen + Arm       | 5. Anemometer and Wind Vane + Arm      |\n| 2. Weather Sensor Board          | 6. Mounting Pole (a) + (b)       |\n| 3. CAT5 Cable                            | 7. Hose Clamps    |\n| 4. Rain Gauge + Arm                  | 8. Screws    |\n\n## The Weather Module Board should already be attached to your station.","images":[{"url":"/uploads/TI_26_2e8af5beca.png"},{"url":"/uploads/TI_27_17f8b5ff80.png"},{"url":"/uploads/TI_28_c01ec2c372.png"}],"logo":null}]},{"id":"35","name":"onboarding.weather.02","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Weather"},"simple":[{"body":"# Insert CAT5 Cable\n\nInsert one end of the CAT5 cable into the Weather Sensor Board. Make sure you insert it the right way round.","images":[{"url":"/uploads/TI_29_04490e357c.png"},{"url":"/uploads/TI_30_fe64b4c2e8.png"},{"url":"/uploads/TI_31_182d1a91b6.png"}],"logo":null}]},{"id":"39","name":"examples.01","locale":"en_US","forward":"Forward","skip":"Skip","guide_title":"Guide","guide_url":"https://www.google.com","header":{"title":"Example Title","subtitle":"Example Subtitle"},"simple":[{"body":"# Heading\n\n## Another header\n\nParagraph of text, hello there how are you doing I hope this finds you well.\n\n| LEFT           | RIGHT      |\n|----------------|------------|\n| 1. Stevenson Screen + Arm      | 5. Anemometer and Wind Vane + Arm      |\n| 2. Weather Sensor Board       | 6. Mounting Pole (a) + (b)       |\n| 3. CAT5 Cable       | 7. Hose Clamps    |\n| 4. Rain Gauge + Arm       | 8. Screws    |\n\nTables don't need to line up exactly in this editor, though that makes things easier to read. The left hand side pipes are important if you're using lists. Another thing you may notice is that LEFT and RIGHT. It's annoying, but the headers are required (cause this is a table) and so we will hide them, but they're necessary for the parser we're using.","images":[],"logo":null}]},{"id":"40","name":"onboarding.water.ph.03","locale":"en_US","forward":"Next","skip":"Skip","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"pH"},"simple":[{"body":"# Three-Point Calibration\n\nMake sure you have 3 pH standard solutions. We recommend pH 4.00, 7.00 and 10.00.","images":[{"url":"/uploads/TI_11_1_2_3_p_H_b98d65977a.png"}],"logo":null}]},{"id":"41","name":"onboarding.water.ec.03","locale":"en_US","forward":"Next","skip":"Skip","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Conductivity"},"simple":[{"body":"# Three-Point Calibration\n\nMake sure you have 3 conductivity standard solutions. We recommend 1,000, 10,000, and 100,000 µS/cm.","images":[{"url":"/uploads/TI_11_1_2_3_conductivity_a5568114a3.png"}],"logo":null}]},{"id":"42","name":"onboarding.water.temp.03","locale":"en_US","forward":"Next","skip":"Skip","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Water Temperature"},"simple":[{"body":"# Three-Point Transfer Calibration\nMake sure you have 3 temperature sources and a standard thermometer.\n\n## We recommend using the following sources in this order: a cup of ice water (0°C), room temperature air, and a cup of boiling water (100°C).","images":[{"url":"/uploads/TI_74_e5319a0c87.png"}],"logo":null}]},{"id":"43","name":"onboarding.water.dox.03","locale":"en_US","forward":"Next","skip":"Skip","guide_title":null,"guide_url":null,"header":{"title":"Set Up","subtitle":"Dissolved Oxygen"},"simple":[{"body":"# Three-point Transfer Calibration\n\nGather together a cup of water, an aquarium air pump, tubing and airstone, and a standard Dissolved Oxygen meter or test kit.","images":[{"url":"/uploads/TI_66_9740ee9cb4.png"}],"logo":null}]},{"id":"44","name":"examples.02","locale":"en_US","forward":"Forward","skip":null,"guide_title":null,"guide_url":null,"header":{"title":"A","subtitle":"B"},"simple":[{"body":"\n\n![Logo](1)\n\n![Welcome](0)\n\nWorld!","images":[{"url":"/uploads/Fieldkit_Panel_04_1500px_a9dcbe9502.png"},{"url":"/uploads/fieldkit_Logo_final_ac28b5ba44.png"}],"logo":null}]},{"id":"45","name":"onboarding.00","locale":"en_US","forward":"Get Started","skip":"Skip instructions","guide_title":"","guide_url":"","header":{"title":"Welcome!","subtitle":null},"simple":[{"body":"![Logo](0:auto)\n\n![Welcome](1)\n\n# Welcome!\n\nOur mobile app makes it easy to set up and deploy your FieldKit station.","images":[{"url":"/uploads/fieldkit_Logo_final_ac28b5ba44.png"},{"url":"/uploads/Fieldkit_Panel_04_1500px_a9dcbe9502.png"}],"logo":null}]},{"id":"46","name":"examples.03","locale":"en_US","forward":"Forward","skip":null,"guide_title":null,"guide_url":null,"header":{"title":"A","subtitle":"B"},"simple":[{"body":"Hello\n\n![Dropper Image](0,1)\n\nWorld!","images":[{"url":"/uploads/Image_from_i_OS_13_1_d4f56f3f14.jpg"},{"url":"/uploads/Image_from_i_OS_14_1_cb602a19a3.jpg"}],"logo":null}]},{"id":"47","name":"onboarding.01","locale":"en_US","forward":"Continue","skip":null,"guide_title":null,"guide_url":null,"header":{"title":"Need Additional Help?","subtitle":null},"simple":[{"body":"If you get stuck, use our Product Guide at fieldkit.org that goes through these steps (and more) in additional detail. \n\nYou can access all of our support resources, including the Product Guide, by clicking the blue  ?  icon at the upper right hand corner. ","images":[{"url":"/uploads/product_guide_help_icon_38aad2f330.svg"}],"logo":null}]},{"id":"48","name":"onboarding.02","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":null},"simple":[{"body":"Do you have everything? (1/3)\nCheck that you have all necessary parts to assemble your FieldKit station.\n\nCORE\nA) Upper Board \nB) Lower Board\nC) Module Base\n\nSENSORS\nD) Module Board(s) found in each Sensor Pack","images":[{"url":"/uploads/TI_1_A_1021_150bb7fb93.png"}],"logo":null}]},{"id":"49","name":"onboarding.03","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":null},"simple":[{"body":"Do you have everything? (2/3)\n\nPOWER\nE) Battery\nF) Micro USB Cable\nG) Solar Panel + Cable (optional)","images":[{"url":"/uploads/TI_1_B_e7c58a7039.png"}],"logo":null}]},{"id":"50","name":"onboarding.04","locale":"en_US","forward":"Next","skip":"Skip this step","guide_title":null,"guide_url":null,"header":{"title":"Assemble Station","subtitle":null},"simple":[{"body":"Do you have everything? (3/3)\n\nCASE\nH) FieldKit Case\nI) Cable Plate Pack\n\nSTATION FASTENERS\nJ) Station Screw Packs\n\n+ Phillips screwdriver and USB wall charger (not included)","images":[{"url":"/uploads/TI_18_A_21_1022_47199fdf54.png"}],"logo":null}]}]}}
+{
+  "data": {
+    "flows": [
+      {
+        "id": "1",
+        "name": "onboarding",
+        "show_progress": true
+      },
+      {
+        "id": "2",
+        "name": "deploy",
+        "show_progress": true
+      },
+      {
+        "id": "3",
+        "name": "calibration",
+        "show_progress": false
+      },
+      {
+        "id": "4",
+        "name": "examples",
+        "show_progress": false
+      }
+    ],
+    "screens": [
+      {
+        "id": "1",
+        "name": "OLD_onboarding.01",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Do you have everything?\nCheck that you have all necessary parts to assemble your FieldKit station.\n\n| LEFT           | RIGHT      |\n|----------------|------------|\n| A) Upper Board       | F) FieldKit Case    |\n| B) Lower Board      | G) Cable Plate Pack     |\n| C) Module Base         | H) Screw Packs    |\n| D) Module Board(s)         | I) Micro-USB Cable   |\n| E) Battery        |  |",
+            "images": [
+              {
+                "url": "uploads/TI_1_A_e65b535bb2.png"
+              },
+              {
+                "url": "uploads/TI_18_9cfa25c5fc.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "name": "onboarding.05",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Combine Upper and Lower Boards\nIf not already assembled, combine your Upper Board and Lower Board. Be sure to line up the pin headers and sockets. Then press them together firmly.",
+            "images": [
+              {
+                "url": "uploads/TI_2_A_112a78f350.jpg"
+              },
+              {
+                "url": "uploads/TI_19_23d1c3d3b8.png"
+              },
+              {
+                "url": "uploads/TI_2_B_9b35a3f7e6.jpg"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "name": "onboarding.06",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Attach Module Base\nAttach the combined Upper and Lower Boards to the Module Base. You now have your FieldKit Core.",
+            "images": [
+              {
+                "url": "uploads/TI_3_A_e2c8ce7917.png"
+              },
+              {
+                "url": "uploads/TI_3_B_128f1f4de9.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "name": "onboarding.07",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Attach Module Boards\nAttach your individual Module Boards to the Module Base, and secure with Module Board Screws.\n\n## Use caution to avoid bending the Module Base pins, and make sure the pins never touch each other, as it could damage the board.",
+            "images": [
+              {
+                "url": "uploads/TI_4_A_e9dc955a94.jpg"
+              },
+              {
+                "url": "uploads/TI_4_B_8d208f1547.jpg"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "name": "onboarding.08",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Secure Inside Case\nPlace your assembled components inside the Case. Secure with Core to Case Screws to minimize movement and risk of damage.\n\n## You'll have to temporarily lift off the Upper Board to reach one of the screw holes in the Lower Board.",
+            "images": [
+              {
+                "url": "uploads/TI_5_A_ccf0984f18.png"
+              },
+              {
+                "url": "uploads/TI_5_B_920a8e61b4.png"
+              },
+              {
+                "url": "uploads/TI_20_e6fe720726.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "6",
+        "name": "onboarding.09",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Attach Battery\nInsert the Battery cable to the top left of the Upper Board where it says “BATTERY”.\n\n## Important: Before inserting, double check you've got it right. Inserting cables into the wrong sockets can permanently damage your FieldKit.",
+            "images": [
+              {
+                "url": "uploads/TI_6_A_501dfaea02.png"
+              },
+              {
+                "url": "uploads/TI_6_B_6405844cdc.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "7",
+        "name": "onboarding.10",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Attach Button\nInsert the Button cable to the top right of the Upper Board where it says “BTN”.\n\n## Important: Before inserting, double check you've got it right. Inserting cables into the wrong sockets can permanently damage your FieldKit.",
+            "images": [
+              {
+                "url": "uploads/TI_7_A_836b705122.png"
+              },
+              {
+                "url": "uploads/TI_7_B_4470d5694e.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "8",
+        "name": "onboarding.13",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Assemble Cable Plate\nAdd the cables and inserts into the glands. Screw them into the Cable Plate.\n\n## Note: Cable Plate assembly depends on your sensor and power configuration, and can be pretty involved. Visit [the product guide](https://fieldkit.org/Product-Guide/Set-Up-Station/#Assemble-Cable-Plate) for detailed instructions.",
+            "images": [
+              {
+                "url": "uploads/TI_21_1c7cdf7182.png"
+              },
+              {
+                "url": "uploads/TI_22_89ef0f77bf.png"
+              },
+              {
+                "url": "uploads/TI_23_f4df431734.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "9",
+        "name": "onboarding.11",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Plug in Micro-USB Cable\nPlug in the Micro-USB cable to an external power source to charge the Battery.",
+            "images": [
+              {
+                "url": "uploads/TI_8_A_5c71cc37f2.png"
+              },
+              {
+                "url": "uploads/TI_8_B_1bf06a1115.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "10",
+        "name": "onboarding.14",
+        "locale": "en_US",
+        "forward": "Complete Station Assembly",
+        "skip": "",
+        "guide_title": "View Product Guide for setup instructions",
+        "guide_url": "https://www.fieldkit.org/product-guide/set-up-station/",
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Attach Cable Plate to Case\nOnce you've attached your cables, inserts and glands to the Cable Plate, screw your Cable Plate onto your Case using Cable Plate Screws. \n\n## Ensure that the gasket is pressed into the groove to form a snug fit for optimum weather protection. ",
+            "images": [
+              {
+                "url": "uploads/TI_24_6362509d17.png"
+              },
+              {
+                "url": "uploads/TI_25_80accf62d1.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "11",
+        "name": "onboarding.12",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": ""
+        },
+        "simple": [
+          {
+            "body": "# Switch On and Leave Station to Charge\nFlip the switch to the “ON” position. Leave Micro-USB cable plugged in until the battery reads fully charged.",
+            "images": [
+              {
+                "url": "uploads/TI_15_A_NEW_x2_9759453cc0.png"
+              },
+              {
+                "url": "uploads/TI_15_B_NEW_x2_05f6fd4bb9.png"
+              },
+              {
+                "url": "uploads/TI_8_B_f3f2eaff13.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "17",
+        "name": "onboarding.weather.03",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Weather"
+        },
+        "simple": [
+          {
+            "body": "# Connect Rain Gauge\n\nTurn over the Weather Sensor Board, and insert the RJ11 jack from the Rain Gauge into the slot on the Weather Sensor Board marked “RAIN.”",
+            "images": [
+              {
+                "url": "uploads/TI_32_ea3474ae96.png"
+              },
+              {
+                "url": "uploads/TI_33_ba502858a1.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "18",
+        "name": "onboarding.weather.04",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Weather"
+        },
+        "simple": [
+          {
+            "body": "# Connect Anemometer and Wind Vane\n\nInsert the RJ11 jack from the Wind Vane into the slot on the Weather Sensor Board marked “WIND.” Insert the RJ11 jack from the Anemometer into the Wind Vane so that they are connected.",
+            "images": [
+              {
+                "url": "uploads/TI_34_41fc0b20bb.png"
+              },
+              {
+                "url": "uploads/TI_35_77a7e23703.png"
+              },
+              {
+                "url": "uploads/TI_63_8e5ec859d8.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "19",
+        "name": "onboarding.weather.05",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Weather"
+        },
+        "simple": [
+          {
+            "body": "# Place Stevenson Screen\n\nInsert the Weather Sensor Board into the Stevenson Screen. Attach the enclosed board to the Arm.",
+            "images": [
+              {
+                "url": "uploads/TI_36_9cae5fda4b.png"
+              },
+              {
+                "url": "uploads/TI_37_d407eb532d.png"
+              },
+              {
+                "url": "uploads/TI_64_69d61032ed.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "20",
+        "name": "onboarding.weather.06",
+        "locale": "en_US",
+        "forward": "Complete Setup",
+        "skip": "",
+        "guide_title": "Need more help? View Product Guide",
+        "guide_url": "https://www.fieldkit.org/product-guide/set-up-station/#weather-module-setup",
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Weather"
+        },
+        "simple": [
+          {
+            "body": "# Attach to Station\n\nMake sure that the other end of the CAT5 cable is securely inserted into the Weather Module Board.\n\n## Visit FieldKit.Org/Product-Guide/Set-Up-Station/#Weather-Module-Setup for instructions on positioning instruments, managing cables and exploring mounting solutions. ",
+            "images": [
+              {
+                "url": "uploads/TI_38_5c371cef29.png"
+              },
+              {
+                "url": "uploads/TI_39_bdd7faffff.png"
+              },
+              {
+                "url": "uploads/TI_65_2d924591e9.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "21",
+        "name": "onboarding.water.ph.01",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "pH"
+        },
+        "simple": [
+          {
+            "body": "# Do you have everything?\n\nCollect the pH Probe.\n## The pH Module Board should already be attached to your station.\n\n## Before calibrating, examine your module board and probe cable for a CAL ID decal. All probe and module pairs that have the same CAL ID printed on them have been calibrated together in the lab and will not require calibration before use. If you have multiple probes of the same type, match the CAL ID number on the probe cable and the module board when setting up the station.",
+            "images": [
+              {
+                "url": "uploads/TI_41_ee59861b57.png"
+              },
+              {
+                "url": "uploads/TI_40_c5a6a2624f.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "22",
+        "name": "onboarding.water.ph.02",
+        "locale": "en_US",
+        "forward": "Calibrate Sensors",
+        "skip": "",
+        "guide_title": "Need more help? View Product Guide",
+        "guide_url": "https://www.fieldkit.org/product-guide/set-up-station//#pH-module-setup",
+        "header": {
+          "title": "Set Up",
+          "subtitle": "pH"
+        },
+        "simple": [
+          {
+            "body": "# Attach to Station\n\nScrew the pH Probe cable into the pH Module Board.",
+            "images": [
+              {
+                "url": "uploads/TI_42_c6bf2633fc.png"
+              },
+              {
+                "url": "uploads/TI_43_e9486a789f.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "24",
+        "name": "onboarding.water.ec.01",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Conductivity"
+        },
+        "simple": [
+          {
+            "body": "# Do you have everything?\nCollect the Conductivity Probe.\n\n## The Conductivity Module Board should already be attached to your station.\n\n## Before calibrating, examine your module board and probe cable for a CAL ID decal. All probe and module pairs that have the same CAL ID printed on them have been calibrated together in the lab and will not require calibration before use. If you have multiple probes of the same type, match the CAL ID number on the probe cable and the module board when setting up the station.",
+            "images": [
+              {
+                "url": "uploads/TI_44_d448775f78.png"
+              },
+              {
+                "url": "uploads/TI_45_0771d4aa64.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "25",
+        "name": "onboarding.water.ec.02",
+        "locale": "en_US",
+        "forward": "Calibrate Sensors",
+        "skip": "",
+        "guide_title": "Need more help? View Product Guide ",
+        "guide_url": "https://www.fieldkit.org/product-guide/set-up-station/#conductivity-module-setup",
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Conductivity"
+        },
+        "simple": [
+          {
+            "body": "# Attach to Station\n\nScrew the Conductivity Probe cable into the Conductivity Module Board.",
+            "images": [
+              {
+                "url": "uploads/TI_46_249a8d8dd5.png"
+              },
+              {
+                "url": "uploads/TI_47_cb0eafa7a6.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "26",
+        "name": "onboarding.water.dox.01",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Dissolved Oxygen"
+        },
+        "simple": [
+          {
+            "body": "# Do you have everything?\nCollect the Dissolved Oxygen Probe.\n\n## The Dissolved Oxygen Module Board should already be attached to your station.\n\n## Before calibrating, examine your module board and probe cable for a CAL ID decal. All probe and module pairs that have the same CAL ID printed on them have been calibrated together in the lab and will not require calibration before use. If you have multiple probes of the same type, match the CAL ID number on the probe cable and the module board when setting up the station.",
+            "images": [
+              {
+                "url": "uploads/TI_48_764d104c39.png"
+              },
+              {
+                "url": "uploads/TI_49_769c7512f4.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "27",
+        "name": "onboarding.water.dox.02",
+        "locale": "en_US",
+        "forward": "Calibrate Sensors",
+        "skip": "",
+        "guide_title": "Need more help? View Product Guide",
+        "guide_url": "https://www.fieldkit.org/product-guide/set-up-station/#dissolved-oxygen-module-setup",
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Dissolved Oxygen"
+        },
+        "simple": [
+          {
+            "body": "# Attach to Station\nScrew the Dissolved Oxygen Probe cable into the Dissolved Oxygen Module Board.",
+            "images": [
+              {
+                "url": "uploads/TI_50_8834adfd6d.png"
+              },
+              {
+                "url": "uploads/TI_51_7245d5bf10.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "29",
+        "name": "onboarding.water.temp.01",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Water Temperature"
+        },
+        "simple": [
+          {
+            "body": "# Do you have everything?\n\nCollect the Water Temperature Probe.\n\n## The Water Temperature Module Board should already be attached to your station.\n\n## Before calibrating, examine your module board and probe cable for a CAL ID decal. All probe and module pairs that have the same CAL ID printed on them have been calibrated together in the lab and will not require calibration before use. If you have multiple probes of the same type, match the CAL ID number on the probe cable and the module board when setting up the station.",
+            "images": [
+              {
+                "url": "uploads/TI_52_6bd200df41.png"
+              },
+              {
+                "url": "uploads/TI_53_bf0f0b3bd8.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "30",
+        "name": "onboarding.water.temp.02",
+        "locale": "en_US",
+        "forward": "Complete Setup",
+        "skip": "",
+        "guide_title": "Need more help? View Product Guide",
+        "guide_url": "https://www.fieldkit.org/product-guide/set-up-station/#water-temperature-module-setup",
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Water Temperature"
+        },
+        "simple": [
+          {
+            "body": "# Attach to Station\n\nScrew the Water Temperature Probe cable into the Water Temperature Module Board.",
+            "images": [
+              {
+                "url": "uploads/TI_54_144e3748ce.png"
+              },
+              {
+                "url": "uploads/TI_55_66606bdf84.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "31",
+        "name": "onboarding.distance.01",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Distance"
+        },
+        "simple": [
+          {
+            "body": "# Do you have everything?\nCollect the Distance Pack:\n\nA) CAT5 Cable\nB) Distance Sensor Board\nC) Ultrasonic Rangefinder     \n\n## The Distance Module Board should already be attached to your station.",
+            "images": [
+              {
+                "url": "uploads/TI_56_69c1d0dd93.png"
+              },
+              {
+                "url": "uploads/TI_57_7fc02a0769.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "32",
+        "name": "onboarding.distance.02",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Distance"
+        },
+        "simple": [
+          {
+            "body": "# Insert CAT5 Cable\nInsert one end of the CAT5 cable. Make sure you insert it the right way round.",
+            "images": [
+              {
+                "url": "uploads/TI_58_8615906cb3.png"
+              },
+              {
+                "url": "uploads/TI_59_224561592e.png"
+              },
+              {
+                "url": "uploads/TI_60_ad8e7789c5.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "33",
+        "name": "onboarding.distance.03",
+        "locale": "en_US",
+        "forward": "Complete Setup",
+        "skip": "",
+        "guide_title": "Need more help? View Product Guide",
+        "guide_url": "https://www.fieldkit.org/product-guide/set-up-station",
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Distance"
+        },
+        "simple": [
+          {
+            "body": "# Attach to Station\nMake sure that the other end of the CAT5 cable is securely inserted into the Distance Module Board.",
+            "images": [
+              {
+                "url": "uploads/TI_61_d487cfcc1b.png"
+              },
+              {
+                "url": "uploads/TI_62_9036f44b11.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "34",
+        "name": "onboarding.weather.01",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Weather"
+        },
+        "simple": [
+          {
+            "body": "# Do you have everything?\n\nCollect the Weather Pack:\n\n| LEFT           | RIGHT      |\n|----------------|------------|\n| 1. Stevenson Screen + Arm       | 5. Anemometer and Wind Vane + Arm      |\n| 2. Weather Sensor Board          | 6. Mounting Pole (a) + (b)       |\n| 3. CAT5 Cable                            | 7. Hose Clamps    |\n| 4. Rain Gauge + Arm                  | 8. Screws    |\n\n## The Weather Module Board should already be attached to your station.",
+            "images": [
+              {
+                "url": "uploads/TI_26_2e8af5beca.png"
+              },
+              {
+                "url": "uploads/TI_27_17f8b5ff80.png"
+              },
+              {
+                "url": "uploads/TI_28_c01ec2c372.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "35",
+        "name": "onboarding.weather.02",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Weather"
+        },
+        "simple": [
+          {
+            "body": "# Insert CAT5 Cable\n\nInsert one end of the CAT5 cable into the Weather Sensor Board. Make sure you insert it the right way round.",
+            "images": [
+              {
+                "url": "uploads/TI_29_04490e357c.png"
+              },
+              {
+                "url": "uploads/TI_30_fe64b4c2e8.png"
+              },
+              {
+                "url": "uploads/TI_31_182d1a91b6.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "39",
+        "name": "examples.01",
+        "locale": "en_US",
+        "forward": "Forward",
+        "skip": "Skip",
+        "guide_title": "Guide",
+        "guide_url": "https://www.google.com",
+        "header": {
+          "title": "Example Title",
+          "subtitle": "Example Subtitle"
+        },
+        "simple": [
+          {
+            "body": "# Heading\n\n## Another header\n\nParagraph of text, hello there how are you doing I hope this finds you well.\n\n| LEFT           | RIGHT      |\n|----------------|------------|\n| 1. Stevenson Screen + Arm      | 5. Anemometer and Wind Vane + Arm      |\n| 2. Weather Sensor Board       | 6. Mounting Pole (a) + (b)       |\n| 3. CAT5 Cable       | 7. Hose Clamps    |\n| 4. Rain Gauge + Arm       | 8. Screws    |\n\nTables don't need to line up exactly in this editor, though that makes things easier to read. The left hand side pipes are important if you're using lists. Another thing you may notice is that LEFT and RIGHT. It's annoying, but the headers are required (cause this is a table) and so we will hide them, but they're necessary for the parser we're using.",
+            "images": [],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "40",
+        "name": "onboarding.water.ph.03",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "pH"
+        },
+        "simple": [
+          {
+            "body": "# Three-Point Calibration\n\nMake sure you have 3 pH standard solutions. We recommend pH 4.00, 7.00 and 10.00.",
+            "images": [
+              {
+                "url": "uploads/TI_11_1_2_3_p_H_b98d65977a.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "41",
+        "name": "onboarding.water.ec.03",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Conductivity"
+        },
+        "simple": [
+          {
+            "body": "# Three-Point Calibration\n\nMake sure you have 3 conductivity standard solutions. We recommend 1,000, 10,000, and 100,000 µS/cm.",
+            "images": [
+              {
+                "url": "uploads/TI_11_1_2_3_conductivity_a5568114a3.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "42",
+        "name": "onboarding.water.temp.03",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Water Temperature"
+        },
+        "simple": [
+          {
+            "body": "# Three-Point Transfer Calibration\nMake sure you have 3 temperature sources and a standard thermometer.\n\n## We recommend using the following sources in this order: a cup of ice water (0°C), room temperature air, and a cup of boiling water (100°C).",
+            "images": [
+              {
+                "url": "uploads/TI_74_e5319a0c87.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "43",
+        "name": "onboarding.water.dox.03",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Set Up",
+          "subtitle": "Dissolved Oxygen"
+        },
+        "simple": [
+          {
+            "body": "# Three-point Transfer Calibration\n\nGather together a cup of water, an aquarium air pump, tubing and airstone, and a standard Dissolved Oxygen meter or test kit.",
+            "images": [
+              {
+                "url": "uploads/TI_66_9740ee9cb4.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "44",
+        "name": "examples.02",
+        "locale": "en_US",
+        "forward": "Forward",
+        "skip": null,
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "A",
+          "subtitle": "B"
+        },
+        "simple": [
+          {
+            "body": "\n\n![Logo](1)\n\n![Welcome](0)\n\nWorld!",
+            "images": [
+              {
+                "url": "uploads/Fieldkit_Panel_04_1500px_a9dcbe9502.png"
+              },
+              {
+                "url": "uploads/fieldkit_Logo_final_ac28b5ba44.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "45",
+        "name": "onboarding.00",
+        "locale": "en_US",
+        "forward": "Get Started",
+        "skip": "Skip instructions",
+        "guide_title": "",
+        "guide_url": "",
+        "header": {
+          "title": "Welcome!",
+          "subtitle": null
+        },
+        "simple": [
+          {
+            "body": "![Logo](0:auto)\n\n![Welcome](1)\n\n# Welcome!\n\nOur mobile app makes it easy to set up and deploy your FieldKit station.",
+            "images": [
+              {
+                "url": "uploads/fieldkit_Logo_final_ac28b5ba44.png"
+              },
+              {
+                "url": "uploads/Fieldkit_Panel_04_1500px_a9dcbe9502.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "46",
+        "name": "examples.03",
+        "locale": "en_US",
+        "forward": "Forward",
+        "skip": null,
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "A",
+          "subtitle": "B"
+        },
+        "simple": [
+          {
+            "body": "Hello\n\n![Dropper Image](0,1)\n\nWorld!",
+            "images": [
+              {
+                "url": "uploads/Image_from_i_OS_13_1_d4f56f3f14.jpg"
+              },
+              {
+                "url": "uploads/Image_from_i_OS_14_1_cb602a19a3.jpg"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "47",
+        "name": "onboarding.01",
+        "locale": "en_US",
+        "forward": "Continue",
+        "skip": null,
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Need Additional Help?",
+          "subtitle": null
+        },
+        "simple": [
+          {
+            "body": "If you get stuck, use our Product Guide at fieldkit.org that goes through these steps (and more) in additional detail. \n\nYou can access all of our support resources, including the Product Guide, by clicking the blue  ?  icon at the upper right hand corner. ",
+            "images": [
+              {
+                "url": "uploads/product_guide_help_icon_38aad2f330.svg"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "48",
+        "name": "onboarding.02",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": null
+        },
+        "simple": [
+          {
+            "body": "Do you have everything? (1/3)\nCheck that you have all necessary parts to assemble your FieldKit station.\n\nCORE\nA) Upper Board \nB) Lower Board\nC) Module Base\n\nSENSORS\nD) Module Board(s) found in each Sensor Pack",
+            "images": [
+              {
+                "url": "uploads/TI_1_A_1021_150bb7fb93.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "49",
+        "name": "onboarding.03",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": null
+        },
+        "simple": [
+          {
+            "body": "Do you have everything? (2/3)\n\nPOWER\nE) Battery\nF) Micro USB Cable\nG) Solar Panel + Cable (optional)",
+            "images": [
+              {
+                "url": "uploads/TI_1_B_e7c58a7039.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      },
+      {
+        "id": "50",
+        "name": "onboarding.04",
+        "locale": "en_US",
+        "forward": "Next",
+        "skip": "Skip this step",
+        "guide_title": null,
+        "guide_url": null,
+        "header": {
+          "title": "Assemble Station",
+          "subtitle": null
+        },
+        "simple": [
+          {
+            "body": "Do you have everything? (3/3)\n\nCASE\nH) FieldKit Case\nI) Cable Plate Pack\n\nSTATION FASTENERS\nJ) Station Screw Packs\n\n+ Phillips screwdriver and USB wall charger (not included)",
+            "images": [
+              {
+                "url": "uploads/TI_18_A_21_1022_47199fdf54.png"
+              }
+            ],
+            "logo": null
+          }
+        ]
+      }
+    ]
+  }
+}
