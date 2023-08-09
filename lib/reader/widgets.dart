@@ -1,5 +1,5 @@
 import 'package:flows/flows.dart';
-import 'package:flutter/material.dart' show Widget, StatelessWidget, BuildContext, Text, Row, Column;
+import 'package:flutter/material.dart' show BuildContext, Column, Row, StatelessWidget, Text, TextStyle, Widget;
 
 class MarkdownWidgetParser extends MarkdownParser<Widget> {
   MarkdownWidgetParser({super.logger});
@@ -89,7 +89,7 @@ class MarkdownHeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text);
+    return Text(text, style: const TextStyle(fontFamily: 'Avenir', fontSize: 20.0));  // Increased font size to 20
   }
 }
 
@@ -101,7 +101,7 @@ class MarkdownParagraphWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text);
+    return Text(text, style: const TextStyle(fontFamily: 'Avenir'));
   }
 }
 
@@ -148,7 +148,7 @@ class MarkdownListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text);
+    return Text(text, style: const TextStyle(fontFamily: 'Avenir'));
   }
 }
 
@@ -203,7 +203,7 @@ class MarkdownTableHeaderCellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text);
+    return Text(text, style: const TextStyle(fontFamily: 'Avenir'));
   }
 }
 
@@ -214,7 +214,7 @@ class MarkdownTableCellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text);
+    return Text(text, style: const TextStyle(fontFamily: 'Avenir'));
   }
 }
 
