@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fk/reader/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +27,17 @@ class QuickFlow extends StatefulWidget {
 class _QuickFlowState extends State<QuickFlow> {
   int index = 0;
 
+  void onBack() {
+    if (index > 0) {
+      Loggers.ui.i("back");
+      setState(() {
+        index -= 1;
+      });
+    } else {
+      Loggers.ui.i("back:exit");
+      Navigator.of(context).pop();}
+  }
+
   @override
   Widget build(BuildContext context) {
     final flows1 = context.read<flows.ContentFlows>();
@@ -40,6 +50,7 @@ class _QuickFlowState extends State<QuickFlow> {
           index += 1;
         });
       },
+      onBack: onBack,
       onSkip: () {
         Loggers.ui.i("skip");
       },
@@ -81,22 +92,36 @@ class FlowScreenWidget extends StatelessWidget {
   final VoidCallback? onForward;
   final VoidCallback? onSkip;
   final VoidCallback? onGuide;
+  final VoidCallback? onBack; 
 
-  const FlowScreenWidget({Key? key, required this.screen, this.onForward, this.onSkip, this.onGuide}) : super(key: key);
+  const FlowScreenWidget({Key? key, required this.screen, this.onForward, this.onSkip, this.onGuide, this.onBack}) : super(key: key);
 
   @override
   Widget build(context) {
     Loggers.ui.i("screen: $screen");
 
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        if (onBack != null) {  // Check if onBack is provided
+          onBack!();  // Use the onBack function if provided
+          return false;  // Prevent the default behavior (pop)
+        }
+        return true;  // Allow the default behavior if onBack is not provided
+      },
+      child: Scaffold(
       appBar: AppBar(
-        title: Text(screen.header?.title ?? ""),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: onBack, // If onBack is not provided, the IconButton will be disabled.
       ),
+      title: Text(screen.header?.title ?? ""),
+    ),
+
       body: Column(children: [
         ...screen.simple.expand((simple) {
           List<Widget> widgets = [];
           // Add markdown content widget if the body is not null or empty
-          if ((simple.body ?? '').isNotEmpty) {
+          if ((simple.body).isNotEmpty) {
             widgets.add(FlowSimpleScreenWidget(screen: simple));
           }
           // Add carousel widget if there are any images
@@ -153,7 +178,7 @@ class FlowScreenWidget extends StatelessWidget {
               onPressed: onGuide, 
               child: Text(screen.guideTitle!)
               ),
-        ]));
+        ])));
   }
 }
 
