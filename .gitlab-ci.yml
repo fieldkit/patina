@@ -5,10 +5,8 @@ stages:
 image: "ghcr.io/cirruslabs/flutter:3.10.5"
 
 before_script:
-  # Java NDK
-  - yes | sdkmanager 'ndk;25.2.9519653' && echo no-idea-why-this-is-needed
-  - mkdir -p ~/.gradle
-  - echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk" >> ~/.gradle/gradle.properties
+  # TODO Ugly
+  - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
   # Rust
   - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup.sh
   - sh rustup.sh -y
@@ -24,7 +22,11 @@ test:
 build:android:
   stage: build
   script:
-    - git clone https://gitlab.com/fieldkit/libraries/rustfk.git # TODO Ugly
+    # BEGIN Java NDK
+    - yes | sdkmanager 'ndk;25.2.9519653' && echo no-idea-why-this-is-needed
+    - mkdir -p ~/.gradle
+    - echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk" >> ~/.gradle/gradle.properties
+    # END Java NDK
     - flutter build apk
 
 build:ios:
