@@ -7,12 +7,13 @@ image: "ghcr.io/cirruslabs/flutter:3.10.5"
 before_script:
   # TODO Ugly
   - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
-  # Rust
+  # BEGIN Rust
   - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup.sh
   - sh rustup.sh -y
   - export PATH="$HOME/.cargo/bin:$PATH"
   - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
   - cargo install cargo-ndk
+  # END Rust
 
 test:
   stage: test
@@ -31,5 +32,6 @@ build:android:
 
 build:ios:
   stage: build
+  when: manual
   script:
     - echo "ok"
