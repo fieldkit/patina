@@ -1,0 +1,33 @@
+stages:
+  - test
+  - build
+
+image: "ghcr.io/cirruslabs/flutter:3.10.5"
+
+before_script:
+  # Java NDK
+  - yes | sdkmanager 'ndk;25.2.9519653' && echo no-idea-why-this-is-needed
+  - mkdir -p ~/.gradle
+  - echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk" >> ~/.gradle/gradle.properties
+  # Rust
+  - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup.sh
+  - sh rustup.sh -y
+  - export PATH="$HOME/.cargo/bin:$PATH"
+  - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+  - cargo install cargo-ndk
+
+test:
+  stage: test
+  script:
+    - echo "ok"
+
+build:android:
+  stage: build
+  script:
+    - git clone https://gitlab.com/fieldkit/libraries/rustfk.git # TODO Ugly
+    - flutter build apk
+
+build:ios:
+  stage: build
+  script:
+    - echo "ok"
