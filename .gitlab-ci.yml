@@ -2,7 +2,7 @@ stages:
   - test
   - build
 
-image: "ghcr.io/cirruslabs/flutter:3.10.5"
+image: "ghcr.io/cirruslabs/flutter:3.13.0"
 
 before_script:
   # TODO Ugly
