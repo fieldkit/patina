@@ -14,6 +14,7 @@ before_script:
   - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
   - cargo install cargo-ndk
   # END Rust
+  - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
 
 test:
   stage: test
@@ -28,6 +29,7 @@ build:android:
     - mkdir -p ~/.gradle
     - echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk" >> ~/.gradle/gradle.properties
     # END Java NDK
+    - echo '# Defaults' > .env
     - flutter build apk
   artifacts:
     name: "fk-patina-${CI_BUILD_REF_NAME}-${CI_BUILD_ID}"
@@ -40,4 +42,10 @@ build:ios:
   tags:
     - mac-lab
   script:
-    - echo "ok"
+    - echo '# Defaults' > .env
+    - flutter clean
+    - flutter build ipa --export-method ad-hoc
+  artifacts:
+    name: "fk-patina-${CI_BUILD_REF_NAME}-${CI_BUILD_ID}"
+    paths:
+      - build/ios/ipa/*
