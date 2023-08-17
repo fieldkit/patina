@@ -42,7 +42,15 @@ build:ios:
   tags:
     - mac-lab
   script:
+    # BEGIN Signing
+    - export KEYCHAIN_PASSWORD=`cat .secure_files/secure-lab-mac-keychain-pw.txt`
+    - security find-identity -p codesigning
+    - security list-keychains
+    - security unlock-keychain -p ${KEYCHAIN_PASSWORD} login.keychain
+    - security show-keychain-info login.keychain || true
+    # END Signing
     - echo '# Defaults' > .env
+    - export PATH=~/tools/flutter/bin:$PATH
     - flutter clean
     - flutter build ipa --export-method ad-hoc
   artifacts:
