@@ -14,15 +14,23 @@ before_script:
   - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
   - cargo install cargo-ndk
   # END Rust
-  - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
 
 test:
   stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   script:
-    - echo "ok"
+    # apt-get update && apt-get install -y cmake ninja-build clang pkg-config
+    - flutter test
 
 build:android:
   stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   script:
     # BEGIN Java NDK
     - yes | sdkmanager 'ndk;25.2.9519653' && echo no-idea-why-this-is-needed
@@ -38,10 +46,15 @@ build:android:
 
 build:ios:
   stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   tags:
     - mac-lab
   script:
     # BEGIN Signing
+    - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
     - export KEYCHAIN_PASSWORD=`cat .secure_files/secure-lab-mac-keychain-pw.txt`
     - security find-identity -p codesigning
     - security list-keychains
