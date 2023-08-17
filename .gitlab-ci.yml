@@ -37,5 +37,7 @@ build:android:
 build:ios:
   stage: build
   when: manual
+  tags:
+    - mac-lab
   script:
     - echo "ok"
