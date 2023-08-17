@@ -29,6 +29,10 @@ build:android:
     - echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk" >> ~/.gradle/gradle.properties
     # END Java NDK
     - flutter build apk
+  artifacts:
+    name: "fk-patina-${CI_BUILD_REF_NAME}-${CI_BUILD_ID}"
+    paths:
+      - build/app/outputs/flutter-apk/*.apk
 
 build:ios:
   stage: build
