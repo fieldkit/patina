@@ -41,8 +41,8 @@ impl CheckForAndCacheFirmware {
 
         match cache_firmware_and_json_if_newer(
             self.publish_tx.clone(),
-            &self.storage_path,
             &self.portal_base_url,
+            &self.storage_path,
             self.tokens.clone(),
             cached,
         )
