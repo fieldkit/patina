@@ -17,6 +17,41 @@ class AccountsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final accounts = context.watch<PortalAccounts>();
 
+
+    // If there are no accounts, display a custom message and an image
+    if (accounts.accounts.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.accountsTitle),
+          // Other AppBar properties...
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Looks like there are no accounts created yet!",
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20.0), // Spacer
+              Image.asset('../../resources/flows/uploads/Fieldkit_couple2.png'),
+              const SizedBox(height: 20.0), // Spacer
+              const Text(
+                "Accounts are useful for updating your station information on the online portal and occasionally accessing user-specific firmware. Are you connected to the internet? Once you are, let's set up an account!",
+                style: TextStyle(fontSize: 16.0),
+                textAlign: TextAlign.center,
+              ),
+              // You can also include the 'Add Account' button here, if desired
+            ],
+          ),
+        ),
+      );
+    }
+
+    // If there are accounts, display the regular content
+
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.accountsTitle),
@@ -71,9 +106,36 @@ class AccountsPage extends StatelessWidget {
                       );
                     });
               }),
-        ]));
+        ]),
+        bottomNavigationBar: Container(
+          padding: const EdgeInsets.all(24.0),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditAccountPage(original: PortalAccount(email: "", name: "", tokens: null, active: false)),
+                ),
+              );
+            },
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
+              padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),   // Set the color here
+            ),
+            child: Text(
+              AppLocalizations.of(context)!.accountsAddButton,
+              style: const TextStyle(
+                fontFamily: 'Avenir',
+                fontSize: 18.0,
+                fontWeight: FontWeight.w500,),
+            ),
+            
+          ),
+        ),
+    );
   }
 }
+
 
 class AccountsList extends StatelessWidget {
   final PortalAccounts accounts;
@@ -245,7 +307,17 @@ class _AccountState extends State<AccountForm> {
                   }
                 }
               },
-              child: Text(localizations.accountSaveButton),
+                style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
+                padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),   
+              ),
+              child: Text(
+                localizations.accountSaveButton,
+                style: const TextStyle(
+                  fontFamily: 'Avenir',
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w500,),
+              ),
             ),
           ].map((child) => Padding(padding: const EdgeInsets.all(8), child: child)).toList(),
         ),

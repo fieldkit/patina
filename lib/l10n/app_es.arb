@@ -83,5 +83,7 @@
   "confirmDeleteAccountTitle": "Delete Account",
   "confirmDelete": "Are you sure?",
   "confirmYes": "Yes",
-  "confirmCancel": "Cancel"
+  "confirmCancel": "Cancel",
+
+  "onboardingTitle": "Onboarding Instructions"
 }
