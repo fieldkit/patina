@@ -17,7 +17,6 @@ class AccountsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final accounts = context.watch<PortalAccounts>();
 
-
     // If there are no accounts, display a custom message and an image
     if (accounts.accounts.isEmpty) {
       return Scaffold(
@@ -36,7 +35,7 @@ class AccountsPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20.0), // Spacer
-              Image.asset('../../resources/flows/uploads/Fieldkit_couple2.png'),
+              Image.asset('resources/flows/uploads/Fieldkit_couple2.png'),
               const SizedBox(height: 20.0), // Spacer
               const Text(
                 "Accounts are useful for updating your station information on the online portal and occasionally accessing user-specific firmware. Are you connected to the internet? Once you are, let's set up an account!",
@@ -53,89 +52,104 @@ class AccountsPage extends StatelessWidget {
     // If there are accounts, display the regular content
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.accountsTitle),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditAccountPage(original: PortalAccount(email: "", name: "", tokens: null, active: false)),
-                    ),
-                  );
-                },
-                child: Text(AppLocalizations.of(context)!.accountsAddButton, style: const TextStyle(color: Colors.white)))
-          ],
-        ),
-        body: ListView(children: [
-          AccountsList(
-              accounts: accounts,
-              onActivate: (account) async {
-                await accounts.activate(account);
-              },
-              onLogin: (account) async {
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.accountsTitle),
+        actions: [
+          TextButton(
+              onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        EditAccountPage(original: PortalAccount(email: account.email, name: account.name, tokens: null, active: false)),
+                    builder: (context) => EditAccountPage(
+                        original: PortalAccount(
+                            email: "", name: "", tokens: null, active: false)),
                   ),
                 );
               },
-              onDelete: (account) async {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text(AppLocalizations.of(context)!.confirmDeleteAccountTitle),
-                        content: Text(AppLocalizations.of(context)!.confirmDelete),
-                        actions: <Widget>[
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(AppLocalizations.of(context)!.confirmCancel)),
-                          TextButton(
-                              onPressed: () async {
-                                Navigator.pop(context);
-                                await accounts.delete(account);
-                              },
-                              child: Text(AppLocalizations.of(context)!.confirmYes))
-                        ],
-                      );
-                    });
-              }),
-        ]),
-        bottomNavigationBar: Container(
-          padding: const EdgeInsets.all(24.0),
-          child: ElevatedButton(
-            onPressed: () {
+              child: Text(AppLocalizations.of(context)!.accountsAddButton,
+                  style: const TextStyle(color: Colors.white)))
+        ],
+      ),
+      body: ListView(children: [
+        AccountsList(
+            accounts: accounts,
+            onActivate: (account) async {
+              await accounts.activate(account);
+            },
+            onLogin: (account) async {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EditAccountPage(original: PortalAccount(email: "", name: "", tokens: null, active: false)),
+                  builder: (context) => EditAccountPage(
+                      original: PortalAccount(
+                          email: account.email,
+                          name: account.name,
+                          tokens: null,
+                          active: false)),
                 ),
               );
             },
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
-              padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),   // Set the color here
+            onDelete: (account) async {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text(AppLocalizations.of(context)!
+                          .confirmDeleteAccountTitle),
+                      content:
+                          Text(AppLocalizations.of(context)!.confirmDelete),
+                      actions: <Widget>[
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                                AppLocalizations.of(context)!.confirmCancel)),
+                        TextButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await accounts.delete(account);
+                            },
+                            child:
+                                Text(AppLocalizations.of(context)!.confirmYes))
+                      ],
+                    );
+                  });
+            }),
+      ]),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(24.0),
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EditAccountPage(
+                    original: PortalAccount(
+                        email: "", name: "", tokens: null, active: false)),
+              ),
+            );
+          },
+          style: ButtonStyle(
+            backgroundColor:
+                MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
+            padding: MaterialStateProperty.all<EdgeInsets>(
+                const EdgeInsets.symmetric(
+                    vertical: 24.0, horizontal: 32.0)), // Set the color here
+          ),
+          child: Text(
+            AppLocalizations.of(context)!.accountsAddButton,
+            style: const TextStyle(
+              fontFamily: 'Avenir',
+              fontSize: 18.0,
+              fontWeight: FontWeight.w500,
             ),
-            child: Text(
-              AppLocalizations.of(context)!.accountsAddButton,
-              style: const TextStyle(
-                fontFamily: 'Avenir',
-                fontSize: 18.0,
-                fontWeight: FontWeight.w500,),
-            ),
-            
           ),
         ),
+      ),
     );
   }
 }
-
 
 class AccountsList extends StatelessWidget {
   final PortalAccounts accounts;
@@ -143,14 +157,22 @@ class AccountsList extends StatelessWidget {
   final void Function(PortalAccount) onDelete;
   final void Function(PortalAccount) onLogin;
 
-  const AccountsList({super.key, required this.accounts, required this.onActivate, required this.onDelete, required this.onLogin});
+  const AccountsList(
+      {super.key,
+      required this.accounts,
+      required this.onActivate,
+      required this.onDelete,
+      required this.onLogin});
 
   @override
   Widget build(BuildContext context) {
     final items = accounts.accounts
         .map(
           (account) => AccountItem(
-              account: account, onActivate: () => onActivate(account), onLogin: () => onLogin(account), onDelete: () => onDelete(account)),
+              account: account,
+              onActivate: () => onActivate(account),
+              onLogin: () => onLogin(account),
+              onDelete: () => onDelete(account)),
         )
         .toList();
     return Column(children: items);
@@ -161,19 +183,25 @@ class AccountStatus extends StatelessWidget {
   final Validity validity;
   final bool active;
 
-  const AccountStatus({super.key, required this.validity, required this.active});
+  const AccountStatus(
+      {super.key, required this.validity, required this.active});
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    text(value) => Container(width: double.infinity, margin: WH.pagePadding, child: Text(value));
+    text(value) => Container(
+        width: double.infinity, margin: WH.pagePadding, child: Text(value));
 
     switch (validity) {
       case Validity.unknown:
-        return ColoredBox(color: const Color.fromRGBO(250, 197, 89, 1), child: text(localizations.accountUnknown));
+        return ColoredBox(
+            color: const Color.fromRGBO(250, 197, 89, 1),
+            child: text(localizations.accountUnknown));
       case Validity.invalid:
-        return ColoredBox(color: const Color.fromRGBO(240, 144, 141, 1), child: text(localizations.accountInvalid));
+        return ColoredBox(
+            color: const Color.fromRGBO(240, 144, 141, 1),
+            child: text(localizations.accountInvalid));
       case Validity.valid:
         if (active) {
           return text(localizations.accountDefault);
@@ -190,23 +218,37 @@ class AccountItem extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onLogin;
 
-  const AccountItem({super.key, required this.account, required this.onActivate, required this.onDelete, required this.onLogin});
+  const AccountItem(
+      {super.key,
+      required this.account,
+      required this.onActivate,
+      required this.onDelete,
+      required this.onLogin});
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return BorderedListItem(header: GenericListItemHeader(title: account.email, subtitle: account.name), children: [
-      WH.align(AccountStatus(validity: account.valid, active: account.active)),
-      WH.align(WH.padChildrenPage([
-        Row(
-          children: WH.padButtonsRow([
-            ElevatedButton(onPressed: onDelete, child: Text(localizations.accountDeleteButton)),
-            if (account.valid != Validity.valid) ElevatedButton(onPressed: onLogin, child: Text(localizations.accountRepairButton)),
-          ]),
-        )
-      ]))
-    ]);
+    return BorderedListItem(
+        header:
+            GenericListItemHeader(title: account.email, subtitle: account.name),
+        children: [
+          WH.align(
+              AccountStatus(validity: account.valid, active: account.active)),
+          WH.align(WH.padChildrenPage([
+            Row(
+              children: WH.padButtonsRow([
+                ElevatedButton(
+                    onPressed: onDelete,
+                    child: Text(localizations.accountDeleteButton)),
+                if (account.valid != Validity.valid)
+                  ElevatedButton(
+                      onPressed: onLogin,
+                      child: Text(localizations.accountRepairButton)),
+              ]),
+            )
+          ]))
+        ]);
   }
 }
 
@@ -253,7 +295,8 @@ class _AccountState extends State<AccountForm> {
               name: 'email',
               initialValue: widget.original.email,
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(labelText: localizations.accountEmail),
+              decoration:
+                  InputDecoration(labelText: localizations.accountEmail),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
                 FormBuilderValidators.email(),
@@ -307,19 +350,26 @@ class _AccountState extends State<AccountForm> {
                   }
                 }
               },
-                style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
-                padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),   
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
+                padding: MaterialStateProperty.all<EdgeInsets>(
+                    const EdgeInsets.symmetric(
+                        vertical: 24.0, horizontal: 32.0)),
               ),
               child: Text(
                 localizations.accountSaveButton,
                 style: const TextStyle(
                   fontFamily: 'Avenir',
                   fontSize: 18.0,
-                  fontWeight: FontWeight.w500,),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ].map((child) => Padding(padding: const EdgeInsets.all(8), child: child)).toList(),
+          ]
+              .map((child) =>
+                  Padding(padding: const EdgeInsets.all(8), child: child))
+              .toList(),
         ),
       ),
     );
@@ -335,8 +385,10 @@ class ProvideAccountsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final accounts = context.read<AppState>().portalAccounts;
     return FutureBuilder<PortalAccounts>(
-        future: Future.wait([accounts.load().then((a) => a.validate()), Future.delayed(const Duration(seconds: 0))])
-            .then((responses) => responses[0]),
+        future: Future.wait([
+          accounts.load().then((a) => a.validate()),
+          Future.delayed(const Duration(seconds: 0))
+        ]).then((responses) => responses[0]),
         builder: (context, AsyncSnapshot<PortalAccounts> snapshot) {
           if (snapshot.hasData) {
             return ChangeNotifierProvider(
