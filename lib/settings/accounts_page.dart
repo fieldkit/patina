@@ -22,7 +22,6 @@ class AccountsPage extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.accountsTitle),
-          // Other AppBar properties...
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -42,7 +41,37 @@ class AccountsPage extends StatelessWidget {
                 style: TextStyle(fontSize: 16.0),
                 textAlign: TextAlign.center,
               ),
-              // You can also include the 'Add Account' button here, if desired
+              const SizedBox(height: 40.0), // Spacer
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditAccountPage(
+                          original: PortalAccount(
+                              email: "",
+                              name: "",
+                              tokens: null,
+                              active: false)),
+                    ),
+                  );
+                },
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.symmetric(
+                          vertical: 24.0, horizontal: 32.0)),
+                ),
+                child: Text(
+                  AppLocalizations.of(context)!.accountsAddButton,
+                  style: const TextStyle(
+                    fontFamily: 'Avenir',
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -70,82 +99,88 @@ class AccountsPage extends StatelessWidget {
                   style: const TextStyle(color: Colors.white)))
         ],
       ),
-      body: ListView(children: [
-        AccountsList(
-            accounts: accounts,
-            onActivate: (account) async {
-              await accounts.activate(account);
-            },
-            onLogin: (account) async {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditAccountPage(
-                      original: PortalAccount(
-                          email: account.email,
-                          name: account.name,
-                          tokens: null,
-                          active: false)),
-                ),
-              );
-            },
-            onDelete: (account) async {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text(AppLocalizations.of(context)!
-                          .confirmDeleteAccountTitle),
-                      content:
-                          Text(AppLocalizations.of(context)!.confirmDelete),
-                      actions: <Widget>[
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                                AppLocalizations.of(context)!.confirmCancel)),
-                        TextButton(
-                            onPressed: () async {
-                              Navigator.pop(context);
-                              await accounts.delete(account);
-                            },
-                            child:
-                                Text(AppLocalizations.of(context)!.confirmYes))
-                      ],
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(children: [
+              AccountsList(
+                  accounts: accounts,
+                  onActivate: (account) async {
+                    await accounts.activate(account);
+                  },
+                  onLogin: (account) async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditAccountPage(
+                            original: PortalAccount(
+                                email: account.email,
+                                name: account.name,
+                                tokens: null,
+                                active: false)),
+                      ),
                     );
-                  });
-            }),
-      ]),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(24.0),
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EditAccountPage(
-                    original: PortalAccount(
-                        email: "", name: "", tokens: null, active: false)),
-              ),
-            );
-          },
-          style: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
-            padding: MaterialStateProperty.all<EdgeInsets>(
-                const EdgeInsets.symmetric(
-                    vertical: 24.0, horizontal: 32.0)), // Set the color here
+                  },
+                  onDelete: (account) async {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(AppLocalizations.of(context)!
+                                .confirmDeleteAccountTitle),
+                            content: Text(
+                                AppLocalizations.of(context)!.confirmDelete),
+                            actions: <Widget>[
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(AppLocalizations.of(context)!
+                                      .confirmCancel)),
+                              TextButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    await accounts.delete(account);
+                                  },
+                                  child: Text(
+                                      AppLocalizations.of(context)!.confirmYes))
+                            ],
+                          );
+                        });
+                  }),
+            ]),
           ),
-          child: Text(
-            AppLocalizations.of(context)!.accountsAddButton,
-            style: const TextStyle(
-              fontFamily: 'Avenir',
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500,
+          Container(
+            padding: const EdgeInsets.all(24.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditAccountPage(
+                        original: PortalAccount(
+                            email: "", name: "", tokens: null, active: false)),
+                  ),
+                );
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
+                padding: MaterialStateProperty.all<EdgeInsets>(
+                    const EdgeInsets.symmetric(
+                        vertical: 24.0, horizontal: 32.0)),
+              ),
+              child: Text(
+                AppLocalizations.of(context)!.accountsAddButton,
+                style: const TextStyle(
+                  fontFamily: 'Avenir',
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
