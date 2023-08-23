@@ -60,6 +60,8 @@
   "settingsAccounts": "Accounts",
   "accountsTitle": "Accounts",
   "accountsAddButton": "Add",
+  "accountsNoneCreatedTitle": "Looks like there are no accounts created yet!",
+  "accountsNoneCreatedMessage": "Accounts are useful for updating your station information on the online portal and occasionally accessing user-specific firmware. Are you connected to the internet? Once you are, let's set up an account!",
 
   "accountAddTitle": "Add Account",
   "accountEditTitle": "Edit Account",

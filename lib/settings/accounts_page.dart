@@ -28,17 +28,18 @@ class AccountsPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                "Looks like there are no accounts created yet!",
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              Text(
+                AppLocalizations.of(context)!.accountsNoneCreatedTitle,
+                style: const TextStyle(
+                    fontSize: 20.0, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20.0), // Spacer
               Image.asset('resources/flows/uploads/Fieldkit_couple2.png'),
               const SizedBox(height: 20.0), // Spacer
-              const Text(
-                "Accounts are useful for updating your station information on the online portal and occasionally accessing user-specific firmware. Are you connected to the internet? Once you are, let's set up an account!",
-                style: TextStyle(fontSize: 16.0),
+              Text(
+                AppLocalizations.of(context)!.accountsNoneCreatedMessage,
+                style: const TextStyle(fontSize: 16.0),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40.0), // Spacer
