@@ -70,14 +70,16 @@
 
   "settingsAccounts": "Accounts",
   "accountsTitle": "Accounts",
-  "accountsAddButton": "Add",
-  
+  "accountsAddButton": "Add an Account",
+  "accountsNoneCreatedTitle": "Looks like there are no accounts created yet!",
+  "accountsNoneCreatedMessage": "Accounts are useful for updating your station information on the online portal and occasionally accessing user-specific firmware. Are you connected to the internet? Once you are, let's set up an account!",
+
   "accountAddTitle": "Add Account",
   "accountEditTitle": "Edit Account",
   "accountEmail": "Email",
   "accountPassword": "Password",
   "accountFormFail": "Invalid email or password.",
-  "accountSaveButton": "Save",
+  "accountSaveButton": "Register",
   "accountDeleteButton": "Delete",
   "accountRepairButton": "Login",
   "accountDefault": "This is your default account.",
@@ -94,5 +96,7 @@
   "confirmDeleteAccountTitle": "Delete Account",
   "confirmDelete": "Are you sure?",
   "confirmYes": "Yes",
-  "confirmCancel": "Cancel"
+  "confirmCancel": "Cancel",
+
+  "onboardingTitle": "Onboarding Instructions"
 }
