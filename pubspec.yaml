@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.19.0 <3.0.0"
+  sdk: ">=3.0.6"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -35,7 +35,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   carousel_slider: ^4.2.1
   ffi: ^2.0.2
-  flutter_rust_bridge: ^1.75.2
+  flutter_rust_bridge: ^1.82.1
   flutter_map: ^3.0.0
   freezed_annotation: 2.2.0
   freezed: 2.3.3
@@ -85,7 +85,7 @@ dev_dependencies:
   # rules and activating additional ones.
   build_runner: 2.4.4
   flutter_lints: ^2.0.0
-  ffigen: ^7.2.11
+  ffigen: ^8.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
