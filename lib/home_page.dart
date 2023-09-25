@@ -73,31 +73,30 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Color(0xFF2C3E50),
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Image.asset('../resources/images/Icon_Station_inactive2.png',
+            icon: Image.asset('resources/images/Icon_Station_inactive2.png',
                 width: 24, height: 24),
-            activeIcon: Image.asset(
-                '../resources/images/Icon_Station_active2.png',
-                width: 24,
-                height: 24),
+            activeIcon: Image.asset('resources/images/Icon_Station_active2.png',
+                width: 24, height: 24),
             label: AppLocalizations.of(context)!.stationsTab,
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('../resources/images/Icon_DataSync_inactive2.png',
+            icon: Image.asset('resources/images/Icon_DataSync_inactive2.png',
                 width: 24, height: 24),
             activeIcon: Image.asset(
-                '../resources/images/Icon_DataSync_active2.png',
+                'resources/images/Icon_DataSync_active2.png',
                 width: 24,
                 height: 24),
             label: AppLocalizations.of(context)!.dataSyncTab,
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('../resources/images/Icon_Settings_inactive2.png',
+            icon: Image.asset('resources/images/Icon_Settings_inactive2.png',
                 width: 24, height: 24),
             activeIcon: Image.asset(
-                '../resources/images/Icon_Settings_active2.png',
+                'resources/images/Icon_Settings_active2.png',
                 width: 24,
                 height: 24),
             label: AppLocalizations.of(context)!.settingsTab,

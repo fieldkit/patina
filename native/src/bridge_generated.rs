@@ -20,35 +20,6 @@ use std::sync::Arc;
 
 // Section: imports
 
-use crate::logging::api::AddOrUpdatePortalStation;
-use crate::logging::api::Authenticated;
-use crate::logging::api::BatteryInfo;
-use crate::logging::api::DeviceCapabilities;
-use crate::logging::api::DomainMessage;
-use crate::logging::api::DownloadProgress;
-use crate::logging::api::EphemeralConfig;
-use crate::logging::api::FirmwareDownloadStatus;
-use crate::logging::api::FirmwareInfo;
-use crate::logging::api::LocalFirmware;
-use crate::logging::api::ModuleConfig;
-use crate::logging::api::NearbyStation;
-use crate::logging::api::NetworkConfig;
-use crate::logging::api::RecordArchive;
-use crate::logging::api::SensorConfig;
-use crate::logging::api::SensorValue;
-use crate::logging::api::SolarInfo;
-use crate::logging::api::StationConfig;
-use crate::logging::api::StreamInfo;
-use crate::logging::api::Tokens;
-use crate::logging::api::TransferProgress;
-use crate::logging::api::TransferStatus;
-use crate::logging::api::TransmissionConfig;
-use crate::logging::api::TransmissionToken;
-use crate::logging::api::UpgradeProgress;
-use crate::logging::api::UpgradeStatus;
-use crate::logging::api::UploadProgress;
-use crate::logging::api::WifiTransmissionConfig;
-
 // Section: wire functions
 
 fn wire_start_native_impl(

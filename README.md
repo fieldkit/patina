@@ -23,6 +23,12 @@ Then go ahead and run `flutter run`! When you're ready, refer to our documentati
 [here](https://fzyzcjy.github.io/flutter_rust_bridge/index.html)
 to learn how to write and use binding code.
 
+### RustFK
+Add the following repository to the base of the folder
+
+`git clone https://github.com/fieldkit/rustfk`
+
+
 Once you have edited `api.rs` to incorporate your own Rust code, the bridge files `bridge_definitions.dart` and `bridge_generated.dart` are generated using the following command:
 
 ### Windows
