@@ -27,7 +27,7 @@ class SettingsTab extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            title: const Text("Open Flow"),
+            title: Text(AppLocalizations.of(context)!.onboardingTitle),
             onTap: () {
               Navigator.push(
                 context,

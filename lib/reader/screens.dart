@@ -26,6 +26,18 @@ class QuickFlow extends StatefulWidget {
 class _QuickFlowState extends State<QuickFlow> {
   int index = 0;
 
+  void onBack() {
+    if (index > 0) {
+      Loggers.ui.i("back");
+      setState(() {
+        index -= 1;
+      });
+    } else {
+      Loggers.ui.i("back:exit");
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final flows1 = context.read<flows.ContentFlows>();
@@ -38,6 +50,7 @@ class _QuickFlowState extends State<QuickFlow> {
           index += 1;
         });
       },
+      onBack: onBack,
       onSkip: () {
         Loggers.ui.i("skip");
       },
@@ -80,83 +93,101 @@ class FlowScreenWidget extends StatelessWidget {
   final VoidCallback? onForward;
   final VoidCallback? onSkip;
   final VoidCallback? onGuide;
+  final VoidCallback? onBack;
 
   const FlowScreenWidget(
       {Key? key,
       required this.screen,
       this.onForward,
       this.onSkip,
-      this.onGuide})
+      this.onGuide,
+      this.onBack})
       : super(key: key);
 
   @override
   Widget build(context) {
     Loggers.ui.i("screen: $screen");
 
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(screen.header?.title ?? ""),
-        ),
-        body: Column(children: [
-          ...screen.simple.expand((simple) {
-            List<Widget> widgets = [];
-            // Add markdown content widget if the body is not null or empty
-            if ((simple.body).isNotEmpty) {
-              widgets.add(FlowSimpleScreenWidget(screen: simple));
-            }
-            // Add carousel widget if there are any images
-            if (simple.images.isNotEmpty) {
-              widgets.add(FlowImagesWidget(screen: simple));
-            }
-            return widgets;
-          }).toList(),
-          Container(
-            margin: const EdgeInsets.all(10.0), // CSS-like margin
-            child: Column(children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
-                  backgroundColor:
-                      const Color(0xffce596b), // CSS background-color
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(2.0), // CSS border-radius
-                  ),
-                ),
-                onPressed: onForward,
-                child: Text(
-                  screen.forward,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontFamily: 'Avenir',
-                    fontSize: 18.0,
-                    color: Colors.white,
-                    letterSpacing: 0.1,
-                  ),
-                ),
+    return WillPopScope(
+        onWillPop: () async {
+          if (onBack != null) {
+            // Check if onBack is provided
+            onBack!(); // Use the onBack function if provided
+            return false; // Prevent the default behavior (pop)
+          }
+          return true; // Allow the default behavior if onBack is not provided
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed:
+                    onBack, // If onBack is not provided, the IconButton will be disabled.
               ),
-            ]),
-          ),
-          if (screen.skip != null)
-            TextButton(
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
-              ),
-              onPressed: onSkip,
-              child: Text(
-                screen.skip!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Avenir',
-                  fontSize: 15.0,
-                  color: Colors.grey[850], // Dark gray
-                  letterSpacing: 0.1,
-                ),
-              ),
+              title: Text(screen.header?.title ?? ""),
             ),
-          if (screen.guideTitle != null)
-            ElevatedButton(onPressed: onGuide, child: Text(screen.guideTitle!)),
-        ]));
+            body: Column(children: [
+              ...screen.simple.expand((simple) {
+                List<Widget> widgets = [];
+                // Add markdown content widget if the body is not null or empty
+                if ((simple.body).isNotEmpty) {
+                  widgets.add(FlowSimpleScreenWidget(screen: simple));
+                }
+                // Add carousel widget if there are any images
+                if (simple.images.isNotEmpty) {
+                  widgets.add(FlowImagesWidget(screen: simple));
+                }
+                return widgets;
+              }).toList(),
+              Container(
+                margin: const EdgeInsets.all(10.0), // CSS-like margin
+                child: Column(children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding:
+                          const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
+                      backgroundColor:
+                          const Color(0xffce596b), // CSS background-color
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(2.0), // CSS border-radius
+                      ),
+                    ),
+                    onPressed: onForward,
+                    child: Text(
+                      screen.forward,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Avenir',
+                        fontSize: 18.0,
+                        color: Colors.white,
+                        letterSpacing: 0.1,
+                      ),
+                    ),
+                  ),
+                ]),
+              ),
+              if (screen.skip != null)
+                TextButton(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
+                  ),
+                  onPressed: onSkip,
+                  child: Text(
+                    screen.skip!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Avenir',
+                      fontSize: 15.0,
+                      color: Colors.grey[850], // Dark gray
+                      letterSpacing: 0.1,
+                    ),
+                  ),
+                ),
+              if (screen.guideTitle != null)
+                ElevatedButton(
+                    onPressed: onGuide, child: Text(screen.guideTitle!)),
+            ])));
   }
 }
 
@@ -186,14 +217,33 @@ class _FlowImagesWidgetState extends State<FlowImagesWidget> {
   Timer? _timer;
 
   @override
+  void didUpdateWidget(FlowImagesWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if the 'screen' property has been updated
+    if (oldWidget.screen != widget.screen) {
+      // If it has, reset _currentIndex to 0
+      setState(() {
+        _currentIndex = 0;
+      });
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
 
     _timer = Timer.periodic(
-      const Duration(seconds: 3), // Change duration if needed
+      const Duration(seconds: 3),
       (timer) {
         setState(() {
-          _currentIndex = (_currentIndex + 1) % widget.screen.images.length;
+          if (widget.screen.images.isEmpty) {
+            // Check if the images list is empty
+            _currentIndex = 0; // Reset the index if there are no images
+          } else {
+            _currentIndex = (_currentIndex + 1) %
+                widget.screen.images
+                    .length; // Rotate within the range of the list
+          }
         });
       },
     );
