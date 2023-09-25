@@ -42,9 +42,7 @@ class _HomePageState extends State<HomePage> {
                 child: Navigator(
                     key: stationsNavigatorKey,
                     onGenerateRoute: (RouteSettings settings) {
-                      return MaterialPageRoute(
-                          settings: settings,
-                          builder: (context) => const StationsTab());
+                      return MaterialPageRoute(settings: settings, builder: (context) => const StationsTab());
                     })),
             MultiProvider(
                 providers: [
@@ -56,9 +54,7 @@ class _HomePageState extends State<HomePage> {
                 child: Navigator(
                     key: dataNavigatorKey,
                     onGenerateRoute: (RouteSettings settings) {
-                      return MaterialPageRoute(
-                          settings: settings,
-                          builder: (context) => const DataSyncTab());
+                      return MaterialPageRoute(settings: settings, builder: (context) => const DataSyncTab());
                     })),
             Navigator(
                 key: settingsNavigatorKey,
@@ -76,41 +72,25 @@ class _HomePageState extends State<HomePage> {
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Image.asset('../resources/images/Icon_Station_inactive2.png',
-                width: 24, height: 24),
-            activeIcon: Image.asset(
-                '../resources/images/Icon_Station_active2.png',
-                width: 24,
-                height: 24),
+            icon: Image.asset('resources/images/Icon_Station_inactive2.png', width: 24, height: 24),
+            activeIcon: Image.asset('resources/images/Icon_Station_active2.png', width: 24, height: 24),
             label: AppLocalizations.of(context)!.stationsTab,
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('../resources/images/Icon_DataSync_inactive2.png',
-                width: 24, height: 24),
-            activeIcon: Image.asset(
-                '../resources/images/Icon_DataSync_active2.png',
-                width: 24,
-                height: 24),
+            icon: Image.asset('resources/images/Icon_DataSync_inactive2.png', width: 24, height: 24),
+            activeIcon: Image.asset('resources/images/Icon_DataSync_active2.png', width: 24, height: 24),
             label: AppLocalizations.of(context)!.dataSyncTab,
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('../resources/images/Icon_Settings_inactive2.png',
-                width: 24, height: 24),
-            activeIcon: Image.asset(
-                '../resources/images/Icon_Settings_active2.png',
-                width: 24,
-                height: 24),
+            icon: Image.asset('resources/images/Icon_Settings_inactive2.png', width: 24, height: 24),
+            activeIcon: Image.asset('resources/images/Icon_Settings_active2.png', width: 24, height: 24),
             label: AppLocalizations.of(context)!.settingsTab,
           ),
         ],
         currentIndex: _pageIndex,
         onTap: (int index) {
           if (_pageIndex == index) {
-            final List<GlobalKey<NavigatorState>> keys = [
-              stationsNavigatorKey,
-              dataNavigatorKey,
-              settingsNavigatorKey
-            ];
+            final List<GlobalKey<NavigatorState>> keys = [stationsNavigatorKey, dataNavigatorKey, settingsNavigatorKey];
             final NavigatorState? navigator = keys[index].currentState;
             if (navigator != null) {
               while (navigator.canPop()) {
