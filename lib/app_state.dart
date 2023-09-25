@@ -395,6 +395,8 @@ abstract class Task {
   final String key_ = uuid.v1();
 
   String get key => key_;
+
+  String? get deviceId => null;
 }
 
 abstract class TaskFactory<M> extends ChangeNotifier {
@@ -426,6 +428,9 @@ class DeployTaskFactory extends TaskFactory<DeployTask> {
 
 class DeployTask extends Task {
   final StationModel station;
+
+  @override
+  String get deviceId => station.deviceId;
 
   DeployTask({required this.station});
 }
@@ -468,6 +473,9 @@ class UpgradeTask extends Task {
   final StationModel station;
   final FirmwareComparison comparison;
 
+  @override
+  String get deviceId => station.deviceId;
+
   UpgradeTask({required this.station, required this.comparison});
 }
 
@@ -504,6 +512,7 @@ class UploadTaskFactory extends TaskFactory<UploadTask> {
 }
 
 class UploadTask extends Task {
+  @override
   final String deviceId;
   final List<RecordArchive> files;
   final Tokens tokens;
@@ -551,7 +560,7 @@ class TasksModel extends ChangeNotifier {
   }
 
   List<T> getAllFor<T extends Task>(String deviceId) {
-    return factories.map((f) => f.getAll<T>()).flattened.toList();
+    return factories.map((f) => f.getAll<T>()).flattened.where((t) => t.deviceId != null && t.deviceId == deviceId).toList();
   }
 
   T? getMaybeOne<T extends Task>(String deviceId) {
