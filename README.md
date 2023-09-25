@@ -1,4 +1,7 @@
-# FieldKit Mobile App
+# flutter_rust_bridge_template
+
+This repository serves as a template for Flutter projects calling into native Rust
+libraries via `flutter_rust_bridge`.
 
 ## Getting Started
 
@@ -14,26 +17,26 @@ To begin, ensure that you have a working installation of the following items:
 echo "ANDROID_NDK=.." >> ~/.gradle/gradle.properties
 ```
 
-# Rust Dependencies
+- [Web dependencies](http://cjycode.com/flutter_rust_bridge/template/setup_web.html) for the Web
 
-This project makes use of the task runner "just" to perform common operations,
-it can be installed using Rust's cargo command:
+Then go ahead and run `flutter run`! When you're ready, refer to our documentation
+[here](https://fzyzcjy.github.io/flutter_rust_bridge/index.html)
+to learn how to write and use binding code.
 
+Once you have edited `api.rs` to incorporate your own Rust code, the bridge files `bridge_definitions.dart` and `bridge_generated.dart` are generated using the following command:
+
+### Windows
 ```
-cargo install just
-```
-
-The bindings between the Flutter/Dart app and the Rust library may need to be
-regenerated, and to do so the codegen tool will need to be installed.
-
-```
-cargo install -f --version 1.82.1 flutter_rust_bridge_codegen
+flutter_rust_bridge_codegen --rust-input native\src\api.rs --dart-output .\lib\bridge_generated.dart --dart-decl-output .\lib\bridge_definitions.dart
 ```
 
-You'll notice the version is specified directly above, otherwise the latest
-version will be installed. This version should match the one specified for
-`flutter_rust_bridge` in the `pubspec.yaml` as well as for
-`flutter_rust_bridge` and `flutter_rust_bridge_macros` inside
-`native/Cargo.toml`. Drift among these versions is a common source of compile
-errors. When changing the version in `pubspec.yaml` a `flutter clean` is also
-usually necessary.
+### Linux/MacOS/any other Unix
+```
+flutter_rust_bridge_codegen --rust-input native/src/api.rs --dart-output ./lib/bridge_generated.dart --dart-decl-output ./lib/bridge_definitions.dart
+```
+
+## Scaffolding in existing projects
+
+If you would like to generate boilerplate for using `flutter_rust_bridge` in your existing projects,
+check out the [`flutter_rust_bridge` brick](https://brickhub.dev/bricks/flutter_rust_bridge/)
+for more details.
