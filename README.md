@@ -19,6 +19,15 @@ echo "ANDROID_NDK=.." >> ~/.gradle/gradle.properties
 This project makes use of the task runner "just" to perform common operations,
 it can be installed using Rust's cargo command:
 
+
+### RustFK
+Add the following repository to the base of the folder
+
+`git clone https://github.com/fieldkit/rustfk`
+
+
+Once you have edited `api.rs` to incorporate your own Rust code, the bridge files `bridge_definitions.dart` and `bridge_generated.dart` are generated using the following command:
+
 ```
 cargo install just
 ```
