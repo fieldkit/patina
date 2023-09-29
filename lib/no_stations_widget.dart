@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'common_widgets.dart';
@@ -13,7 +12,6 @@ class MaybeBracketed {
   MaybeBracketed(this.text, this.bracketed);
 }
 
-// I'd love a better way to do this.
 List<MaybeBracketed> extractBracketedText(String text) {
   final List<MaybeBracketed> parsed = List.empty(growable: true);
   int i = 0;
@@ -63,12 +61,38 @@ class NoStationsHelpWidget extends StatelessWidget {
     }).toList();
 
     return WH.padPage(ColoredBox(
-        color: const Color.fromRGBO(232, 232, 232, 1),
-        child: Column(children: [
-          Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Text(localizations.noStationsTitle, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold))),
-          Padding(padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60), child: RichText(text: TextSpan(children: spans)))
-        ])));
+      color: const Color.fromRGBO(232, 232, 232, 1),
+      child: Column(children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          child: Image.asset('resources/images/data_sync.png'),
+        ),
+        Text(
+          localizations.connectStation,
+          style: const TextStyle(
+            fontFamily: 'Avenir',
+            fontSize: 20.0,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Text(
+            localizations.noStationsDescription,
+            style: const TextStyle(
+              fontFamily: 'Avenir',
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Text(localizations.noStationsTitle,
+                style: const TextStyle(
+                    fontSize: 22, fontWeight: FontWeight.bold))),
+        Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
+            child: RichText(text: TextSpan(children: spans)))
+      ]),
+    ));
   }
 }
