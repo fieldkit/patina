@@ -46,3 +46,41 @@ version will be installed. This version should match the one specified for
 `native/Cargo.toml`. Drift among these versions is a common source of compile
 errors. When changing the version in `pubspec.yaml` a `flutter clean` is also
 usually necessary.
+
+### iOS
+
+When the iOS build fails, it's usually do to new platforms/versions of things
+and depending on the situation discovering which command you can run from the
+command line to solve the issue can be quite difficult. I've started collecting
+them here:
+
+This is one that it'll at least suggest to you:
+
+```
+xcodebuild -license
+```
+
+In response to this message:
+
+> iOS 17.0 is not installed. To download and install the platform, open Xcode,
+> select Xcode > Settings > Platforms, and click the GET button for the required
+> platform.
+
+I used the following:
+
+
+```
+xcodebuild -downloadPlatform iOS
+```
+
+I've run the following to install simulators, though I have a feeling if you use the `-downloadPlatform` command that may be better.
+
+```
+xcodebuild -runFirstLaunch
+```
+
+I've never used this one, and have only used the one above.
+
+```
+xcodebuild -downloadAllPlatforms
+```
