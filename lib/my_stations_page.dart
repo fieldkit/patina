@@ -45,7 +45,47 @@ class ListStationsPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.myStationsTitle),
         ),
-        body: ListView(children: [...map, ...cards, if (cards.isEmpty) const NoStationsHelpWidget()]));
+        body: ListView(children: [
+          ...map,
+          const SizedBox(
+              height:
+                  50.0), // Adding space under map, might have to change once cards are there. Looks good with the no stations
+          ...cards,
+          if (cards.isEmpty) const NoStationsHelpWidget(showImage: false),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
+            child: ElevatedButton(
+              onPressed: () {
+                // TODO: Make this functional later
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFCE596B),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 14.0),
+              ),
+              child: Text(
+                AppLocalizations.of(context)!.dataSyncButton,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Text(
+              AppLocalizations.of(context)!.stationScan,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'Avenir',
+                fontSize: 14.0,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+        ]));
   }
 }
 
@@ -80,11 +120,16 @@ class StationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final operations = context.watch<StationOperations>().getBusy<Operation>(config.deviceId);
+    final operations =
+        context.watch<StationOperations>().getBusy<Operation>(config.deviceId);
     final localizations = AppLocalizations.of(context)!;
-    final icon = Icon(Icons.aod_rounded, color: station.connected ? Colors.blue : Colors.grey);
-    final tinyOperations = operations.map((op) => TinyOperation(operation: op)).toList();
-    final subtitle = operations.isEmpty ? Text(localizations.readyToDeploy) : Text(localizations.busyWorking);
+    final icon = Icon(Icons.aod_rounded,
+        color: station.connected ? Colors.blue : Colors.grey);
+    final tinyOperations =
+        operations.map((op) => TinyOperation(operation: op)).toList();
+    final subtitle = operations.isEmpty
+        ? Text(localizations.readyToDeploy)
+        : Text(localizations.busyWorking);
 
     return Container(
         padding: const EdgeInsets.all(10),
@@ -96,20 +141,27 @@ class StationCard extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(5))),
             child: Column(children: [
               ListTile(
-                title: Container(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(config.name)),
-                subtitle: Container(padding: const EdgeInsets.only(bottom: 8), child: subtitle),
+                title: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Text(config.name)),
+                subtitle: Container(
+                    padding: const EdgeInsets.only(bottom: 8), child: subtitle),
                 trailing: icon,
                 dense: false,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ViewStationRoute(deviceId: station.deviceId),
+                      builder: (context) =>
+                          ViewStationRoute(deviceId: station.deviceId),
                     ),
                   );
                 },
               ),
-              if (tinyOperations.isNotEmpty) Container(padding: const EdgeInsets.all(6), child: Column(children: tinyOperations))
+              if (tinyOperations.isNotEmpty)
+                Container(
+                    padding: const EdgeInsets.all(6),
+                    child: Column(children: tinyOperations))
             ])));
   }
 }

@@ -113,10 +113,10 @@ class DataSyncPage extends StatelessWidget {
         ),
         body: ListView(children: [
           if (loginTasks.isNotEmpty) const LoginRequiredWidget(),
-          if (stations.isEmpty) const NoStationsHelpWidget(),
+          if (stations.isEmpty) const NoStationsHelpWidget(showImage: true),
           ...stations,
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
             child: ElevatedButton(
               onPressed: () {
                 // TODO: Make this functional later
@@ -124,13 +124,13 @@ class DataSyncPage extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFCE596B),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 16.0),
+                    horizontal: 20.0, vertical: 14.0),
               ),
               child: Text(
                 AppLocalizations.of(context)!.dataSyncButton,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.normal,
                   fontSize: 20.0,
                 ),
               ),

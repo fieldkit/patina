@@ -1,6 +1,4 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'common_widgets.dart';
@@ -36,63 +34,50 @@ List<MaybeBracketed> extractBracketedText(String text) {
 }
 
 class NoStationsHelpWidget extends StatelessWidget {
-  const NoStationsHelpWidget({super.key});
+  final bool showImage;
+
+  const NoStationsHelpWidget({Key? key, this.showImage = true})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    const paragraphStyle = TextStyle(fontSize: 16, color: Colors.black);
-    const linkStyle = TextStyle(fontSize: 16, color: Colors.grey);
-
-    final parsed = extractBracketedText(localizations.noStationsSeeGuide);
-    final spans = parsed.map((e) {
-      if (e.bracketed) {
-        return TextSpan(
-            style: linkStyle,
-            text: e.text,
-            recognizer: TapGestureRecognizer()
-              ..onTap = () async {
-                await launchUrlString(localizations.productGuideUrl);
-              });
-      } else {
-        return TextSpan(style: paragraphStyle, text: e.text);
-      }
-    }).toList();
-
-    return WH.padPage(ColoredBox(
-      color: const Color.fromRGBO(232, 232, 232, 1),
-      child: Column(children: [
+    return WH.padPage(
+      Column(children: [
+        if (showImage)
+          Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: SizedBox(
+                width: 200.0, // Adjust this value to your desired width
+                height: 200.0,
+                child: Image.asset('resources/images/data_sync.png',
+                    fit: BoxFit.contain),
+              )),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Image.asset('resources/images/data_sync.png'),
-        ),
-        Text(
-          localizations.connectStation,
-          style: const TextStyle(
-            fontFamily: 'Avenir',
-            fontSize: 20.0,
+          child: Text(
+            localizations.connectStation,
+            style: const TextStyle(
+              fontFamily: 'Avenir',
+              fontSize: 22.0,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30.0),
           child: Text(
             localizations.noStationsDescription,
             style: const TextStyle(
               fontFamily: 'Avenir',
+              fontSize: 18.0,
+              fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
           ),
         ),
-        Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Text(localizations.noStationsTitle,
-                style: const TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.bold))),
-        Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
-            child: RichText(text: TextSpan(children: spans)))
       ]),
-    ));
+    );
   }
 }
