@@ -73,18 +73,19 @@ class ListStationsPage extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: Text(
-              AppLocalizations.of(context)!.stationScan,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontFamily: 'Avenir',
-                fontSize: 14.0,
-                color: Colors.grey,
-              ),
-            ),
-          ),
+          // TODO: Add back in once we impliment scanning for stations
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+          //   child: Text(
+          //     AppLocalizations.of(context)!.stationScan,
+          //     textAlign: TextAlign.center,
+          //     style: const TextStyle(
+          //       fontFamily: 'Avenir',
+          //       fontSize: 14.0,
+          //       color: Colors.grey,
+          //     ),
+          //   ),
+          // ),
         ]));
   }
 }
