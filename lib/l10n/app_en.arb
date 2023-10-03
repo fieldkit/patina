@@ -1,5 +1,10 @@
 {
   "fieldKit": "FieldKit",
+
+  "welcomeTitle": "Welcome!",
+  "welcomeMessage": "Our mobile app makes it easy to set up and deploy your FieldKit station.",
+  "welcomeButton": "Get Started",
+  "skipInstructions": "Skip Instructions",
   
   "stationsTab": "Stations",
   "dataSyncTab": "Data",
