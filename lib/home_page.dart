@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       body: SafeArea(
-        child: true // Change to _showWelcome after testing
+        child: _showWelcome // Change to _showWelcome to true to test feature
             ? WelcomeScreen(
                 onDone: () {
                   setState(() {
