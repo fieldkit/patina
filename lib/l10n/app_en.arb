@@ -4,16 +4,21 @@
   "welcomeTitle": "Welcome",
   "welcomeMessage": "Our mobile app makes it easy to set up and deploy your FieldKit station.",
   "welcomeButton": "Get Started",
-
-  "noStationsTitle": "Oops, no stations.",
-  "noStationsSeeGuide": "For help getting connected to your station, please see the [Product Guide].",
-  "productGuideUrl": "https://www.fieldkit.org/product-guide/",
   
   "stationsTab": "Stations",
   "dataSyncTab": "Data",
   "settingsTab": "Settings",
 
-  "dataSyncTitle": "Data Sync",
+  "dataSyncTitle": "Data",
+  "login": "Login",
+  "dataLoginMessage": "To upload data you need to login.",
+
+  "dataSyncTitle": "Data",
+  "dataSyncButton": "Add a Station",
+  "connectStation": "Connect a Station",
+  "noStationsDescription": "You have no stations. Add a station to start collection data.",
+  "stationScan": "Double tap to scan for stations.",
+
   "download": "Download",
   "upload": "Upload",
   "syncItemSubtitle": "{readings} readings.",
