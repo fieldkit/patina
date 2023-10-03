@@ -9,6 +9,23 @@ import 'settings/settings_page.dart';
 import 'sync/sync_page.dart';
 import 'welcome.dart';
 
+class PrefsHelper {
+  static const String _lastOpenedKey = 'lastOpened';
+
+  final SharedPreferences _prefs;
+
+  PrefsHelper(this._prefs);
+
+  Future<void> setLastOpened(DateTime date) async {
+    await _prefs.setString(_lastOpenedKey, date.toIso8601String());
+  }
+
+  DateTime? getLastOpened() {
+    final storedDate = _prefs.getString(_lastOpenedKey);
+    return storedDate == null ? null : DateTime.parse(storedDate);
+  }
+}
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -32,17 +49,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   _checkIfFirstTimeToday() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    DateTime? lastOpened = prefs.getString('lastOpened') == null
-        ? null
-        : DateTime.parse(prefs.getString('lastOpened')!);
+    final prefs = await SharedPreferences.getInstance();
+    final prefsHelper = PrefsHelper(prefs);
+
+    DateTime? lastOpened = prefsHelper.getLastOpened();
     DateTime today = DateTime.now();
 
     if (lastOpened == null ||
         lastOpened.day != today.day ||
         lastOpened.month != today.month ||
         lastOpened.year != today.year) {
-      prefs.setString('lastOpened', today.toIso8601String());
+      prefsHelper.setLastOpened(today);
       setState(() {
         _showWelcome = true;
       });
@@ -55,61 +72,62 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       body: SafeArea(
-        child: _showWelcome // Change to _showWelcome to true to test feature
-            ? WelcomeScreen(
-                onDone: () {
-                  setState(() {
-                    _showWelcome = false;
-                  });
-                },
-              )
-            : IndexedStack(
-                index: _pageIndex,
-                children: <Widget>[
-                  // Should we just push this to the top?
-                  MultiProvider(
-                      providers: [
-                        ChangeNotifierProvider.value(
-                            value: state.knownStations),
-                        ChangeNotifierProvider.value(value: state.firmware),
-                        ChangeNotifierProvider.value(
-                            value: state.stationOperations),
-                        ChangeNotifierProvider.value(value: state.tasks),
-                      ],
-                      child: Navigator(
-                          key: stationsNavigatorKey,
+        child:
+            _showWelcome // Change to _showWelcome to true to test welcome feature
+                ? WelcomeScreen(
+                    onDone: () {
+                      setState(() {
+                        _showWelcome = false;
+                      });
+                    },
+                  )
+                : IndexedStack(
+                    index: _pageIndex,
+                    children: <Widget>[
+                      // Should we just push this to the top?
+                      MultiProvider(
+                          providers: [
+                            ChangeNotifierProvider.value(
+                                value: state.knownStations),
+                            ChangeNotifierProvider.value(value: state.firmware),
+                            ChangeNotifierProvider.value(
+                                value: state.stationOperations),
+                            ChangeNotifierProvider.value(value: state.tasks),
+                          ],
+                          child: Navigator(
+                              key: stationsNavigatorKey,
+                              onGenerateRoute: (RouteSettings settings) {
+                                return MaterialPageRoute(
+                                    settings: settings,
+                                    builder: (context) => const StationsTab());
+                              })),
+                      MultiProvider(
+                          providers: [
+                            ChangeNotifierProvider.value(
+                                value: state.knownStations),
+                            ChangeNotifierProvider.value(value: state.firmware),
+                            ChangeNotifierProvider.value(
+                                value: state.stationOperations),
+                            ChangeNotifierProvider.value(value: state.tasks),
+                          ],
+                          child: Navigator(
+                              key: dataNavigatorKey,
+                              onGenerateRoute: (RouteSettings settings) {
+                                return MaterialPageRoute(
+                                    settings: settings,
+                                    builder: (context) => const DataSyncTab());
+                              })),
+                      Navigator(
+                          key: settingsNavigatorKey,
                           onGenerateRoute: (RouteSettings settings) {
                             return MaterialPageRoute(
                                 settings: settings,
-                                builder: (context) => const StationsTab());
-                          })),
-                  MultiProvider(
-                      providers: [
-                        ChangeNotifierProvider.value(
-                            value: state.knownStations),
-                        ChangeNotifierProvider.value(value: state.firmware),
-                        ChangeNotifierProvider.value(
-                            value: state.stationOperations),
-                        ChangeNotifierProvider.value(value: state.tasks),
-                      ],
-                      child: Navigator(
-                          key: dataNavigatorKey,
-                          onGenerateRoute: (RouteSettings settings) {
-                            return MaterialPageRoute(
-                                settings: settings,
-                                builder: (context) => const DataSyncTab());
-                          })),
-                  Navigator(
-                      key: settingsNavigatorKey,
-                      onGenerateRoute: (RouteSettings settings) {
-                        return MaterialPageRoute(
-                            settings: settings,
-                            builder: (BuildContext context) {
-                              return const SettingsTab();
-                            });
-                      }),
-                ],
-              ),
+                                builder: (BuildContext context) {
+                                  return const SettingsTab();
+                                });
+                          }),
+                    ],
+                  ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
