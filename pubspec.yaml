@@ -73,6 +73,7 @@ dependencies:
       path: dart
   logger: ^1.4.0
   flutter_dotenv: ^5.1.0
+  location: ^5.0.3
 
 dev_dependencies:
   flutter_test:
