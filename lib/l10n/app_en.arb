@@ -20,6 +20,9 @@
   "noStationsDescription": "You have no stations. Add a station to start collection data.",
   "stationScan": "Double tap to scan for stations.",
 
+  "locationDenied": "Location permission denied!",
+  "mapFullScreen": "Full Screen Map",
+
   "download": "Download",
   "upload": "Upload",
   "syncItemSubtitle": "{readings} readings.",

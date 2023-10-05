@@ -60,7 +60,7 @@ class WelcomeScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFCE596B),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 100.0, vertical: 14.0),
+                            horizontal: 80.0, vertical: 14.0),
                       ),
                       child: Text(
                         AppLocalizations.of(context)!.welcomeButton,

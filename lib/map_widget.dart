@@ -1,8 +1,10 @@
+import 'package:fk/fullscreen_map.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // <- Import this for SystemChrome
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Map extends StatefulWidget {
   const Map({super.key});
@@ -14,7 +16,6 @@ class Map extends StatefulWidget {
 class _MapState extends State<Map> {
   LatLng? _userLocation;
   MapController mapController = MapController();
-  bool _isFullscreen = false; // <- Add this
 
   @override
   void initState() {
@@ -22,16 +23,11 @@ class _MapState extends State<Map> {
     _getUserLocation();
   }
 
-  // Toggle fullscreen
-  void _toggleFullscreen() {
-    if (_isFullscreen) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    } else {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    }
-    setState(() {
-      _isFullscreen = !_isFullscreen;
-    });
+  void _navigateToFullscreen() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => FullscreenMap(
+          initialLocation: _userLocation ?? LatLng(34.0312492, -118.269107)),
+    ));
   }
 
   Future<void> _getUserLocation() async {
@@ -52,7 +48,7 @@ class _MapState extends State<Map> {
       mapController.move(_userLocation!, 12);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Location permission denied!")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.locationDenied)),
       );
     }
   }
@@ -66,28 +62,30 @@ class _MapState extends State<Map> {
           options: MapOptions(
             center: _userLocation ?? LatLng(34.0312492, -118.269107),
             zoom: 12,
+            maxZoom: 19,
           ),
           children: [
             TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              subdomains: const ['a', 'b', 'c'],
+              maxZoom: 19,
               userAgentPackageName: 'org.fieldkit.app',
             ),
+            // LocationMarkerLayerWidget(),
           ],
         ),
         Positioned(
-          bottom: 12.0,
+          top: 12.0,
           right: 12.0,
           child: IconButton(
-            iconSize: 36.0,
-            icon: CircleAvatar(
+            icon: const CircleAvatar(
               backgroundColor: Colors.white,
               child: Icon(
-                _isFullscreen ? Icons.fullscreen_exit : Icons.fullscreen,
+                Icons.fullscreen,
                 color: Colors.grey,
-                size: 28.0,
               ),
             ),
-            onPressed: _toggleFullscreen,
+            onPressed: _navigateToFullscreen,
           ),
         )
       ],
