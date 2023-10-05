@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 
 class FullscreenMap extends StatefulWidget {
   final LatLng initialLocation;
@@ -13,6 +15,34 @@ class FullscreenMap extends StatefulWidget {
 
 class _FullscreenMapState extends State<FullscreenMap> {
   MapController mapController = MapController();
+  LatLng? _userLocation;
+  double? _userLocationAccuracy;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserLocation();
+  }
+
+  Future<void> _getUserLocation() async {
+    final location = Location();
+    var hasPermission = await location.hasPermission();
+
+    if (hasPermission == PermissionStatus.denied) {
+      hasPermission = await location.requestPermission();
+    }
+
+    if (hasPermission == PermissionStatus.granted) {
+      final currentLocation = await location.getLocation();
+      setState(() {
+        _userLocation =
+            LatLng(currentLocation.latitude!, currentLocation.longitude!);
+        _userLocationAccuracy = currentLocation.accuracy;
+      });
+
+      mapController.move(_userLocation!, 12);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +52,7 @@ class _FullscreenMapState extends State<FullscreenMap> {
           FlutterMap(
             mapController: mapController,
             options: MapOptions(
-              center: widget.initialLocation,
+              center: _userLocation ?? widget.initialLocation,
               zoom: 12,
             ),
             children: [
@@ -30,6 +60,14 @@ class _FullscreenMapState extends State<FullscreenMap> {
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'org.fieldkit.app',
               ),
+              if (_userLocation != null)
+                LocationMarkerLayer(
+                  position: LocationMarkerPosition(
+                    latitude: _userLocation!.latitude,
+                    longitude: _userLocation!.longitude,
+                    accuracy: _userLocationAccuracy ?? 20.0,
+                  ),
+                ),
             ],
           ),
           Positioned(
@@ -44,7 +82,7 @@ class _FullscreenMapState extends State<FullscreenMap> {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pop(); // Go back to previous screen
+                Navigator.of(context).pop();
               },
             ),
           )

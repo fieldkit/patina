@@ -1,7 +1,7 @@
 import 'package:fk/fullscreen_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-// import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -15,6 +15,7 @@ class Map extends StatefulWidget {
 
 class _MapState extends State<Map> {
   LatLng? _userLocation;
+  double? _userLocationAccuracy;
   MapController mapController = MapController();
 
   @override
@@ -43,6 +44,7 @@ class _MapState extends State<Map> {
       setState(() {
         _userLocation =
             LatLng(currentLocation.latitude!, currentLocation.longitude!);
+        _userLocationAccuracy = currentLocation.accuracy;
       });
 
       mapController.move(_userLocation!, 12);
@@ -71,7 +73,18 @@ class _MapState extends State<Map> {
               maxZoom: 19,
               userAgentPackageName: 'org.fieldkit.app',
             ),
-            // LocationMarkerLayerWidget(),
+            LocationMarkerLayer(
+                position: _userLocation != null
+                    ? LocationMarkerPosition(
+                        latitude: _userLocation!.latitude,
+                        longitude: _userLocation!.longitude,
+                        accuracy: _userLocationAccuracy ??
+                            20.0 // If the accuracy is null, we'll default to 20.0 meters.
+                        )
+                    : LocationMarkerPosition(
+                        latitude: 34.0312492,
+                        longitude: -118.269107,
+                        accuracy: 20.0)),
           ],
         ),
         Positioned(
