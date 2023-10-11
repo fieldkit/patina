@@ -1,0 +1,20 @@
+name: calibration
+description: Library for generating FieldKit calibration data.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.0.5
+
+dependencies:
+  data: ^0.11.0
+  protobuf: ^2.1.0
+  fixnum: ^1.0.1
+  fk_data_protocol:
+    git:
+      url: https://github.com/fieldkit/data-protocol.git
+      path: dart
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.21.0

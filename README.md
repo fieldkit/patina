@@ -5,7 +5,6 @@ Dive into the development of FieldKit using Flutter and Rust. This guide provide
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [Setup and Dependencies](#setup-and-dependencies)
-- [Run the Code](#run-the-code)
 - [Running the Tests](#running-the-tests)
 
 ## 🛠 Prerequisites

@@ -1,0 +1,112 @@
+{
+  "fieldKit": "FieldKit",
+
+  "welcomeTitle": "Welcome!",
+  "welcomeMessage": "Our mobile app makes it easy to set up and deploy your FieldKit station.",
+  "welcomeButton": "Get Started",
+  "skipInstructions": "Skip Instructions",
+  
+  "stationsTab": "Stations",
+  "dataSyncTab": "Data",
+  "settingsTab": "Settings",
+
+  "dataSyncTitle": "Data",
+  "login": "Login",
+  "dataLoginMessage": "To upload data you need to login.",
+
+  "dataSyncTitle": "Data",
+  "dataSyncButton": "Add a Station",
+  "connectStation": "Connect a Station",
+  "noStationsDescription": "You have no stations. Add a station to start collection data.",
+  "stationScan": "Double tap to scan for stations.",
+
+  "download": "Download",
+  "upload": "Upload",
+  "syncItemSubtitle": "{readings} readings.",
+  "syncProgressReadings": "Received {received} of {readings} readings.",
+  "syncWorking": "Working...",
+  "syncElapsed": "{elapsed} elapsed.",
+  "syncPercentageComplete": "{complete} complete.",
+  "@syncPercentageComplete" :{
+    "placeholders": {
+        "complete": {
+          "type": "double",
+          "format": "decimalPercentPattern",
+          "optionalParameters": {
+            "decimalDigits": 2
+          }
+        }
+      }
+  },
+  "syncUpgradeRequiredMessage": "An upgrade is required to sync data from this station.",
+  "syncManageFirmware": "Manage Firmware",
+
+  "myStationsTitle": "My Stations",
+  "readyToDeploy": "Ready to deploy",
+  "busyWorking": "Busy...",
+  "busyUploading": "Uploading...",
+  "busyDownloading": "Downloading...",
+  "busyUpgrading": "Upgrading...",
+  "contacting": "Contacting...",
+  "unknownStationTitle": "Unknown Station",
+  "backButtonTitle": "Back",
+
+  "calibrationTitle": "Calibration",
+  "calibrateButton": "Calibrate",
+  "waitingOnTimer": "Waiting on Timer",
+  "waitingOnReading": "Waiting for Fresh Reading",
+  "waitingOnForm": "Values Required",
+  "standardValue": "{value} Standard Value ({uom})",
+  "oopsBugTitle": "Oops, bug?",
+  "minSec": "min sec",
+
+  "settingsTitle": "Settings",
+
+  "settingsGeneral": "General",
+  "settingsNetwork": "Network",
+  "settingsFirmware": "Firmware",
+  "settingsModules": "Modules",
+  "settingsWifi": "WiFi",
+  "settingsLora": "LoRa",
+  "settingsAutomaticUpload": "Automatic Upload",
+
+  "firmwareTitle": "Firmware",
+  "firmwareUpgrade": "Upgrade",
+  "firmwareStarting": "Starting...",
+  "firmwareUploading": "Uploading...",
+  "firmwareRestarting": "Restarting...",
+  "firmwareCompleted": "Completed",
+  "firmwareFailed": "Failed!",
+
+  "settingsAccounts": "Accounts",
+  "accountsTitle": "Accounts",
+  "accountsAddButton": "Add an Account",
+  "accountsNoneCreatedTitle": "Looks like there are no accounts created yet!",
+  "accountsNoneCreatedMessage": "Accounts are useful for updating your station information on the online portal and occasionally accessing user-specific firmware. Are you connected to the internet? Once you are, let's set up an account!",
+
+  "accountAddTitle": "Add Account",
+  "accountEditTitle": "Edit Account",
+  "accountEmail": "Email",
+  "accountPassword": "Password",
+  "accountFormFail": "Invalid email or password.",
+  "accountSaveButton": "Register",
+  "accountDeleteButton": "Delete",
+  "accountRepairButton": "Login",
+  "accountDefault": "This is your default account.",
+  "accountInvalid": "Something is wrong with this account.",
+  "accountUnknown": "Odd, not sure about this account. Bug?",
+
+  "bayNumber": "Bay #{bay}",
+  "configureButton": "Configure",
+  "batteryLife": "Battery Life",
+  "memoryUsage": "Memory",
+  "deployButton": "Deploy",
+
+  "confirmClearCalibrationTitle": "Clear Calibration",
+  "confirmDeleteAccountTitle": "Delete Account",
+  "confirmDelete": "Are you sure?",
+  "confirmYes": "Yes",
+  "confirmCancel": "Cancel",
+
+  "onboardingTitle": "Onboarding Instructions"
+}
