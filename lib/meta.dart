@@ -9,7 +9,8 @@ class LocalizedModule {
   String name;
   AssetImage icon;
 
-  CalibrationTemplate? get calibrationTemplate => CalibrationTemplate.forModuleKey(key);
+  CalibrationTemplate? get calibrationTemplate =>
+      CalibrationTemplate.forModuleKey(key);
 
   bool get canCalibrate => calibrationTemplate != null;
 
@@ -19,27 +20,52 @@ class LocalizedModule {
     switch (module.key) {
       case "modules.water.temp":
         return LocalizedModule(
-            key: module.key, icon: const AssetImage("resources/images/icon_module_water_temp.png"), name: "Water Temperature Module");
+            key: module.key,
+            icon:
+                const AssetImage("resources/images/icon_module_water_temp.png"),
+            name: "Water Temperature Module");
       case "modules.water.ph":
-        return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_water_ph.png"), name: "pH Module");
+        return LocalizedModule(
+            key: module.key,
+            icon: const AssetImage("resources/images/icon_module_water_ph.png"),
+            name: "pH Module");
       case "modules.water.orp":
-        return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_water_orp.png"), name: "ORP Module");
+        return LocalizedModule(
+            key: module.key,
+            icon:
+                const AssetImage("resources/images/icon_module_water_orp.png"),
+            name: "ORP Module");
       case "modules.water.do":
         return LocalizedModule(
-            key: module.key, icon: const AssetImage("resources/images/icon_module_water_do.png"), name: "Dissolved Oxygen Module");
+            key: module.key,
+            icon: const AssetImage("resources/images/icon_module_water_do.png"),
+            name: "Dissolved Oxygen Module");
       case "modules.water.ec":
         return LocalizedModule(
-            key: module.key, icon: const AssetImage("resources/images/icon_module_water_ec.png"), name: "Conductivity Module");
+            key: module.key,
+            icon: const AssetImage("resources/images/icon_module_water_ec.png"),
+            name: "Conductivity Module");
       case "modules.weather":
-        return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_weather.png"), name: "Weather Module");
+        return LocalizedModule(
+            key: module.key,
+            icon: const AssetImage("resources/images/icon_module_weather.png"),
+            name: "Weather Module");
       case "modules.diagnostics":
         return LocalizedModule(
-            key: module.key, icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Diagnostics Module");
+            key: module.key,
+            icon: const AssetImage("resources/images/icon_module_generic.png"),
+            name: "Diagnostics Module");
       case "modules.random":
-        return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Random Module");
+        return LocalizedModule(
+            key: module.key,
+            icon: const AssetImage("resources/images/icon_module_generic.png"),
+            name: "Random Module");
       default:
         Loggers.main.e("Unknown module key: ${module.key}");
-        return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Unknown Module");
+        return LocalizedModule(
+            key: module.key,
+            icon: const AssetImage("resources/images/icon_module_generic.png"),
+            name: "Unknown Module");
     }
   }
 }
@@ -53,22 +79,26 @@ class LocalizedSensor {
   static LocalizedSensor get(SensorConfig sensor) {
     switch (sensor.fullKey) {
       case "modules.water.temp.temp":
-        return LocalizedSensor(name: "Water Temperature", uom: sensor.calibratedUom);
+        return LocalizedSensor(
+            name: "Water Temperature", uom: sensor.calibratedUom);
       case "modules.water.ph.ph":
         return LocalizedSensor(name: "pH", uom: sensor.calibratedUom);
       case "modules.water.ec.ec":
         return LocalizedSensor(name: "Conductivity", uom: sensor.calibratedUom);
       case "modules.water.do.do":
-        return LocalizedSensor(name: "Dissolved Oxygen", uom: sensor.calibratedUom);
+        return LocalizedSensor(
+            name: "Dissolved Oxygen", uom: sensor.calibratedUom);
       case "modules.water.do.pressure":
         return LocalizedSensor(name: "Air Pressure", uom: sensor.calibratedUom);
       case "modules.water.do.temperature":
-        return LocalizedSensor(name: "Air Temperature", uom: sensor.calibratedUom);
+        return LocalizedSensor(
+            name: "Air Temperature", uom: sensor.calibratedUom);
       case "modules.water.orp.orp":
         return LocalizedSensor(name: "ORP", uom: sensor.calibratedUom);
 
       case "modules.diagnostics.temperature":
-        return LocalizedSensor(name: "Internal Temperature", uom: sensor.calibratedUom);
+        return LocalizedSensor(
+            name: "Internal Temperature", uom: sensor.calibratedUom);
       case "modules.diagnostics.uptime":
         return LocalizedSensor(name: "Uptime", uom: sensor.calibratedUom);
       case "modules.diagnostics.memory":
@@ -82,13 +112,15 @@ class LocalizedSensor {
         return LocalizedSensor(name: "Battery", uom: sensor.calibratedUom);
 
       case "modules.diagnostics.battery_vbus":
-        return LocalizedSensor(name: "Battery (VBus)", uom: sensor.calibratedUom);
+        return LocalizedSensor(
+            name: "Battery (VBus)", uom: sensor.calibratedUom);
       case "modules.diagnostics.battery_vs":
         return LocalizedSensor(name: "Battery (Vs)", uom: sensor.calibratedUom);
       case "modules.diagnostics.battery_ma":
         return LocalizedSensor(name: "Battery (ma)", uom: sensor.calibratedUom);
       case "modules.diagnostics.battery_power":
-        return LocalizedSensor(name: "Battery (Power)", uom: sensor.calibratedUom);
+        return LocalizedSensor(
+            name: "Battery (Power)", uom: sensor.calibratedUom);
 
       case "modules.diagnostics.solar_vbus":
         return LocalizedSensor(name: "Solar (VBus)", uom: sensor.calibratedUom);
@@ -97,7 +129,57 @@ class LocalizedSensor {
       case "modules.diagnostics.solar_ma":
         return LocalizedSensor(name: "Solar (ma)", uom: sensor.calibratedUom);
       case "modules.diagnostics.solar_power":
-        return LocalizedSensor(name: "Solar (Power)", uom: sensor.calibratedUom);
+        return LocalizedSensor(
+            name: "Solar (Power)", uom: sensor.calibratedUom);
+
+      case "modules.weather.rain":
+        return LocalizedSensor(name: "Rain", uom: sensor.calibratedUom);
+      case "modules.weather.wind_speed":
+        return LocalizedSensor(name: "Wind Speed", uom: sensor.calibratedUom);
+      case "modules.weather.wind_direction":
+        return LocalizedSensor(
+            name: "Wind Direction", uom: sensor.calibratedUom);
+      case "modules.weather.humidity":
+        return LocalizedSensor(name: "Humidity", uom: sensor.calibratedUom);
+      case "modules.weather.temperature_1":
+        return LocalizedSensor(
+            name: "Temperature 1", uom: sensor.calibratedUom);
+      case "modules.weather.temperature_2":
+        return LocalizedSensor(
+            name: "Temperature 2", uom: sensor.calibratedUom);
+      case "modules.weather.pressure":
+        return LocalizedSensor(name: "Pressure", uom: sensor.calibratedUom);
+      case "modules.weather.wind_dir":
+        return LocalizedSensor(
+            name: "Wind Direction", uom: sensor.calibratedUom);
+      case "modules.weather.wind_dir_mv":
+        return LocalizedSensor(
+            name: "Wind Direction Raw ADC", uom: sensor.calibratedUom);
+      case "modules.weather.wind_hr_max_speed":
+        return LocalizedSensor(
+            name: "Wind Max Speed (1 hour)", uom: sensor.calibratedUom);
+      case "wind_hr_max_dir":
+        return LocalizedSensor(
+            name: "Wind Max Direction (1 hour)", uom: sensor.calibratedUom);
+      case "modules.weather.wind_10m_max_speed":
+        return LocalizedSensor(
+            name: "Wind Max Speed (10 minutes)", uom: sensor.calibratedUom);
+      case "modules.weather.wind_10m_max_dir":
+        return LocalizedSensor(
+            name: "Wind Max Direction (10 minutes)", uom: sensor.calibratedUom);
+      case "modules.weather.wind_2m_avg_speed":
+        return LocalizedSensor(
+            name: "Wind Average Speed (2 minutes)", uom: sensor.calibratedUom);
+      case "modules.weather.wind_2m_avg_dir":
+        return LocalizedSensor(
+            name: "Wind Average Direction (2 minutes)",
+            uom: sensor.calibratedUom);
+      case "modules.weather.rain_this_hour":
+        return LocalizedSensor(
+            name: "Rain This Hour", uom: sensor.calibratedUom);
+      case "modules.weather.rain_prev_hour":
+        return LocalizedSensor(
+            name: "Rain Previous Hour", uom: sensor.calibratedUom);
 
       case "modules.random.random_0":
         return LocalizedSensor(name: "Random 0", uom: sensor.calibratedUom);
