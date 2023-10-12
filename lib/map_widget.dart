@@ -6,6 +6,9 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+// Define default coordinates
+var conservifyCoordinates = LatLng(34.0312492, -118.269107);
+
 class Map extends StatefulWidget {
   const Map({super.key});
 
@@ -27,7 +30,7 @@ class _MapState extends State<Map> {
   void _navigateToFullscreen() {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => FullscreenMap(
-          initialLocation: _userLocation ?? LatLng(34.0312492, -118.269107)),
+          initialLocation: _userLocation ?? conservifyCoordinates),
     ));
   }
 
