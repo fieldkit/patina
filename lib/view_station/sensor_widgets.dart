@@ -15,30 +15,39 @@ class DisplaySensorValue extends StatelessWidget {
   final LocalizedSensor localized;
   final MainAxisSize mainAxisSize;
 
-  const DisplaySensorValue({super.key, required this.sensor, required this.localized, this.mainAxisSize = MainAxisSize.max});
+  static const _valueStyle = TextStyle(
+    fontSize: 22,
+    color: Color.fromRGBO(112, 112, 112, 1),
+    fontWeight: FontWeight.normal,
+    fontFamily: "Avenir",
+  );
+
+  const DisplaySensorValue({
+    super.key,
+    required this.sensor,
+    required this.localized,
+    this.mainAxisSize = MainAxisSize.max,
+  });
 
   @override
   Widget build(BuildContext context) {
-    var valueFormatter = NumberFormat("0.##");
-    var valueStyle = const TextStyle(
-      fontSize: 18,
-      color: Colors.red,
-      fontWeight: FontWeight.bold,
-    );
-    var unitsStyle = const TextStyle(
-      fontSize: 18,
-      color: Color.fromRGBO(64, 64, 64, 1),
-      fontWeight: FontWeight.normal,
-    );
-    var value = sensor.value?.value;
-    var uom = localized.uom;
+    final valueFormatter = NumberFormat("0.##");
+    final value = sensor.value?.value;
+    final uom = localized.uom;
 
-    var suffix = Container(padding: const EdgeInsets.only(left: 6), child: Text(uom, style: unitsStyle));
+    final suffix = Container(
+      padding: const EdgeInsets.only(left: 6, top: 4),
+      child: Text(uom, style: _valueStyle.copyWith(fontSize: 12)),
+    );
 
-    if (value == null) {
-      return Row(mainAxisSize: mainAxisSize, children: [Text("--", style: valueStyle), suffix]);
-    }
-    return Row(mainAxisSize: mainAxisSize, children: [Text(valueFormatter.format(value), style: valueStyle), suffix]);
+    return Row(
+      mainAxisSize: mainAxisSize,
+      children: [
+        Text(value == null ? "--" : valueFormatter.format(value),
+            style: _valueStyle),
+        suffix
+      ],
+    );
   }
 }
 
@@ -52,15 +61,27 @@ class SensorInfo extends StatelessWidget {
     final localized = LocalizedSensor.get(sensor);
 
     return Container(
-        padding: const EdgeInsets.all(10),
-        child: ColoredBox(
-            color: const Color.fromRGBO(232, 232, 232, 1),
-            child: Container(
-                padding: const EdgeInsets.all(6),
-                child: Column(children: [
-                  Container(padding: const EdgeInsets.only(bottom: 8), child: DisplaySensorValue(sensor: sensor, localized: localized)),
-                  Row(children: [Text(localized.name)])
-                ]))));
+      padding: const EdgeInsets.all(10),
+      child: ColoredBox(
+        color: const Color.fromRGBO(232, 232, 232, 1),
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: DisplaySensorValue(
+                  sensor: sensor,
+                  localized: localized,
+                  mainAxisSize: MainAxisSize.max,
+                ),
+              ),
+              Row(children: [Text(localized.name)])
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -71,37 +92,25 @@ class SensorsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<TableRow> rows = List.empty(growable: true);
-    final iter = children.iterator;
-    while (true) {
-      final List<Widget> columns = List.empty(growable: true);
-      var finished = false;
-      if (iter.moveNext()) {
-        columns.add(iter.current);
-        if (iter.moveNext()) {
-          columns.add(iter.current);
-        } else {
-          columns.add(Container());
-          finished = true;
-        }
+    return Table(children: _generateRows());
+  }
 
-        rows.add(TableRow(children: columns));
-      } else {
-        finished = true;
-      }
-
-      if (finished) {
-        break;
-      }
+  List<TableRow> _generateRows() {
+    final List<TableRow> rows = [];
+    for (int i = 0; i < children.length; i += 2) {
+      rows.add(TableRow(
+        children: [
+          children[i],
+          if (i + 1 < children.length) children[i + 1] else Container(),
+        ],
+      ));
     }
-
-    return Table(children: rows);
+    return rows;
   }
 }
 
-int defaultSensorSorter(SensorConfig a, SensorConfig b) {
-  return a.number.compareTo(b.number);
-}
+int defaultSensorSorter(SensorConfig a, SensorConfig b) =>
+    a.number.compareTo(b.number);
 
 class ModuleInfo extends StatelessWidget {
   final ModuleConfig module;
@@ -110,52 +119,61 @@ class ModuleInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final moduleConfigurations = context.read<AppState>().moduleConfigurations;
     final localized = LocalizedModule.get(module);
     final bay = AppLocalizations.of(context)!.bayNumber(module.position);
 
-    final List<Widget> sensors = module.sensors.sorted(defaultSensorSorter).map((sensor) {
-      return SensorInfo(sensor: sensor);
-    }).toList();
-
-    final Widget maybeCalibration = localized.canCalibrate
-        ? Container(
-            padding: const EdgeInsets.all(10),
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                calibrationPage() {
-                  final config = CalibrationPointConfig.fromTemplate(module.identity, localized.calibrationTemplate!);
-                  if (moduleConfigurations.find(module.identity).isCalibrated) {
-                    return ClearCalibrationPage(config: config);
-                  } else {
-                    return CalibrationPage(config: config);
-                  }
-                }
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => calibrationPage(),
-                  ),
-                );
-              },
-              // style: ElevatedButton.styleFrom(),
-              child: Text(AppLocalizations.of(context)!.calibrateButton),
-            ))
-        : const SizedBox.shrink();
+    final sensors = module.sensors
+        .sorted(defaultSensorSorter)
+        .map((sensor) => SensorInfo(sensor: sensor))
+        .toList();
 
     return Container(
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            border: Border.all(
-              color: const Color.fromRGBO(212, 212, 212, 1),
-            ),
-            borderRadius: const BorderRadius.all(Radius.circular(5))),
-        child: Column(children: [
-          ListTile(leading: Image(image: localized.icon), title: Text(localized.name), subtitle: Text(bay)),
-          maybeCalibration,
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color.fromRGBO(212, 212, 212, 1)),
+        borderRadius: const BorderRadius.all(Radius.circular(5)),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            leading: Image(image: localized.icon),
+            title: Text(localized.name),
+            subtitle: Text(bay),
+          ),
+          _buildCalibrationButton(context, localized),
           SensorsGrid(children: sensors),
-        ]));
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalibrationButton(
+      BuildContext context, LocalizedModule localized) {
+    if (!localized.canCalibrate) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => _calibrationPage(context, localized)),
+          );
+        },
+        child: Text(AppLocalizations.of(context)!.calibrateButton),
+      ),
+    );
+  }
+
+  Widget _calibrationPage(BuildContext context, LocalizedModule localized) {
+    final moduleConfigurations = context.read<AppState>().moduleConfigurations;
+    final config = CalibrationPointConfig.fromTemplate(
+        module.identity, localized.calibrationTemplate!);
+
+    return moduleConfigurations.find(module.identity).isCalibrated
+        ? ClearCalibrationPage(config: config)
+        : CalibrationPage(config: config);
   }
 }

@@ -180,6 +180,9 @@ class LocalizedSensor {
       case "modules.weather.rain_prev_hour":
         return LocalizedSensor(
             name: "Rain Previous Hour", uom: sensor.calibratedUom);
+      case "modules.weather.wind_hr_max_dir":
+        return LocalizedSensor(
+            name: "Wind Max Speed (1 Hour)", uom: sensor.calibratedUom);
 
       case "modules.random.random_0":
         return LocalizedSensor(name: "Random 0", uom: sensor.calibratedUom);
