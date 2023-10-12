@@ -7,7 +7,9 @@ import 'package:location/location.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // Define default coordinates
-var conservifyCoordinates = LatLng(34.0312492, -118.269107);
+double conservifyLat = 34.0312492;
+double conservifyLong = -118.269107;
+double accuracyDefault = 20.0;
 
 class Map extends StatefulWidget {
   const Map({super.key});
@@ -30,7 +32,8 @@ class _MapState extends State<Map> {
   void _navigateToFullscreen() {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => FullscreenMap(
-          initialLocation: _userLocation ?? conservifyCoordinates),
+          initialLocation:
+              _userLocation ?? LatLng(conservifyLat, conservifyLong)),
     ));
   }
 
@@ -82,12 +85,12 @@ class _MapState extends State<Map> {
                         latitude: _userLocation!.latitude,
                         longitude: _userLocation!.longitude,
                         accuracy: _userLocationAccuracy ??
-                            20.0 // If the accuracy is null, we'll default to 20.0 meters.
+                            accuracyDefault // If the accuracy is null, we'll default to 20.0 meters.
                         )
                     : LocationMarkerPosition(
-                        latitude: 34.0312492,
-                        longitude: -118.269107,
-                        accuracy: 20.0)),
+                        latitude: conservifyLat,
+                        longitude: conservifyLong,
+                        accuracy: accuracyDefault)),
           ],
         ),
         Positioned(
