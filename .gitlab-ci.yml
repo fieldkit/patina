@@ -31,8 +31,11 @@ build:android:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  tags:
+    - internal-linux
   script:
     # BEGIN Java NDK
+    - export PATH=~/tools/flutter/bin:$PATH
     - yes | sdkmanager 'ndk;25.2.9519653' && echo no-idea-why-this-is-needed
     - mkdir -p ~/.gradle
     - echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk" >> ~/.gradle/gradle.properties
