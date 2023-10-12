@@ -4,6 +4,11 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
+// Define default coordinates
+double conservifyLat = 34.0312492;
+double conservifyLong = -118.269107;
+double accuracyDefault = 20.0;
+
 class FullscreenMap extends StatefulWidget {
   final LatLng initialLocation;
 
@@ -60,14 +65,16 @@ class _FullscreenMapState extends State<FullscreenMap> {
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'org.fieldkit.app',
               ),
-              if (_userLocation != null)
-                LocationMarkerLayer(
-                  position: LocationMarkerPosition(
-                    latitude: _userLocation!.latitude,
-                    longitude: _userLocation!.longitude,
-                    accuracy: _userLocationAccuracy ?? 20.0,
-                  ),
-                ),
+              LocationMarkerLayer(
+                  position: _userLocation != null
+                      ? LocationMarkerPosition(
+                          latitude: _userLocation!.latitude,
+                          longitude: _userLocation!.longitude,
+                          accuracy: _userLocationAccuracy ?? accuracyDefault)
+                      : LocationMarkerPosition(
+                          latitude: conservifyLat,
+                          longitude: conservifyLong,
+                          accuracy: accuracyDefault)),
             ],
           ),
           Positioned(

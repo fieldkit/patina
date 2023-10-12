@@ -9,7 +9,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // Define default coordinates
 double conservifyLat = 34.0312492;
 double conservifyLong = -118.269107;
-double accuracyDefault = 20.0;
+double accuracyDefault =
+    20.0; // If the accuracy is null, we'll default to 20.0 meters.
 
 class Map extends StatefulWidget {
   const Map({super.key});
@@ -84,9 +85,7 @@ class _MapState extends State<Map> {
                     ? LocationMarkerPosition(
                         latitude: _userLocation!.latitude,
                         longitude: _userLocation!.longitude,
-                        accuracy: _userLocationAccuracy ??
-                            accuracyDefault // If the accuracy is null, we'll default to 20.0 meters.
-                        )
+                        accuracy: _userLocationAccuracy ?? accuracyDefault)
                     : LocationMarkerPosition(
                         latitude: conservifyLat,
                         longitude: conservifyLong,
