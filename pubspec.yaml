@@ -90,6 +90,11 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   ffigen: ^8.0.0
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "resources/images/launcher/ic_launcher_round.png"
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
