@@ -1,86 +1,94 @@
-# FieldKit Mobile App
+# 📱 FieldKit Mobile App
 
-## Getting Started
+Stay ahead in the field with FieldKit mobile app. Here's everything you need to get started to build the fieldkit app.
 
-To begin, ensure that you have a working installation of the following items:
-- [Flutter SDK](https://docs.flutter.dev/get-started/install)
-- [Rust language](https://rustup.rs/)
-- Appropriate [Rust targets](https://rust-lang.github.io/rustup/cross-compilation.html) for cross-compiling to your device
-- For Android targets:
-    - Install [cargo-ndk](https://github.com/bbqsrc/cargo-ndk#installing)
-    - Install Android NDK 22, then put its path in one of the `gradle.properties`, e.g.:
+This version is for contributors or developers, to download the [Android app](https://play.google.com/store/apps/details?id=com.fieldkit) or the [iOS app](https://apps.apple.com/us/app/fieldkit-org/id1463631293).
 
+![screenshot of app](README_image.png)
+
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [Setup and Dependencies](#setup-and-dependencies)
+- [Running the Code](#running-the-code)
+- [Running the Tests](#running-the-tests)
+
+## 🛠 Prerequisites
+
+Before you get started, ensure you have the following installed:
+
+- **Flutter SDK**: [Installation Guide](https://docs.flutter.dev/get-started/install)
+- **Rust Language**: [Get Rustup](https://rustup.rs/)
+- **Rust Targets**: For cross-compiling to your device. [Read More](https://rust-lang.github.io/rustup/cross-compilation.html)
+
+### Android-Specific Dependencies:
+- **cargo-ndk**: [Installation Instructions](https://github.com/bbqsrc/cargo-ndk#installing)
+- **Android NDK 22**: After installation, set its path using:
+
+```bash
+echo "ANDROID_NDK=path/to/ndk" >> ~/.gradle/gradle.properties
 ```
-echo "ANDROID_NDK=.." >> ~/.gradle/gradle.properties
-```
 
-# Rust Dependencies
-
-This project makes use of the task runner "just" to perform common operations,
-it can be installed using Rust's cargo command:
-
+## 📦 Setup and Dependencies
 
 ### RustFK
-Add the following repository to the base of the folder
 
-`git clone https://github.com/fieldkit/rustfk`
-
-
-Once you have edited `api.rs` to incorporate your own Rust code, the bridge files `bridge_definitions.dart` and `bridge_generated.dart` are generated using the following command:
-
+1. **Clone the Repository**:
+```bash
+git clone https://github.com/fieldkit/rustfk
 ```
+
+2. **Integrate your Rust code**: Edit `api.rs` as needed. Afterwards, get the "just" task runner:
+```bash
 cargo install just
 ```
 
-The bindings between the Flutter/Dart app and the Rust library may need to be
-regenerated, and to do so the codegen tool will need to be installed.
+3. **Generate Bridge Files**:
+   First, ensure the codegen tool's version matches `flutter_rust_bridge` in `pubspec.yaml` and `flutter_rust_bridge` & `flutter_rust_bridge_macros` inside `native/Cargo.toml`.
 
-```
+```bash
 cargo install -f --version 1.82.1 flutter_rust_bridge_codegen
 ```
 
-You'll notice the version is specified directly above, otherwise the latest
-version will be installed. This version should match the one specified for
-`flutter_rust_bridge` in the `pubspec.yaml` as well as for
-`flutter_rust_bridge` and `flutter_rust_bridge_macros` inside
-`native/Cargo.toml`. Drift among these versions is a common source of compile
-errors. When changing the version in `pubspec.yaml` a `flutter clean` is also
-usually necessary.
+> 🔧 **Tip**: @henever you adjust the version in `pubspec.yaml`, ensure to run `flutter clean`.
 
-### iOS
+### 🍏 iOS Troubleshooting
 
-When the iOS build fails, it's usually do to new platforms/versions of things
-and depending on the situation discovering which command you can run from the
-command line to solve the issue can be quite difficult. I've started collecting
-them here:
+Facing build issues with iOS? Try the following:
 
-This is one that it'll at least suggest to you:
-
-```
+- **Licensing issues**:
+```bash
 xcodebuild -license
 ```
 
-In response to this message:
-
-> iOS 17.0 is not installed. To download and install the platform, open Xcode,
-> select Xcode > Settings > Platforms, and click the GET button for the required
-> platform.
-
-I used the following:
-
-
-```
+- **Missing iOS platforms**:
+```bash
 xcodebuild -downloadPlatform iOS
 ```
 
-I've run the following to install simulators, though I have a feeling if you use the `-downloadPlatform` command that may be better.
-
-```
+- **Installing simulators**:
+```bash
 xcodebuild -runFirstLaunch
 ```
 
-I've never used this one, and have only used the one above.
+OR
 
-```
+```bash
 xcodebuild -downloadAllPlatforms
+```
+
+## 🏃 Running the Code 
+
+Run the Flutter application with:
+
+```bash
+flutter run
+```
+
+
+## 🧪 Running the Tests
+
+Test the Flutter application with:
+
+```bash
+flutter test
 ```
