@@ -1,10 +1,15 @@
 # 📱 FieldKit Mobile App
 
-Dive into the development of FieldKit using Flutter and Rust. This guide provides steps to set up your environment, work with RustFK and troubleshoot common iOS issues.
+Stay ahead in the field with FieldKit mobile app. Here's everything you need to get started to build the fieldkit app.
+
+This version is for contributors or developers, to download the [Android app](https://play.google.com/store/apps/details?id=com.fieldkit) or the [iOS app](https://apps.apple.com/us/app/fieldkit-org/id1463631293).
+
+![screenshot of app](README_image.png)
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [Setup and Dependencies](#setup-and-dependencies)
+- [Running the Code](#running-the-code)
 - [Running the Tests](#running-the-tests)
 
 ## 🛠 Prerequisites
@@ -44,7 +49,7 @@ cargo install just
 cargo install -f --version 1.82.1 flutter_rust_bridge_codegen
 ```
 
-> **Tip**: If you modify the version in `pubspec.yaml`, remember to execute `flutter clean`.
+> 🔧 **Tip**: @henever you adjust the version in `pubspec.yaml`, ensure to run `flutter clean`.
 
 ### 🍏 iOS Troubleshooting
 
@@ -71,7 +76,7 @@ OR
 xcodebuild -downloadAllPlatforms
 ```
 
-## 🏃 Run the Code 
+## 🏃 Running the Code 
 
 Run the Flutter application with:
 
