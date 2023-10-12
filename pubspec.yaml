@@ -89,6 +89,11 @@ dev_dependencies:
   ffigen: ^8.0.0
   test: ^1.24.3
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "resources/images/launcher/ic_launcher_round.png"
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
