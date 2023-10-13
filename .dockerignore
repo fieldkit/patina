@@ -1,0 +1,6 @@
+.git
+.dart_tool
+build
+target
+native/target
+rustfk
