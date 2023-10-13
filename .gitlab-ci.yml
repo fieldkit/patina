@@ -1,36 +1,59 @@
 stages:
+  - prepare
   - test
   - build
 
-image: "ghcr.io/cirruslabs/flutter:3.13.0"
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
-before_script:
-  # TODO Ugly
-  - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
-  # BEGIN Rust
-  - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup.sh
-  - sh rustup.sh -y
-  - export PATH="$HOME/.cargo/bin:$PATH"
-  - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
-  - cargo install cargo-ndk
-  # END Rust
+prepare:image:
+  stage: prepare
+  when: manual
+  image: docker:24.0.5
+  services:
+    - name: docker:24.0.5-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_CLI_EXPERIMENTAL: enabled
+  script:
+    - echo $IMAGE_TAG
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker manifest inspect $IMAGE_TAG || true
+    - |
+      if ! docker manifest inspect $IMAGE_TAG; then
+        docker build -t $IMAGE_TAG .
+        docker push $IMAGE_TAG
+      fi
 
-test:
-  stage: test
+.setup: &common
+  image: "ghcr.io/cirruslabs/flutter:3.13.0"
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  before_script:
+    # TODO Ugly
+    - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
+    # BEGIN Rust
+    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup.sh
+    - sh rustup.sh -y
+    - export PATH="$HOME/.cargo/bin:$PATH"
+    - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+    - cargo install cargo-ndk
+    # END Rust
+
+test:
+  <<: *common
+  stage: test
   script:
     # apt-get update && apt-get install -y cmake ninja-build clang pkg-config
     - flutter test
 
 build:android:
+  <<: *common
   stage: build
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_TAG
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   script:
     # BEGIN Java NDK
     - export PATH=~/tools/flutter/bin:$PATH
@@ -46,11 +69,8 @@ build:android:
       - build/app/outputs/flutter-apk/*.apk
 
 build:ios:
+  <<: *common
   stage: build
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_TAG
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   tags:
     - mac-lab
   script:
