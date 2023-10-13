@@ -51,6 +51,15 @@ test:
     # apt-get update && apt-get install -y cmake ninja-build clang pkg-config
     - flutter test
 
+build:test-image:
+  stage: build
+  needs: [prepare:image]
+  image: $IMAGE_TAG
+  script:
+    - ls -alh $HOME
+    - pwd
+    - which cargo
+
 build:android:
   <<: *common
   stage: build
