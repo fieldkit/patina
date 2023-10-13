@@ -26,7 +26,8 @@ class AppEventDispatcher {
   }
 
   void removeListener<T>(Function(T) callback) {
-    _listeners.removeWhere((listener) => listener.callbackHashCode == callback.hashCode);
+    _listeners.removeWhere(
+        (listener) => listener.callbackHashCode == callback.hashCode);
   }
 }
 

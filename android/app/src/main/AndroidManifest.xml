@@ -7,6 +7,9 @@
         android:label="FieldKit"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.mapbox.token"
+            android:value="pk.eyJ1Ijoiamxld2FsbGVuIiwiYSI6ImNrNGFiMmlobzAyYTYzbGxoMGt1NGRmazYifQ.ACzetD69xjKhAYx7_Vf9ew" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
