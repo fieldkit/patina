@@ -1,8 +1,5 @@
 FROM ghcr.io/cirruslabs/flutter:3.13.0
 
-ENV CARGO_HOME=$HOME/.cargo
-ENV PATH=$PATH:$CARGO_HOME/.bin
-
 RUN apt-get update && apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev && rm -rf /var/lib/apt/lists/*
 
 RUN yes | sdkmanager --install 'ndk;25.2.9519653'
@@ -14,7 +11,9 @@ RUN mkdir -p ~/.gradle && echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk" >> ~/.gradle/
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup.sh
 RUN sh rustup.sh -y
-RUN PATH="$CARGO_HOME/bin:$PATH" rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
-RUN PATH="$CARGO_HOME/bin:$PATH" cargo install cargo-ndk
+ENV HOME=/root
+ENV PATH="${HOME}/.cargo/bin:$PATH"
+RUN rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+RUN cargo install cargo-ndk
 
 RUN flutter doctor --android-licenses

@@ -56,9 +56,9 @@ build:test-image:
   needs: [prepare:image]
   image: $IMAGE_TAG
   script:
-    - ls -alh $HOME
-    - pwd
-    - which cargo
+    - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
+    - flutter test
+    - flutter build apk
 
 build:android:
   <<: *common
