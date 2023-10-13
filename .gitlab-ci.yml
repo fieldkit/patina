@@ -29,6 +29,7 @@ prepare:image:
 
 .setup: &common
   image: "ghcr.io/cirruslabs/flutter:3.13.0"
+  when: manual # TODO REMOVE BEFORE MERGE
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
@@ -48,7 +49,6 @@ test:
   <<: *common
   stage: test
   script:
-    # apt-get update && apt-get install -y cmake ninja-build clang pkg-config
     - flutter test
 
 build:test-image:
@@ -57,8 +57,8 @@ build:test-image:
   image: $IMAGE_TAG
   script:
     - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
-    - flutter test
-    - flutter build apk
+    - flutter test && sccache --show-stats
+    - flutter build apk && sccache --show-stats
 
 build:android:
   <<: *common
