@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../reader/screens.dart';
 import 'accounts_page.dart';
+import 'help_page.dart';
 
 class SettingsTab extends StatelessWidget {
   const SettingsTab({super.key});
@@ -32,12 +33,22 @@ class SettingsTab extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ProvideContentFlowsWidget(child: QuickFlow(start: StartFlow(name: "onboarding"))),
+                  builder: (context) => const ProvideContentFlowsWidget(
+                      child: QuickFlow(start: StartFlow(name: "onboarding"))),
                 ),
               );
             },
           ),
           const Divider(),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.helpTitle),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HelpPage()),
+              );
+            },
+          ),
         ]));
   }
 }
