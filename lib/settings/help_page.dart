@@ -74,14 +74,21 @@ class _HelpPageState extends State<HelpPage> {
               });
             },
           ),
-          if (isArrowUp) ...[
-            ListTile(
-              title: Text('App Version: $appVersion'),
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Column(
+              children: [
+                if (isArrowUp) ...[
+                  ListTile(
+                    title: Text('App Version: $appVersion'),
+                  ),
+                  // ListTile(
+                  //   title: Text(AppLocalizations.of(context)!.noUpdates),
+                  // ),
+                ],
+              ],
             ),
-            ListTile(
-              title: Text(AppLocalizations.of(context)!.noUpdates),
-            ),
-          ],
+          )
         ],
       ),
     );
