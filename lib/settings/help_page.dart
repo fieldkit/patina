@@ -42,12 +42,12 @@ class _HelpPageState extends State<HelpPage> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: <Widget>[
-          ListTile(
-            title: Text(AppLocalizations.of(context)!.helpCheckList),
-            onTap: () {
-              // TODO: Add the action for the Pre-deployment Checklist
-            },
-          ),
+          // ListTile(
+          //   title: Text(AppLocalizations.of(context)!.helpCheckList),
+          //   onTap: () {
+          //     // TODO: Add the action for the Pre-deployment Checklist
+          //   },
+          // ),
           const Divider(),
           ListTile(
             title: Text(AppLocalizations.of(context)!.tutorialGuide),
