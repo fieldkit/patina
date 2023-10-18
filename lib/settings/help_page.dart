@@ -48,7 +48,7 @@ class _HelpPageState extends State<HelpPage> {
           //     // TODO: Add the action for the Pre-deployment Checklist
           //   },
           // ),
-          const Divider(),
+          // const Divider(),
           ListTile(
             title: Text(AppLocalizations.of(context)!.tutorialGuide),
             onTap: () {
