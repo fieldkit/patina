@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/link.dart';
 
 class LegalPage extends StatefulWidget {
   const LegalPage({super.key});
@@ -42,39 +43,36 @@ class _LegalPageState extends State<LegalPage> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: <Widget>[
-          ListTile(
-            title: Text(AppLocalizations.of(context)!.termsOfService),
-            onTap: () async {
-              const url = 'https://www.fieldkit.org/terms-and-conditions/';
-              if (await canLaunchUrl(url as Uri)) {
-                await launchUrl(url as Uri);
-              } else {
-                throw 'Could not launch $url';
-              }
+          Link(
+            uri: Uri.parse('https://www.fieldkit.org/terms-and-conditions'),
+            target: LinkTarget.blank,
+            builder: (BuildContext ctx, FollowLink? openLink) {
+              return ListTile(
+                onTap: openLink,
+                title: Text(AppLocalizations.of(context)!.termsOfService),
+              );
             },
           ),
           const Divider(),
-          ListTile(
-            title: Text(AppLocalizations.of(context)!.privacyPolicy),
-            onTap: () async {
-              const url = 'https://www.fieldkit.org/privacy-policy/';
-              if (await canLaunchUrl(url as Uri)) {
-                await launchUrl(url as Uri);
-              } else {
-                throw 'Could not launch $url';
-              }
+          Link(
+            uri: Uri.parse('https://www.fieldkit.org/privacy-policy'),
+            target: LinkTarget.blank,
+            builder: (BuildContext ctx, FollowLink? openLink) {
+              return ListTile(
+                onTap: openLink,
+                title: Text(AppLocalizations.of(context)!.privacyPolicy),
+              );
             },
           ),
           const Divider(),
-          ListTile(
-            title: Text(AppLocalizations.of(context)!.licenses),
-            onTap: () async {
-              const url = 'https://www.fieldkit.org/licenses/';
-              if (await canLaunchUrl(url as Uri)) {
-                await launchUrl(url as Uri);
-              } else {
-                throw 'Could not launch $url';
-              }
+          Link(
+            uri: Uri.parse('https://www.fieldkit.org/licenses'),
+            target: LinkTarget.blank,
+            builder: (BuildContext ctx, FollowLink? openLink) {
+              return ListTile(
+                onTap: openLink,
+                title: Text(AppLocalizations.of(context)!.licenses),
+              );
             },
           ),
         ],
