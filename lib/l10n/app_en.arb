@@ -111,5 +111,16 @@
   "confirmYes": "Yes",
   "confirmCancel": "Cancel",
 
-  "onboardingTitle": "Onboarding Instructions"
+  "onboardingTitle": "Onboarding Instructions",
+  "helpTitle": "Help",
+  "helpCheckList": "Pre-deployment Checklist",
+  "tutorialGuide": "Tutorial Guide",
+  "appVersion": "App Version",
+  "noUpdates": "No updates available",
+  "yesUpdates": "Tap for updates!",
+
+  "legalTitle": "Legal",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "licenses": "Licenses"
 }
