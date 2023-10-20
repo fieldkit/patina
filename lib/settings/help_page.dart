@@ -27,6 +27,8 @@ class _HelpPageState extends State<HelpPage> {
     });
   }
 
+  final _textStyle = const TextStyle(fontSize: 20.0);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,14 +80,26 @@ class _HelpPageState extends State<HelpPage> {
             padding: const EdgeInsets.only(left: 10.0),
             child: Column(
               children: [
-                if (isArrowUp) ...[
-                  ListTile(
-                    title: Text('App Version: $appVersion'),
-                  ),
-                  // ListTile(
-                  //   title: Text(AppLocalizations.of(context)!.noUpdates),
-                  // ),
-                ],
+                if (isArrowUp)
+                  RichText(
+                    text: TextSpan(
+                      style: DefaultTextStyle.of(context).style,
+                      children: [
+                        TextSpan(
+                          text: AppLocalizations.of(context)!.appVersion,
+                          style: _textStyle,
+                        ),
+                        TextSpan(
+                          text: ': ', // Add a colon and space
+                          style: _textStyle,
+                        ),
+                        TextSpan(
+                          text: appVersion,
+                          style: _textStyle,
+                        ),
+                      ],
+                    ),
+                  )
               ],
             ),
           )
