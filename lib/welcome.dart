@@ -1,6 +1,7 @@
 import 'package:fk/reader/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'constants.dart';
 
 class WelcomeScreen extends StatelessWidget {
   final VoidCallback onDone;
@@ -58,7 +59,7 @@ class WelcomeScreen extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFCE596B),
+                        backgroundColor: AppColors.primaryColor,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 80.0, vertical: 14.0),
                       ),

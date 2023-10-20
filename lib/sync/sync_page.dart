@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../constants.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
@@ -37,19 +38,46 @@ class DataSyncTab extends StatelessWidget {
 }
 
 class MessageAndButton extends StatelessWidget {
+  final String title;
   final String message;
   final String button;
   final VoidCallback? onPressed;
 
   const MessageAndButton(
-      {super.key, required this.message, required this.button, this.onPressed});
+      {super.key,
+      required this.title,
+      required this.message,
+      required this.button,
+      this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      WH.align(Text(message)),
-      WH.align(WH
-          .vertical(ElevatedButton(onPressed: onPressed, child: Text(button)))),
+      WH.align(
+        Text(
+          title,
+          style: const TextStyle(fontSize: 20.0),
+        ),
+      ),
+      WH.align(
+        Text(
+          message,
+          style: const TextStyle(fontSize: 16.0),
+        ),
+      ),
+      WH.align(
+        WH.vertical(
+          ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+            ),
+            child: Text(button),
+          ),
+        ),
+      ),
     ]);
   }
 }
@@ -59,17 +87,26 @@ class LoginRequiredWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WH.padPage(MessageAndButton(
-        button: AppLocalizations.of(context)!.login,
-        message: AppLocalizations.of(context)!.dataLoginMessage,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AccountsPage(),
-            ),
-          );
-        }));
+    return Center(
+      child: Card(
+        margin: const EdgeInsets.all(16.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: MessageAndButton(
+              title: AppLocalizations.of(context)!.alertTitle,
+              button: AppLocalizations.of(context)!.login,
+              message: AppLocalizations.of(context)!.dataLoginMessage,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AccountsPage(),
+                  ),
+                );
+              }),
+        ),
+      ),
+    );
   }
 }
 
@@ -122,7 +159,7 @@ class DataSyncPage extends StatelessWidget {
                 // TODO: Make this functional later
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFCE596B),
+                backgroundColor: AppColors.primaryColor,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 20.0, vertical: 14.0),
               ),
@@ -176,6 +213,7 @@ class UpgradeRequiredWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return WH.padPage(MessageAndButton(
+        title: localizations.alertTitle,
         message: localizations.syncUpgradeRequiredMessage,
         button: localizations.syncManageFirmware,
         onPressed: () {

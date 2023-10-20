@@ -5,6 +5,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:fk/common_widgets.dart';
+import '../constants.dart';
 
 import '../app_state.dart';
 import '../diagnostics.dart';
@@ -59,7 +60,7 @@ class AccountsPage extends StatelessWidget {
                 },
                 style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
+                      MaterialStateProperty.all<Color>(AppColors.primaryColor),
                   padding: MaterialStateProperty.all<EdgeInsets>(
                       const EdgeInsets.symmetric(
                           vertical: 24.0, horizontal: 32.0)),
@@ -166,7 +167,7 @@ class AccountsPage extends StatelessWidget {
               },
               style: ButtonStyle(
                 backgroundColor:
-                    MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
+                    MaterialStateProperty.all<Color>(AppColors.primaryColor),
                 padding: MaterialStateProperty.all<EdgeInsets>(
                     const EdgeInsets.symmetric(
                         vertical: 24.0, horizontal: 32.0)),
@@ -388,7 +389,7 @@ class _AccountState extends State<AccountForm> {
               },
               style: ButtonStyle(
                 backgroundColor:
-                    MaterialStateProperty.all<Color>(const Color(0xFFce596b)),
+                    MaterialStateProperty.all<Color>(AppColors.primaryColor),
                 padding: MaterialStateProperty.all<EdgeInsets>(
                     const EdgeInsets.symmetric(
                         vertical: 24.0, horizontal: 32.0)),
