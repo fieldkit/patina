@@ -12,7 +12,7 @@
 
   "dataSyncTitle": "Data",
   "login": "Login",
-  "dataLoginMessage": "To upload data you need to login.",
+  "dataLoginMessage": "To upload data you need to login:",
 
   "dataSyncTitle": "Data",
   "dataSyncButton": "Add a Station",
@@ -100,5 +100,16 @@
   "confirmYes": "Yes",
   "confirmCancel": "Cancel",
 
-  "onboardingTitle": "Onboarding Instructions"
+  "onboardingTitle": "Onboarding Instructions",
+  "helpTitle": "Help",
+  "helpCheckList": "Pre-deployment Checklist",
+  "tutorialGuide": "Tutorial Guide",
+  "appVersion": "App Version",
+  "noUpdates": "No updates available",
+  "yesUpdates": "Tap for updates!",
+
+  "legalTitle": "Legal",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "licenses": "Licenses"
 }

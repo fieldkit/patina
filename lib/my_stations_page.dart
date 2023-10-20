@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'common_widgets.dart';
 import 'gen/ffi.dart';
+import 'constants.dart';
 
 import 'app_state.dart';
 import 'location_widgets.dart';
@@ -59,7 +60,7 @@ class ListStationsPage extends StatelessWidget {
                 // TODO: Make this functional later
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFCE596B),
+                backgroundColor: AppColors.primaryColor,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 20.0, vertical: 14.0),
               ),
