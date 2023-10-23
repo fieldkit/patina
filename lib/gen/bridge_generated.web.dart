@@ -53,6 +53,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  Object api2wire_box_autoadd_u64(int raw) {
+    return api2wire_u64(raw);
+  }
+
+  @protected
   List<dynamic> api2wire_box_autoadd_wifi_transmission_config(
       WifiTransmissionConfig raw) {
     return api2wire_wifi_transmission_config(raw);
@@ -85,6 +90,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  Object? api2wire_opt_box_autoadd_u64(int? raw) {
+    return raw == null ? null : api2wire_box_autoadd_u64(raw);
+  }
+
+  @protected
   List<dynamic> api2wire_record_archive(RecordArchive raw) {
     return [api2wire_String(raw.deviceId), api2wire_String(raw.path)];
   }
@@ -100,6 +110,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   @protected
   List<dynamic> api2wire_transmission_token(TransmissionToken raw) {
     return [api2wire_String(raw.token), api2wire_String(raw.url)];
+  }
+
+  @protected
+  Object api2wire_u64(int raw) {
+    return castNativeBigInt(raw);
   }
 
   @protected
@@ -148,7 +163,7 @@ class NativeWasmModule implements WasmModule {
       NativePortType port_, List<dynamic> tokens);
 
   external dynamic /* void */ wire_start_download(
-      NativePortType port_, String device_id);
+      NativePortType port_, String device_id, Object? first);
 
   external dynamic /* void */ wire_start_upload(NativePortType port_,
       String device_id, List<dynamic> tokens, List<dynamic> files);
@@ -200,8 +215,9 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_validate_tokens(NativePortType port_, List<dynamic> tokens) =>
       wasmModule.wire_validate_tokens(port_, tokens);
 
-  void wire_start_download(NativePortType port_, String device_id) =>
-      wasmModule.wire_start_download(port_, device_id);
+  void wire_start_download(
+          NativePortType port_, String device_id, Object? first) =>
+      wasmModule.wire_start_download(port_, device_id, first);
 
   void wire_start_upload(NativePortType port_, String device_id,
           List<dynamic> tokens, List<dynamic> files) =>

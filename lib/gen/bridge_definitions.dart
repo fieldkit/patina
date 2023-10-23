@@ -62,7 +62,7 @@ abstract class Native {
   FlutterRustBridgeTaskConstMeta get kValidateTokensConstMeta;
 
   Future<TransferProgress> startDownload(
-      {required String deviceId, dynamic hint});
+      {required String deviceId, int? first, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStartDownloadConstMeta;
 

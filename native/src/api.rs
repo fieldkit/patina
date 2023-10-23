@@ -298,13 +298,17 @@ impl Sdk {
         })
     }
 
-    async fn start_download(&self, device_id: DeviceId) -> Result<TransferProgress> {
+    async fn start_download(
+        &self,
+        device_id: DeviceId,
+        first: Option<u64>,
+    ) -> Result<TransferProgress> {
         info!("{:?} start download", &device_id);
 
         let discovered = self.nearby.get_discovered(&device_id).await;
 
         if let Some(discovered) = discovered {
-            self.server.sync(discovered).await?;
+            self.server.sync(discovered, first).await?;
         } else {
             warn!("{:?} undiscovered!", &device_id);
         }
@@ -516,9 +520,9 @@ pub fn validate_tokens(tokens: Tokens) -> Result<Authenticated> {
     })?)
 }
 
-pub fn start_download(device_id: String) -> Result<TransferProgress> {
+pub fn start_download(device_id: String, first: Option<u64>) -> Result<TransferProgress> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.start_download(DeviceId(device_id.clone())))
+        rt.block_on(sdk.start_download(DeviceId(device_id.clone()), first))
     })?)
 }
 
