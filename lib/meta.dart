@@ -30,6 +30,9 @@ class LocalizedModule {
       case "modules.water.ec":
         return LocalizedModule(
             key: module.key, icon: const AssetImage("resources/images/icon_module_water_ec.png"), name: "Conductivity Module");
+      case "modules.water.depth":
+        return LocalizedModule(
+            key: module.key, icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Water Depth Module");
       case "modules.weather":
         return LocalizedModule(key: module.key, icon: const AssetImage("resources/images/icon_module_weather.png"), name: "Weather Module");
       case "modules.diagnostics":
@@ -66,6 +69,11 @@ class LocalizedSensor {
         return LocalizedSensor(name: "Air Temperature", uom: sensor.calibratedUom);
       case "modules.water.orp.orp":
         return LocalizedSensor(name: "ORP", uom: sensor.calibratedUom);
+
+      case "modules.water.depth.temp":
+        return LocalizedSensor(name: "Water Temperature", uom: sensor.calibratedUom);
+      case "modules.water.depth.depth":
+        return LocalizedSensor(name: "Water Depth (Pressure)", uom: sensor.calibratedUom);
 
       case "modules.diagnostics.temperature":
         return LocalizedSensor(name: "Internal Temperature", uom: sensor.calibratedUom);
