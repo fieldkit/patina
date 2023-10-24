@@ -537,6 +537,8 @@ impl support::IntoDart for RecordArchive {
         vec![
             self.device_id.into_into_dart().into_dart(),
             self.path.into_into_dart().into_dart(),
+            self.head.into_into_dart().into_dart(),
+            self.tail.into_into_dart().into_dart(),
         ]
         .into_dart()
     }

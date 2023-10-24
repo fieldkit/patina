@@ -96,7 +96,12 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
 
   @protected
   List<dynamic> api2wire_record_archive(RecordArchive raw) {
-    return [api2wire_String(raw.deviceId), api2wire_String(raw.path)];
+    return [
+      api2wire_String(raw.deviceId),
+      api2wire_String(raw.path),
+      api2wire_i64(raw.head),
+      api2wire_i64(raw.tail)
+    ];
   }
 
   @protected

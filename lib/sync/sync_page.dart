@@ -16,22 +16,19 @@ class DataSyncTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final KnownStationsModel knownStations =
-        context.watch<KnownStationsModel>();
-    final StationOperations stationOperations =
-        context.watch<StationOperations>();
+    final KnownStationsModel knownStations = context.watch<KnownStationsModel>();
+    final StationOperations stationOperations = context.watch<StationOperations>();
     final TasksModel tasks = context.watch<TasksModel>();
 
     return DataSyncPage(
       known: knownStations,
       stationOperations: stationOperations,
       tasks: tasks,
-      onDownload: (station) async {
-        await knownStations.startDownload(deviceId: station.deviceId);
+      onDownload: (task) async {
+        await knownStations.startDownload(deviceId: task.deviceId, first: task.first);
       },
       onUpload: (task) async {
-        await knownStations.startUpload(
-            deviceId: task.deviceId, tokens: task.tokens, files: task.files);
+        await knownStations.startUpload(deviceId: task.deviceId, tokens: task.tokens, files: task.files);
       },
     );
   }
@@ -43,12 +40,7 @@ class MessageAndButton extends StatelessWidget {
   final String button;
   final VoidCallback? onPressed;
 
-  const MessageAndButton(
-      {super.key,
-      required this.title,
-      required this.message,
-      required this.button,
-      this.onPressed});
+  const MessageAndButton({super.key, required this.title, required this.message, required this.button, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +63,7 @@ class MessageAndButton extends StatelessWidget {
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryColor,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
             ),
             child: Text(button),
           ),
@@ -114,7 +105,7 @@ class DataSyncPage extends StatelessWidget {
   final KnownStationsModel known;
   final TasksModel tasks;
   final StationOperations stationOperations;
-  final void Function(StationModel) onDownload;
+  final void Function(DownloadTask) onDownload;
   final void Function(UploadTask) onUpload;
 
   const DataSyncPage(
@@ -129,18 +120,15 @@ class DataSyncPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final loginTasks = tasks.getAll<LoginTask>();
 
-    final stations = known.stations
-        .where((station) => station.config != null)
-        .map((station) {
+    final stations = known.stations.where((station) => station.config != null).map((station) {
+      final downloadTask = tasks.getMaybeOne<DownloadTask>(station.deviceId);
       final uploadTask = tasks.getMaybeOne<UploadTask>(station.deviceId);
       final busy = stationOperations.isBusy(station.deviceId);
-      Loggers.ui.i(
-          "data-sync: busy=$busy uploadTask=$uploadTask loginTasks=$loginTasks");
+      Loggers.ui.i("data-sync: busy=$busy downloadTask=$downloadTask uploadTask=$uploadTask loginTasks=$loginTasks");
       return StationSyncStatus(
         station: station,
-        onDownload: busy ? null : () => onDownload(station),
-        onUpload:
-            (!busy && uploadTask != null) ? () => onUpload(uploadTask) : null,
+        onDownload: (!busy && downloadTask != null) ? () => onDownload(downloadTask) : null,
+        onUpload: (!busy && uploadTask != null) ? () => onUpload(uploadTask) : null,
       );
     }).toList();
 
@@ -160,8 +148,7 @@ class DataSyncPage extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 14.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
               ),
               child: Text(
                 AppLocalizations.of(context)!.dataSyncButton,
@@ -181,23 +168,17 @@ class SyncOptions extends StatelessWidget {
   final VoidCallback? onDownload;
   final VoidCallback? onUpload;
 
-  const SyncOptions(
-      {super.key, required this.onDownload, required this.onUpload});
+  const SyncOptions({super.key, required this.onDownload, required this.onUpload});
 
   @override
   Widget build(BuildContext context) {
-    pad(child) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(10),
-        child: child);
+    pad(child) => Container(width: double.infinity, padding: const EdgeInsets.all(10), child: child);
 
     final localizations = AppLocalizations.of(context)!;
 
     return Column(children: [
-      pad(ElevatedButton(
-          onPressed: onDownload, child: Text(localizations.download))),
-      pad(ElevatedButton(
-          onPressed: onUpload, child: Text(localizations.upload))),
+      pad(ElevatedButton(onPressed: onDownload, child: Text(localizations.download))),
+      pad(ElevatedButton(onPressed: onUpload, child: Text(localizations.upload))),
     ]);
   }
 }
@@ -240,11 +221,7 @@ class StationSyncStatus extends StatelessWidget {
   bool get isDownloading => station.syncing?.download != null;
   bool get isUploading => station.syncing?.upload != null;
 
-  const StationSyncStatus(
-      {super.key,
-      required this.station,
-      required this.onDownload,
-      required this.onUpload});
+  const StationSyncStatus({super.key, required this.station, required this.onDownload, required this.onUpload});
 
   Widget _progress(BuildContext context) {
     if (isDownloading) {
@@ -275,9 +252,7 @@ class StationSyncStatus extends StatelessWidget {
         ? localizations.syncPercentageComplete(station.syncing?.completed ?? 0)
         : localizations.syncItemSubtitle(config.data.records);
 
-    return BorderedListItem(
-        header: GenericListItemHeader(title: title, subtitle: subtitle),
-        children: [_progress(context)]);
+    return BorderedListItem(header: GenericListItemHeader(title: title, subtitle: subtitle), children: [_progress(context)]);
   }
 }
 
@@ -290,8 +265,7 @@ class DownloadProgressPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    final label =
-        localizations.syncProgressReadings(progress.total, progress.received);
+    final label = localizations.syncProgressReadings(progress.total, progress.received);
     final started = DateTime.fromMillisecondsSinceEpoch(progress.started);
     final elapsed = DateTime.now().difference(started);
     final subtitle = localizations.syncElapsed(elapsed.toString());
@@ -313,9 +287,6 @@ class UploadProgressPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WH.padColumn(Column(children: [
-      WH.progressBar(progress.completed),
-      WH.padBelowProgress(const SizedBox.shrink())
-    ]));
+    return WH.padColumn(Column(children: [WH.progressBar(progress.completed), WH.padBelowProgress(const SizedBox.shrink())]));
   }
 }

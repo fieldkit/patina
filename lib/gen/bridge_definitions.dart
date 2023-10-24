@@ -273,10 +273,14 @@ class NetworkConfig {
 class RecordArchive {
   final String deviceId;
   final String path;
+  final int head;
+  final int tail;
 
   const RecordArchive({
     required this.deviceId,
     required this.path,
+    required this.head,
+    required this.tail,
   });
 }
 

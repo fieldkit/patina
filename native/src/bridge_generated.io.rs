@@ -233,6 +233,8 @@ impl Wire2Api<RecordArchive> for wire_RecordArchive {
         RecordArchive {
             device_id: self.device_id.wire2api(),
             path: self.path.wire2api(),
+            head: self.head.wire2api(),
+            tail: self.tail.wire2api(),
         }
     }
 }
@@ -302,6 +304,8 @@ pub struct wire_LocalFirmware {
 pub struct wire_RecordArchive {
     device_id: *mut wire_uint_8_list,
     path: *mut wire_uint_8_list,
+    head: i64,
+    tail: i64,
 }
 
 #[repr(C)]
@@ -383,6 +387,8 @@ impl NewWithNullPtr for wire_RecordArchive {
         Self {
             device_id: core::ptr::null_mut(),
             path: core::ptr::null_mut(),
+            head: Default::default(),
+            tail: Default::default(),
         }
     }
 }

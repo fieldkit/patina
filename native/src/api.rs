@@ -786,6 +786,8 @@ pub struct TransferProgress {
 pub struct RecordArchive {
     pub device_id: String,
     pub path: String,
+    pub head: i64,
+    pub tail: i64,
 }
 
 #[derive(Debug)]
