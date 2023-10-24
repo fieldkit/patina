@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:protobuf/protobuf.dart';
 import 'package:uuid/uuid.dart';
 import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
 
@@ -908,10 +909,13 @@ class ModuleConfigurations extends ChangeNotifier {
 
   ModuleConfiguration find(ModuleIdentity moduleIdentity) {
     final configuration = knownStations.findModule(moduleIdentity)?.module.configuration;
-    if (configuration == null) {
+    if (configuration == null || configuration.isEmpty) {
       return ModuleConfiguration(null);
     }
-    return ModuleConfiguration(proto.ModuleConfiguration.fromBuffer(configuration));
+
+    final CodedBufferReader reader = CodedBufferReader(configuration);
+    final List<int> delimited = reader.readBytes();
+    return ModuleConfiguration(proto.ModuleConfiguration.fromBuffer(delimited));
   }
 
   Future<void> clear(ModuleIdentity moduleIdentity) async {
