@@ -47,6 +47,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<ffi.Uint64> api2wire_box_autoadd_u64(int raw) {
+    return inner.new_box_autoadd_u64_0(api2wire_u64(raw));
+  }
+
+  @protected
   ffi.Pointer<wire_WifiTransmissionConfig>
       api2wire_box_autoadd_wifi_transmission_config(
           WifiTransmissionConfig raw) {
@@ -73,6 +78,16 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   @protected
   ffi.Pointer<wire_Tokens> api2wire_opt_box_autoadd_tokens(Tokens? raw) {
     return raw == null ? ffi.nullptr : api2wire_box_autoadd_tokens(raw);
+  }
+
+  @protected
+  ffi.Pointer<ffi.Uint64> api2wire_opt_box_autoadd_u64(int? raw) {
+    return raw == null ? ffi.nullptr : api2wire_box_autoadd_u64(raw);
+  }
+
+  @protected
+  int api2wire_u64(int raw) {
+    return raw;
   }
 
   @protected
@@ -134,6 +149,8 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
       RecordArchive apiObj, wire_RecordArchive wireObj) {
     wireObj.device_id = api2wire_String(apiObj.deviceId);
     wireObj.path = api2wire_String(apiObj.path);
+    wireObj.head = api2wire_i64(apiObj.head);
+    wireObj.tail = api2wire_i64(apiObj.tail);
   }
 
   void _api_fill_to_wire_tokens(Tokens apiObj, wire_Tokens wireObj) {
@@ -410,19 +427,22 @@ class NativeWire implements FlutterRustBridgeWireBase {
   void wire_start_download(
     int port_,
     ffi.Pointer<wire_uint_8_list> device_id,
+    ffi.Pointer<ffi.Uint64> first,
   ) {
     return _wire_start_download(
       port_,
       device_id,
+      first,
     );
   }
 
   late final _wire_start_downloadPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_start_download');
-  late final _wire_start_download = _wire_start_downloadPtr
-      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<ffi.Uint64>)>>('wire_start_download');
+  late final _wire_start_download = _wire_start_downloadPtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<ffi.Uint64>)>();
 
   void wire_start_upload(
     int port_,
@@ -553,6 +573,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_tokens_0 = _new_box_autoadd_tokens_0Ptr
       .asFunction<ffi.Pointer<wire_Tokens> Function()>();
 
+  ffi.Pointer<ffi.Uint64> new_box_autoadd_u64_0(
+    int value,
+  ) {
+    return _new_box_autoadd_u64_0(
+      value,
+    );
+  }
+
+  late final _new_box_autoadd_u64_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Uint64> Function(ffi.Uint64)>>(
+          'new_box_autoadd_u64_0');
+  late final _new_box_autoadd_u64_0 = _new_box_autoadd_u64_0Ptr
+      .asFunction<ffi.Pointer<ffi.Uint64> Function(int)>();
+
   ffi.Pointer<wire_WifiTransmissionConfig>
       new_box_autoadd_wifi_transmission_config_0() {
     return _new_box_autoadd_wifi_transmission_config_0();
@@ -650,6 +684,12 @@ final class wire_RecordArchive extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_id;
 
   external ffi.Pointer<wire_uint_8_list> path;
+
+  @ffi.Int64()
+  external int head;
+
+  @ffi.Int64()
+  external int tail;
 }
 
 final class wire_list_record_archive extends ffi.Struct {

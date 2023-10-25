@@ -136,13 +136,16 @@ impl NearbyDevices {
         let device_id = &discovered.device_id;
         if let Some(connected) = devices.get_mut(device_id) {
             if connected.is_disconnected() && connected.retry.is_none() {
-                info!("bg:discovered: {:?}", connected);
+                info!("bg:rediscovered: {:?}", connected);
 
                 connected.attempted = None;
                 connected.finished = None;
-            }
+                connected.failures = 0;
 
-            Ok(false)
+                Ok(true)
+            } else {
+                Ok(false)
+            }
         } else {
             info!("bg:discovered: {:?}", discovered);
 
@@ -376,6 +379,8 @@ impl NearbyDevices {
                     .map(|f| RecordArchive {
                         device_id: f.device_id.clone(),
                         path: f.path.clone(),
+                        head: f.meta.head,
+                        tail: f.meta.tail,
                     })
                     .collect();
                 publish_tx

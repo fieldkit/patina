@@ -62,7 +62,7 @@ abstract class Native {
   FlutterRustBridgeTaskConstMeta get kValidateTokensConstMeta;
 
   Future<TransferProgress> startDownload(
-      {required String deviceId, dynamic hint});
+      {required String deviceId, int? first, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStartDownloadConstMeta;
 
@@ -273,10 +273,14 @@ class NetworkConfig {
 class RecordArchive {
   final String deviceId;
   final String path;
+  final int head;
+  final int tail;
 
   const RecordArchive({
     required this.deviceId,
     required this.path,
+    required this.head,
+    required this.tail,
   });
 }
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
@@ -136,7 +137,7 @@ class KnownStationsModel extends ChangeNotifier {
     return _stations[deviceId]!;
   }
 
-  Future<void> startDownload({required String deviceId}) async {
+  Future<void> startDownload({required String deviceId, int? first}) async {
     final station = find(deviceId);
     if (station == null) {
       Loggers.state.w("$deviceId station missing");
@@ -148,7 +149,7 @@ class KnownStationsModel extends ChangeNotifier {
       return;
     }
 
-    final progress = await api.startDownload(deviceId: deviceId);
+    final progress = await api.startDownload(deviceId: deviceId, first: first);
     applyTransferProgress(progress);
   }
 
@@ -472,6 +473,61 @@ class UpgradeTask extends Task {
   UpgradeTask({required this.station, required this.comparison});
 }
 
+class DownloadTaskFactory extends TaskFactory<DownloadTask> {
+  List<NearbyStation> _nearby = List.empty();
+  List<RecordArchive> _archives = List.empty();
+  final Map<String, int> _records = {};
+
+  DownloadTaskFactory({required KnownStationsModel knownStations, required AppEventDispatcher dispatcher}) {
+    dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) {
+      _records[refreshed.field0.deviceId] = refreshed.field0.data.records;
+      _tasks.clear();
+      _tasks.addAll(create());
+      notifyListeners();
+    });
+
+    dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
+      _nearby = nearby.field0;
+      _tasks.clear();
+      _tasks.addAll(create());
+      notifyListeners();
+    });
+
+    dispatcher.addListener<DomainMessage_RecordArchives>((archives) {
+      _archives = archives.field0;
+      _tasks.clear();
+      _tasks.addAll(create());
+      notifyListeners();
+    });
+  }
+
+  List<DownloadTask> create() {
+    final List<DownloadTask> tasks = List.empty(growable: true);
+    final archivesById = _archives.groupListsBy((a) => a.deviceId);
+    for (final nearby in _nearby) {
+      final int? first = archivesById[nearby.deviceId]?.map((archive) => archive.tail).reduce(max);
+      final int? total = _records[nearby.deviceId];
+      if (total != null) {
+        tasks.add(DownloadTask(deviceId: nearby.deviceId, total: total, first: first));
+      }
+    }
+    return tasks;
+  }
+}
+
+class DownloadTask extends Task {
+  final String deviceId;
+  final int total;
+  final int? first;
+
+  DownloadTask({required this.deviceId, required this.total, this.first});
+
+  @override
+  String toString() {
+    return "DownloadTask($deviceId, $first, $total)";
+  }
+}
+
 class UploadTaskFactory extends TaskFactory<UploadTask> {
   final PortalAccounts portalAccounts;
   List<RecordArchive> _archives = List.empty();
@@ -510,6 +566,11 @@ class UploadTask extends Task {
   final Tokens tokens;
 
   UploadTask({required this.deviceId, required this.files, required this.tokens});
+
+  @override
+  String toString() {
+    return "UploadTask($deviceId, $files)";
+  }
 }
 
 class LoginTask extends Task {
@@ -541,6 +602,7 @@ class TasksModel extends ChangeNotifier {
     factories.add(LoginTaskFactory(portalAccounts: portalAccounts));
     factories.add(DeployTaskFactory(knownStations: knownStations));
     factories.add(UploadTaskFactory(portalAccounts: portalAccounts, dispatcher: dispatcher));
+    factories.add(DownloadTaskFactory(knownStations: knownStations, dispatcher: dispatcher));
     factories.add(UpgradeTaskFactory(availableFirmware: availableFirmware, knownStations: knownStations));
     for (final TaskFactory f in factories) {
       f.addListener(notifyListeners);
@@ -908,7 +970,9 @@ class ModuleConfigurations extends ChangeNotifier {
   ModuleConfigurations({required this.api, required this.knownStations});
 
   ModuleConfiguration find(ModuleIdentity moduleIdentity) {
-    final configuration = knownStations.findModule(moduleIdentity)?.module.configuration;
+    final stationAndModule = knownStations.findModule(moduleIdentity);
+    final configuration = stationAndModule?.module.configuration;
+    Loggers.state.i("Find module configuration $moduleIdentity ${stationAndModule?.station} ${stationAndModule?.module} $configuration");
     if (configuration == null || configuration.isEmpty) {
       return ModuleConfiguration(null);
     }

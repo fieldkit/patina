@@ -67,8 +67,12 @@ pub extern "C" fn wire_validate_tokens(port_: i64, tokens: *mut wire_Tokens) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_start_download(port_: i64, device_id: *mut wire_uint_8_list) {
-    wire_start_download_impl(port_, device_id)
+pub extern "C" fn wire_start_download(
+    port_: i64,
+    device_id: *mut wire_uint_8_list,
+    first: *mut u64,
+) {
+    wire_start_download_impl(port_, device_id, first)
 }
 
 #[no_mangle]
@@ -122,6 +126,11 @@ pub extern "C" fn new_box_autoadd_local_firmware_0() -> *mut wire_LocalFirmware 
 #[no_mangle]
 pub extern "C" fn new_box_autoadd_tokens_0() -> *mut wire_Tokens {
     support::new_leak_box_ptr(wire_Tokens::new_with_null_ptr())
+}
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_u64_0(value: u64) -> *mut u64 {
+    support::new_leak_box_ptr(value)
 }
 
 #[no_mangle]
@@ -186,6 +195,11 @@ impl Wire2Api<Tokens> for *mut wire_Tokens {
         Wire2Api::<Tokens>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<u64> for *mut u64 {
+    fn wire2api(self) -> u64 {
+        unsafe { *support::box_from_leak_ptr(self) }
+    }
+}
 impl Wire2Api<WifiTransmissionConfig> for *mut wire_WifiTransmissionConfig {
     fn wire2api(self) -> WifiTransmissionConfig {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -219,6 +233,8 @@ impl Wire2Api<RecordArchive> for wire_RecordArchive {
         RecordArchive {
             device_id: self.device_id.wire2api(),
             path: self.path.wire2api(),
+            head: self.head.wire2api(),
+            tail: self.tail.wire2api(),
         }
     }
 }
@@ -288,6 +304,8 @@ pub struct wire_LocalFirmware {
 pub struct wire_RecordArchive {
     device_id: *mut wire_uint_8_list,
     path: *mut wire_uint_8_list,
+    head: i64,
+    tail: i64,
 }
 
 #[repr(C)]
@@ -369,6 +387,8 @@ impl NewWithNullPtr for wire_RecordArchive {
         Self {
             device_id: core::ptr::null_mut(),
             path: core::ptr::null_mut(),
+            head: Default::default(),
+            tail: Default::default(),
         }
     }
 }
