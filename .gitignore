@@ -55,3 +55,4 @@ rustfk
 /fk-data
 
 /resources/.env
+/lib/l10n/untranslated.txt

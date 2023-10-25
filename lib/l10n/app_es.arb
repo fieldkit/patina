@@ -11,6 +11,7 @@
   "settingsTab": "Settings",
 
   "dataSyncTitle": "Data",
+  "alertTitle": "Heads up!",
   "login": "Login",
   "dataLoginMessage": "To upload data you need to login:",
 
