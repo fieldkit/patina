@@ -127,6 +127,8 @@ class DataSyncPage extends StatelessWidget {
       Loggers.ui.i("data-sync: busy=$busy downloadTask=$downloadTask uploadTask=$uploadTask loginTasks=$loginTasks");
       return StationSyncStatus(
         station: station,
+        downloadTask: downloadTask,
+        uploadTask: uploadTask,
         onDownload: (!busy && downloadTask != null) ? () => onDownload(downloadTask) : null,
         onUpload: (!busy && uploadTask != null) ? () => onUpload(uploadTask) : null,
       );
@@ -212,6 +214,8 @@ class UpgradeRequiredWidget extends StatelessWidget {
 
 class StationSyncStatus extends StatelessWidget {
   final StationModel station;
+  final DownloadTask? downloadTask;
+  final UploadTask? uploadTask;
   final VoidCallback? onDownload;
   final VoidCallback? onUpload;
 
@@ -221,7 +225,13 @@ class StationSyncStatus extends StatelessWidget {
   bool get isDownloading => station.syncing?.download != null;
   bool get isUploading => station.syncing?.upload != null;
 
-  const StationSyncStatus({super.key, required this.station, required this.onDownload, required this.onUpload});
+  const StationSyncStatus(
+      {super.key,
+      required this.station,
+      required this.downloadTask,
+      required this.uploadTask,
+      required this.onDownload,
+      required this.onUpload});
 
   Widget _progress(BuildContext context) {
     if (isDownloading) {
@@ -243,14 +253,27 @@ class StationSyncStatus extends StatelessWidget {
     return UpgradeRequiredWidget(station: station);
   }
 
+  String downloadSubtitle(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final DownloadTask? task = downloadTask;
+    if (task == null) {
+      return localizations.syncWorking;
+    } else {
+      final int? first = task.first;
+      if (first != null) {
+        return localizations.readingsAvailableAndAlreadyHave(first, task.total - first);
+      } else {
+        return localizations.readingsAvailable(task.total);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
     final title = config.name;
-    final subtitle = isSyncing
-        ? localizations.syncPercentageComplete(station.syncing?.completed ?? 0)
-        : localizations.syncItemSubtitle(config.data.records);
+    final subtitle = isSyncing ? localizations.syncPercentageComplete(station.syncing?.completed ?? 0) : downloadSubtitle(context);
 
     return BorderedListItem(header: GenericListItemHeader(title: title, subtitle: subtitle), children: [_progress(context)]);
   }
