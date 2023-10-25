@@ -32,17 +32,56 @@ echo "ANDROID_NDK=path/to/ndk" >> ~/.gradle/gradle.properties
 
 ### RustFK
 
+By default, `rustfk` will be downloaded from git when building the native rust
+library for the application.
+
+If you're going to be making changes to the rust side of the application, it's
+handy to develop against a local working copy of the `rustfk` library.
+
+For most development you can build against the default git revision and no
+local copy is necessary.
+
 1. **Clone the Repository**:
 ```bash
 git clone https://github.com/fieldkit/rustfk
 ```
 
-2. **Integrate your Rust code**: Edit `api.rs` as needed. Afterwards, get the "just" task runner:
+2. **Depend on Local Version**
+Edit `native/Cargo.toml` and change:
+```
+[dependencies.discovery]
+git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
+rev = "<SOME HASH>"
+ 
+[dependencies.query]
+git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
+rev = "<SOME HASH>"
+ 
+[dependencies.store]
+git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
+rev = "<SOME HASH>"
+```
+
+To instead depend on your local copy:
+
+```
+[dependencies.discovery]
+path = "../rustfk/libs/discovery"
+ 
+[dependencies.query]
+path = "../rustfk/libs/query"
+ 
+[dependencies.store]
+path = "../rustfk/libs/store"
+
+```
+
+3. **Integrate your Rust code**: Edit `api.rs` as needed. Afterwards, get the "just" task runner:
 ```bash
 cargo install just
 ```
 
-3. **Generate Bridge Files**:
+4. **Generate Bridge Files**:
    First, ensure the codegen tool's version matches `flutter_rust_bridge` in `pubspec.yaml` and `flutter_rust_bridge` & `flutter_rust_bridge_macros` inside `native/Cargo.toml`.
 
 ```bash
