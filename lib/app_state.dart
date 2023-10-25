@@ -477,8 +477,16 @@ class UpgradeTask extends Task {
 class DownloadTaskFactory extends TaskFactory<DownloadTask> {
   List<NearbyStation> _nearby = List.empty();
   List<RecordArchive> _archives = List.empty();
+  final Map<String, int> _records = {};
 
   DownloadTaskFactory({required KnownStationsModel knownStations, required AppEventDispatcher dispatcher}) {
+    dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) {
+      _records[refreshed.field0.deviceId] = refreshed.field0.data.records;
+      _tasks.clear();
+      _tasks.addAll(create());
+      notifyListeners();
+    });
+
     dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
       _nearby = nearby.field0;
       _tasks.clear();
@@ -499,7 +507,10 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
     final archivesById = _archives.groupListsBy((a) => a.deviceId);
     for (final nearby in _nearby) {
       final int? first = archivesById[nearby.deviceId]?.map((archive) => archive.tail).reduce(max);
-      tasks.add(DownloadTask(deviceId: nearby.deviceId, first: first));
+      final int? total = _records[nearby.deviceId];
+      if (total != null) {
+        tasks.add(DownloadTask(deviceId: nearby.deviceId, total: total, first: first));
+      }
     }
     return tasks;
   }
@@ -507,13 +518,14 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
 
 class DownloadTask extends Task {
   final String deviceId;
+  final int total;
   final int? first;
 
-  DownloadTask({required this.deviceId, this.first});
+  DownloadTask({required this.deviceId, required this.total, this.first});
 
   @override
   String toString() {
-    return "DownloadTask($deviceId, $first)";
+    return "DownloadTask($deviceId, $first, $total)";
   }
 }
 
