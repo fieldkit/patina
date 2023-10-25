@@ -7,16 +7,20 @@ edition = "2021"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies.discovery]
-path = "../rustfk/libs/discovery"
+git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
+rev = "ab744b011dcf899ae133d8519e9e66e88b72bd65"
 
 [dependencies.query]
-path = "../rustfk/libs/query"
+git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
+rev = "ab744b011dcf899ae133d8519e9e66e88b72bd65"
 
 [dependencies.store]
-path = "../rustfk/libs/store"
+git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
+rev = "ab744b011dcf899ae133d8519e9e66e88b72bd65"
 
 [dependencies.sync]
-path = "../rustfk/libs/sync"
+git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
+rev = "ab744b011dcf899ae133d8519e9e66e88b72bd65"
 
 [dependencies]
 anyhow = "1"
