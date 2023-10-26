@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:data/data.dart';
 import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
+import 'package:protobuf/protobuf.dart';
 
 enum CurveType {
   linear,
@@ -207,6 +208,11 @@ class CurrentCalibration {
   }
 
   Uint8List toBytes() {
-    return toDataProtocol().writeToBuffer();
+    final proto.ModuleConfiguration config = toDataProtocol();
+    final buffer = config.writeToBuffer();
+    final delimitted = CodedBufferWriter();
+    delimitted.writeInt32NoTag(buffer.lengthInBytes);
+    delimitted.writeRawBytes(buffer);
+    return delimitted.toBuffer();
   }
 }

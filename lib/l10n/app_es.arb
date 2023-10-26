@@ -11,8 +11,9 @@
   "settingsTab": "Settings",
 
   "dataSyncTitle": "Data",
+  "alertTitle": "Heads up!",
   "login": "Login",
-  "dataLoginMessage": "To upload data you need to login.",
+  "dataLoginMessage": "To upload data you need to login:",
 
   "dataSyncTitle": "Data",
   "dataSyncButton": "Add a Station",
@@ -20,9 +21,13 @@
   "noStationsDescription": "You have no stations. Add a station to start collection data.",
   "stationScan": "Double tap to scan for stations.",
 
+  "locationDenied": "Location permission denied!",
+  "mapFullScreen": "Full Screen Map",
+
   "download": "Download",
   "upload": "Upload",
-  "syncItemSubtitle": "{readings} readings.",
+  "readingsAvailable": "{readings} readings can be downloaded.",
+  "readingsAvailableAndAlreadyHave": "Already have {alreadyHave} readings and {readings} more can be downloaded.",
   "syncProgressReadings": "Received {received} of {readings} readings.",
   "syncWorking": "Working...",
   "syncElapsed": "{elapsed} elapsed.",
@@ -97,5 +102,16 @@
   "confirmYes": "Yes",
   "confirmCancel": "Cancel",
 
-  "onboardingTitle": "Onboarding Instructions"
+  "onboardingTitle": "Onboarding Instructions",
+  "helpTitle": "Help",
+  "helpCheckList": "Pre-deployment Checklist",
+  "tutorialGuide": "Tutorial Guide",
+  "appVersion": "App Version",
+  "noUpdates": "No updates available",
+  "yesUpdates": "Tap for updates!",
+
+  "legalTitle": "Legal",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "licenses": "Licenses"
 }

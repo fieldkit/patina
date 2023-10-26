@@ -6,6 +6,7 @@ setup:
     cd flows && flutter pub get
 
 gen: setup
+    cargo install flutter_rust_bridge_codegen@1.82.1
     flutter_rust_bridge_codegen \
         -r native/src/api.rs \
         -d lib/gen/bridge_generated.dart \

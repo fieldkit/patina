@@ -161,7 +161,11 @@ fn wire_validate_tokens_impl(port_: MessagePort, tokens: impl Wire2Api<Tokens> +
         },
     )
 }
-fn wire_start_download_impl(port_: MessagePort, device_id: impl Wire2Api<String> + UnwindSafe) {
+fn wire_start_download_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+    first: impl Wire2Api<Option<u64>> + UnwindSafe,
+) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, TransferProgress, _>(
         WrapInfo {
             debug_name: "start_download",
@@ -170,7 +174,8 @@ fn wire_start_download_impl(port_: MessagePort, device_id: impl Wire2Api<String>
         },
         move || {
             let api_device_id = device_id.wire2api();
-            move |task_callback| start_download(api_device_id)
+            let api_first = first.wire2api();
+            move |task_callback| start_download(api_device_id, api_first)
         },
     )
 }
@@ -285,6 +290,11 @@ impl Wire2Api<i64> for i64 {
     }
 }
 
+impl Wire2Api<u64> for u64 {
+    fn wire2api(self) -> u64 {
+        self
+    }
+}
 impl Wire2Api<u8> for u8 {
     fn wire2api(self) -> u8 {
         self
@@ -527,6 +537,8 @@ impl support::IntoDart for RecordArchive {
         vec![
             self.device_id.into_into_dart().into_dart(),
             self.path.into_into_dart().into_dart(),
+            self.head.into_into_dart().into_dart(),
+            self.tail.into_into_dart().into_dart(),
         ]
         .into_dart()
     }

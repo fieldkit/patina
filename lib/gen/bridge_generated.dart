@@ -192,14 +192,16 @@ class NativeImpl implements Native {
       );
 
   Future<TransferProgress> startDownload(
-      {required String deviceId, dynamic hint}) {
+      {required String deviceId, int? first, dynamic hint}) {
     var arg0 = _platform.api2wire_String(deviceId);
+    var arg1 = _platform.api2wire_opt_box_autoadd_u64(first);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_start_download(port_, arg0),
+      callFfi: (port_) =>
+          _platform.inner.wire_start_download(port_, arg0, arg1),
       parseSuccessData: _wire2api_transfer_progress,
       parseErrorData: _wire2api_FrbAnyhowException,
       constMeta: kStartDownloadConstMeta,
-      argValues: [deviceId],
+      argValues: [deviceId, first],
       hint: hint,
     ));
   }
@@ -207,7 +209,7 @@ class NativeImpl implements Native {
   FlutterRustBridgeTaskConstMeta get kStartDownloadConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "start_download",
-        argNames: ["deviceId"],
+        argNames: ["deviceId", "first"],
       );
 
   Future<TransferProgress> startUpload(
@@ -603,11 +605,13 @@ class NativeImpl implements Native {
 
   RecordArchive _wire2api_record_archive(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return RecordArchive(
       deviceId: _wire2api_String(arr[0]),
       path: _wire2api_String(arr[1]),
+      head: _wire2api_i64(arr[2]),
+      tail: _wire2api_i64(arr[3]),
     );
   }
 

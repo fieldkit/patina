@@ -9,14 +9,7 @@ class BorderedListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            border: Border.all(
-              color: const Color.fromRGBO(212, 212, 212, 1),
-            ),
-            borderRadius: const BorderRadius.all(Radius.circular(5))),
-        child: Column(children: [header, ...children]));
+    return Card(margin: const EdgeInsets.all(16), child: Column(children: [header, ...children]));
   }
 }
 

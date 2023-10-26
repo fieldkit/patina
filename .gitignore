@@ -8,6 +8,7 @@
 .buildlog/
 .history
 .svn/
+.vscode/
 
 # IntelliJ related
 *.iml
@@ -54,3 +55,4 @@ rustfk
 /fk-data
 
 /resources/.env
+/lib/l10n/untranslated.txt

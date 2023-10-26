@@ -1,58 +1,86 @@
 stages:
+  - prepare
   - test
   - build
 
-image: "ghcr.io/cirruslabs/flutter:3.13.0"
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
-before_script:
-  # TODO Ugly
-  - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
-  # BEGIN Rust
-  - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup.sh
-  - sh rustup.sh -y
-  - export PATH="$HOME/.cargo/bin:$PATH"
-  - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
-  - cargo install cargo-ndk
-  # END Rust
-
-test:
-  stage: test
+prepare:image:
+  stage: prepare
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  image: docker:24.0.5
+  services:
+    - name: docker:24.0.5-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_CLI_EXPERIMENTAL: enabled
   script:
-    # apt-get update && apt-get install -y cmake ninja-build clang pkg-config
+    - echo $IMAGE_TAG
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker manifest inspect $IMAGE_TAG || true
+    - |
+      if ! docker manifest inspect $IMAGE_TAG; then
+        docker build -t $IMAGE_TAG .
+        docker push $IMAGE_TAG
+      fi
+
+test:
+  stage: test
+  needs: [prepare:image]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  image: $IMAGE_TAG
+  script:
+    - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
     - flutter test
 
 build:android:
   stage: build
+  needs: [test]
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  image: $IMAGE_TAG
   script:
-    # BEGIN Java NDK
-    - yes | sdkmanager 'ndk;25.2.9519653' && echo no-idea-why-this-is-needed
-    - mkdir -p ~/.gradle
-    - echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk" >> ~/.gradle/gradle.properties
-    # END Java NDK
-    - echo '# Defaults' > .env
-    - flutter build apk
+    - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
+    - flutter build apk && sccache --show-stats
   artifacts:
     name: "fk-patina-${CI_BUILD_REF_NAME}-${CI_BUILD_ID}"
     paths:
       - build/app/outputs/flutter-apk/*.apk
 
-build:ios:
-  stage: build
+.setup: &common
+  image: "ghcr.io/cirruslabs/flutter:3.13.0"
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  before_script:
+    # BEGIN Rust
+    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup.sh
+    - sh rustup.sh -y
+    - export PATH="$HOME/.cargo/bin:$PATH"
+    - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+    - cargo install cargo-ndk
+    # END Rust
+
+build:ios:
+  <<: *common
+  stage: build
+  needs: [test]
   tags:
     - mac-lab
   script:
+    - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
     # BEGIN Signing
     - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
     - export KEYCHAIN_PASSWORD=`cat .secure_files/secure-lab-mac-keychain-pw.txt`

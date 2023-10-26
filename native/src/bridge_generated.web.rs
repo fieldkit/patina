@@ -42,8 +42,8 @@ pub fn wire_validate_tokens(port_: MessagePort, tokens: JsValue) {
 }
 
 #[wasm_bindgen]
-pub fn wire_start_download(port_: MessagePort, device_id: String) {
-    wire_start_download_impl(port_, device_id)
+pub fn wire_start_download(port_: MessagePort, device_id: String, first: JsValue) {
+    wire_start_download_impl(port_, device_id, first)
 }
 
 #[wasm_bindgen]
@@ -132,18 +132,21 @@ impl Wire2Api<Option<Tokens>> for JsValue {
         (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
     }
 }
+
 impl Wire2Api<RecordArchive> for JsValue {
     fn wire2api(self) -> RecordArchive {
         let self_ = self.dyn_into::<JsArray>().unwrap();
         assert_eq!(
             self_.length(),
-            2,
-            "Expected 2 elements, got {}",
+            4,
+            "Expected 4 elements, got {}",
             self_.length()
         );
         RecordArchive {
             device_id: self_.get(0).wire2api(),
             path: self_.get(1).wire2api(),
+            head: self_.get(2).wire2api(),
+            tail: self_.get(3).wire2api(),
         }
     }
 }
@@ -212,6 +215,16 @@ impl Wire2Api<bool> for JsValue {
 }
 impl Wire2Api<i64> for JsValue {
     fn wire2api(self) -> i64 {
+        ::std::convert::TryInto::try_into(self.dyn_into::<js_sys::BigInt>().unwrap()).unwrap()
+    }
+}
+impl Wire2Api<Option<u64>> for JsValue {
+    fn wire2api(self) -> Option<u64> {
+        (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
+    }
+}
+impl Wire2Api<u64> for JsValue {
+    fn wire2api(self) -> u64 {
         ::std::convert::TryInto::try_into(self.dyn_into::<js_sys::BigInt>().unwrap()).unwrap()
     }
 }

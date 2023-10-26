@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../constants.dart';
 
 import 'package:fk/reader/widgets.dart';
 import 'package:flutter/material.dart';
@@ -147,7 +148,7 @@ class FlowScreenWidget extends StatelessWidget {
                       padding:
                           const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
                       backgroundColor:
-                          const Color(0xffce596b), // CSS background-color
+                          AppColors.primaryColor, // CSS background-color
                       shape: RoundedRectangleBorder(
                         borderRadius:
                             BorderRadius.circular(2.0), // CSS border-radius
