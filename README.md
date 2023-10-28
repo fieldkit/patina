@@ -46,47 +46,23 @@ local copy is necessary.
 git clone https://github.com/fieldkit/rustfk
 ```
 
-2. **Depend on Local Version**
-Edit `native/Cargo.toml` and change:
-```
-[dependencies.discovery]
-git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "<SOME HASH>"
- 
-[dependencies.query]
-git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "<SOME HASH>"
- 
-[dependencies.store]
-git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "<SOME HASH>"
-```
 
-To instead depend on your local copy:
-
-```
-[dependencies.discovery]
-path = "../rustfk/libs/discovery"
- 
-[dependencies.query]
-path = "../rustfk/libs/query"
- 
-[dependencies.store]
-path = "../rustfk/libs/store"
-
-```
-
-3. **Integrate your Rust code**: Edit `api.rs` as needed. Afterwards, get the "just" task runner:
+2. **Integrate your Rust code**: Edit `api.rs` as needed. Afterwards, get the "just" task runner:
 ```bash
 cargo install just
 ```
 
-4. **Generate Bridge Files**:
+3. **Generate Bridge Files**:
    First, ensure the codegen tool's version matches `flutter_rust_bridge` in `pubspec.yaml` and `flutter_rust_bridge` & `flutter_rust_bridge_macros` inside `native/Cargo.toml`.
 
 ```bash
 cargo install -f --version 1.82.1 flutter_rust_bridge_codegen
 ```
+
+4. **Run gen**
+
+```just gen```
+
 
 > 🔧 **Tip**: @henever you adjust the version in `pubspec.yaml`, ensure to run `flutter clean`.
 
