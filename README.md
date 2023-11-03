@@ -64,7 +64,7 @@ cargo install -f --version 1.82.1 flutter_rust_bridge_codegen
 ```just gen```
 
 
-> 🔧 **Tip**: @henever you adjust the version in `pubspec.yaml`, ensure to run `flutter clean`.
+> 🔧 **Tip**: Whenever you adjust the version in `pubspec.yaml`, ensure to run `flutter clean`.
 
 ### 🍏 iOS Troubleshooting
 
