@@ -99,6 +99,30 @@ Run the Flutter application with:
 flutter run
 ```
 
+## Errors about `libffi` architecture
+
+First of all, I'm so sorry this is happening to you because this was one of the
+most frustrating errors I've ever gotten. There's a clue in the build log,
+though, which is rare. It suggests this:
+
+```
+sudo gem uninstall ffi && sudo arch -x86_64 gem install ffi -- --enable-libffi-alloc
+```
+
+Somehwat related, if you find you get the opposite error, you may need to
+specify the architecture then as well, for example:
+
+```
+arch -x86_64 pod repo update
+```
+
+## Errors about `#import <FlutterMacOS/FlutterMacOS.h>`
+
+This is usually the `MACOS_DEPLOYMENT_TARGET` and friends.
+
+Double check the `post_install` step of the `Podfile` and be sure that
+`flutter_additional_macos_build_settings` is being called, or
+`flutter_additional_ios_build_settings` for `iOS`.
 
 ## 🧪 Running the Tests
 
