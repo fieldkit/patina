@@ -54,7 +54,7 @@ build:android:
     - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
     - flutter build apk && sccache --show-stats
   artifacts:
-    name: "fk-patina-${CI_BUILD_REF_NAME}-${CI_BUILD_ID}"
+    name: "fk-patina-android-${CI_COMMIT_REF_NAME}"
     paths:
       - build/app/outputs/flutter-apk/*.apk
 
@@ -94,6 +94,6 @@ build:ios:
     - flutter clean
     - flutter build ipa --export-method ad-hoc
   artifacts:
-    name: "fk-patina-${CI_BUILD_REF_NAME}-${CI_BUILD_ID}"
+    name: "fk-patina-ios-${CI_COMMIT_REF_NAME}"
     paths:
       - build/ios/ipa/*
