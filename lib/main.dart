@@ -9,6 +9,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:fk/settings/accounts_page.dart';
+import 'constants.dart';
 
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'app_state.dart';
@@ -70,6 +71,7 @@ Future<Configuration> _loadConfiguration() async {
 // Restoring this from the original Flutter designs after update
 
 final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
+  backgroundColor: AppColors.primaryColor,
   foregroundColor: Colors.white,
   minimumSize: const Size(88, 36),
   padding: const EdgeInsets.symmetric(horizontal: 16),
