@@ -1,6 +1,5 @@
 import 'package:fk/reader/screens.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'constants.dart';
 
@@ -11,8 +10,6 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-
     return WillPopScope(
         onWillPop: () async {
           onDone();
