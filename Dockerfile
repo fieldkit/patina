@@ -1,4 +1,4 @@
-FROM ghcr.io/cirruslabs/flutter:3.13.0 AS base
+FROM ghcr.io/cirruslabs/flutter:3.16.0 AS base
 
 RUN apt-get update && apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev && rm -rf /var/lib/apt/lists/*
 
