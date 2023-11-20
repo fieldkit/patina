@@ -2,7 +2,6 @@ stages:
   - prepare
   - test
   - build
-  - artifacts
 
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
@@ -58,15 +57,6 @@ build:android:
     name: "fk-patina-android-${CI_COMMIT_REF_NAME}"
     paths:
       - build/app/outputs/flutter-apk/*.apk
-
-artifacts:android:
-  stage: artifacts
-  needs: [build:android]
-  script:
-    - echo done
-  artifacts:
-    expose_as: "fk-android"
-    paths: ["build/app/outputs/flutter-apk/app-release.apk"]
 
 .setup: &common
   image: "ghcr.io/cirruslabs/flutter:3.16.0"
