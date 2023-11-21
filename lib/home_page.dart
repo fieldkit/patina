@@ -48,37 +48,37 @@ class _HomePageState extends State<HomePage> {
     _checkIfFirstTimeToday();
   }
 
-  // _checkIfFirstTimeToday() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final prefsHelper = PrefsHelper(prefs);
-
-  //   DateTime? lastOpened = prefsHelper.getLastOpened();
-  //   DateTime today = DateTime.now();
-
-  //   if (lastOpened == null ||
-  //       lastOpened.day != today.day ||
-  //       lastOpened.month != today.month ||
-  //       lastOpened.year != today.year) {
-  //     prefsHelper.setLastOpened(today);
-  //     setState(() {
-  //       _showWelcome = true;
-  //     });
-  //   }
-  // }
-
-  // For testing welcome screen
-
   _checkIfFirstTimeToday() async {
     final prefs = await SharedPreferences.getInstance();
     final prefsHelper = PrefsHelper(prefs);
 
+    DateTime? lastOpened = prefsHelper.getLastOpened();
     DateTime today = DateTime.now();
-    prefsHelper.setLastOpened(today);
 
-    setState(() {
-      _showWelcome = true; // Always show welcome page when the app opens
-    });
+    if (lastOpened == null ||
+        lastOpened.day != today.day ||
+        lastOpened.month != today.month ||
+        lastOpened.year != today.year) {
+      prefsHelper.setLastOpened(today);
+      setState(() {
+        _showWelcome = true;
+      });
+    }
   }
+
+  // For testing welcome screen
+
+  // _checkIfFirstTimeToday() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final prefsHelper = PrefsHelper(prefs);
+
+  //   DateTime today = DateTime.now();
+  //   prefsHelper.setLastOpened(today);
+
+  //   setState(() {
+  //     _showWelcome = true; // Always show welcome page when the app opens
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
