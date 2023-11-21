@@ -48,22 +48,36 @@ class _HomePageState extends State<HomePage> {
     _checkIfFirstTimeToday();
   }
 
+  // _checkIfFirstTimeToday() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final prefsHelper = PrefsHelper(prefs);
+
+  //   DateTime? lastOpened = prefsHelper.getLastOpened();
+  //   DateTime today = DateTime.now();
+
+  //   if (lastOpened == null ||
+  //       lastOpened.day != today.day ||
+  //       lastOpened.month != today.month ||
+  //       lastOpened.year != today.year) {
+  //     prefsHelper.setLastOpened(today);
+  //     setState(() {
+  //       _showWelcome = true;
+  //     });
+  //   }
+  // }
+
+  // For testing welcome screen
+
   _checkIfFirstTimeToday() async {
     final prefs = await SharedPreferences.getInstance();
     final prefsHelper = PrefsHelper(prefs);
 
-    DateTime? lastOpened = prefsHelper.getLastOpened();
     DateTime today = DateTime.now();
+    prefsHelper.setLastOpened(today);
 
-    if (lastOpened == null ||
-        lastOpened.day != today.day ||
-        lastOpened.month != today.month ||
-        lastOpened.year != today.year) {
-      prefsHelper.setLastOpened(today);
-      setState(() {
-        _showWelcome = true;
-      });
-    }
+    setState(() {
+      _showWelcome = true; // Always show welcome page when the app opens
+    });
   }
 
   @override
@@ -129,59 +143,69 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF2C3E50),
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Image.asset('resources/images/Icon_Station_inactive2.png',
-                width: 24, height: 24),
-            activeIcon: Image.asset('resources/images/Icon_Station_active2.png',
-                width: 24, height: 24),
-            label: AppLocalizations.of(context)!.stationsTab,
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('resources/images/Icon_DataSync_inactive2.png',
-                width: 24, height: 24),
-            activeIcon: Image.asset(
-                'resources/images/Icon_DataSync_active2.png',
-                width: 24,
-                height: 24),
-            label: AppLocalizations.of(context)!.dataSyncTab,
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('resources/images/Icon_Settings_inactive2.png',
-                width: 24, height: 24),
-            activeIcon: Image.asset(
-                'resources/images/Icon_Settings_active2.png',
-                width: 24,
-                height: 24),
-            label: AppLocalizations.of(context)!.settingsTab,
-          ),
-        ],
-        currentIndex: _pageIndex,
-        onTap: (int index) {
-          if (_pageIndex == index) {
-            final List<GlobalKey<NavigatorState>> keys = [
-              stationsNavigatorKey,
-              dataNavigatorKey,
-              settingsNavigatorKey
-            ];
-            final NavigatorState? navigator = keys[index].currentState;
-            if (navigator != null) {
-              while (navigator.canPop()) {
-                navigator.pop();
-              }
-            }
-          } else {
-            setState(
-              () {
-                _pageIndex = index;
+      bottomNavigationBar: _showWelcome
+          ? null
+          : BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              selectedItemColor: const Color(0xFF2C3E50),
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Image.asset(
+                      'resources/images/Icon_Station_inactive2.png',
+                      width: 24,
+                      height: 24),
+                  activeIcon: Image.asset(
+                      'resources/images/Icon_Station_active2.png',
+                      width: 24,
+                      height: 24),
+                  label: AppLocalizations.of(context)!.stationsTab,
+                ),
+                BottomNavigationBarItem(
+                  icon: Image.asset(
+                      'resources/images/Icon_DataSync_inactive2.png',
+                      width: 24,
+                      height: 24),
+                  activeIcon: Image.asset(
+                      'resources/images/Icon_DataSync_active2.png',
+                      width: 24,
+                      height: 24),
+                  label: AppLocalizations.of(context)!.dataSyncTab,
+                ),
+                BottomNavigationBarItem(
+                  icon: Image.asset(
+                      'resources/images/Icon_Settings_inactive2.png',
+                      width: 24,
+                      height: 24),
+                  activeIcon: Image.asset(
+                      'resources/images/Icon_Settings_active2.png',
+                      width: 24,
+                      height: 24),
+                  label: AppLocalizations.of(context)!.settingsTab,
+                ),
+              ],
+              currentIndex: _pageIndex,
+              onTap: (int index) {
+                if (_pageIndex == index) {
+                  final List<GlobalKey<NavigatorState>> keys = [
+                    stationsNavigatorKey,
+                    dataNavigatorKey,
+                    settingsNavigatorKey
+                  ];
+                  final NavigatorState? navigator = keys[index].currentState;
+                  if (navigator != null) {
+                    while (navigator.canPop()) {
+                      navigator.pop();
+                    }
+                  }
+                } else {
+                  setState(
+                    () {
+                      _pageIndex = index;
+                    },
+                  );
+                }
               },
-            );
-          }
-        },
-      ),
+            ),
     );
   }
 }
