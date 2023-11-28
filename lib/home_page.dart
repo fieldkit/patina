@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
@@ -49,36 +50,38 @@ class _HomePageState extends State<HomePage> {
   }
 
   _checkIfFirstTimeToday() async {
-    final prefs = await SharedPreferences.getInstance();
-    final prefsHelper = PrefsHelper(prefs);
+    await dotenv.load(fileName: ".env");
+    bool showWelcomeScreen = dotenv.env['SHOW_WELCOME_SCREEN'] == 'true';
+    print(dotenv.env['SHOW_WELCOME_SCREEN']);
+    if (showWelcomeScreen) {
+      // For testing welcome screen
+      final prefs = await SharedPreferences.getInstance();
+      final prefsHelper = PrefsHelper(prefs);
 
-    DateTime? lastOpened = prefsHelper.getLastOpened();
-    DateTime today = DateTime.now();
-
-    if (lastOpened == null ||
-        lastOpened.day != today.day ||
-        lastOpened.month != today.month ||
-        lastOpened.year != today.year) {
+      DateTime today = DateTime.now();
       prefsHelper.setLastOpened(today);
+
       setState(() {
-        _showWelcome = true;
+        _showWelcome = true; // Always show welcome page when the app opens
       });
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      final prefsHelper = PrefsHelper(prefs);
+
+      DateTime? lastOpened = prefsHelper.getLastOpened();
+      DateTime today = DateTime.now();
+
+      if (lastOpened == null ||
+          lastOpened.day != today.day ||
+          lastOpened.month != today.month ||
+          lastOpened.year != today.year) {
+        prefsHelper.setLastOpened(today);
+        setState(() {
+          _showWelcome = true;
+        });
+      }
     }
   }
-
-  // For testing welcome screen
-
-  // _checkIfFirstTimeToday() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final prefsHelper = PrefsHelper(prefs);
-
-  //   DateTime today = DateTime.now();
-  //   prefsHelper.setLastOpened(today);
-
-  //   setState(() {
-  //     _showWelcome = true; // Always show welcome page when the app opens
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
