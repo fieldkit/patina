@@ -68,7 +68,7 @@ dependencies:
     path: './flows'
   fk_data_protocol:
     git:
-      url: https://github.com/fieldkit/data-protocol.git
+      url: https://gitlab.com/fieldkit/libraries/data-protocol.git
       path: dart
   logger: ^1.4.0
   flutter_dotenv: ^5.1.0
