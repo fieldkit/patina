@@ -63,7 +63,8 @@ dependencies:
   geolocator: ^9.0.2
   async: ^2.11.0
   calibration:
-    path: './calibration'
+    git:
+      url: https://gitlab.com/fieldkit/libraries/caldor.git
   flows:
     path: './flows'
   fk_data_protocol:
