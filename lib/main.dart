@@ -9,6 +9,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:fk/settings/accounts_page.dart';
+import 'constants.dart';
 
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'app_state.dart';
@@ -27,7 +28,8 @@ Future<String> _getStoragePath() async {
   return location.path;
 }
 
-Future<void> _startNative(Configuration config, AppEventDispatcher dispatcher) async {
+Future<void> _startNative(
+    Configuration config, AppEventDispatcher dispatcher) async {
   api.createLogSink().listen((logRow) {
     var display = logRow.trim();
     Loggers.bridge.i(display);
@@ -60,12 +62,34 @@ Future<Configuration> _loadConfiguration() async {
   await dotenv.load(fileName: "resources/.env", isOptional: true);
 
   final storagePath = await _getStoragePath();
-  final portalBaseUrl = dotenv.env['FK_PORTAL_URL'] ?? "https://api.fieldkit.org";
+  final portalBaseUrl =
+      dotenv.env['FK_PORTAL_URL'] ?? "https://api.fieldkit.org";
 
   return Configuration(storagePath: storagePath, portalBaseUrl: portalBaseUrl);
 }
 
-Future<AppEnv> initializeCurrentEnv(Configuration config, AppEventDispatcher dispatcher) async {
+// Restoring this from the original Flutter designs after update
+
+final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
+  backgroundColor: AppColors.primaryColor,
+  foregroundColor: Colors.white,
+  minimumSize: const Size(88, 36),
+  padding: const EdgeInsets.symmetric(horizontal: 16),
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(2)),
+  ),
+);
+
+final ButtonStyle flatButtonStyle = TextButton.styleFrom(
+  minimumSize: const Size(88, 36),
+  padding: const EdgeInsets.symmetric(horizontal: 16),
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(2)),
+  ),
+);
+
+Future<AppEnv> initializeCurrentEnv(
+    Configuration config, AppEventDispatcher dispatcher) async {
   Loggers.initialize(config.storagePath);
 
   logger.i("Storage: ${config.storagePath}");
@@ -121,10 +145,10 @@ class _OurAppState extends State<OurApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ValueListenableProvider.value(value: widget.env.appState),
-        ],
-        child: ProvideAccountsWidget(
+      providers: [
+        ValueListenableProvider.value(value: widget.env.appState),
+      ],
+      child: ProvideAccountsWidget(
         child: MaterialApp(
           onGenerateTitle: (BuildContext context) =>
               AppLocalizations.of(context)!.fieldKit,
@@ -140,31 +164,31 @@ class _OurAppState extends State<OurApp> {
           ],
           title: 'FieldKit',
           theme: ThemeData(
+            textButtonTheme: TextButtonThemeData(style: flatButtonStyle),
+            elevatedButtonTheme:
+                ElevatedButtonThemeData(style: raisedButtonStyle),
             primaryColor: Colors.white, // changes the default AppBar color
             hintColor: Colors.grey, // changes the default color of many widgets
             brightness:
                 Brightness.light, // changes the AppBar content color to dark
             primaryTextTheme: const TextTheme(
               titleLarge: TextStyle(
-                color: Color.fromARGB(255, 48, 44, 44), 
+                color: Color.fromARGB(255, 48, 44, 44),
               ),
             ),
             appBarTheme: const AppBarTheme(
               centerTitle: true,
               iconTheme: IconThemeData(
-                color: Color.fromARGB(255, 44, 37, 37), 
+                color: Color.fromARGB(255, 44, 37, 37),
               ),
               titleTextStyle: TextStyle(
-                color: Color.fromARGB(255, 48, 44, 44), 
+                color: Color.fromARGB(255, 48, 44, 44),
                 fontWeight: FontWeight.w500,
                 fontSize: 17,
               ),
               shape: Border(
-                bottom: BorderSide(
-                  color: Color.fromARGB(255, 221, 221, 221),
-                  width: 2
-                )
-              ),
+                  bottom: BorderSide(
+                      color: Color.fromARGB(255, 221, 221, 221), width: 2)),
               backgroundColor: Colors.transparent,
               elevation: 0,
             ),
@@ -175,7 +199,6 @@ class _OurAppState extends State<OurApp> {
         ),
       ),
     );
-
   }
 }
 

@@ -46,49 +46,25 @@ local copy is necessary.
 git clone https://github.com/fieldkit/rustfk
 ```
 
-2. **Depend on Local Version**
-Edit `native/Cargo.toml` and change:
-```
-[dependencies.discovery]
-git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "<SOME HASH>"
- 
-[dependencies.query]
-git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "<SOME HASH>"
- 
-[dependencies.store]
-git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "<SOME HASH>"
-```
 
-To instead depend on your local copy:
-
-```
-[dependencies.discovery]
-path = "../rustfk/libs/discovery"
- 
-[dependencies.query]
-path = "../rustfk/libs/query"
- 
-[dependencies.store]
-path = "../rustfk/libs/store"
-
-```
-
-3. **Integrate your Rust code**: Edit `api.rs` as needed. Afterwards, get the "just" task runner:
+2. **Integrate your Rust code**: Edit `api.rs` as needed. Afterwards, get the "just" task runner:
 ```bash
 cargo install just
 ```
 
-4. **Generate Bridge Files**:
+3. **Generate Bridge Files**:
    First, ensure the codegen tool's version matches `flutter_rust_bridge` in `pubspec.yaml` and `flutter_rust_bridge` & `flutter_rust_bridge_macros` inside `native/Cargo.toml`.
 
 ```bash
 cargo install -f --version 1.82.1 flutter_rust_bridge_codegen
 ```
 
-> 🔧 **Tip**: @henever you adjust the version in `pubspec.yaml`, ensure to run `flutter clean`.
+4. **Run gen**
+
+```just gen```
+
+
+> 🔧 **Tip**: Whenever you adjust the version in `pubspec.yaml`, ensure to run `flutter clean`.
 
 ### 🍏 iOS Troubleshooting
 
@@ -123,6 +99,30 @@ Run the Flutter application with:
 flutter run
 ```
 
+## Errors about `libffi` architecture
+
+First of all, I'm so sorry this is happening to you because this was one of the
+most frustrating errors I've ever gotten. There's a clue in the build log,
+though, which is rare. It suggests this:
+
+```
+sudo gem uninstall ffi && sudo arch -x86_64 gem install ffi -- --enable-libffi-alloc
+```
+
+Somehwat related, if you find you get the opposite error, you may need to
+specify the architecture then as well, for example:
+
+```
+arch -x86_64 pod repo update
+```
+
+## Errors about `#import <FlutterMacOS/FlutterMacOS.h>`
+
+This is usually the `MACOS_DEPLOYMENT_TARGET` and friends.
+
+Double check the `post_install` step of the `Podfile` and be sure that
+`flutter_additional_macos_build_settings` is being called, or
+`flutter_additional_ios_build_settings` for `iOS`.
 
 ## 🧪 Running the Tests
 
