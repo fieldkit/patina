@@ -62,13 +62,14 @@ dependencies:
   url_launcher: ^6.1.11
   geolocator: ^9.0.2
   async: ^2.11.0
-  calibration:
-    path: './calibration'
+  caldor:
+    git:
+      url: https://gitlab.com/fieldkit/libraries/caldor.git
   flows:
     path: './flows'
   fk_data_protocol:
     git:
-      url: https://github.com/fieldkit/data-protocol.git
+      url: https://gitlab.com/fieldkit/libraries/data-protocol.git
       path: dart
   logger: ^1.4.0
   flutter_dotenv: ^5.1.0
