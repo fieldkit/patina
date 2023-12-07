@@ -68,12 +68,15 @@
   "settingsTitle": "Settings",
 
   "settingsGeneral": "General",
-  "settingsNetwork": "Network",
+  "settingsNetworks": "Networks",
   "settingsFirmware": "Firmware",
   "settingsModules": "Modules",
   "settingsWifi": "WiFi",
   "settingsLora": "LoRa",
   "settingsAutomaticUpload": "Automatic Upload",
+  "endDeployment": "End Deployment",
+  "forgetStation": "Forget Station",
+  "settingsAutomaticUpload": "Automatic Upload Settings",
 
   "firmwareTitle": "Firmware",
   "firmwareUpgrade": "Upgrade",
