@@ -42,7 +42,18 @@ class ConfigureStationPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.settingsTitle),
-        // subtitle: Text(config.name),
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: Size.zero,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 0),
+              Text(config.name),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(0),
