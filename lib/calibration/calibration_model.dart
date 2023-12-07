@@ -1,4 +1,4 @@
-import 'package:calibration/calibration.dart';
+import 'package:caldor/calibration.dart';
 import 'package:flutter/foundation.dart';
 
 import '../app_state.dart';

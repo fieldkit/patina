@@ -30,20 +30,6 @@ class SettingsTab extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.book), // Icon for Onboarding
-            title: Text(AppLocalizations.of(context)!.onboardingTitle),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProvideContentFlowsWidget(
-                      child: QuickFlow(start: StartFlow(name: "onboarding"))),
-                ),
-              );
-            },
-          ),
-          const Divider(),
-          ListTile(
             leading: const Icon(Icons.question_mark), // Icon for Help
             title: Text(AppLocalizations.of(context)!.helpTitle),
             onTap: () {

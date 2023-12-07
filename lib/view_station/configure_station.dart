@@ -41,54 +41,74 @@ class ConfigureStationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(config.name),
+        title: Text(AppLocalizations.of(context)!.settingsTitle),
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: Size.zero,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 0),
+              Text(config.name),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
       ),
-      body: ListView(children: [
-        /*
+      body: ListView(
+        padding: const EdgeInsets.all(0),
+        children: [
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsGeneral),
             onTap: () {},
           ),
-        const Divider(),
-        */
-        ListTile(
-          title: Text(AppLocalizations.of(context)!.settingsNetwork),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ConfigureNetworksPage(
-                  station: station,
+          const Divider(),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.settingsNetworks),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ConfigureNetworksPage(
+                    station: station,
+                  ),
                 ),
-              ),
-            );
-          },
-        ),
-        const Divider(),
-        ConfigureAutomaticUploadListItem(station: station),
-        const Divider(),
-        ListTile(
-          title: Text(AppLocalizations.of(context)!.settingsFirmware),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => StationFirmwarePage(
-                  station: station,
+              );
+            },
+          ),
+          const Divider(),
+          ConfigureAutomaticUploadListItem(station: station),
+          const Divider(),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.settingsFirmware),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StationFirmwarePage(
+                    station: station,
+                  ),
                 ),
-              ),
-            );
-          },
-        ),
-        /*
-        const Divider(),
-        ListTile(
-          title: Text(AppLocalizations.of(context)!.settingsModules),
-          onTap: () {},
-        ),
-        const Divider(),
-        */
-      ]),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.settingsModules),
+            onTap: () {},
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.endDeployment),
+            onTap: () {},
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.forgetStation),
+            onTap: () {},
+          ),
+        ],
+      ),
     );
   }
 }
@@ -184,7 +204,8 @@ class ConfigureAutomaticUploadPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final StationConfiguration configuration = context.watch<AppState>().configuration;
+    final StationConfiguration configuration =
+        context.watch<AppState>().configuration;
 
     Loggers.ui.i("station $station $config");
 
