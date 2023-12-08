@@ -47,7 +47,12 @@ class FirmwareItem extends StatelessWidget {
   final VoidCallback onUpgrade;
   final bool canUpgrade;
 
-  const FirmwareItem({super.key, required this.comparison, required this.operations, required this.onUpgrade, required this.canUpgrade});
+  const FirmwareItem(
+      {super.key,
+      required this.comparison,
+      required this.operations,
+      required this.onUpgrade,
+      required this.canUpgrade});
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +62,8 @@ class FirmwareItem extends StatelessWidget {
 
     GenericListItemHeader header() {
       if (comparison.newer) {
-        return GenericListItemHeader(title: title, subtitle: formatter.format(comparison.time));
+        return GenericListItemHeader(
+            title: title, subtitle: formatter.format(comparison.time));
       } else {
         return GenericListItemHeader(
           title: title,
@@ -68,14 +74,20 @@ class FirmwareItem extends StatelessWidget {
       }
     }
 
-    pad(child) => Container(width: double.infinity, padding: const EdgeInsets.all(10), child: child);
+    pad(child) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(10),
+        child: child);
 
     return ExpandableBorderedListItem(
         header: header(),
         expanded: comparison.newer || operations.isNotEmpty,
         children: [
-          ElevatedButton(onPressed: canUpgrade ? onUpgrade : null, child: Text(localizations.firmwareUpgrade)),
-          ...operations.map((operation) => UpgradeProgressWidget(operation: operation))
+          ElevatedButton(
+              onPressed: canUpgrade ? onUpgrade : null,
+              child: Text(localizations.firmwareUpgrade)),
+          ...operations
+              .map((operation) => UpgradeProgressWidget(operation: operation))
         ].map((child) => pad(child)).toList());
   }
 }
@@ -94,12 +106,24 @@ class StationFirmwarePage extends StatelessWidget {
     final busy = stationOps.isBusy(config.deviceId);
     final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
     final availableFirmware = context.watch<AvailableFirmwareModel>();
+    const isFirmwareUpToDate =
+        false; // TODO: Replace with actual condition to check firmware status
+    final firmwareVersion = config.firmware.label;
+
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    final DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(config.firmware.time);
+    final String firmwareReleaseDate = formatter.format(dateTime);
+
     final items = availableFirmware.firmware
         .where((firmware) => firmware.module == "fk-core")
         .map((firmware) => FirmwareItem(
             comparison: FirmwareComparison.compare(firmware, config.firmware),
-            operations: operations.where((op) => op.firmwareId == firmware.id).toList(),
-            canUpgrade: station.connected && !busy && operations.where((op) => op.busy).isEmpty,
+            operations:
+                operations.where((op) => op.firmwareId == firmware.id).toList(),
+            canUpgrade: station.connected &&
+                !busy &&
+                operations.where((op) => op.busy).isEmpty,
             onUpgrade: () async {
               await availableFirmware.upgrade(config.deviceId, firmware);
             }))
@@ -107,10 +131,63 @@ class StationFirmwarePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.firmwareTitle),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(localizations.firmwareTitle),
+            Text(station.deviceId,
+                style: const TextStyle(fontSize: 14),
+          ],
+        ),
       ),
       body: ListView(
-        children: items,
+        children: [
+          Card(
+            child: ListTile(
+              leading: Icon(
+                  station.connected
+                      ? Icons.signal_wifi_4_bar
+                      : Icons.signal_wifi_off,
+                  color: station.connected ? Colors.blue : Colors.grey),
+              title: Text(station.deviceId),
+              subtitle: Text("Firmware version $firmwareVersion"),
+              trailing: Text(station.connected
+                  ? AppLocalizations.of(context)!.firmwareConnected
+                  : AppLocalizations.of(context)!.firmwareNotConnected),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: Text(isFirmwareUpToDate
+                  ? AppLocalizations.of(context)!.firmwareUpdated
+                  : AppLocalizations.of(context)!.firmwareNotUpdated),
+              subtitle: Text("Version released $firmwareReleaseDate"),
+              trailing: ElevatedButton(
+                onPressed: isFirmwareUpToDate
+                    ? null
+                    : () {
+                        // TODO: Add logic to initiate firmware update
+                      },
+                child: Text(AppLocalizations.of(context)!.firmwareUpdate),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              // TODO: Add logic to check for new firmware
+            },
+            style: const ButtonStyle(),
+            child: Text(AppLocalizations.of(context)!.firmwareCheck,
+                style: const TextStyle(color: Colors.red)),
+          ),
+          Card(
+            color: Colors.grey,
+            child: ListTile(
+                leading: const Icon(Icons.lightbulb_outline),
+                title: Text(AppLocalizations.of(context)!.quickTip)),
+          ),
+          ...items
+        ],
       ),
     );
   }
