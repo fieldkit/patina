@@ -48,11 +48,13 @@ class ViewStationPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ConfigureStationRoute(deviceId: station.deviceId),
+                    builder: (context) =>
+                        ConfigureStationRoute(deviceId: station.deviceId),
                   ),
                 );
               },
-              child: Text(AppLocalizations.of(context)!.configureButton, style: const TextStyle(color: Colors.white)))
+              child: Text(AppLocalizations.of(context)!.configureButton,
+                  style: const TextStyle(color: Colors.white)))
         ],
       ),
       body: ListView(children: [
@@ -86,7 +88,8 @@ class HighLevelsDetails extends StatelessWidget {
     }).toList();
 
     var circle = Container(
-        decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
+        decoration:
+            const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
         alignment: Alignment.center,
         child: const Text(
           "00:00:00",
@@ -104,11 +107,14 @@ class HighLevelsDetails extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   ListTile(
-                      leading: Image.asset("resources/images/battery/normal_40.png", cacheWidth: 16),
+                      leading: Image.asset(
+                          "resources/images/battery/normal_40.png",
+                          cacheWidth: 16),
                       title: Text(AppLocalizations.of(context)!.batteryLife),
                       subtitle: Text("$battery%")),
                   ListTile(
-                      leading: Image.asset("resources/images/memory/icon.png", cacheWidth: 16),
+                      leading: Image.asset("resources/images/memory/icon.png",
+                          cacheWidth: 16),
                       title: Text(AppLocalizations.of(context)!.memoryUsage),
                       subtitle: Text("${bytesUsed}b of 512MB")),
                 ],
@@ -117,7 +123,9 @@ class HighLevelsDetails extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(10),
           width: double.infinity,
-          child: ElevatedButton(onPressed: () {}, child: Text(AppLocalizations.of(context)!.deployButton)),
+          child: ElevatedButton(
+              onPressed: () {},
+              child: Text(AppLocalizations.of(context)!.deployButton)),
         ),
         Column(children: modules)
       ],

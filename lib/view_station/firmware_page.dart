@@ -135,8 +135,10 @@ class StationFirmwarePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(localizations.firmwareTitle),
-            Text(station.deviceId,
-                style: const TextStyle(fontSize: 14),
+            Text(
+              station.deviceId,
+              style: const TextStyle(fontSize: 14),
+            ),
           ],
         ),
       ),
