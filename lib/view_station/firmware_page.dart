@@ -136,7 +136,7 @@ class StationFirmwarePage extends StatelessWidget {
           children: [
             Text(localizations.firmwareTitle),
             Text(
-              station.deviceId,
+              station.config!.name,
               style: const TextStyle(fontSize: 14),
             ),
           ],
@@ -146,16 +146,19 @@ class StationFirmwarePage extends StatelessWidget {
         children: [
           Card(
             child: ListTile(
-              leading: Icon(
-                  station.connected
-                      ? Icons.signal_wifi_4_bar
-                      : Icons.signal_wifi_off,
-                  color: station.connected ? Colors.blue : Colors.grey),
-              title: Text(station.deviceId),
+              leading: Image(
+                  image: station.connected
+                      ? const AssetImage(
+                          "resources/images/Icon_Station_Connected.png")
+                      : const AssetImage(
+                          "resources/images/Icon_Station_Not_Connected.png")),
+              title: Text(station.config!.name),
               subtitle: Text("Firmware version $firmwareVersion"),
-              trailing: Text(station.connected
-                  ? AppLocalizations.of(context)!.firmwareConnected
-                  : AppLocalizations.of(context)!.firmwareNotConnected),
+              trailing: Text(
+                  station.connected
+                      ? AppLocalizations.of(context)!.firmwareConnected
+                      : AppLocalizations.of(context)!.firmwareNotConnected,
+                  style: const TextStyle(fontSize: 14)),
             ),
           ),
           Card(
