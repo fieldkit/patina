@@ -185,16 +185,17 @@ class StationFirmwarePage extends StatelessWidget {
             onPressed: () {
               // TODO: Add logic to check for new firmware
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.grey),
+            style: TextButton.styleFrom(
+                foregroundColor: Color.fromARGB(255, 53, 49, 49)),
             child: Text(AppLocalizations.of(context)!.firmwareCheck,
                 style: const TextStyle(color: Colors.red)),
           ),
           Card(
-            color: Colors.grey,
-            child: ListTile(
-                leading: const Icon(Icons.lightbulb_outline),
-                title: Text(AppLocalizations.of(context)!.quickTip)),
-          ),
+              color: Color.fromARGB(255, 252, 252, 252),
+              child: ListTile(
+                  leading: const Icon(Icons.lightbulb_outline),
+                  title: Text(AppLocalizations.of(context)!.quickTip),
+                  subtitle: Text(AppLocalizations.of(context)!.firmwareTip))),
           ...items
         ],
       ),
