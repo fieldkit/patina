@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../constants.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../gen/ffi.dart';
@@ -145,7 +146,9 @@ class StationFirmwarePage extends StatelessWidget {
       body: ListView(
         children: [
           Card(
+            shadowColor: Colors.white,
             child: ListTile(
+              tileColor: Colors.white,
               leading: SizedBox(
                 width: 48.0, // Adjust the width as needed
                 height: 48.0, // Adjust the height as needed
@@ -167,7 +170,9 @@ class StationFirmwarePage extends StatelessWidget {
             ),
           ),
           Card(
+            shadowColor: Colors.white,
             child: ListTile(
+                tileColor: Colors.white,
                 title: Text(isFirmwareUpToDate
                     ? AppLocalizations.of(context)!.firmwareUpdated
                     : AppLocalizations.of(context)!.firmwareNotUpdated),
@@ -186,12 +191,13 @@ class StationFirmwarePage extends StatelessWidget {
               // TODO: Add logic to check for new firmware
             },
             style: TextButton.styleFrom(
-                foregroundColor: Color.fromARGB(255, 53, 49, 49)),
+                foregroundColor: const Color.fromARGB(255, 53, 49, 49),
+                backgroundColor: const Color.fromARGB(255, 252, 252, 252)),
             child: Text(AppLocalizations.of(context)!.firmwareCheck,
-                style: const TextStyle(color: Colors.red)),
+                style: const TextStyle(color: AppColors.primaryColor)),
           ),
           Card(
-              color: Color.fromARGB(255, 252, 252, 252),
+              color: const Color.fromARGB(255, 252, 252, 252),
               child: ListTile(
                   leading: const Icon(Icons.lightbulb_outline),
                   title: Text(AppLocalizations.of(context)!.quickTip),
