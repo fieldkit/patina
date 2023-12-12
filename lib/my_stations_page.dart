@@ -126,11 +126,14 @@ class StationCard extends StatelessWidget {
     final operations =
         context.watch<StationOperations>().getBusy<Operation>(config.deviceId);
     final localizations = AppLocalizations.of(context)!;
-    final icon = Image(
-      image: AssetImage(station.connected
-          ? "resources/images/Icon_Station_Connected.png"
-          : "resources/images/Icon_Station_Not_Connected.png"),
-    );
+    final icon = SizedBox(
+        width: 54.0, // Adjust the width as needed
+        height: 54.0, // Adjust the height as needed
+        child: Image(
+          image: AssetImage(station.connected
+              ? "resources/images/Icon_Station_Connected.png"
+              : "resources/images/Icon_Station_Not_Connected.png"),
+        ));
     final tinyOperations =
         operations.map((op) => TinyOperation(operation: op)).toList();
     final subtitle = operations.isEmpty

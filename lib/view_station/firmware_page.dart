@@ -146,12 +146,17 @@ class StationFirmwarePage extends StatelessWidget {
         children: [
           Card(
             child: ListTile(
-              leading: Image(
-                  image: station.connected
-                      ? const AssetImage(
-                          "resources/images/Icon_Station_Connected.png")
-                      : const AssetImage(
-                          "resources/images/Icon_Station_Not_Connected.png")),
+              leading: SizedBox(
+                width: 48.0, // Adjust the width as needed
+                height: 48.0, // Adjust the height as needed
+                child: Image(
+                    image: station.connected
+                        ? const AssetImage(
+                            "resources/images/Icon_Station_Connected.png")
+                        : const AssetImage(
+                            "resources/images/Icon_Station_Not_Connected.png",
+                          )),
+              ),
               title: Text(station.config!.name),
               subtitle: Text("Firmware version $firmwareVersion"),
               trailing: Text(
@@ -163,25 +168,24 @@ class StationFirmwarePage extends StatelessWidget {
           ),
           Card(
             child: ListTile(
-              title: Text(isFirmwareUpToDate
-                  ? AppLocalizations.of(context)!.firmwareUpdated
-                  : AppLocalizations.of(context)!.firmwareNotUpdated),
-              subtitle: Text("Version released $firmwareReleaseDate"),
-              trailing: ElevatedButton(
-                onPressed: isFirmwareUpToDate
-                    ? null
-                    : () {
-                        // TODO: Add logic to initiate firmware update
-                      },
-                child: Text(AppLocalizations.of(context)!.firmwareUpdate),
-              ),
-            ),
+                title: Text(isFirmwareUpToDate
+                    ? AppLocalizations.of(context)!.firmwareUpdated
+                    : AppLocalizations.of(context)!.firmwareNotUpdated),
+                subtitle: Text("Version released $firmwareReleaseDate")),
+          ),
+          TextButton(
+            onPressed: isFirmwareUpToDate
+                ? null
+                : () {
+                    // TODO: Add logic to initiate firmware update
+                  },
+            child: Text(AppLocalizations.of(context)!.firmwareUpdate),
           ),
           TextButton(
             onPressed: () {
               // TODO: Add logic to check for new firmware
             },
-            style: const ButtonStyle(),
+            style: TextButton.styleFrom(foregroundColor: Colors.grey),
             child: Text(AppLocalizations.of(context)!.firmwareCheck,
                 style: const TextStyle(color: Colors.red)),
           ),
