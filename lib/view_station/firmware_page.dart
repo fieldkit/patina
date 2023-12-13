@@ -178,23 +178,40 @@ class StationFirmwarePage extends StatelessWidget {
                     : AppLocalizations.of(context)!.firmwareNotUpdated),
                 subtitle: Text("Version released $firmwareReleaseDate")),
           ),
-          TextButton(
-            onPressed: isFirmwareUpToDate
-                ? null
-                : () {
-                    // TODO: Add logic to initiate firmware update
-                  },
-            child: Text(AppLocalizations.of(context)!.firmwareUpdate),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
+            child: ElevatedButton(
+              onPressed: isFirmwareUpToDate
+                  ? null
+                  : () {
+                      // TODO: Add logic to initiate firmware update
+                    },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: const Color.fromARGB(255, 201, 201, 201),
+                textStyle: const TextStyle(fontSize: 16),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 18.0),
+              ),
+              child: Text(AppLocalizations.of(context)!.firmwareUpdate),
+            ),
           ),
-          TextButton(
-            onPressed: () {
-              // TODO: Add logic to check for new firmware
-            },
-            style: TextButton.styleFrom(
-                foregroundColor: const Color.fromARGB(255, 53, 49, 49),
-                backgroundColor: const Color.fromARGB(255, 252, 252, 252)),
-            child: Text(AppLocalizations.of(context)!.firmwareCheck,
-                style: const TextStyle(color: AppColors.primaryColor)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
+            child: ElevatedButton(
+              onPressed: () {
+                // TODO: Add logic to check for new firmware
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.white,
+                side: const BorderSide(color: AppColors.primaryColor, width: 1),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 18.0),
+              ),
+              child: Text(AppLocalizations.of(context)!.firmwareCheck,
+                  style: const TextStyle(
+                      color: AppColors.primaryColor, fontSize: 16)),
+            ),
           ),
           Card(
               color: const Color.fromARGB(255, 252, 252, 252),
