@@ -161,7 +161,8 @@ class StationFirmwarePage extends StatelessWidget {
                           )),
               ),
               title: Text(station.config!.name),
-              subtitle: Text("Firmware version $firmwareVersion"),
+              subtitle: Text(AppLocalizations.of(context)!
+                  .firmwareVersion(firmwareVersion)),
               trailing: Text(
                   station.connected
                       ? AppLocalizations.of(context)!.firmwareConnected
@@ -176,7 +177,8 @@ class StationFirmwarePage extends StatelessWidget {
                 title: Text(isFirmwareUpToDate
                     ? AppLocalizations.of(context)!.firmwareUpdated
                     : AppLocalizations.of(context)!.firmwareNotUpdated),
-                subtitle: Text("Version released $firmwareReleaseDate")),
+                subtitle: Text(AppLocalizations.of(context)!.firmwareReleased(
+                    firmwareReleaseDate))), // TODO: Fix release date, currently 1970
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
