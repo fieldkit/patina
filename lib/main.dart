@@ -59,7 +59,7 @@ class Configuration {
 }
 
 Future<Configuration> _loadConfiguration() async {
-  await dotenv.load(fileName: "resources/.env", isOptional: true);
+  await dotenv.load(fileName: ".env");
 
   final storagePath = await _getStoragePath();
   final portalBaseUrl =
