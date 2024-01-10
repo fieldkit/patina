@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:ansi_styles/ansi_styles.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
@@ -12,27 +14,41 @@ class NoneFilter extends LogFilter {
 class AddLoggerName extends LogPrinter {
   final LogPrinter real;
   final String name;
+  final bool colors;
 
-  AddLoggerName(this.real, this.name);
+  AddLoggerName(this.real, this.name, this.colors);
 
   @override
   List<String> log(LogEvent event) {
     final printed = real.log(event);
-    return printed.map((s) => '$name $s').toList();
+    return printed
+        .map((s) {
+          if (colors) {
+            return s;
+          } else {
+            return AnsiStyles.strip(s);
+          }
+        })
+        .map((s) => '$name $s')
+        .toList();
   }
 }
 
 final devNull = Logger(filter: NoneFilter());
 
-Logger create(File file, String name) {
+Logger create(File file, String name, bool colors) {
   return Logger(
     filter: null,
-    printer: AddLoggerName(SimplePrinter(), name),
+    printer: AddLoggerName(SimplePrinter(colors: colors), name, colors),
     output: MultiOutput([
       ConsoleOutput(),
       FileOutput(file: file),
     ]),
   );
+}
+
+String? getCommitRefName() {
+  return dotenv.env['CI_COMMIT_REF_NAME'];
 }
 
 class Loggers {
@@ -46,15 +62,18 @@ class Loggers {
   static Logger _markDown = devNull;
 
   static void initialize(String logsPath) {
-    _path = "$logsPath/logs.txt";
-    final File file = File("$logsPath/logs.txt");
-    _main = create(file, "main");
-    _bridge = create(file, "bridge");
-    _state = create(file, "state");
-    _cal = create(file, "cal");
-    _ui = create(file, "ui");
-    _portal = create(file, "portal");
-    _markDown = create(file, "mark-down");
+    final isAutomatedBuild = getCommitRefName() != null;
+    final colors = !isAutomatedBuild;
+    final path = "$logsPath/logs.txt";
+    final File file = File(path);
+    _main = create(file, "main", colors);
+    _bridge = create(file, "bridge", colors);
+    _state = create(file, "state", colors);
+    _cal = create(file, "cal", colors);
+    _ui = create(file, "ui", colors);
+    _portal = create(file, "portal", colors);
+    _markDown = create(file, "mark-down", colors);
+    _path = path;
   }
 
   static Logger get main => _main;
@@ -71,18 +90,18 @@ class Loggers {
 class ShareDiagnostics {
   Future<String?> upload() async {
     try {
-      var uuid = const Uuid();
-      var id = uuid.v4();
+      const uuid = Uuid();
+      final id = uuid.v4();
 
-      var sending = File(Loggers.path);
-      var body = await sending.readAsBytes();
+      final sending = File(Loggers.path);
+      final body = await sending.readAsBytes();
       Loggers.main.i("uploading: $sending");
 
-      var url = Uri.https("code.conservify.org", "diagnostics/$id/logs.txt");
+      final url = Uri.https("code.conservify.org", "diagnostics/$id/logs.txt");
       Loggers.main.i("uploading: $url");
-      var response = await http.post(url, body: body);
+      final response = await http.post(url, body: body);
       Loggers.main.i("upload: $response");
-      var meta = response.body;
+      final meta = response.body;
       Loggers.main.i("upload: $meta");
 
       return id.toString();

@@ -212,7 +212,8 @@ void main() async {
 
   final env = await initializeCurrentEnv(config, AppEventDispatcher());
 
-  logger.i("Initialized: $env");
+  final refName = getCommitRefName();
+  logger.i("Initialized: $env $refName");
 
   runApp(OurApp(env: env));
 }

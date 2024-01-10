@@ -79,6 +79,7 @@ dependencies:
   shared_preferences: ^2.2.1
   flutter_map_location_marker: ^5.3.0
   package_info_plus: ^4.2.0
+  ansi_styles: ^0.3.2+1
 
 dev_dependencies:
   flutter_test:
