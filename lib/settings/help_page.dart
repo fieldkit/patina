@@ -98,6 +98,15 @@ class _HelpPageState extends State<HelpPage> {
                           text: appVersion,
                           style: _textStyle,
                         ),
+                        TextSpan(
+                          text: '\n',
+                          style: _textStyle,
+                        ),
+                        TextSpan(
+                          text: getCommitRefName() ??
+                              AppLocalizations.of(context)!.developerBuild,
+                          style: _textStyle,
+                        ),
                       ],
                     ),
                   )
