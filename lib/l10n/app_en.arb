@@ -123,6 +123,7 @@
   "appVersion": "App Version",
   "noUpdates": "No updates available",
   "yesUpdates": "Tap for updates!",
+  "helpUploadLogs": "Send Logs",
 
   "legalTitle": "Legal",
   "termsOfService": "Terms of Service",

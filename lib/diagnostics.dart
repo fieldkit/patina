@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 class NoneFilter extends LogFilter {
   @override
@@ -34,6 +36,7 @@ Logger create(File file, String name) {
 }
 
 class Loggers {
+  static String? _path;
   static Logger _main = devNull;
   static Logger _bridge = devNull;
   static Logger _state = devNull;
@@ -43,6 +46,7 @@ class Loggers {
   static Logger _markDown = devNull;
 
   static void initialize(String logsPath) {
+    _path = "$logsPath/logs.txt";
     final File file = File("$logsPath/logs.txt");
     _main = create(file, "main");
     _bridge = create(file, "bridge");
@@ -61,4 +65,30 @@ class Loggers {
   static Logger get ui => _ui;
   static Logger get portal => _portal;
   static Logger get markDown => _markDown;
+  static String get path => _path!;
+}
+
+class ShareDiagnostics {
+  Future<String?> upload() async {
+    try {
+      var uuid = const Uuid();
+      var id = uuid.v4();
+
+      var sending = File(Loggers.path);
+      var body = await sending.readAsBytes();
+      Loggers.main.i("uploading: $sending");
+
+      var url = Uri.https("code.conservify.org", "diagnostics/$id/logs.txt");
+      Loggers.main.i("uploading: $url");
+      var response = await http.post(url, body: body);
+      Loggers.main.i("upload: $response");
+      var meta = response.body;
+      Loggers.main.i("upload: $meta");
+
+      return id.toString();
+    } catch (e) {
+      Loggers.ui.e("send logs failed: $e");
+      return null;
+    }
+  }
 }
