@@ -14,12 +14,18 @@ class CalibrationTable extends StatelessWidget {
   final List<Widget> Function() header;
   final List<Widget> Function(proto.CalibrationPoint) row;
 
-  const CalibrationTable({super.key, required this.calibration, required this.header, required this.row});
+  const CalibrationTable(
+      {super.key,
+      required this.calibration,
+      required this.header,
+      required this.row});
 
   @override
   Widget build(BuildContext context) {
-    TableRow makeRow(List<Widget> children) =>
-        TableRow(children: children.map((c) => Padding(padding: const EdgeInsets.all(5), child: c)).toList());
+    TableRow makeRow(List<Widget> children) => TableRow(
+        children: children
+            .map((c) => Padding(padding: const EdgeInsets.all(5), child: c))
+            .toList());
 
     final points = calibration.points.map((p) => makeRow(row(p))).toList();
 
@@ -66,8 +72,13 @@ class CalibrationWidget extends StatelessWidget {
     final formatted = time.toIso8601String();
 
     final properties = Column(
-      children: [Text(formatted), Text("Kind = ${calibration.kind}"), Text("${calibration.type}")]
-          .map((c) => WH.align(Padding(padding: const EdgeInsets.all(5), child: c)))
+      children: [
+        Text(formatted),
+        Text("Kind = ${calibration.kind}"),
+        Text("${calibration.type}")
+      ]
+          .map((c) =>
+              WH.align(Padding(padding: const EdgeInsets.all(5), child: c)))
           .toList(),
     );
 
@@ -96,7 +107,8 @@ class ClearCalibrationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final moduleConfigurations = context.read<AppState>().moduleConfigurations;
-    final moduleConfiguration = moduleConfigurations.find(config.moduleIdentity);
+    final moduleConfiguration =
+        moduleConfigurations.find(config.moduleIdentity);
     final calibrations = moduleConfiguration.calibrations;
     final outerNavigator = Navigator.of(context);
 
@@ -106,7 +118,7 @@ class ClearCalibrationPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.calibrationTitle),
         ),
-        body: Column(
+        body: ListView(
             children: <Widget>[
           ...calibrations.map((c) => CalibrationWidget(calibration: c)),
           Row(
@@ -121,7 +133,8 @@ class ClearCalibrationPage extends StatelessWidget {
                           final navigator = Navigator.of(context);
 
                           return AlertDialog(
-                            title: Text(localizations.confirmClearCalibrationTitle),
+                            title: Text(
+                                localizations.confirmClearCalibrationTitle),
                             content: Text(localizations.confirmDelete),
                             actions: <Widget>[
                               TextButton(
@@ -134,18 +147,21 @@ class ClearCalibrationPage extends StatelessWidget {
                                     navigator.pop();
                                     try {
                                       Loggers.cal.i("clearing calibration");
-                                      await moduleConfigurations.clear(config.moduleIdentity);
+                                      await moduleConfigurations
+                                          .clear(config.moduleIdentity);
                                       Loggers.cal.i("cleared!");
                                       outerNavigator.push(
                                         MaterialPageRoute(
-                                          builder: (context) => CalibrationPage(config: config),
+                                          builder: (context) =>
+                                              CalibrationPage(config: config),
                                         ),
                                       );
                                     } catch (e) {
                                       Loggers.cal.e("Exception clearing: $e");
                                     }
                                   },
-                                  child: Text(AppLocalizations.of(context)!.confirmYes))
+                                  child: Text(
+                                      AppLocalizations.of(context)!.confirmYes))
                             ],
                           );
                         });
