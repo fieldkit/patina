@@ -792,6 +792,11 @@ class ModuleIdentity {
 
   @override
   int get hashCode => moduleId.hashCode;
+
+  @override
+  String toString() {
+    return "ModuleIdentity($moduleId)";
+  }
 }
 
 extension Identity on ModuleConfig {
@@ -1065,8 +1070,7 @@ class ModuleConfigurations extends ChangeNotifier {
   ModuleConfiguration find(ModuleIdentity moduleIdentity) {
     final stationAndModule = knownStations.findModule(moduleIdentity);
     final configuration = stationAndModule?.module.configuration;
-    Loggers.state.v(
-        "Module Configuration(Find): $moduleIdentity ${stationAndModule?.station} ${stationAndModule?.module} ${configuration?.length}");
+    Loggers.state.v("$moduleIdentity Configuration: $configuration");
     if (configuration == null || configuration.isEmpty) {
       return ModuleConfiguration(null);
     }
