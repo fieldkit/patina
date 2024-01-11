@@ -59,7 +59,7 @@ class Configuration {
 }
 
 Future<Configuration> _loadConfiguration() async {
-  await dotenv.load(fileName: "resources/.env", isOptional: true);
+  await dotenv.load(fileName: ".env");
 
   final storagePath = await _getStoragePath();
   final portalBaseUrl =
@@ -212,7 +212,8 @@ void main() async {
 
   final env = await initializeCurrentEnv(config, AppEventDispatcher());
 
-  logger.i("Initialized: $env");
+  final refName = getCommitRefName();
+  logger.i("Initialized: $env $refName");
 
   runApp(OurApp(env: env));
 }
