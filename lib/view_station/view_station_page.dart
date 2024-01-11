@@ -54,7 +54,7 @@ class ViewStationPage extends StatelessWidget {
                 );
               },
               child: Text(AppLocalizations.of(context)!.configureButton,
-                  style: const TextStyle(color: Colors.white)))
+                  style: const TextStyle(color: Colors.grey)))
         ],
       ),
       body: ListView(children: [

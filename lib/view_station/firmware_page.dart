@@ -1,3 +1,4 @@
+import 'package:fk_data_protocol/fk-data.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -107,8 +108,21 @@ class StationFirmwarePage extends StatelessWidget {
     final busy = stationOps.isBusy(config.deviceId);
     final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
     final availableFirmware = context.watch<AvailableFirmwareModel>();
-    const isFirmwareUpToDate =
-        false; // TODO: Replace with actual condition to check firmware status
+    bool checkIfFirmwareIsUpToDate({
+      required FirmwareInfo currentVersion,
+      required List<LocalFirmware> availableFirmware,
+    }) {
+      String currentVersionLabel = currentVersion.label;
+
+      // Check if any available firmware has a label that matches the current version label
+      return availableFirmware
+          .any((firmware) => firmware.label == currentVersionLabel);
+    }
+
+    final isFirmwareUpToDate = checkIfFirmwareIsUpToDate(
+      currentVersion: config.firmware,
+      availableFirmware: availableFirmware.firmware,
+    );
     final firmwareVersion = config.firmware.label;
 
     final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
@@ -138,7 +152,7 @@ class StationFirmwarePage extends StatelessWidget {
             Text(localizations.firmwareTitle),
             Text(
               station.config!.name,
-              style: const TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
           ],
         ),
@@ -147,38 +161,48 @@ class StationFirmwarePage extends StatelessWidget {
         children: [
           Card(
             shadowColor: Colors.white,
-            child: ListTile(
-              tileColor: Colors.white,
-              leading: SizedBox(
-                width: 48.0, // Adjust the width as needed
-                height: 48.0, // Adjust the height as needed
-                child: Image(
-                    image: station.connected
-                        ? const AssetImage(
-                            "resources/images/Icon_Station_Connected.png")
-                        : const AssetImage(
-                            "resources/images/Icon_Station_Not_Connected.png",
-                          )),
+            child: Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(8.0),
+              child: ListTile(
+                tileColor: Colors.white,
+                leading: SizedBox(
+                  width: 48.0, // Adjust the width as needed
+                  height: 48.0, // Adjust the height as needed
+                  child: Image(
+                      image: station.connected
+                          ? const AssetImage(
+                              "resources/images/Icon_Station_Connected.png")
+                          : const AssetImage(
+                              "resources/images/Icon_Station_Not_Connected.png",
+                            )),
+                ),
+                title: Text(station.config!.name,
+                    style: const TextStyle(fontSize: 18)),
+                subtitle: Text(AppLocalizations.of(context)!
+                    .firmwareVersion(firmwareVersion)),
+                // TODO: Remove trailing text for connnected to match old app design
+                trailing: Text(
+                    station.connected
+                        ? AppLocalizations.of(context)!.firmwareConnected
+                        : AppLocalizations.of(context)!.firmwareNotConnected,
+                    style: const TextStyle(fontSize: 14)),
               ),
-              title: Text(station.config!.name),
-              subtitle: Text(AppLocalizations.of(context)!
-                  .firmwareVersion(firmwareVersion)),
-              trailing: Text(
-                  station.connected
-                      ? AppLocalizations.of(context)!.firmwareConnected
-                      : AppLocalizations.of(context)!.firmwareNotConnected,
-                  style: const TextStyle(fontSize: 14)),
             ),
           ),
           Card(
             shadowColor: Colors.white,
-            child: ListTile(
-                tileColor: Colors.white,
-                title: Text(isFirmwareUpToDate
-                    ? AppLocalizations.of(context)!.firmwareUpdated
-                    : AppLocalizations.of(context)!.firmwareNotUpdated),
-                subtitle: Text(AppLocalizations.of(context)!.firmwareReleased(
-                    firmwareReleaseDate))), // TODO: Fix release date, currently 1970
+            child: Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(8.0),
+              child: ListTile(
+                  tileColor: Colors.white,
+                  title: Text(isFirmwareUpToDate
+                      ? AppLocalizations.of(context)!.firmwareUpdated
+                      : AppLocalizations.of(context)!.firmwareNotUpdated),
+                  subtitle: Text(AppLocalizations.of(context)!.firmwareReleased(
+                      firmwareReleaseDate))), // TODO: Fix release date, currently 1970
+            ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
@@ -216,11 +240,14 @@ class StationFirmwarePage extends StatelessWidget {
             ),
           ),
           Card(
-              color: const Color.fromARGB(255, 252, 252, 252),
-              child: ListTile(
-                  leading: const Icon(Icons.lightbulb_outline),
-                  title: Text(AppLocalizations.of(context)!.quickTip),
-                  subtitle: Text(AppLocalizations.of(context)!.firmwareTip))),
+            color: const Color.fromARGB(255, 252, 252, 252),
+            child: Container(
+                padding: const EdgeInsets.all(8.0),
+                child: ListTile(
+                    leading: const Icon(Icons.lightbulb),
+                    title: Text(AppLocalizations.of(context)!.quickTip),
+                    subtitle: Text(AppLocalizations.of(context)!.firmwareTip))),
+          ),
           ...items
         ],
       ),
