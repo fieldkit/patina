@@ -15,7 +15,11 @@ class DisplaySensorValue extends StatelessWidget {
   final LocalizedSensor localized;
   final MainAxisSize mainAxisSize;
 
-  const DisplaySensorValue({super.key, required this.sensor, required this.localized, this.mainAxisSize = MainAxisSize.max});
+  const DisplaySensorValue(
+      {super.key,
+      required this.sensor,
+      required this.localized,
+      this.mainAxisSize = MainAxisSize.max});
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +37,19 @@ class DisplaySensorValue extends StatelessWidget {
     var value = sensor.value?.value;
     var uom = localized.uom;
 
-    var suffix = Container(padding: const EdgeInsets.only(left: 6), child: Text(uom, style: unitsStyle));
+    var suffix = Container(
+        padding: const EdgeInsets.only(left: 6),
+        child: Text(uom, style: unitsStyle));
 
     if (value == null) {
-      return Row(mainAxisSize: mainAxisSize, children: [Text("--", style: valueStyle), suffix]);
+      return Row(
+          mainAxisSize: mainAxisSize,
+          children: [Text("--", style: valueStyle), suffix]);
     }
-    return Row(mainAxisSize: mainAxisSize, children: [Text(valueFormatter.format(value), style: valueStyle), suffix]);
+    return Row(mainAxisSize: mainAxisSize, children: [
+      Text(valueFormatter.format(value), style: valueStyle),
+      suffix
+    ]);
   }
 }
 
@@ -58,7 +69,10 @@ class SensorInfo extends StatelessWidget {
             child: Container(
                 padding: const EdgeInsets.all(6),
                 child: Column(children: [
-                  Container(padding: const EdgeInsets.only(bottom: 8), child: DisplaySensorValue(sensor: sensor, localized: localized)),
+                  Container(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: DisplaySensorValue(
+                          sensor: sensor, localized: localized)),
                   Row(children: [Text(localized.name)])
                 ]))));
   }
@@ -114,7 +128,8 @@ class ModuleInfo extends StatelessWidget {
     final localized = LocalizedModule.get(module);
     final bay = AppLocalizations.of(context)!.bayNumber(module.position);
 
-    final List<Widget> sensors = module.sensors.sorted(defaultSensorSorter).map((sensor) {
+    final List<Widget> sensors =
+        module.sensors.sorted(defaultSensorSorter).map((sensor) {
       return SensorInfo(sensor: sensor);
     }).toList();
 
@@ -125,10 +140,12 @@ class ModuleInfo extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 calibrationPage() {
-                  final config = CalibrationPointConfig.fromTemplate(module.identity, localized.calibrationTemplate!);
+                  final config = CalibrationPointConfig.fromTemplate(
+                      module.identity, localized.calibrationTemplate!);
                   if (moduleConfigurations.find(module.identity).isCalibrated) {
                     return ClearCalibrationPage(config: config);
                   } else {
+                    // return ClearCalibrationPage(config: config);
                     return CalibrationPage(config: config);
                   }
                 }
@@ -153,7 +170,10 @@ class ModuleInfo extends StatelessWidget {
             ),
             borderRadius: const BorderRadius.all(Radius.circular(5))),
         child: Column(children: [
-          ListTile(leading: Image(image: localized.icon), title: Text(localized.name), subtitle: Text(bay)),
+          ListTile(
+              leading: Image(image: localized.icon),
+              title: Text(localized.name),
+              subtitle: Text(bay)),
           maybeCalibration,
           SensorsGrid(children: sensors),
         ]));
