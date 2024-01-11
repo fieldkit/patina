@@ -105,6 +105,8 @@ class _HomePageState extends State<HomePage> {
                       MultiProvider(
                           providers: [
                             ChangeNotifierProvider.value(
+                                value: state.moduleConfigurations),
+                            ChangeNotifierProvider.value(
                                 value: state.knownStations),
                             ChangeNotifierProvider.value(value: state.firmware),
                             ChangeNotifierProvider.value(

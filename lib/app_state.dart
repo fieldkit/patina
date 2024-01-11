@@ -738,10 +738,6 @@ class AppState {
       updatePortal,
     );
   }
-
-  ModuleConfiguration findModuleConfiguration(ModuleIdentity moduleIdentity) {
-    return moduleConfigurations.find(moduleIdentity);
-  }
 }
 
 class AppEnv {
@@ -1060,13 +1056,17 @@ class ModuleConfigurations extends ChangeNotifier {
   final Native api;
   final KnownStationsModel knownStations;
 
-  ModuleConfigurations({required this.api, required this.knownStations});
+  ModuleConfigurations({required this.api, required this.knownStations}) {
+    knownStations.addListener(() {
+      notifyListeners();
+    });
+  }
 
   ModuleConfiguration find(ModuleIdentity moduleIdentity) {
     final stationAndModule = knownStations.findModule(moduleIdentity);
     final configuration = stationAndModule?.module.configuration;
-    Loggers.state.i(
-        "Find module configuration $moduleIdentity ${stationAndModule?.station} ${stationAndModule?.module} $configuration");
+    Loggers.state.v(
+        "Module Configuration(Find): $moduleIdentity ${stationAndModule?.station} ${stationAndModule?.module} ${configuration?.length}");
     if (configuration == null || configuration.isEmpty) {
       return ModuleConfiguration(null);
     }

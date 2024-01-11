@@ -124,7 +124,7 @@ class ModuleInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final moduleConfigurations = context.read<AppState>().moduleConfigurations;
+    final moduleConfigurations = context.watch<ModuleConfigurations>();
     final localized = LocalizedModule.get(module);
     final bay = AppLocalizations.of(context)!.bayNumber(module.position);
 

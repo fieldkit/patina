@@ -51,7 +51,7 @@ class CalibrationPanel extends StatelessWidget {
 
   Future<void> calibrateAndContinue(BuildContext context, SensorConfig sensor,
       CurrentCalibration current, ActiveCalibration active) async {
-    final moduleConfigurations = context.read<AppState>().moduleConfigurations;
+    final moduleConfigurations = context.read<ModuleConfigurations>();
     final navigator = Navigator.of(context);
 
     final configured = config.standard;
