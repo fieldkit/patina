@@ -440,6 +440,10 @@ abstract class Task {
   final String key_ = uuid.v1();
 
   String get key => key_;
+
+  bool isFor(String deviceId) {
+    return false;
+  }
 }
 
 abstract class TaskFactory<M> extends ChangeNotifier {
@@ -473,6 +477,11 @@ class DeployTask extends Task {
   final StationModel station;
 
   DeployTask({required this.station});
+
+  @override
+  bool isFor(String deviceId) {
+    return station.deviceId == deviceId;
+  }
 }
 
 class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
@@ -516,6 +525,11 @@ class UpgradeTask extends Task {
   final FirmwareComparison comparison;
 
   UpgradeTask({required this.station, required this.comparison});
+
+  @override
+  bool isFor(String deviceId) {
+    return station.deviceId == deviceId;
+  }
 }
 
 class DownloadTaskFactory extends TaskFactory<DownloadTask> {
@@ -576,6 +590,11 @@ class DownloadTask extends Task {
   String toString() {
     return "DownloadTask($deviceId, $first, $total)";
   }
+
+  @override
+  bool isFor(String deviceId) {
+    return this.deviceId == deviceId;
+  }
 }
 
 class UploadTaskFactory extends TaskFactory<UploadTask> {
@@ -624,6 +643,11 @@ class UploadTask extends Task {
   String toString() {
     return "UploadTask($deviceId, $files)";
   }
+
+  @override
+  bool isFor(String deviceId) {
+    return this.deviceId == deviceId;
+  }
 }
 
 class LoginTask extends Task {
@@ -670,7 +694,11 @@ class TasksModel extends ChangeNotifier {
   }
 
   List<T> getAllFor<T extends Task>(String deviceId) {
-    return factories.map((f) => f.getAll<T>()).flattened.toList();
+    return factories
+        .map((f) => f.getAll<T>())
+        .flattened
+        .where((task) => task.isFor(deviceId))
+        .toList();
   }
 
   T? getMaybeOne<T extends Task>(String deviceId) {
