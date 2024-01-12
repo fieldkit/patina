@@ -85,13 +85,17 @@ class CalibrationWidget extends StatelessWidget {
     final table = CalibrationTable(
         calibration: calibration,
         header: () {
-          return [header("Standard"), header("Uncalibrated"), header("Raw")];
+          return [
+            header("Standard"),
+            header("Factory"),
+            header("Uncalibrated"),
+          ];
         },
         row: (p) {
           return [
             value(p.references[0].toStringAsFixed(2)),
+            value(p.factory[0].toStringAsFixed(2)),
             value(p.uncalibrated[0].toStringAsFixed(2)),
-            value(p.factory[0].toStringAsFixed(2))
           ];
         });
 
