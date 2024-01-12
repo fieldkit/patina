@@ -32,8 +32,12 @@ class CalibrationPage extends StatelessWidget {
             create: (context) => active,
             child: ProvideCountdown(
                 duration: const Duration(seconds: 120),
-                child: Consumer<CountdownTimer>(builder: (context, countdown, child) {
-                  return CalibrationPanel(config: config, current: current ?? CurrentCalibration(curveType: config.curveType));
+                child: Consumer<CountdownTimer>(
+                    builder: (context, countdown, child) {
+                  return CalibrationPanel(
+                      config: config,
+                      current: current ??
+                          CurrentCalibration(curveType: config.curveType));
                 }))));
   }
 }
@@ -42,16 +46,19 @@ class CalibrationPanel extends StatelessWidget {
   final CurrentCalibration current;
   final CalibrationPointConfig config;
 
-  const CalibrationPanel({super.key, required this.current, required this.config});
+  const CalibrationPanel(
+      {super.key, required this.current, required this.config});
 
-  Future<void> calibrateAndContinue(BuildContext context, SensorConfig sensor, CurrentCalibration current, ActiveCalibration active) async {
-    final moduleConfigurations = context.read<AppState>().moduleConfigurations;
+  Future<void> calibrateAndContinue(BuildContext context, SensorConfig sensor,
+      CurrentCalibration current, ActiveCalibration active) async {
+    final moduleConfigurations = context.read<ModuleConfigurations>();
     final navigator = Navigator.of(context);
 
     final configured = config.standard;
     final standard = configured.acceptable ? configured : active.userStandard();
 
-    final reading = SensorReading(uncalibrated: sensor.value!.uncalibrated, value: sensor.value!.value);
+    final reading = SensorReading(
+        uncalibrated: sensor.value!.uncalibrated, value: sensor.value!.value);
     current.addPoint(CalibrationPoint(standard: standard, reading: reading));
 
     Loggers.cal.i("(calibrate) calibration: $current");
@@ -83,13 +90,16 @@ class CalibrationPanel extends StatelessWidget {
     }
   }
 
-  CanContinue canContinue(SensorConfig sensor, Standard standard, ActiveCalibration active, CountdownTimer countdown) {
+  CanContinue canContinue(SensorConfig sensor, Standard standard,
+      ActiveCalibration active, CountdownTimer countdown) {
     if (!standard.acceptable && active.invalid) {
       return CanContinue.form;
     }
     if (countdown.done) {
       final sensorTime = sensor.value?.time;
-      final untilOrAfter = (sensorTime != null) ? countdown.finished.difference(sensorTime) : null;
+      final untilOrAfter = (sensorTime != null)
+          ? countdown.finished.difference(sensorTime)
+          : null;
       Loggers.cal.i(
           "elapsed=${countdown.elapsed} skipped=${countdown.skipped} untilOrAfter=$untilOrAfter sensor-time=$sensorTime sensor-cal=${sensor.value?.value} sensor-uncal=${sensor.value?.uncalibrated}");
       final time = sensor.value?.time;
@@ -120,7 +130,8 @@ class CalibrationPanel extends StatelessWidget {
       config: config,
       sensor: sensor,
       canContinue: canContinue(sensor, config.standard, active, countdown),
-      onCalibrateAndContinue: () => calibrateAndContinue(context, sensor, current, active),
+      onCalibrateAndContinue: () =>
+          calibrateAndContinue(context, sensor, current, active),
       onSkipTimer: () => countdown.skip(),
     );
   }
@@ -146,13 +157,20 @@ class CalibrationWait extends StatelessWidget {
 
     switch (canContinue) {
       case CanContinue.yes:
-        return ElevatedButton(onPressed: () => onCalibrateAndContinue(), child: Text(localizations.calibrateButton));
+        return ElevatedButton(
+            onPressed: () => onCalibrateAndContinue(),
+            child: Text(localizations.calibrateButton));
       case CanContinue.form:
-        return ElevatedButton(onPressed: null, child: Text(localizations.waitingOnForm));
+        return ElevatedButton(
+            onPressed: null, child: Text(localizations.waitingOnForm));
       case CanContinue.timer:
-        return GestureDetector(onLongPress: onSkipTimer, child: ElevatedButton(onPressed: null, child: Text(localizations.waitingOnTimer)));
+        return GestureDetector(
+            onLongPress: onSkipTimer,
+            child: ElevatedButton(
+                onPressed: null, child: Text(localizations.waitingOnTimer)));
       case CanContinue.staleValue:
-        return ElevatedButton(onPressed: null, child: Text(localizations.waitingOnReading));
+        return ElevatedButton(
+            onPressed: null, child: Text(localizations.waitingOnReading));
     }
   }
 
@@ -184,7 +202,8 @@ class FixedStandardWidget extends StatelessWidget {
   final SensorConfig sensor;
   final FixedStandard standard;
 
-  const FixedStandardWidget({super.key, required this.standard, required this.sensor});
+  const FixedStandardWidget(
+      {super.key, required this.standard, required this.sensor});
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +217,8 @@ class FixedStandardWidget extends StatelessWidget {
                 ),
                 borderRadius: const BorderRadius.all(Radius.circular(5))),
             padding: const EdgeInsets.all(8),
-            child: Text(localizations.standardValue(sensor.calibratedUom, standard.value))));
+            child: Text(localizations.standardValue(
+                sensor.calibratedUom, standard.value))));
   }
 }
 
@@ -206,14 +226,17 @@ class StandardWidget extends StatelessWidget {
   final SensorConfig sensor;
   final Standard standard;
 
-  const StandardWidget({super.key, required this.standard, required this.sensor});
+  const StandardWidget(
+      {super.key, required this.standard, required this.sensor});
 
   @override
   Widget build(BuildContext context) {
     if (standard is FixedStandard) {
-      return FixedStandardWidget(standard: standard as FixedStandard, sensor: sensor);
+      return FixedStandardWidget(
+          standard: standard as FixedStandard, sensor: sensor);
     }
-    return UnknownStandardWidget(standard: standard as UnknownStandard, sensor: sensor);
+    return UnknownStandardWidget(
+        standard: standard as UnknownStandard, sensor: sensor);
   }
 }
 
@@ -221,12 +244,14 @@ class CurrentReadingAndStandard extends StatelessWidget {
   final SensorConfig sensor;
   final Standard standard;
 
-  const CurrentReadingAndStandard({super.key, required this.sensor, required this.standard});
+  const CurrentReadingAndStandard(
+      {super.key, required this.sensor, required this.standard});
 
   @override
   Widget build(BuildContext context) {
     final localized = LocalizedSensor.get(sensor);
-    final sensorValue = DisplaySensorValue(sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
+    final sensorValue = DisplaySensorValue(
+        sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
     return Column(children: [
       sensorValue,
       StandardWidget(standard: standard, sensor: sensor),
@@ -238,7 +263,8 @@ class UnknownStandardWidget extends StatelessWidget {
   final SensorConfig sensor;
   final UnknownStandard standard;
 
-  const UnknownStandardWidget({super.key, required this.standard, required this.sensor});
+  const UnknownStandardWidget(
+      {super.key, required this.standard, required this.sensor});
 
   @override
   Widget build(BuildContext context) {

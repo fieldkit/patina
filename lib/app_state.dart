@@ -12,6 +12,8 @@ import 'diagnostics.dart';
 import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'dispatcher.dart';
 
+const uuid = Uuid();
+
 class StationModel {
   final String deviceId;
   StationConfig? config;
@@ -28,7 +30,8 @@ class StationModel {
 }
 
 class UpdatePortal {
-  UpdatePortal(Native api, PortalAccounts portalAccounts, AppEventDispatcher dispatcher) {
+  UpdatePortal(Native api, PortalAccounts portalAccounts,
+      AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) async {
       final deviceId = refreshed.field0.deviceId;
       final account = portalAccounts.getAccountForDevice(deviceId);
@@ -38,7 +41,11 @@ class UpdatePortal {
         try {
           final idIfOk = await api.addOrUpdateStationInPortal(
               tokens: tokens,
-              station: AddOrUpdatePortalStation(name: name, deviceId: deviceId, locationName: "", statusPb: refreshed.field2));
+              station: AddOrUpdatePortalStation(
+                  name: name,
+                  deviceId: deviceId,
+                  locationName: "",
+                  statusPb: refreshed.field2));
           if (idIfOk == null) {
             Loggers.main.w("$deviceId permissions-conflict");
           } else {
@@ -58,7 +65,8 @@ class UpdatePortal {
 class KnownStationsModel extends ChangeNotifier {
   final Map<String, StationModel> _stations = {};
 
-  UnmodifiableListView<StationModel> get stations => UnmodifiableListView(_stations.values);
+  UnmodifiableListView<StationModel> get stations =>
+      UnmodifiableListView(_stations.values);
 
   KnownStationsModel(Native api, AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
@@ -102,10 +110,12 @@ class KnownStationsModel extends ChangeNotifier {
       station.syncing = SyncingProgress(download: null, upload: null);
     }
     if (status is TransferStatus_Downloading) {
-      station.syncing = SyncingProgress(download: DownloadOperation(status: status), upload: null);
+      station.syncing = SyncingProgress(
+          download: DownloadOperation(status: status), upload: null);
     }
     if (status is TransferStatus_Uploading) {
-      station.syncing = SyncingProgress(download: null, upload: UploadOperation(status: status));
+      station.syncing = SyncingProgress(
+          download: null, upload: UploadOperation(status: status));
     }
     if (status is TransferStatus_Completed) {
       station.syncing = null;
@@ -153,7 +163,10 @@ class KnownStationsModel extends ChangeNotifier {
     applyTransferProgress(progress);
   }
 
-  Future<void> startUpload({required String deviceId, required Tokens tokens, required List<RecordArchive> files}) async {
+  Future<void> startUpload(
+      {required String deviceId,
+      required Tokens tokens,
+      required List<RecordArchive> files}) async {
     final station = find(deviceId);
     if (station == null) {
       Loggers.state.w("$deviceId station missing");
@@ -165,7 +178,8 @@ class KnownStationsModel extends ChangeNotifier {
       return;
     }
 
-    final progress = await api.startUpload(deviceId: deviceId, tokens: tokens, files: files);
+    final progress =
+        await api.startUpload(deviceId: deviceId, tokens: tokens, files: files);
     applyTransferProgress(progress);
   }
 
@@ -198,20 +212,29 @@ class StationOperations extends ChangeNotifier {
 
   StationOperations({required AppEventDispatcher dispatcher}) {
     dispatcher.addListener<DomainMessage_UpgradeProgress>((upgradeProgress) {
-      getOrCreate<UpgradeOperation>(() => UpgradeOperation(upgradeProgress.field0.firmwareId), upgradeProgress.field0.deviceId)
+      getOrCreate<UpgradeOperation>(
+              () => UpgradeOperation(upgradeProgress.field0.firmwareId),
+              upgradeProgress.field0.deviceId)
           .update(upgradeProgress);
       notifyListeners();
     });
     dispatcher.addListener<DomainMessage_DownloadProgress>((transferProgress) {
-      getOrCreate<TransferOperation>(DownloadOperation.new, transferProgress.field0.deviceId).update(transferProgress);
+      getOrCreate<TransferOperation>(
+              DownloadOperation.new, transferProgress.field0.deviceId)
+          .update(transferProgress);
       notifyListeners();
     });
     dispatcher.addListener<DomainMessage_UploadProgress>((transferProgress) {
-      getOrCreate<TransferOperation>(UploadOperation.new, transferProgress.field0.deviceId).update(transferProgress);
+      getOrCreate<TransferOperation>(
+              UploadOperation.new, transferProgress.field0.deviceId)
+          .update(transferProgress);
       notifyListeners();
     });
-    dispatcher.addListener<DomainMessage_FirmwareDownloadStatus>((downloadProgress) {
-      getOrCreate<FirmwareDownloadOperation>(FirmwareDownloadOperation.new, globalOperationKey).update(downloadProgress);
+    dispatcher
+        .addListener<DomainMessage_FirmwareDownloadStatus>((downloadProgress) {
+      getOrCreate<FirmwareDownloadOperation>(
+              FirmwareDownloadOperation.new, globalOperationKey)
+          .update(downloadProgress);
       notifyListeners();
     });
   }
@@ -271,7 +294,8 @@ abstract class TransferOperation extends Operation {
   }
 
   @override
-  bool get done => status is TransferStatus_Completed || status is TransferStatus_Failed;
+  bool get done =>
+      status is TransferStatus_Completed || status is TransferStatus_Failed;
 
   double get completed {
     final status = this.status;
@@ -291,7 +315,8 @@ abstract class TransferOperation extends Operation {
 class DownloadOperation extends TransferOperation {
   DownloadOperation({super.status = const TransferStatus.starting()});
 
-  TransferStatus_Downloading? get _downloading => status as TransferStatus_Downloading;
+  TransferStatus_Downloading? get _downloading =>
+      status as TransferStatus_Downloading;
 
   int get received => _downloading?.field0.received ?? 0;
   int get total => _downloading?.field0.total ?? 0;
@@ -308,12 +333,21 @@ class FirmwareComparison {
   final DateTime otherTime;
   final bool newer;
 
-  FirmwareComparison({required this.label, required this.time, required this.otherTime, required this.newer});
+  FirmwareComparison(
+      {required this.label,
+      required this.time,
+      required this.otherTime,
+      required this.newer});
 
-  factory FirmwareComparison.compare(LocalFirmware local, FirmwareInfo station) {
+  factory FirmwareComparison.compare(
+      LocalFirmware local, FirmwareInfo station) {
     final other = DateTime.fromMillisecondsSinceEpoch(station.time * 1000);
     final time = DateTime.fromMillisecondsSinceEpoch(local.time);
-    return FirmwareComparison(label: local.label, time: time, otherTime: other, newer: time.isAfter(other));
+    return FirmwareComparison(
+        label: local.label,
+        time: time,
+        otherTime: other,
+        newer: time.isAfter(other));
   }
 }
 
@@ -333,7 +367,8 @@ class UpgradeOperation extends Operation {
   }
 
   @override
-  bool get done => status is UpgradeStatus_Completed || status is UpgradeStatus_Failed;
+  bool get done =>
+      status is UpgradeStatus_Completed || status is UpgradeStatus_Failed;
 }
 
 class FirmwareDownloadOperation extends Operation {
@@ -348,17 +383,22 @@ class FirmwareDownloadOperation extends Operation {
   }
 
   @override
-  bool get done => status is FirmwareDownloadStatus_Completed || status is FirmwareDownloadStatus_Failed;
+  bool get done =>
+      status is FirmwareDownloadStatus_Completed ||
+      status is FirmwareDownloadStatus_Failed;
 }
 
 class AvailableFirmwareModel extends ChangeNotifier {
   final Native api;
   final List<LocalFirmware> _firmware = [];
 
-  UnmodifiableListView<LocalFirmware> get firmware => UnmodifiableListView(_firmware);
+  UnmodifiableListView<LocalFirmware> get firmware =>
+      UnmodifiableListView(_firmware);
 
-  AvailableFirmwareModel({required this.api, required AppEventDispatcher dispatcher}) {
-    dispatcher.addListener<DomainMessage_AvailableFirmware>((availableFirmware) {
+  AvailableFirmwareModel(
+      {required this.api, required AppEventDispatcher dispatcher}) {
+    dispatcher
+        .addListener<DomainMessage_AvailableFirmware>((availableFirmware) {
       _firmware.clear();
       _firmware.addAll(availableFirmware.field0);
       notifyListeners();
@@ -366,7 +406,8 @@ class AvailableFirmwareModel extends ChangeNotifier {
   }
 
   Future<void> upgrade(String deviceId, LocalFirmware firmware) async {
-    await api.upgradeStation(deviceId: deviceId, firmware: firmware, swap: false);
+    await api.upgradeStation(
+        deviceId: deviceId, firmware: firmware, swap: false);
   }
 }
 
@@ -379,19 +420,21 @@ class StationConfiguration extends ChangeNotifier {
   Future<void> enableWifiUploading(String deviceId) async {
     final account = portalAccounts.getAccountForDevice(deviceId);
     if (account == null) {
-      Loggers.state.i("No account for device $deviceId (hasAny: ${portalAccounts.hasAnyTokens()})");
+      Loggers.state.i(
+          "No account for device $deviceId (hasAny: ${portalAccounts.hasAnyTokens()})");
       return;
     }
 
-    await api.configureWifiTransmission(deviceId: deviceId, config: WifiTransmissionConfig(tokens: account.tokens));
+    await api.configureWifiTransmission(
+        deviceId: deviceId,
+        config: WifiTransmissionConfig(tokens: account.tokens));
   }
 
   Future<void> disableWifiUploading(String deviceId) async {
-    await api.configureWifiTransmission(deviceId: deviceId, config: const WifiTransmissionConfig(tokens: null));
+    await api.configureWifiTransmission(
+        deviceId: deviceId, config: const WifiTransmissionConfig(tokens: null));
   }
 }
-
-var uuid = const Uuid();
 
 abstract class Task {
   final String key_ = uuid.v1();
@@ -436,7 +479,8 @@ class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
   final AvailableFirmwareModel availableFirmware;
   final KnownStationsModel knownStations;
 
-  UpgradeTaskFactory({required this.availableFirmware, required this.knownStations}) {
+  UpgradeTaskFactory(
+      {required this.availableFirmware, required this.knownStations}) {
     listener() {
       _tasks.clear();
       _tasks.addAll(create());
@@ -455,7 +499,8 @@ class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
         for (final local in availableFirmware.firmware) {
           final comparison = FirmwareComparison.compare(local, firmware);
           if (comparison.newer) {
-            Loggers.state.i("UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
+            Loggers.state.i(
+                "UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
             tasks.add(UpgradeTask(station: station, comparison: comparison));
             break;
           }
@@ -478,7 +523,9 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
   List<RecordArchive> _archives = List.empty();
   final Map<String, int> _records = {};
 
-  DownloadTaskFactory({required KnownStationsModel knownStations, required AppEventDispatcher dispatcher}) {
+  DownloadTaskFactory(
+      {required KnownStationsModel knownStations,
+      required AppEventDispatcher dispatcher}) {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) {
       _records[refreshed.field0.deviceId] = refreshed.field0.data.records;
       _tasks.clear();
@@ -505,10 +552,13 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
     final List<DownloadTask> tasks = List.empty(growable: true);
     final archivesById = _archives.groupListsBy((a) => a.deviceId);
     for (final nearby in _nearby) {
-      final int? first = archivesById[nearby.deviceId]?.map((archive) => archive.tail).reduce(max);
+      final int? first = archivesById[nearby.deviceId]
+          ?.map((archive) => archive.tail)
+          .reduce(max);
       final int? total = _records[nearby.deviceId];
       if (total != null) {
-        tasks.add(DownloadTask(deviceId: nearby.deviceId, total: total, first: first));
+        tasks.add(DownloadTask(
+            deviceId: nearby.deviceId, total: total, first: first));
       }
     }
     return tasks;
@@ -532,7 +582,8 @@ class UploadTaskFactory extends TaskFactory<UploadTask> {
   final PortalAccounts portalAccounts;
   List<RecordArchive> _archives = List.empty();
 
-  UploadTaskFactory({required this.portalAccounts, required AppEventDispatcher dispatcher}) {
+  UploadTaskFactory(
+      {required this.portalAccounts, required AppEventDispatcher dispatcher}) {
     portalAccounts.addListener(() {
       _tasks.clear();
       _tasks.addAll(create());
@@ -553,7 +604,8 @@ class UploadTaskFactory extends TaskFactory<UploadTask> {
     for (final entry in byId.entries) {
       final tokens = portalAccounts.getAccountForDevice(entry.key)?.tokens;
       if (tokens != null) {
-        tasks.add(UploadTask(deviceId: entry.key, files: entry.value, tokens: tokens));
+        tasks.add(UploadTask(
+            deviceId: entry.key, files: entry.value, tokens: tokens));
       }
     }
     return tasks;
@@ -565,7 +617,8 @@ class UploadTask extends Task {
   final List<RecordArchive> files;
   final Tokens tokens;
 
-  UploadTask({required this.deviceId, required this.files, required this.tokens});
+  UploadTask(
+      {required this.deviceId, required this.files, required this.tokens});
 
   @override
   String toString() {
@@ -601,9 +654,12 @@ class TasksModel extends ChangeNotifier {
       required AppEventDispatcher dispatcher}) {
     factories.add(LoginTaskFactory(portalAccounts: portalAccounts));
     factories.add(DeployTaskFactory(knownStations: knownStations));
-    factories.add(UploadTaskFactory(portalAccounts: portalAccounts, dispatcher: dispatcher));
-    factories.add(DownloadTaskFactory(knownStations: knownStations, dispatcher: dispatcher));
-    factories.add(UpgradeTaskFactory(availableFirmware: availableFirmware, knownStations: knownStations));
+    factories.add(UploadTaskFactory(
+        portalAccounts: portalAccounts, dispatcher: dispatcher));
+    factories.add(DownloadTaskFactory(
+        knownStations: knownStations, dispatcher: dispatcher));
+    factories.add(UpgradeTaskFactory(
+        availableFirmware: availableFirmware, knownStations: knownStations));
     for (final TaskFactory f in factories) {
       f.addListener(notifyListeners);
     }
@@ -641,14 +697,24 @@ class AppState {
   final TasksModel tasks;
   final UpdatePortal updatePortal;
 
-  AppState._(this.api, this.dispatcher, this.knownStations, this.moduleConfigurations, this.portalAccounts, this.firmware,
-      this.stationOperations, this.tasks, this.configuration, this.updatePortal);
+  AppState._(
+      this.api,
+      this.dispatcher,
+      this.knownStations,
+      this.moduleConfigurations,
+      this.portalAccounts,
+      this.firmware,
+      this.stationOperations,
+      this.tasks,
+      this.configuration,
+      this.updatePortal);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
     final stationOperations = StationOperations(dispatcher: dispatcher);
     final firmware = AvailableFirmwareModel(api: api, dispatcher: dispatcher);
     final knownStations = KnownStationsModel(api, dispatcher);
-    final moduleConfigurations = ModuleConfigurations(api: api, knownStations: knownStations);
+    final moduleConfigurations =
+        ModuleConfigurations(api: api, knownStations: knownStations);
     final portalAccounts = PortalAccounts(api: api, accounts: List.empty());
     final tasks = TasksModel(
       availableFirmware: firmware,
@@ -656,7 +722,8 @@ class AppState {
       portalAccounts: portalAccounts,
       dispatcher: dispatcher,
     );
-    final configurations = StationConfiguration(api: api, portalAccounts: portalAccounts);
+    final configurations =
+        StationConfiguration(api: api, portalAccounts: portalAccounts);
     final updatePortal = UpdatePortal(api, portalAccounts, dispatcher);
     return AppState._(
       api,
@@ -671,17 +738,14 @@ class AppState {
       updatePortal,
     );
   }
-
-  ModuleConfiguration findModuleConfiguration(ModuleIdentity moduleIdentity) {
-    return moduleConfigurations.find(moduleIdentity);
-  }
 }
 
 class AppEnv {
   AppEventDispatcher dispatcher;
   ValueNotifier<AppState?> _appState;
 
-  AppEnv._(this.dispatcher, {AppState? appState}) : _appState = ValueNotifier(appState);
+  AppEnv._(this.dispatcher, {AppState? appState})
+      : _appState = ValueNotifier(appState);
 
   AppEnv.appState(AppEventDispatcher dispatcher)
       : this._(
@@ -728,6 +792,11 @@ class ModuleIdentity {
 
   @override
   int get hashCode => moduleId.hashCode;
+
+  @override
+  String toString() {
+    return "ModuleIdentity($moduleId)";
+  }
 }
 
 extension Identity on ModuleConfig {
@@ -774,20 +843,31 @@ class PortalAccount extends ChangeNotifier {
   final bool active;
   final Validity valid;
 
-  PortalAccount({required this.email, required this.name, required this.tokens, required this.active, this.valid = Validity.unknown});
+  PortalAccount(
+      {required this.email,
+      required this.name,
+      required this.tokens,
+      required this.active,
+      this.valid = Validity.unknown});
 
   factory PortalAccount.fromJson(Map<String, dynamic> data) {
     final email = data['email'] as String;
     final name = data['name'] as String;
     final active = data['active'] as bool;
     final tokensData = data["tokens"] as Map<String, dynamic>?;
-    final tokens = tokensData != null ? PortalTokens.fromJson(tokensData) : null;
-    return PortalAccount(email: email, name: name, tokens: tokens, active: active);
+    final tokens =
+        tokensData != null ? PortalTokens.fromJson(tokensData) : null;
+    return PortalAccount(
+        email: email, name: name, tokens: tokens, active: active);
   }
 
   factory PortalAccount.fromAuthenticated(Authenticated authenticated) {
     return PortalAccount(
-        email: authenticated.email, name: authenticated.name, tokens: authenticated.tokens, active: true, valid: Validity.valid);
+        email: authenticated.email,
+        name: authenticated.name,
+        tokens: authenticated.tokens,
+        active: true,
+        valid: Validity.valid);
   }
 
   Map<String, dynamic> toJson() => {
@@ -798,11 +878,17 @@ class PortalAccount extends ChangeNotifier {
       };
 
   PortalAccount invalid() {
-    return PortalAccount(email: email, name: name, tokens: null, active: active, valid: Validity.invalid);
+    return PortalAccount(
+        email: email,
+        name: name,
+        tokens: null,
+        active: active,
+        valid: Validity.invalid);
   }
 
   PortalAccount withActive(bool active) {
-    return PortalAccount(email: email, name: name, tokens: tokens, active: active, valid: valid);
+    return PortalAccount(
+        email: email, name: name, tokens: tokens, active: active, valid: valid);
   }
 }
 
@@ -812,7 +898,8 @@ class PortalAccounts extends ChangeNotifier {
   final Native api;
   final List<PortalAccount> _accounts = List.empty(growable: true);
 
-  UnmodifiableListView<PortalAccount> get accounts => UnmodifiableListView(_accounts);
+  UnmodifiableListView<PortalAccount> get accounts =>
+      UnmodifiableListView(_accounts);
 
   PortalAccount? get active => _accounts.where((a) => a.active).first;
 
@@ -822,7 +909,9 @@ class PortalAccounts extends ChangeNotifier {
 
   factory PortalAccounts.fromJson(Native api, Map<String, dynamic> data) {
     final accountsData = data['accounts'] as List<dynamic>;
-    final accounts = accountsData.map((accountData) => PortalAccount.fromJson(accountData)).toList();
+    final accounts = accountsData
+        .map((accountData) => PortalAccount.fromJson(accountData))
+        .toList();
     return PortalAccounts(api: api, accounts: accounts);
   }
 
@@ -838,7 +927,8 @@ class PortalAccounts extends ChangeNotifier {
         // A little messy, I know.
         final loaded = PortalAccounts.fromJson(api, jsonDecode(value));
         for (final account in loaded.accounts) {
-          Loggers.state.v("Account email=${account.email} url=${account.tokens?.transmission.url} #devonly");
+          Loggers.state.v(
+              "Account email=${account.email} url=${account.tokens?.transmission.url} #devonly");
         }
         _accounts.clear();
         _accounts.addAll(loaded.accounts);
@@ -874,7 +964,8 @@ class PortalAccounts extends ChangeNotifier {
 
   Future<PortalAccount?> _authenticate(String email, String password) async {
     try {
-      final authenticated = await api.authenticatePortal(email: email, password: password);
+      final authenticated =
+          await api.authenticatePortal(email: email, password: password);
       return PortalAccount.fromAuthenticated(authenticated);
     } catch (e) {
       Loggers.state.e("Exception authenticating: $e");
@@ -896,7 +987,8 @@ class PortalAccounts extends ChangeNotifier {
   }
 
   Future<void> activate(PortalAccount account) async {
-    final updated = _accounts.map((iter) => iter.withActive(account == iter)).toList();
+    final updated =
+        _accounts.map((iter) => iter.withActive(account == iter)).toList();
     _accounts.clear();
     _accounts.addAll(updated);
     await _save();
@@ -926,7 +1018,8 @@ class PortalAccounts extends ChangeNotifier {
       final tokens = iter.tokens;
       if (tokens != null) {
         try {
-          _accounts.add(PortalAccount.fromAuthenticated(await api.validateTokens(tokens: tokens)));
+          _accounts.add(PortalAccount.fromAuthenticated(
+              await api.validateTokens(tokens: tokens)));
         } catch (e) {
           Loggers.state.e("Exception validating: $e");
           _accounts.add(iter.invalid());
@@ -948,7 +1041,8 @@ class PortalAccounts extends ChangeNotifier {
   }
 
   bool hasAnyTokens() {
-    final maybeTokens = _accounts.map((e) => e.tokens).where((e) => e != null).firstOrNull;
+    final maybeTokens =
+        _accounts.map((e) => e.tokens).where((e) => e != null).firstOrNull;
     return maybeTokens != null;
   }
 }
@@ -967,12 +1061,16 @@ class ModuleConfigurations extends ChangeNotifier {
   final Native api;
   final KnownStationsModel knownStations;
 
-  ModuleConfigurations({required this.api, required this.knownStations});
+  ModuleConfigurations({required this.api, required this.knownStations}) {
+    knownStations.addListener(() {
+      notifyListeners();
+    });
+  }
 
   ModuleConfiguration find(ModuleIdentity moduleIdentity) {
     final stationAndModule = knownStations.findModule(moduleIdentity);
     final configuration = stationAndModule?.module.configuration;
-    Loggers.state.i("Find module configuration $moduleIdentity ${stationAndModule?.station} ${stationAndModule?.module} $configuration");
+    Loggers.state.v("$moduleIdentity Configuration: $configuration");
     if (configuration == null || configuration.isEmpty) {
       return ModuleConfiguration(null);
     }
@@ -985,7 +1083,8 @@ class ModuleConfigurations extends ChangeNotifier {
   Future<void> clear(ModuleIdentity moduleIdentity) async {
     final mas = knownStations.findModule(moduleIdentity);
     if (mas != null) {
-      await api.clearCalibration(deviceId: mas.station.deviceId, module: mas.module.position);
+      await api.clearCalibration(
+          deviceId: mas.station.deviceId, module: mas.module.position);
     } else {
       Loggers.state.e("Unknown module identity $moduleIdentity");
     }
@@ -994,7 +1093,10 @@ class ModuleConfigurations extends ChangeNotifier {
   Future<void> calibrate(ModuleIdentity moduleIdentity, Uint8List data) async {
     final mas = knownStations.findModule(moduleIdentity);
     if (mas != null) {
-      await api.calibrate(deviceId: mas.station.deviceId, module: mas.module.position, data: data);
+      await api.calibrate(
+          deviceId: mas.station.deviceId,
+          module: mas.module.position,
+          data: data);
     } else {
       Loggers.state.e("Unknown module identity $moduleIdentity");
     }

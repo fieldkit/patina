@@ -42,7 +42,7 @@ dependencies:
   latlong2: ^0.8.1
   udp: ^5.0.3
   http: ^0.13.5
-  protobuf: ^2.1.0
+  protobuf: ^3.1.0
   fixnum: ^1.0.1
   provider: ^6.0.4
   uuid: ^3.0.7
@@ -58,18 +58,20 @@ dependencies:
     sdk: flutter
   loader_overlay: ^2.2.0
   collection: ^1.17.1
-  data: ^0.11.0
+  data: ^0.12.0
   url_launcher: ^6.1.11
   geolocator: ^9.0.2
   async: ^2.11.0
   caldor:
     git:
       url: https://gitlab.com/fieldkit/libraries/caldor.git
+      ref: 7215f8182a056774a339d422c785cf17c124f111
   flows:
     path: './flows'
   fk_data_protocol:
     git:
       url: https://gitlab.com/fieldkit/libraries/data-protocol.git
+      ref: 5db13c9c986f4f6a69b24aca7024bd55f07f8110
       path: dart
   logger: ^1.4.0
   flutter_dotenv: ^5.1.0
@@ -77,6 +79,7 @@ dependencies:
   shared_preferences: ^2.2.1
   flutter_map_location_marker: ^5.3.0
   package_info_plus: ^4.2.0
+  ansi_styles: ^0.3.2+1
 
 dev_dependencies:
   flutter_test:

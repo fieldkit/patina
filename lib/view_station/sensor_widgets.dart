@@ -15,39 +15,39 @@ class DisplaySensorValue extends StatelessWidget {
   final LocalizedSensor localized;
   final MainAxisSize mainAxisSize;
 
-  static const _valueStyle = TextStyle(
-    fontSize: 22,
-    color: Color.fromRGBO(112, 112, 112, 1),
-    fontWeight: FontWeight.normal,
-    fontFamily: "Avenir",
-  );
-
-  const DisplaySensorValue({
-    super.key,
-    required this.sensor,
-    required this.localized,
-    this.mainAxisSize = MainAxisSize.max,
-  });
+  const DisplaySensorValue(
+      {super.key,
+      required this.sensor,
+      required this.localized,
+      this.mainAxisSize = MainAxisSize.max});
 
   @override
   Widget build(BuildContext context) {
     final valueFormatter = NumberFormat("0.##");
+    var valueStyle = const TextStyle(
+        fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold);
+
+    var unitsStyle = const TextStyle(
+        fontSize: 18,
+        color: Color.fromRGBO(64, 64, 64, 1),
+        fontWeight: FontWeight.normal);
+
     final value = sensor.value?.value;
     final uom = localized.uom;
 
-    final suffix = Container(
-      padding: const EdgeInsets.only(left: 6, top: 4),
-      child: Text(uom, style: _valueStyle.copyWith(fontSize: 12)),
-    );
+    var suffix = Container(
+        padding: const EdgeInsets.only(left: 6),
+        child: Text(uom, style: unitsStyle));
 
-    return Row(
-      mainAxisSize: mainAxisSize,
-      children: [
-        Text(value == null ? "--" : valueFormatter.format(value),
-            style: _valueStyle),
-        suffix
-      ],
-    );
+    if (value == null) {
+      return Row(
+          mainAxisSize: mainAxisSize,
+          children: [Text("--", style: valueStyle), suffix]);
+    }
+    return Row(mainAxisSize: mainAxisSize, children: [
+      Text(valueFormatter.format(value), style: valueStyle),
+      suffix
+    ]);
   }
 }
 
@@ -61,27 +61,18 @@ class SensorInfo extends StatelessWidget {
     final localized = LocalizedSensor.get(sensor);
 
     return Container(
-      padding: const EdgeInsets.all(10),
-      child: ColoredBox(
-        color: const Color.fromRGBO(232, 232, 232, 1),
-        child: Container(
-          padding: const EdgeInsets.all(6),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: DisplaySensorValue(
-                  sensor: sensor,
-                  localized: localized,
-                  mainAxisSize: MainAxisSize.max,
-                ),
-              ),
-              Row(children: [Text(localized.name)])
-            ],
-          ),
-        ),
-      ),
-    );
+        padding: const EdgeInsets.all(10),
+        child: ColoredBox(
+            color: const Color.fromRGBO(232, 232, 232, 1),
+            child: Container(
+                padding: const EdgeInsets.all(6),
+                child: Column(children: [
+                  Container(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: DisplaySensorValue(
+                          sensor: sensor, localized: localized)),
+                  Row(children: [Text(localized.name)])
+                ]))));
   }
 }
 
@@ -119,28 +110,58 @@ class ModuleInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final moduleConfigurations = context.watch<ModuleConfigurations>();
     final localized = LocalizedModule.get(module);
     final bay = AppLocalizations.of(context)!.bayNumber(module.position);
 
-    final sensors = module.sensors
-        .sorted(defaultSensorSorter)
-        .map((sensor) => SensorInfo(sensor: sensor))
-        .toList();
+    final List<Widget> sensors =
+        module.sensors.sorted(defaultSensorSorter).map((sensor) {
+      return SensorInfo(sensor: sensor);
+    }).toList();
+
+    final Widget maybeCalibration = localized.canCalibrate
+        ? Container(
+            padding: const EdgeInsets.all(10),
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                calibrationPage() {
+                  final config = CalibrationPointConfig.fromTemplate(
+                      module.identity, localized.calibrationTemplate!);
+                  if (moduleConfigurations.find(module.identity).isCalibrated) {
+                    return ClearCalibrationPage(config: config);
+                  } else {
+                    // return ClearCalibrationPage(config: config);
+                    return CalibrationPage(config: config);
+                  }
+                }
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => calibrationPage(),
+                  ),
+                );
+              },
+              // style: ElevatedButton.styleFrom(),
+              child: Text(AppLocalizations.of(context)!.calibrateButton),
+            ))
+        : const SizedBox.shrink();
 
     return Container(
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color.fromRGBO(212, 212, 212, 1)),
-        borderRadius: const BorderRadius.all(Radius.circular(5)),
-      ),
+          border: Border.all(
+            color: const Color.fromRGBO(212, 212, 212, 1),
+          ),
+          borderRadius: const BorderRadius.all(Radius.circular(5))),
       child: Column(
         children: [
           ListTile(
-            leading: Image(image: localized.icon),
-            title: Text(localized.name),
-            subtitle: Text(bay),
-          ),
-          _buildCalibrationButton(context, localized),
+              leading: Image(image: localized.icon),
+              title: Text(localized.name),
+              subtitle: Text(bay)),
+          maybeCalibration,
           SensorsGrid(children: sensors),
         ],
       ),

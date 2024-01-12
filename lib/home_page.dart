@@ -1,3 +1,4 @@
+import 'package:fk/diagnostics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -50,9 +51,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   _checkIfFirstTimeToday() async {
-    await dotenv.load(fileName: ".env");
+    Loggers.ui.i(dotenv.env['SHOW_WELCOME_SCREEN']);
     bool showWelcomeScreen = dotenv.env['SHOW_WELCOME_SCREEN'] == 'true';
-    print(dotenv.env['SHOW_WELCOME_SCREEN']);
     if (showWelcomeScreen) {
       // For testing welcome screen
       final prefs = await SharedPreferences.getInstance();
@@ -104,6 +104,8 @@ class _HomePageState extends State<HomePage> {
                       // Should we just push this to the top?
                       MultiProvider(
                           providers: [
+                            ChangeNotifierProvider.value(
+                                value: state.moduleConfigurations),
                             ChangeNotifierProvider.value(
                                 value: state.knownStations),
                             ChangeNotifierProvider.value(value: state.firmware),
