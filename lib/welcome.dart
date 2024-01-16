@@ -12,10 +12,11 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    return WillPopScope(
-        onWillPop: () async {
-          onDone();
-          return true; // return true to allow the pop action
+    return PopScope(
+        onPopInvoked: (bool didPop) async {
+          if (didPop) {
+            onDone();
+          }
         },
         child: Scaffold(
           body: Center(
