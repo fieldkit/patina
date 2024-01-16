@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import 'common_widgets.dart';
 import 'gen/ffi.dart';
-import 'constants.dart';
 
 import 'app_state.dart';
 import 'location_widgets.dart';
