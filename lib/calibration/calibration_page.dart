@@ -24,7 +24,7 @@ class CalibrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return dismissKeyboardOnOutsideGap(Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.calibrationTitle),
         ),
@@ -38,7 +38,7 @@ class CalibrationPage extends StatelessWidget {
                       config: config,
                       current: current ??
                           CurrentCalibration(curveType: config.curveType));
-                }))));
+                })))));
   }
 }
 
