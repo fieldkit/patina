@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:uuid/uuid.dart';
@@ -51,6 +52,8 @@ class UpdatePortal {
           } else {
             Loggers.main.i("$deviceId refreshed portal-id=$idIfOk");
           }
+        } on FrbAnyhowException catch (e) {
+          Loggers.main.i("Add or update portal error: ${e.anyhow}");
         } catch (e) {
           Loggers.main.i("Add or update portal error: $e");
         }
