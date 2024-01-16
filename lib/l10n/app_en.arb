@@ -64,6 +64,7 @@
   "standardValue": "{value} Standard Value ({uom})",
   "oopsBugTitle": "Oops, bug?",
   "minSec": "min sec",
+  "standardFieldLabel": "Standard",
 
   "settingsTitle": "Settings",
 

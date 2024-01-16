@@ -278,12 +278,13 @@ class ActiveCalibrationStandardForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activeCalibration = context.watch<ActiveCalibration>();
+    final localizations = AppLocalizations.of(context)!;
 
     Loggers.cal.i("active = $activeCalibration");
 
     final form = NumberForm(
       original: activeCalibration.standard,
-      label: "Standard",
+      label: localizations.standardFieldLabel,
       onValid: (value) => activeCalibration.haveStandard(value),
       onInvalid: () => activeCalibration.haveStandard(null),
     );
