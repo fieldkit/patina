@@ -325,7 +325,7 @@ class ActiveCalibrationStandardForm extends StatelessWidget {
     final activeCalibration = context.watch<ActiveCalibration>();
     final localizations = AppLocalizations.of(context)!;
 
-    Loggers.cal.i("active = $activeCalibration $initial");
+    Loggers.cal.v("active=$activeCalibration initial=$initial");
 
     final form = NumberForm(
       original: activeCalibration.standard ?? initial,

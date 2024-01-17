@@ -50,12 +50,12 @@ class UpdatePortal {
           if (idIfOk == null) {
             Loggers.main.w("$deviceId permissions-conflict");
           } else {
-            Loggers.main.i("$deviceId refreshed portal-id=$idIfOk");
+            Loggers.main.v("$deviceId refreshed portal-id=$idIfOk");
           }
         } on FrbAnyhowException catch (e) {
-          Loggers.main.i("Add or update portal error: ${e.anyhow}");
+          Loggers.main.e("portal-error: ${e.anyhow}");
         } catch (e) {
-          Loggers.main.i("Add or update portal error: $e");
+          Loggers.main.e("portal-error: $e");
         }
       } else {
         // TODO Warn user about lack of updates due to logged out.
@@ -644,7 +644,7 @@ class UploadTask extends Task {
 
   @override
   String toString() {
-    return "UploadTask($deviceId, $files)";
+    return "UploadTask($deviceId, ${files.length} files)";
   }
 
   @override

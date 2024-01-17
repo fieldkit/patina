@@ -116,8 +116,6 @@ class ClearCalibrationPage extends StatelessWidget {
     final calibrations = moduleConfiguration.calibrations;
     final outerNavigator = Navigator.of(context);
 
-    Loggers.cal.i("$calibrations");
-
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.calibrationTitle),
