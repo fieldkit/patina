@@ -414,7 +414,7 @@ impl Sdk {
         if let Some(addr) = self.get_nearby_addr(&device_id).await? {
             let client = query::device::Client::new()?;
             client.clear_calibration(&addr, module).await?;
-            let status = client.query_status(&addr).await?;
+            let status = client.query_readings(&addr).await?;
             self.nearby
                 .mark_finished_and_publish_reply(&device_id, status)
                 .await?;
@@ -428,7 +428,7 @@ impl Sdk {
         if let Some(addr) = self.get_nearby_addr(&device_id).await? {
             let client = query::device::Client::new()?;
             client.calibrate(&addr, module, &data).await?;
-            let status = client.query_status(&addr).await?;
+            let status = client.query_readings(&addr).await?;
             self.nearby
                 .mark_finished_and_publish_reply(&device_id, status)
                 .await?;

@@ -42,7 +42,8 @@ class _NumberFormState extends State<NumberForm> {
               },
               child: FormBuilderTextField(
                 name: 'value',
-                keyboardType: TextInputType.number,
+                keyboardType: const TextInputType.numberWithOptions(
+                    signed: true, decimal: true),
                 decoration: InputDecoration(labelText: widget.label),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),

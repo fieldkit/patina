@@ -66,6 +66,9 @@
   "oopsBugTitle": "Oops, bug?",
   "minSec": "min sec",
   "countdownInstructions": "Tap the Calibrate button to record the sensor value and the standard value.",
+  "standardFieldLabel": "Standard",
+  "backAreYouSure": "Are you sure?",
+  "backWarning": "Navigating away will require you start this calibration over.",
 
   "settingsTitle": "Settings",
 
