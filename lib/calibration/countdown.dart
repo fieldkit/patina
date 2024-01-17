@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:fk/constants.dart';
 import '../diagnostics.dart';
 
 class CountdownTimer {
@@ -25,10 +27,15 @@ class CountdownTimer {
     return now.isAfter(finallyDone);
   }
 
-  CountdownTimer({required this.expected, required this.started, required this.elapsed, this.skipped = false});
+  CountdownTimer(
+      {required this.expected,
+      required this.started,
+      required this.elapsed,
+      this.skipped = false});
 
   String toStringRemaining() {
-    return toMinutesSecondsString([(expected - elapsed).inSeconds, 0].reduce(max));
+    return toMinutesSecondsString(
+        [(expected - elapsed).inSeconds, 0].reduce(max));
   }
 
   String toMinutesSecondsString(int total) {
@@ -60,25 +67,19 @@ class DisplayCountdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final countdown = context.watch<CountdownTimer>();
-    return IntrinsicHeight(
-        child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(Icons.access_time, size: 60),
-        const VerticalDivider(
-          width: 10,
-          thickness: 1,
-          color: Colors.grey,
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(countdown.toStringRemaining(), style: const TextStyle(fontSize: 18)),
-            Text(AppLocalizations.of(context)!.minSec, style: const TextStyle(fontSize: 14))
-          ],
-        )
-      ],
-    ));
+    final screenSize = MediaQuery.of(context).size;
+
+    return CircularCountDownTimer(
+      width: screenSize.width * 0.2,
+      height: screenSize.width * 0.2,
+      duration: countdown.expected.inSeconds,
+      fillColor: AppColors.primaryColor,
+      ringColor: Colors.grey,
+      strokeWidth: 10,
+      textFormat: CountdownTextFormat.MM_SS,
+      isReverse: true,
+      strokeCap: StrokeCap.butt,
+    );
   }
 }
 
@@ -86,13 +87,15 @@ class ProvideCountdown extends StatelessWidget {
   final Duration duration;
   final Widget child;
 
-  const ProvideCountdown({super.key, required this.duration, required this.child});
+  const ProvideCountdown(
+      {super.key, required this.duration, required this.child});
 
   @override
   Widget build(BuildContext context) {
     final started = DateTime.now().toUtc();
     return StreamProvider(
-        initialData: CountdownTimer(expected: duration, started: started, elapsed: Duration.zero),
+        initialData: CountdownTimer(
+            expected: duration, started: started, elapsed: Duration.zero),
         updateShouldNotify: (previous, value) => true,
         create: (BuildContext context) {
           final countdown = CountdownTimer(
@@ -100,7 +103,8 @@ class ProvideCountdown extends StatelessWidget {
             started: started,
             elapsed: const Duration(seconds: 0),
           );
-          return Stream<CountdownTimer>.periodic(CountdownTimer.period, (c) => countdown.tick(Duration(seconds: c + 1)))
+          return Stream<CountdownTimer>.periodic(CountdownTimer.period,
+                  (c) => countdown.tick(Duration(seconds: c + 1)))
               .takeWhile((e) => !e.wasDone);
         },
         child: child);

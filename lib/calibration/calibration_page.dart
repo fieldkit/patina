@@ -159,6 +159,10 @@ class CalibrationWait extends StatelessWidget {
       case CanContinue.yes:
         return ElevatedButton(
             onPressed: () => onCalibrateAndContinue(),
+            style: ElevatedButton.styleFrom(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 150, vertical: 20),
+            ),
             child: Text(localizations.calibrateButton));
       case CanContinue.form:
         return ElevatedButton(
@@ -209,16 +213,37 @@ class FixedStandardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Container(
-            decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color.fromRGBO(212, 212, 212, 1),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(
+              color: const Color.fromRGBO(212, 212, 212, 1),
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(25))),
+        padding: const EdgeInsetsDirectional.fromSTEB(60, 20, 60, 20),
+        child: RichText(
+          text: TextSpan(
+            style: DefaultTextStyle.of(context).style,
+            children: <TextSpan>[
+              TextSpan(
+                text: standard.value.toString(),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black45,
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(5))),
-            padding: const EdgeInsets.all(8),
-            child: Text(localizations.standardValue(
-                sensor.calibratedUom, standard.value))));
+              ),
+              TextSpan(
+                text: localizations.standardValue2(sensor.calibratedUom),
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -253,6 +278,13 @@ class CurrentReadingAndStandard extends StatelessWidget {
     final sensorValue = DisplaySensorValue(
         sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
     return Column(children: [
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          AppLocalizations.of(context)!.countdownInstructions,
+          textAlign: TextAlign.center,
+        ),
+      ),
       sensorValue,
       StandardWidget(standard: standard, sensor: sensor),
     ]);
@@ -283,7 +315,7 @@ class ActiveCalibrationStandardForm extends StatelessWidget {
 
     final form = NumberForm(
       original: activeCalibration.standard,
-      label: "Standard",
+      label: "Standard", // TODO: l10n
       onValid: (value) => activeCalibration.haveStandard(value),
       onInvalid: () => activeCalibration.haveStandard(null),
     );
