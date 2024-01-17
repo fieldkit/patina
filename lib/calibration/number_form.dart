@@ -16,8 +16,7 @@ class NumberForm extends StatefulWidget {
       required this.onInvalid});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _NumberFormState createState() => _NumberFormState();
+  State<NumberForm> createState() => _NumberFormState();
 }
 
 class _NumberFormState extends State<NumberForm> {
@@ -42,6 +41,8 @@ class _NumberFormState extends State<NumberForm> {
               },
               child: FormBuilderTextField(
                 name: 'value',
+                initialValue:
+                    widget.original == null ? "" : widget.original.toString(),
                 keyboardType: const TextInputType.numberWithOptions(
                     signed: true, decimal: true),
                 decoration: InputDecoration(labelText: widget.label),
