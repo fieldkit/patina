@@ -108,28 +108,25 @@ class StationFirmwarePage extends StatelessWidget {
     final busy = stationOps.isBusy(config.deviceId);
     final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
     final availableFirmware = context.watch<AvailableFirmwareModel>();
-    bool checkIfFirmwareIsUpToDate({
-      required FirmwareInfo currentVersion,
-      required List<LocalFirmware> availableFirmware,
-    }) {
-      String currentVersionLabel = currentVersion.label;
 
-      // Check if any available firmware has a label that matches the current version label
-      return availableFirmware
-          .any((firmware) => firmware.label == currentVersionLabel);
-    }
-
-    final isFirmwareUpToDate = checkIfFirmwareIsUpToDate(
-      currentVersion: config.firmware,
-      availableFirmware: availableFirmware.firmware,
-    );
+    // Extract the current firmware version and its release date
     final firmwareVersion = config.firmware.label;
-
     final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
     final DateTime dateTime =
         DateTime.fromMillisecondsSinceEpoch(config.firmware.time);
     final String firmwareReleaseDate = formatter.format(dateTime);
 
+    // Determine if the firmware is up to date
+    var isFirmwareUpToDate = true; // Default to true, modify as needed
+    for (var firmware in availableFirmware.firmware) {
+      var comparison = FirmwareComparison.compare(firmware, config.firmware);
+      if (comparison.newer) {
+        isFirmwareUpToDate = false;
+        break;
+      }
+    }
+
+    // Generate firmware items
     final items = availableFirmware.firmware
         .where((firmware) => firmware.module == "fk-core")
         .map((firmware) => FirmwareItem(

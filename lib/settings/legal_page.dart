@@ -7,7 +7,7 @@ class LegalPage extends StatefulWidget {
   const LegalPage({super.key});
 
   @override
-  _LegalPageState createState() => _LegalPageState();
+  State<LegalPage> createState() => _LegalPageState();
 }
 
 class _LegalPageState extends State<LegalPage> {

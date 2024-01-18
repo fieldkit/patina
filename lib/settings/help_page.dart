@@ -1,3 +1,4 @@
+import 'package:fk/diagnostics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -7,7 +8,7 @@ class HelpPage extends StatefulWidget {
   const HelpPage({super.key});
 
   @override
-  _HelpPageState createState() => _HelpPageState();
+  State<HelpPage> createState() => _HelpPageState();
 }
 
 class _HelpPageState extends State<HelpPage> {
@@ -44,13 +45,6 @@ class _HelpPageState extends State<HelpPage> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: <Widget>[
-          // ListTile(
-          //   title: Text(AppLocalizations.of(context)!.helpCheckList),
-          //   onTap: () {
-          //     // TODO: Add the action for the Pre-deployment Checklist
-          //   },
-          // ),
-          // const Divider(),
           ListTile(
             title: Text(AppLocalizations.of(context)!.tutorialGuide),
             onTap: () {
@@ -61,6 +55,13 @@ class _HelpPageState extends State<HelpPage> {
                       child: QuickFlow(start: StartFlow(name: "onboarding"))),
                 ),
               );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.helpUploadLogs),
+            onTap: () {
+              ShareDiagnostics().upload();
             },
           ),
           const Divider(),
@@ -95,6 +96,15 @@ class _HelpPageState extends State<HelpPage> {
                         ),
                         TextSpan(
                           text: appVersion,
+                          style: _textStyle,
+                        ),
+                        TextSpan(
+                          text: '\n',
+                          style: _textStyle,
+                        ),
+                        TextSpan(
+                          text: getCommitRefName() ??
+                              AppLocalizations.of(context)!.developerBuild,
                           style: _textStyle,
                         ),
                       ],

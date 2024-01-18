@@ -52,6 +52,7 @@ build:android:
   image: $IMAGE_TAG
   script:
     - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
+    - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
     - flutter build apk && sccache --show-stats
   artifacts:
     name: "fk-patina-android-${CI_COMMIT_REF_NAME}"
@@ -89,7 +90,7 @@ build:ios:
     - security unlock-keychain -p ${KEYCHAIN_PASSWORD} login.keychain
     - security show-keychain-info login.keychain || true
     # END Signing
-    - echo '# Defaults' > .env
+    - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
     - export PATH=~/tools/flutter/bin:$PATH
     - flutter clean
     - flutter build ipa --export-method ad-hoc

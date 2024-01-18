@@ -114,12 +114,9 @@ impl NearbyDevices {
     pub async fn schedule_queries(&self) -> Result<bool> {
         match self.first_station_to_query().await? {
             Some(querying) => match self.query_station(&querying).await {
-                Ok(status) => Ok(self
-                    .mark_finished_and_publish_reply(&querying.device_id, status)
-                    .await
-                    .map(|_| true)?),
+                Ok(_) => Ok(true),
                 Err(e) => {
-                    warn!("Query station: {}", e);
+                    warn!("query station: {}", e);
 
                     match self.mark_retry(&querying.device_id).await? {
                         Connection::Connected => Ok(true),
@@ -237,7 +234,7 @@ impl NearbyDevices {
         Ok(())
     }
 
-    async fn mark_finished_and_publish_reply(
+    pub(crate) async fn mark_finished_and_publish_reply(
         &self,
         device_id: &DeviceId,
         status: RawAndDecoded<HttpReply>,
@@ -257,9 +254,12 @@ impl NearbyDevices {
         Ok(())
     }
 
-    async fn query_station(&self, querying: &Querying) -> Result<RawAndDecoded<HttpReply>> {
+    async fn query_station(&self, querying: &Querying) -> Result<()> {
         let client = query::device::Client::new()?;
-        Ok(client.query_readings(&querying.http_addr).await?)
+        let status = client.query_readings(&querying.http_addr).await?;
+        Ok(self
+            .mark_finished_and_publish_reply(&querying.device_id, status)
+            .await?)
     }
 
     pub async fn mark_busy(&self, device_id: &DeviceId, busy: bool) -> Result<()> {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fk/fullscreen_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -16,7 +18,7 @@ class Map extends StatefulWidget {
   const Map({super.key});
 
   @override
-  _MapState createState() => _MapState();
+  State<Map> createState() => _MapState();
 }
 
 class _MapState extends State<Map> {
@@ -39,6 +41,11 @@ class _MapState extends State<Map> {
   }
 
   Future<void> _getUserLocation() async {
+    // lyokone/location doesn't support Linux, silences noisy exception at startup.
+    if (Platform.isLinux) {
+      return;
+    }
+
     final location = Location();
     var hasPermission = await location.hasPermission();
 
