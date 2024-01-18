@@ -109,25 +109,139 @@ class StationFirmwarePage extends StatelessWidget {
     final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
     final availableFirmware = context.watch<AvailableFirmwareModel>();
 
-    // Extract the current firmware version and its release date
+    return Scaffold(
+      appBar: _buildAppBar(context, localizations),
+      body: ListView(
+        children: [
+          _buildStationCard(context, localizations),
+          _buildFirmwareUpdateCard(context, localizations, availableFirmware),
+          _buildFirmwareActionButton(context, localizations, availableFirmware),
+          _buildQuickTipCard(context, localizations),
+          ..._buildFirmwareItems(availableFirmware, operations, busy, context)
+        ],
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context, AppLocalizations localizations) {
+    return AppBar(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(localizations.firmwareTitle),
+          Text(
+            station.config!.name,
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStationCard(
+      BuildContext context, AppLocalizations localizations) {
     final firmwareVersion = config.firmware.label;
-    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
-    final DateTime dateTime =
-        DateTime.fromMillisecondsSinceEpoch(config.firmware.time);
-    final String firmwareReleaseDate = formatter.format(dateTime);
+    return Card(
+      shadowColor: Colors.white,
+      child: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+          tileColor: Colors.white,
+          leading: SizedBox(
+            width: 48.0,
+            height: 48.0,
+            child: Image(
+                image: station.connected
+                    ? const AssetImage(
+                        "resources/images/Icon_Station_Connected.png")
+                    : const AssetImage(
+                        "resources/images/Icon_Station_Not_Connected.png",
+                      )),
+          ),
+          title:
+              Text(station.config!.name, style: const TextStyle(fontSize: 18)),
+          subtitle: Text(
+              AppLocalizations.of(context)!.firmwareVersion(firmwareVersion)),
+          // TODO: Remove trailing text for connnected to match old app design
+          trailing: Text(
+              station.connected
+                  ? AppLocalizations.of(context)!.firmwareConnected
+                  : AppLocalizations.of(context)!.firmwareNotConnected,
+              style: const TextStyle(fontSize: 14)),
+        ),
+      ),
+    );
+  }
 
-    // Determine if the firmware is up to date
-    var isFirmwareUpToDate = true; // Default to true, modify as needed
-    for (var firmware in availableFirmware.firmware) {
-      var comparison = FirmwareComparison.compare(firmware, config.firmware);
-      if (comparison.newer) {
-        isFirmwareUpToDate = false;
-        break;
-      }
-    }
+  Widget _buildFirmwareUpdateCard(
+      BuildContext context,
+      AppLocalizations localizations,
+      AvailableFirmwareModel availableFirmware) {
+    final isFirmwareUpToDate = _checkIfFirmwareIsUpToDate(availableFirmware);
+    final firmwareReleaseDate = _formatFirmwareReleaseDate();
+    return Card(
+      shadowColor: Colors.white,
+      child: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+            tileColor: Colors.white,
+            title: Text(isFirmwareUpToDate
+                ? AppLocalizations.of(context)!.firmwareUpdated
+                : AppLocalizations.of(context)!.firmwareNotUpdated),
+            subtitle: Text(AppLocalizations.of(context)!.firmwareReleased(
+                firmwareReleaseDate))), // TODO: Fix release date, currently 1970
+      ),
+    );
+  }
 
-    // Generate firmware items
-    final items = availableFirmware.firmware
+  Widget _buildFirmwareActionButton(
+      BuildContext context,
+      AppLocalizations localizations,
+      AvailableFirmwareModel availableFirmware) {
+    final isFirmwareUpToDate = _checkIfFirmwareIsUpToDate(availableFirmware);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
+      child: ElevatedButton(
+        onPressed: () {
+          isFirmwareUpToDate
+              ? null
+              : () async {
+                  // Logic to initiate firmware update
+                  await availableFirmware.upgrade(
+                      config.deviceId,
+                      availableFirmware
+                          .firmware.last); // Jacob, is this correct?
+                };
+        },
+        style: TextButton.styleFrom(
+          backgroundColor: AppColors.primaryColor,
+          side: const BorderSide(color: AppColors.primaryColor, width: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 18.0),
+        ),
+        child: Text(AppLocalizations.of(context)!.firmwareUpdate,
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
+      ),
+    );
+  }
+
+  Widget _buildQuickTipCard(
+      BuildContext context, AppLocalizations localizations) {
+    return Card(
+      color: const Color.fromARGB(255, 252, 252, 252),
+      child: Container(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+              leading: const Icon(Icons.lightbulb),
+              title: Text(AppLocalizations.of(context)!.quickTip),
+              subtitle: Text(AppLocalizations.of(context)!.firmwareTip))),
+    );
+  }
+
+  List<Widget> _buildFirmwareItems(AvailableFirmwareModel availableFirmware,
+      List<UpgradeOperation> operations, bool busy, BuildContext context) {
+    return availableFirmware.firmware
         .where((firmware) => firmware.module == "fk-core")
         .map((firmware) => FirmwareItem(
             comparison: FirmwareComparison.compare(firmware, config.firmware),
@@ -140,114 +254,21 @@ class StationFirmwarePage extends StatelessWidget {
               await availableFirmware.upgrade(config.deviceId, firmware);
             }))
         .toList();
+  }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(localizations.firmwareTitle),
-            Text(
-              station.config!.name,
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
-      body: ListView(
-        children: [
-          Card(
-            shadowColor: Colors.white,
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(8.0),
-              child: ListTile(
-                tileColor: Colors.white,
-                leading: SizedBox(
-                  width: 48.0, // Adjust the width as needed
-                  height: 48.0, // Adjust the height as needed
-                  child: Image(
-                      image: station.connected
-                          ? const AssetImage(
-                              "resources/images/Icon_Station_Connected.png")
-                          : const AssetImage(
-                              "resources/images/Icon_Station_Not_Connected.png",
-                            )),
-                ),
-                title: Text(station.config!.name,
-                    style: const TextStyle(fontSize: 18)),
-                subtitle: Text(AppLocalizations.of(context)!
-                    .firmwareVersion(firmwareVersion)),
-                // TODO: Remove trailing text for connnected to match old app design
-                trailing: Text(
-                    station.connected
-                        ? AppLocalizations.of(context)!.firmwareConnected
-                        : AppLocalizations.of(context)!.firmwareNotConnected,
-                    style: const TextStyle(fontSize: 14)),
-              ),
-            ),
-          ),
-          Card(
-            shadowColor: Colors.white,
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(8.0),
-              child: ListTile(
-                  tileColor: Colors.white,
-                  title: Text(isFirmwareUpToDate
-                      ? AppLocalizations.of(context)!.firmwareUpdated
-                      : AppLocalizations.of(context)!.firmwareNotUpdated),
-                  subtitle: Text(AppLocalizations.of(context)!.firmwareReleased(
-                      firmwareReleaseDate))), // TODO: Fix release date, currently 1970
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
-            child: ElevatedButton(
-              onPressed: isFirmwareUpToDate
-                  ? null
-                  : () {
-                      // TODO: Add logic to initiate firmware update
-                    },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: const Color.fromARGB(255, 201, 201, 201),
-                textStyle: const TextStyle(fontSize: 16),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 18.0),
-              ),
-              child: Text(AppLocalizations.of(context)!.firmwareUpdate),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
-            child: ElevatedButton(
-              onPressed: () {
-                // TODO: Add logic to check for new firmware
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.white,
-                side: const BorderSide(color: AppColors.primaryColor, width: 1),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 18.0),
-              ),
-              child: Text(AppLocalizations.of(context)!.firmwareCheck,
-                  style: const TextStyle(
-                      color: AppColors.primaryColor, fontSize: 16)),
-            ),
-          ),
-          Card(
-            color: const Color.fromARGB(255, 252, 252, 252),
-            child: Container(
-                padding: const EdgeInsets.all(8.0),
-                child: ListTile(
-                    leading: const Icon(Icons.lightbulb),
-                    title: Text(AppLocalizations.of(context)!.quickTip),
-                    subtitle: Text(AppLocalizations.of(context)!.firmwareTip))),
-          ),
-          ...items
-        ],
-      ),
-    );
+  bool _checkIfFirmwareIsUpToDate(AvailableFirmwareModel availableFirmware) {
+    for (var firmware in availableFirmware.firmware) {
+      var comparison = FirmwareComparison.compare(firmware, config.firmware);
+      if (comparison.newer) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  String _formatFirmwareReleaseDate() {
+    final formatter = DateFormat('MM-dd HH:mm:ss');
+    return formatter
+        .format(DateTime.fromMillisecondsSinceEpoch(config.firmware.time));
   }
 }
