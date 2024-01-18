@@ -70,15 +70,16 @@ class DisplayCountdown extends StatelessWidget {
     final screenSize = MediaQuery.of(context).size;
 
     return CircularCountDownTimer(
-      width: screenSize.width * 0.2,
-      height: screenSize.width * 0.2,
+      width: screenSize.width * 0.3,
+      height: screenSize.width * 0.3,
       duration: countdown.expected.inSeconds,
-      fillColor: AppColors.primaryColor,
+      fillColor: const Color.fromRGBO(61, 126, 195, 1),
       ringColor: Colors.grey,
       strokeWidth: 10,
       textFormat: CountdownTextFormat.MM_SS,
       isReverse: true,
       strokeCap: StrokeCap.butt,
+      textStyle: const TextStyle(fontSize: 30.0),
     );
   }
 }

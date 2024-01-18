@@ -52,9 +52,11 @@
   "waitingOnForm": "Values Required",
   "standardValue": "{value} Standard Value ({uom})",
   "standardValue2": " Standard Value ({uom})",
+  "sensorValue": "Sensor Value:",
   "oopsBugTitle": "Oops, bug?",
   "minSec": "min sec",
   "countdownInstructions": "Tap the Calibrate button to record the sensor value and the standard value.",
+  "calibrationMessage": "Recording these values together allows us to later calibrate the sensor.",
 
   "settingsTitle": "Settings",
 
