@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/link.dart';
 
 class LegalPage extends StatefulWidget {
   const LegalPage({super.key});
 
   @override
-  _LegalPageState createState() => _LegalPageState();
+  State<LegalPage> createState() => _LegalPageState();
 }
 
 class _LegalPageState extends State<LegalPage> {

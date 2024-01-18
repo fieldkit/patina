@@ -22,23 +22,61 @@ class CalibrationPage extends StatelessWidget {
 
   CalibrationPage({super.key, this.current, required this.config});
 
+  Future<bool?> _confirmBackDialog(BuildContext context) async {
+    return showDialog<bool>(
+        context: context,
+        builder: (context) {
+          final localizations = AppLocalizations.of(context)!;
+          final navigator = Navigator.of(context);
+
+          return AlertDialog(
+            title: Text(localizations.backAreYouSure),
+            content: Text(localizations.backWarning),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    navigator.pop(false);
+                  },
+                  child: Text(localizations.confirmCancel)),
+              TextButton(
+                  onPressed: () async {
+                    navigator.pop(true);
+                  },
+                  child: Text(AppLocalizations.of(context)!.confirmYes))
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.calibrationTitle),
-        ),
-        body: ChangeNotifierProvider(
-            create: (context) => active,
-            child: ProvideCountdown(
-                duration: const Duration(seconds: 120),
-                child: Consumer<CountdownTimer>(
-                    builder: (context, countdown, child) {
-                  return CalibrationPanel(
-                      config: config,
-                      current: current ??
-                          CurrentCalibration(curveType: config.curveType));
-                }))));
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) async {
+          if (didPop) {
+            return;
+          }
+          final NavigatorState navigator = Navigator.of(context);
+          final bool? shouldPop = await _confirmBackDialog(context);
+          if (shouldPop ?? false) {
+            navigator.pop();
+          }
+        },
+        child: dismissKeyboardOnOutsideGap(Scaffold(
+            appBar: AppBar(
+              title: Text(AppLocalizations.of(context)!.calibrationTitle),
+            ),
+            body: ChangeNotifierProvider(
+                create: (context) => active,
+                child: ProvideCountdown(
+                    duration: const Duration(seconds: 120),
+                    child: Consumer<CountdownTimer>(
+                        builder: (context, countdown, child) {
+                      return CalibrationPanel(
+                          config: config,
+                          current: current ??
+                              CurrentCalibration(curveType: config.curveType));
+                    }))))));
   }
 }
 
@@ -79,7 +117,7 @@ class CalibrationPanel extends StatelessWidget {
 
       navigator.popUntil((route) => route.isFirst);
     } else {
-      navigator.push(
+      navigator.pushReplacement(
         MaterialPageRoute(
           builder: (context) => CalibrationPage(
             config: nextConfig,
@@ -101,7 +139,7 @@ class CalibrationPanel extends StatelessWidget {
           ? countdown.finished.difference(sensorTime)
           : null;
       Loggers.cal.i(
-          "elapsed=${countdown.elapsed} skipped=${countdown.skipped} untilOrAfter=$untilOrAfter sensor-time=$sensorTime sensor-cal=${sensor.value?.value} sensor-uncal=${sensor.value?.uncalibrated}");
+          "elapsed=${countdown.elapsed} skipped=${countdown.skipped} finished=${countdown.finished} untilOrAfter=$untilOrAfter sensor-time=$sensorTime sensor-cal=${sensor.value?.value} sensor-uncal=${sensor.value?.uncalibrated}");
       final time = sensor.value?.time;
       if (time == null) {
         return CanContinue.staleValue;
@@ -343,12 +381,13 @@ class ActiveCalibrationStandardForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activeCalibration = context.watch<ActiveCalibration>();
+    final localizations = AppLocalizations.of(context)!;
 
     Loggers.cal.i("active = $activeCalibration");
 
     final form = NumberForm(
       original: activeCalibration.standard,
-      label: "Standard", // TODO: l10n
+      label: localizations.standardFieldLabel,
       onValid: (value) => activeCalibration.haveStandard(value),
       onInvalid: () => activeCalibration.haveStandard(null),
     );

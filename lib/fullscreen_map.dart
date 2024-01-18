@@ -15,7 +15,7 @@ class FullscreenMap extends StatefulWidget {
   const FullscreenMap({super.key, required this.initialLocation});
 
   @override
-  _FullscreenMapState createState() => _FullscreenMapState();
+  State<FullscreenMap> createState() => _FullscreenMapState();
 }
 
 class _FullscreenMapState extends State<FullscreenMap> {
