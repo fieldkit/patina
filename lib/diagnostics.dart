@@ -6,9 +6,27 @@ import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 
+String? getCommitRefName() {
+  return dotenv.env['CI_COMMIT_REF_NAME'];
+}
+
+bool isAutomatedBuild() {
+  return getCommitRefName() != null;
+}
+
 class NoneFilter extends LogFilter {
   @override
   bool shouldLog(LogEvent event) => false;
+}
+
+class StandardFilter extends LogFilter {
+  @override
+  bool shouldLog(LogEvent event) => event.level.index >= Level.debug.index;
+}
+
+class AutomatedBuildFilter extends LogFilter {
+  @override
+  bool shouldLog(LogEvent event) => event.level.index >= Level.verbose.index;
 }
 
 class AddLoggerName extends LogPrinter {
@@ -37,18 +55,16 @@ class AddLoggerName extends LogPrinter {
 final devNull = Logger(filter: NoneFilter());
 
 Logger create(File file, String name, bool colors) {
+  final LogFilter filter =
+      isAutomatedBuild() ? AutomatedBuildFilter() : StandardFilter();
   return Logger(
-    filter: null,
+    filter: filter,
     printer: AddLoggerName(SimplePrinter(colors: colors), name, colors),
     output: MultiOutput([
       ConsoleOutput(),
       FileOutput(file: file),
     ]),
   );
-}
-
-String? getCommitRefName() {
-  return dotenv.env['CI_COMMIT_REF_NAME'];
 }
 
 class Loggers {
@@ -62,8 +78,7 @@ class Loggers {
   static Logger _markDown = devNull;
 
   static void initialize(String logsPath) {
-    final isAutomatedBuild = getCommitRefName() != null;
-    final colors = !isAutomatedBuild;
+    final colors = !isAutomatedBuild();
     final path = "$logsPath/logs.txt";
     final File file = File(path);
     _main = create(file, "main", colors);

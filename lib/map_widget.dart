@@ -18,7 +18,7 @@ class Map extends StatefulWidget {
   const Map({super.key});
 
   @override
-  _MapState createState() => _MapState();
+  State<Map> createState() => _MapState();
 }
 
 class _MapState extends State<Map> {

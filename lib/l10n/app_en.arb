@@ -64,6 +64,9 @@
   "standardValue": "{value} Standard Value ({uom})",
   "oopsBugTitle": "Oops, bug?",
   "minSec": "min sec",
+  "standardFieldLabel": "Standard",
+  "backAreYouSure": "Are you sure?",
+  "backWarning": "Navigating away will require you start this calibration over.",
 
   "settingsTitle": "Settings",
 

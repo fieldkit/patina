@@ -12,10 +12,11 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    return WillPopScope(
-        onWillPop: () async {
-          onDone();
-          return true; // return true to allow the pop action
+    return PopScope(
+        onPopInvoked: (bool didPop) async {
+          if (didPop) {
+            onDone();
+          }
         },
         child: Scaffold(
           body: Center(
@@ -24,22 +25,18 @@ class WelcomeScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('resources/images/logo_fk_blue.png', height: 50),
-                  const SizedBox(height: 20),
-                  Image.asset('resources/images/art/welcome.jpg', height: 380),
-                  const SizedBox(height: 20),
+                  Image.asset('resources/images/logo_fk_blue.png'),
+                  Image.asset('resources/images/art/welcome.jpg'),
                   Text(
                     AppLocalizations.of(context)!.welcomeTitle,
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 10),
                   Text(
                     AppLocalizations.of(context)!.welcomeMessage,
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16),
                   ),
-                  const SizedBox(height: 30),
                   Divider(
                     color: Colors.grey[300],
                     thickness: 1.0,
@@ -47,7 +44,7 @@ class WelcomeScreen extends StatelessWidget {
                     endIndent: 50,
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(50, 10, 50, 20),
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(

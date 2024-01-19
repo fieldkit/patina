@@ -65,7 +65,7 @@ dependencies:
   caldor:
     git:
       url: https://gitlab.com/fieldkit/libraries/caldor.git
-      ref: 7215f8182a056774a339d422c785cf17c124f111
+      ref: 165135a4fadf6dccc9f8460878921d1a7b282983
   flows:
     path: './flows'
   fk_data_protocol:

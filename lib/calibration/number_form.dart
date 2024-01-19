@@ -8,11 +8,15 @@ class NumberForm extends StatefulWidget {
   final void Function(double) onValid;
   final VoidCallback onInvalid;
 
-  const NumberForm({super.key, required this.label, required this.original, required this.onValid, required this.onInvalid});
+  const NumberForm(
+      {super.key,
+      required this.label,
+      required this.original,
+      required this.onValid,
+      required this.onInvalid});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _NumberFormState createState() => _NumberFormState();
+  State<NumberForm> createState() => _NumberFormState();
 }
 
 class _NumberFormState extends State<NumberForm> {
@@ -37,6 +41,10 @@ class _NumberFormState extends State<NumberForm> {
               },
               child: FormBuilderTextField(
                 name: 'value',
+                initialValue:
+                    widget.original == null ? "" : widget.original.toString(),
+                keyboardType: const TextInputType.numberWithOptions(
+                    signed: true, decimal: true),
                 decoration: InputDecoration(labelText: widget.label),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
