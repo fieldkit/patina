@@ -56,6 +56,7 @@
   "unknownStationTitle": "Unknown Station",
   "backButtonTitle": "Back",
 
+  "calibrationStartTimer": "Start Timer",
   "calibrationTitle": "Calibration",
   "calibrateButton": "Calibrate",
   "waitingOnTimer": "Waiting on Timer",
