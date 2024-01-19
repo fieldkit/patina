@@ -197,6 +197,10 @@ class CalibrationWait extends StatelessWidget {
       case CanContinue.yes:
         return ElevatedButton(
             onPressed: () => onCalibrateAndContinue(),
+            style: ElevatedButton.styleFrom(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 150, vertical: 20),
+            ),
             child: Text(localizations.calibrateButton));
       case CanContinue.form:
         return ElevatedButton(
@@ -219,8 +223,22 @@ class CalibrationWait extends StatelessWidget {
         sensor: sensor,
         standard: config.standard,
       ),
-      const DisplayCountdown(),
       continueWidget(context),
+      Padding(
+        padding: const EdgeInsets.all(20),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          color: Colors.grey[200],
+          child: Text(
+            AppLocalizations.of(context)!.calibrationMessage,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              color: Colors.black54,
+            ),
+          ),
+        ),
+      ),
     ];
 
     return Center(
@@ -247,16 +265,37 @@ class FixedStandardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Container(
-            decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color.fromRGBO(212, 212, 212, 1),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 30),
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(
+              color: const Color.fromRGBO(212, 212, 212, 1),
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(25))),
+        padding: const EdgeInsetsDirectional.fromSTEB(60, 6, 60, 6),
+        child: RichText(
+          text: TextSpan(
+            style: DefaultTextStyle.of(context).style,
+            children: <TextSpan>[
+              TextSpan(
+                text: standard.value.toString(),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black45,
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(5))),
-            padding: const EdgeInsets.all(8),
-            child: Text(localizations.standardValue(
-                sensor.calibratedUom, standard.value))));
+              ),
+              TextSpan(
+                text: localizations.standardValue2(sensor.calibratedUom),
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -292,8 +331,34 @@ class CurrentReadingAndStandard extends StatelessWidget {
     final localized = LocalizedSensor.get(sensor);
     final sensorValue = DisplaySensorValue(
         sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
+
     return Column(children: [
-      sensorValue,
+      Padding(
+        padding: const EdgeInsets.fromLTRB(20, 30, 20, 40),
+        child: Text(
+          AppLocalizations.of(context)!.countdownInstructions,
+          textAlign: TextAlign.center,
+        ),
+      ),
+      const DisplayCountdown(),
+      Padding(
+          padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Align(
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Text(AppLocalizations.of(context)!.sensorValue,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black54,
+                      )),
+                  sensorValue,
+                ],
+              ),
+            ),
+          )),
       StandardWidget(standard: standard, sensor: sensor),
     ]);
   }
