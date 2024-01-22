@@ -13,7 +13,7 @@ import 'calibration_model.dart';
 import 'countdown.dart';
 import 'number_form.dart';
 
-enum CanContinue { form, timer, staleValue, yes }
+enum CanContinue { ready, form, countdown, staleValue, yes }
 
 class CalibrationPage extends StatelessWidget {
   final ActiveCalibration active = ActiveCalibration();
@@ -130,27 +130,27 @@ class CalibrationPanel extends StatelessWidget {
 
   CanContinue canContinue(SensorConfig sensor, Standard standard,
       ActiveCalibration active, CountdownTimer countdown) {
+    if (!countdown.started) {
+      return CanContinue.ready;
+    }
+
     if (!standard.acceptable && active.invalid) {
       return CanContinue.form;
     }
+
     if (countdown.done) {
-      final sensorTime = sensor.value?.time;
-      final untilOrAfter = (sensorTime != null)
-          ? countdown.finished.difference(sensorTime)
-          : null;
-      Loggers.cal.i(
-          "elapsed=${countdown.elapsed} skipped=${countdown.skipped} finished=${countdown.finished} untilOrAfter=$untilOrAfter sensor-time=$sensorTime sensor-cal=${sensor.value?.value} sensor-uncal=${sensor.value?.uncalibrated}");
       final time = sensor.value?.time;
       if (time == null) {
         return CanContinue.staleValue;
       } else {
-        if (countdown.isValueFresh(time)) {
+        if (countdown.finishedBefore(time)) {
           return CanContinue.yes;
         }
         return CanContinue.staleValue;
       }
     }
-    return CanContinue.timer;
+
+    return CanContinue.countdown;
   }
 
   @override
@@ -167,6 +167,7 @@ class CalibrationPanel extends StatelessWidget {
     return CalibrationWait(
       config: config,
       sensor: sensor,
+      onStartTimer: () => countdown.start(DateTime.now()),
       canContinue: canContinue(sensor, config.standard, active, countdown),
       onCalibrateAndContinue: () =>
           calibrateAndContinue(context, sensor, current, active),
@@ -178,6 +179,7 @@ class CalibrationPanel extends StatelessWidget {
 class CalibrationWait extends StatelessWidget {
   final CalibrationPointConfig config;
   final SensorConfig sensor;
+  final VoidCallback onStartTimer;
   final VoidCallback onCalibrateAndContinue;
   final VoidCallback onSkipTimer;
   final CanContinue canContinue;
@@ -186,33 +188,44 @@ class CalibrationWait extends StatelessWidget {
       {super.key,
       required this.config,
       required this.sensor,
+      required this.onStartTimer,
       required this.onCalibrateAndContinue,
       required this.canContinue,
       required this.onSkipTimer});
 
   Widget continueWidget(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final buttonStyle = ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 150, vertical: 20));
 
     switch (canContinue) {
+      case CanContinue.ready:
+        return ElevatedButton(
+            onPressed: onStartTimer,
+            style: buttonStyle,
+            child: Text(localizations.calibrationStartTimer));
       case CanContinue.yes:
         return ElevatedButton(
             onPressed: () => onCalibrateAndContinue(),
-            style: ElevatedButton.styleFrom(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 150, vertical: 20),
-            ),
+            style: buttonStyle,
             child: Text(localizations.calibrateButton));
       case CanContinue.form:
         return ElevatedButton(
-            onPressed: null, child: Text(localizations.waitingOnForm));
-      case CanContinue.timer:
+            onPressed: null,
+            style: buttonStyle,
+            child: Text(localizations.waitingOnForm));
+      case CanContinue.countdown:
         return GestureDetector(
             onLongPress: onSkipTimer,
             child: ElevatedButton(
-                onPressed: null, child: Text(localizations.waitingOnTimer)));
+                onPressed: null,
+                style: buttonStyle,
+                child: Text(localizations.waitingOnTimer)));
       case CanContinue.staleValue:
         return ElevatedButton(
-            onPressed: null, child: Text(localizations.waitingOnReading));
+            onPressed: null,
+            style: buttonStyle,
+            child: Text(localizations.waitingOnReading));
     }
   }
 
