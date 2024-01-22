@@ -58,6 +58,10 @@
 
   "calibrationTitle": "Calibration",
   "calibrateButton": "Calibrate",
+  "calibrationDelete": "Delete",
+  "calibrationBack": "Back",
+  "factory": "Factory",
+  "uncalibrated": "Uncalibrated",
   "waitingOnTimer": "Waiting on Timer",
   "waitingOnReading": "Waiting for Fresh Reading",
   "waitingOnForm": "Values Required",

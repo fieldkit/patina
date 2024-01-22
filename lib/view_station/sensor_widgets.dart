@@ -129,7 +129,7 @@ class ModuleInfo extends StatelessWidget {
                   final config = CalibrationPointConfig.fromTemplate(
                       module.identity, localized.calibrationTemplate!);
                   if (moduleConfigurations.find(module.identity).isCalibrated) {
-                    return ClearCalibrationPage(config: config);
+                    return ClearCalibrationPage(config: config, module: module);
                   } else {
                     // return ClearCalibrationPage(config: config);
                     return CalibrationPage(config: config);
@@ -194,7 +194,7 @@ class ModuleInfo extends StatelessWidget {
         module.identity, localized.calibrationTemplate!);
 
     return moduleConfigurations.find(module.identity).isCalibrated
-        ? ClearCalibrationPage(config: config)
+        ? ClearCalibrationPage(config: config, module: module)
         : CalibrationPage(config: config);
   }
 }
