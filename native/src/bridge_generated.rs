@@ -532,6 +532,22 @@ impl rust2dart::IntoIntoDart<NetworkConfig> for NetworkConfig {
     }
 }
 
+impl support::IntoDart for PortalError {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Authentication => vec![0.into_dart()],
+            Self::Other(field0) => vec![1.into_dart(), field0.into_into_dart().into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for PortalError {}
+impl rust2dart::IntoIntoDart<PortalError> for PortalError {
+    fn into_into_dart(self) -> Self {
+        self
+    }
+}
+
 impl support::IntoDart for RecordArchive {
     fn into_dart(self) -> support::DartAbi {
         vec![

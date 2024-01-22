@@ -17,7 +17,7 @@ use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 use discovery::{DeviceId, Discovered, Discovery};
 use query::{
     device::{self, HttpReply},
-    portal::{DecodedToken, PortalError, StatusCode},
+    portal::{DecodedToken, StatusCode},
 };
 use store::Db;
 
@@ -222,7 +222,11 @@ impl Sdk {
             .collect::<Result<Vec<_>>>()?)
     }
 
-    async fn authenticate_portal(&self, email: String, password: String) -> Result<Authenticated> {
+    async fn authenticate_portal(
+        &self,
+        email: String,
+        password: String,
+    ) -> Result<Authenticated, PortalError> {
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let tokens = client
             .login(query::portal::LoginPayload {
@@ -246,7 +250,7 @@ impl Sdk {
         &self,
         tokens: Tokens,
         station: AddOrUpdatePortalStation,
-    ) -> Result<Option<u32>> {
+    ) -> Result<Option<u32>, PortalError> {
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let authenticated = client.to_authenticated(tokens.into())?;
 
@@ -256,7 +260,7 @@ impl Sdk {
             .map(|s| s.id))
     }
 
-    async fn validate_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
+    async fn validate_tokens(&self, tokens: Tokens) -> Result<Authenticated, PortalError> {
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let client = client.to_authenticated(tokens.clone().into())?;
 
@@ -274,7 +278,7 @@ impl Sdk {
                 email: ourselves.email,
                 tokens,
             }),
-            Err(PortalError::HttpStatus(StatusCode::UNAUTHORIZED)) => {
+            Err(query::portal::PortalError::HttpStatus(StatusCode::UNAUTHORIZED)) => {
                 Ok(self.refresh_tokens(tokens).await?)
             }
             Err(e) => {
@@ -284,7 +288,7 @@ impl Sdk {
         }
     }
 
-    async fn refresh_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
+    async fn refresh_tokens(&self, tokens: Tokens) -> Result<Authenticated, PortalError> {
         let refresh_token = tokens.refresh_token()?;
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let refreshed = client.use_refresh_token(&refresh_token).await?;
@@ -324,7 +328,7 @@ impl Sdk {
         device_id: DeviceId,
         tokens: Tokens,
         files: Vec<RecordArchive>,
-    ) -> Result<TransferProgress> {
+    ) -> Result<TransferProgress, PortalError> {
         info!("{:?} start upload", &device_id);
 
         tokio::task::spawn({
@@ -437,7 +441,10 @@ impl Sdk {
         Ok(())
     }
 
-    async fn cache_firmware(&self, tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> {
+    async fn cache_firmware(
+        &self,
+        tokens: Option<Tokens>,
+    ) -> Result<FirmwareDownloadStatus, PortalError> {
         crate::firmware::cache_firmware(
             self.portal_base_url.clone(),
             self.storage_path.clone(),
@@ -486,7 +493,7 @@ pub fn get_my_stations() -> Result<Vec<StationConfig>> {
     Ok(with_runtime(|rt, sdk| rt.block_on(sdk.get_my_stations()))?)
 }
 
-pub fn authenticate_portal(email: String, password: String) -> Result<Authenticated> {
+pub fn authenticate_portal(email: String, password: String) -> Result<Authenticated, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.authenticate_portal(email, password))
     })?)
@@ -495,7 +502,7 @@ pub fn authenticate_portal(email: String, password: String) -> Result<Authentica
 pub fn add_or_update_station_in_portal(
     tokens: Tokens,
     station: AddOrUpdatePortalStation,
-) -> Result<Option<u32>> {
+) -> Result<Option<u32>, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.add_or_update_station_in_portal(tokens, station))
     })?)
@@ -522,7 +529,7 @@ pub fn calibrate(device_id: String, module: usize, data: Vec<u8>) -> Result<()> 
     })?)
 }
 
-pub fn validate_tokens(tokens: Tokens) -> Result<Authenticated> {
+pub fn validate_tokens(tokens: Tokens) -> Result<Authenticated, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.validate_tokens(tokens))
     })?)
@@ -538,13 +545,13 @@ pub fn start_upload(
     device_id: String,
     tokens: Tokens,
     files: Vec<RecordArchive>,
-) -> Result<TransferProgress> {
+) -> Result<TransferProgress, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.start_upload(DeviceId(device_id.clone()), tokens, files))
     })?)
 }
 
-pub fn cache_firmware(tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> {
+pub fn cache_firmware(tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.cache_firmware(tokens))
     })?)
@@ -570,7 +577,7 @@ fn start_runtime() -> Result<Runtime> {
     Ok(rt)
 }
 
-fn with_runtime<R>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R>) -> Result<R> {
+fn with_runtime<R, E>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R, E>) -> Result<R, E> {
     let mut sdk_guard = SDK.lock().expect("Get sdk");
     let sdk = sdk_guard.as_mut().expect("Sdk present");
 
@@ -704,11 +711,11 @@ impl Tokens {
         }
     }
 
-    fn decoded(&self) -> Result<DecodedToken, PortalError> {
+    fn decoded(&self) -> Result<DecodedToken, query::portal::PortalError> {
         DecodedToken::decode(&self.token)
     }
 
-    fn refresh_token(&self) -> Result<String> {
+    fn refresh_token(&self) -> Result<String, query::portal::PortalError> {
         Ok(self.decoded()?.refresh_token)
     }
 }
@@ -1006,3 +1013,22 @@ impl TryInto<StationConfig> for StationAndConnection {
 
 #[derive(Error, Debug)]
 pub enum SdkMappingError {}
+
+#[derive(Error, Debug)]
+pub enum PortalError {
+    #[error("Authentication")]
+    Authentication,
+    #[error("Other")]
+    Other(String),
+}
+
+impl From<query::portal::PortalError> for PortalError {
+    fn from(value: query::portal::PortalError) -> Self {
+        if let query::portal::PortalError::HttpStatus(status) = value {
+            if status.is_client_error() {
+                return PortalError::Authentication;
+            }
+        }
+        return PortalError::Other(value.to_string());
+    }
+}

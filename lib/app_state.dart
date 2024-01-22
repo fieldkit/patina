@@ -37,7 +37,7 @@ class UpdatePortal {
       final deviceId = refreshed.field0.deviceId;
       final account = portalAccounts.getAccountForDevice(deviceId);
       final tokens = account?.tokens;
-      if (tokens != null) {
+      if (account != null && tokens != null) {
         final name = refreshed.field0.name;
         try {
           final idIfOk = await api.addOrUpdateStationInPortal(
@@ -52,6 +52,9 @@ class UpdatePortal {
           } else {
             Loggers.main.v("$deviceId refreshed portal-id=$idIfOk");
           }
+        } on PortalError_Authentication catch (e) {
+          Loggers.main.e("portal-error: auth $e");
+          await portalAccounts.validateAccount(account);
         } on FrbAnyhowException catch (e) {
           Loggers.main.e("portal-error: ${e.anyhow}");
         } catch (e) {
@@ -1042,19 +1045,30 @@ class PortalAccounts extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<PortalAccounts> validateAccount(PortalAccount account) async {
+    final tokens = account.tokens;
+    if (tokens != null) {
+      _accounts.remove(account);
+      try {
+        _accounts.add(PortalAccount.fromAuthenticated(
+            await api.validateTokens(tokens: tokens)));
+      } catch (e) {
+        Loggers.state.e("Exception validating: $e");
+        _accounts.add(account.invalid());
+      }
+      await _save();
+      notifyListeners();
+    }
+    return this;
+  }
+
   Future<PortalAccounts> validate() async {
     final validating = _accounts.map((e) => e).toList();
     _accounts.clear();
     for (final iter in validating) {
       final tokens = iter.tokens;
       if (tokens != null) {
-        try {
-          _accounts.add(PortalAccount.fromAuthenticated(
-              await api.validateTokens(tokens: tokens)));
-        } catch (e) {
-          Loggers.state.e("Exception validating: $e");
-          _accounts.add(iter.invalid());
-        }
+        await validateAccount(iter);
       } else {
         _accounts.add(iter);
       }

@@ -270,6 +270,14 @@ class NetworkConfig {
   });
 }
 
+@freezed
+sealed class PortalError with _$PortalError implements FrbException {
+  const factory PortalError.authentication() = PortalError_Authentication;
+  const factory PortalError.other(
+    String field0,
+  ) = PortalError_Other;
+}
+
 class RecordArchive {
   final String deviceId;
   final String path;

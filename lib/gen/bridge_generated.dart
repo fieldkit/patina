@@ -67,7 +67,7 @@ class NativeImpl implements Native {
       callFfi: (port_) =>
           _platform.inner.wire_authenticate_portal(port_, arg0, arg1),
       parseSuccessData: _wire2api_authenticated,
-      parseErrorData: _wire2api_FrbAnyhowException,
+      parseErrorData: _wire2api_portal_error,
       constMeta: kAuthenticatePortalConstMeta,
       argValues: [email, password],
       hint: hint,
@@ -91,7 +91,7 @@ class NativeImpl implements Native {
       callFfi: (port_) => _platform.inner
           .wire_add_or_update_station_in_portal(port_, arg0, arg1),
       parseSuccessData: _wire2api_opt_box_autoadd_u32,
-      parseErrorData: _wire2api_FrbAnyhowException,
+      parseErrorData: _wire2api_portal_error,
       constMeta: kAddOrUpdateStationInPortalConstMeta,
       argValues: [tokens, station],
       hint: hint,
@@ -178,7 +178,7 @@ class NativeImpl implements Native {
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) => _platform.inner.wire_validate_tokens(port_, arg0),
       parseSuccessData: _wire2api_authenticated,
-      parseErrorData: _wire2api_FrbAnyhowException,
+      parseErrorData: _wire2api_portal_error,
       constMeta: kValidateTokensConstMeta,
       argValues: [tokens],
       hint: hint,
@@ -224,7 +224,7 @@ class NativeImpl implements Native {
       callFfi: (port_) =>
           _platform.inner.wire_start_upload(port_, arg0, arg1, arg2),
       parseSuccessData: _wire2api_transfer_progress,
-      parseErrorData: _wire2api_FrbAnyhowException,
+      parseErrorData: _wire2api_portal_error,
       constMeta: kStartUploadConstMeta,
       argValues: [deviceId, tokens, files],
       hint: hint,
@@ -242,7 +242,7 @@ class NativeImpl implements Native {
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) => _platform.inner.wire_cache_firmware(port_, arg0),
       parseSuccessData: _wire2api_firmware_download_status,
-      parseErrorData: _wire2api_FrbAnyhowException,
+      parseErrorData: _wire2api_portal_error,
       constMeta: kCacheFirmwareConstMeta,
       argValues: [tokens],
       hint: hint,
@@ -601,6 +601,19 @@ class NativeImpl implements Native {
 
   Uint8List? _wire2api_opt_uint_8_list(dynamic raw) {
     return raw == null ? null : _wire2api_uint_8_list(raw);
+  }
+
+  PortalError _wire2api_portal_error(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return PortalError_Authentication();
+      case 1:
+        return PortalError_Other(
+          _wire2api_String(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   RecordArchive _wire2api_record_archive(dynamic raw) {
