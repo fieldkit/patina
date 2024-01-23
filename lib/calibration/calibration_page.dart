@@ -251,7 +251,7 @@ class FixedStandardWidget extends StatelessWidget {
         child: Container(
             decoration: BoxDecoration(
                 border: Border.all(
-                  color: const Color.fromRGBO(212, 212, 212, 1),
+                  color: Colors.grey[100] ?? Colors.grey,
                 ),
                 borderRadius: const BorderRadius.all(Radius.circular(5))),
             padding: const EdgeInsets.all(8),

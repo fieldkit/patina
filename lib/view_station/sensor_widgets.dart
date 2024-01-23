@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:fk/app_state.dart';
 import 'package:provider/provider.dart';
 
+import 'package:fk/constants.dart';
+
 import '../calibration/calibration_model.dart';
 import '../calibration/calibration_page.dart';
 import '../calibration/clear_calibration_page.dart';
@@ -25,7 +27,9 @@ class DisplaySensorValue extends StatelessWidget {
   Widget build(BuildContext context) {
     final valueFormatter = NumberFormat("0.##");
     var valueStyle = const TextStyle(
-        fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold);
+        fontSize: 18,
+        color: AppColors.primaryColor,
+        fontWeight: FontWeight.bold);
 
     var unitsStyle = const TextStyle(
         fontSize: 18,

@@ -17,73 +17,107 @@ class CalibrationSection extends StatelessWidget {
 
   const CalibrationSection({super.key, required this.point});
 
+  double _determineFontSize(double screenWidth) {
+    if (screenWidth < 320) {
+      return 16;
+    } else if (screenWidth < 480) {
+      return 20;
+    } else {
+      return 26;
+    }
+  }
+
+  double _determineContainerPadding(double screenWidth) {
+    if (screenWidth < 320) {
+      return 6;
+    } else if (screenWidth < 480) {
+      return 8;
+    } else {
+      return 12;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    var valueStyle = const TextStyle(
-      fontSize: 16,
+    double screenWidth = MediaQuery.of(context).size.width;
+    double fontSize = _determineFontSize(screenWidth);
+    double containerPadding = _determineContainerPadding(screenWidth);
+    double arrowSize = screenWidth < 360 ? 30 : 40;
+    var valueStyle = TextStyle(
+      fontSize: fontSize,
       fontWeight: FontWeight.normal,
+      fontFamily: "Avenir",
     );
 
     Text value(double val) => Text(val.toStringAsFixed(2), style: valueStyle);
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: const Color.fromRGBO(212, 212, 212, 1),
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: const Color.fromRGBO(212, 212, 212, 1),
+          ),
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
         ),
-        borderRadius: const BorderRadius.all(Radius.circular(5)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Standard: ${point.references[0].toStringAsFixed(2)}", // TODO l10n
-            style: const TextStyle(fontSize: 20),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(AppLocalizations.of(context)!.factory),
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: const Color.fromRGBO(212, 212, 212, 1),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Standard: ${point.references[0].toStringAsFixed(2)}", // TODO l10n
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: "Avenir"),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  color: Colors.grey[100],
+                  padding: EdgeInsets.all(containerPadding),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      value(point.uncalibrated[0]),
+                      Text(
+                        AppLocalizations.of(context)!.uncalibrated,
+                        style: const TextStyle(
+                          fontFamily: "Avenir",
+                          fontSize: 12,
                         ),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(5))),
-                    padding: const EdgeInsets.all(8),
-                    child: value(point.factory[0]),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const Icon(Icons.arrow_forward, size: 40, color: Colors.black54),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(AppLocalizations.of(context)!.uncalibrated), //TODO: l10n
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: const Color.fromRGBO(212, 212, 212, 1),
-                        ),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(5))),
-                    padding: const EdgeInsets.all(8),
-                    child: value(point.uncalibrated[0]),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+                ),
+                Icon(Icons.arrow_forward,
+                    size: arrowSize, color: Colors.black54),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(
+                        color: Colors.grey[100],
+                        padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            value(point.factory[0]),
+                            Text(
+                              AppLocalizations.of(context)!.factory,
+                              style: const TextStyle(
+                                fontFamily: "Avenir",
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        )),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ));
   }
 }
 
@@ -94,11 +128,25 @@ class CalibrationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final time = DateTime.fromMillisecondsSinceEpoch(calibration.time * 1000);
-    final DateFormat formatter = DateFormat('HH:mm yyyy-MM-dd');
-    final formatted = formatter.format(time);
+    return Column(
+      children: [
+        ...calibration.points.map((p) => CalibrationSection(point: p)).toList(),
+      ],
+    );
+  }
+}
 
-    final properties = Container(
+class TimeWidget extends StatelessWidget {
+  final proto.Calibration calibration;
+
+  const TimeWidget({super.key, required this.calibration});
+
+  @override
+  Widget build(BuildContext context) {
+    final time = DateTime.fromMillisecondsSinceEpoch(calibration.time * 1000);
+    final DateFormat formatter = DateFormat('hh:mm a yyyy-MM-dd');
+    final formatted = formatter.format(time);
+    return Container(
       decoration: BoxDecoration(
           border: Border.all(
             color: const Color.fromRGBO(212, 212, 212, 1),
@@ -107,13 +155,6 @@ class CalibrationWidget extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child:
           Text(formatted, style: const TextStyle(fontWeight: FontWeight.w300)),
-    );
-
-    return Column(
-      children: [
-        properties,
-        ...calibration.points.map((p) => CalibrationSection(point: p)).toList(),
-      ],
     );
   }
 }
@@ -137,82 +178,103 @@ class ClearCalibrationPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.calibrationTitle),
+          title: Text(
+              "${AppLocalizations.of(context)!.calibrationTitle} - ${localized.name}"),
         ),
-        body: ListView(
-            children: <Widget>[
-          Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-            Image(image: localized.icon, width: 50, height: 50),
-            Text(localized.name),
-            Text(bay),
-          ]),
-          ...calibrations.map((c) => CalibrationWidget(calibration: c)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              ElevatedButton(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
+        body: LayoutBuilder(// Use LayoutBuilder to get available width
+            builder: (context, constraints) {
+          return ListView(
+              children: <Widget>[
+            Row(children: [
+              Image(image: localized.icon, width: 50, height: 50),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        localized.name,
+                        style: const TextStyle(fontSize: 18),
+                      )),
+                  Text(bay),
+                ],
+              ),
+            ]),
+            Wrap(
+              direction: Axis.horizontal,
+              spacing: 8.0,
+              runSpacing: 4.0,
+              children: calibrations
+                  .map((c) => SizedBox(
+                      width: (constraints.maxWidth / calibrations.length) - 100,
+                      child: TimeWidget(calibration: c)))
+                  .toList(),
+            ),
+            ...calibrations.map((c) => CalibrationWidget(calibration: c)),
+            ButtonBar(
+              alignment: MainAxisAlignment.spaceAround,
+              buttonMinWidth: 100,
+              buttonPadding:
+                  const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+              children: [
+                ElevatedButton(
                     child: Text(AppLocalizations.of(context)!.calibrationBack),
-                  ),
-                  onPressed: () {
-                    Loggers.cal.i("keeping calibration");
-                    final navigator = Navigator.of(context);
-                    navigator.push(
-                      MaterialPageRoute(
-                        builder: (context) => CalibrationPage(config: config),
-                      ),
-                    );
-                  }),
-              ElevatedButton(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
+                    onPressed: () {
+                      Loggers.cal.i("keeping calibration");
+                      final navigator = Navigator.of(context);
+                      navigator.push(
+                        MaterialPageRoute(
+                          builder: (context) => CalibrationPage(config: config),
+                        ),
+                      );
+                    }),
+                ElevatedButton(
                     child:
                         Text(AppLocalizations.of(context)!.calibrationDelete),
-                  ),
-                  onPressed: () async {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          final localizations = AppLocalizations.of(context)!;
-                          final navigator = Navigator.of(context);
+                    onPressed: () async {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            final localizations = AppLocalizations.of(context)!;
+                            final navigator = Navigator.of(context);
 
-                          return AlertDialog(
-                            title: Text(
-                                localizations.confirmClearCalibrationTitle),
-                            content: Text(localizations.confirmDelete),
-                            actions: <Widget>[
-                              TextButton(
-                                  onPressed: () {
-                                    navigator.pop();
-                                  },
-                                  child: Text(localizations.confirmCancel)),
-                              TextButton(
-                                  onPressed: () async {
-                                    navigator.pop();
-                                    try {
-                                      Loggers.cal.i("clearing calibration");
-                                      await moduleConfigurations
-                                          .clear(config.moduleIdentity);
-                                      Loggers.cal.i("cleared!");
-                                      outerNavigator.push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              CalibrationPage(config: config),
-                                        ),
-                                      );
-                                    } catch (e) {
-                                      Loggers.cal.e("Exception clearing: $e");
-                                    }
-                                  },
-                                  child: Text(
-                                      AppLocalizations.of(context)!.confirmYes))
-                            ],
-                          );
-                        });
-                  }),
-            ].map(WH.padPage).toList(),
-          )
-        ].map(WH.padPage).toList()));
+                            return AlertDialog(
+                              title: Text(
+                                  localizations.confirmClearCalibrationTitle),
+                              content: Text(localizations.confirmDelete),
+                              actions: <Widget>[
+                                TextButton(
+                                    onPressed: () {
+                                      navigator.pop();
+                                    },
+                                    child: Text(localizations.confirmCancel)),
+                                TextButton(
+                                    onPressed: () async {
+                                      navigator.pop();
+                                      try {
+                                        Loggers.cal.i("clearing calibration");
+                                        await moduleConfigurations
+                                            .clear(config.moduleIdentity);
+                                        Loggers.cal.i("cleared!");
+                                        outerNavigator.push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                CalibrationPage(config: config),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        Loggers.cal.e("Exception clearing: $e");
+                                      }
+                                    },
+                                    child: Text(AppLocalizations.of(context)!
+                                        .confirmYes))
+                              ],
+                            );
+                          });
+                    }),
+              ].map(WH.padPage).toList(),
+            )
+          ].map(WH.padPage).toList());
+        }));
   }
 }
