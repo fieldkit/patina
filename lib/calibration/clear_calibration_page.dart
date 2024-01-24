@@ -1,3 +1,4 @@
+import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -154,8 +155,11 @@ class ClearCalibrationPage extends StatelessWidget {
                                       Loggers.cal.i("cleared!");
                                       outerNavigator.push(
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              CalibrationPage(config: config),
+                                          builder: (context) => ModuleProviders(
+                                              moduleIdentity:
+                                                  config.moduleIdentity,
+                                              child: CalibrationPage(
+                                                  config: config)),
                                         ),
                                       );
                                     } catch (e) {

@@ -1,3 +1,4 @@
+import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -146,7 +147,6 @@ class ModuleInfo extends StatelessWidget {
                   if (moduleConfigurations.find(module.identity).isCalibrated) {
                     return ClearCalibrationPage(config: config);
                   } else {
-                    // return ClearCalibrationPage(config: config);
                     return CalibrationPage(config: config);
                   }
                 }
@@ -154,7 +154,9 @@ class ModuleInfo extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => calibrationPage(),
+                    builder: (context) => ModuleProviders(
+                        moduleIdentity: module.identity,
+                        child: calibrationPage()),
                   ),
                 );
               },

@@ -1,3 +1,4 @@
+import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -22,7 +23,9 @@ class ConfigureStationRoute extends StatelessWidget {
         if (station == null) {
           return const NoSuchStationPage();
         } else {
-          return ConfigureStationPage(station: station);
+          return StationProviders(
+              deviceId: deviceId,
+              child: ConfigureStationPage(station: station));
         }
       },
     );
@@ -68,9 +71,11 @@ class ConfigureStationPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ConfigureWiFiPage(
-                    station: station,
-                  ),
+                  builder: (context) => StationProviders(
+                      deviceId: station.deviceId,
+                      child: ConfigureWiFiPage(
+                        station: station,
+                      )),
                 ),
               );
             },
@@ -87,9 +92,11 @@ class ConfigureStationPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => StationFirmwarePage(
-                    station: station,
-                  ),
+                  builder: (context) => StationProviders(
+                      deviceId: station.deviceId,
+                      child: StationFirmwarePage(
+                        station: station,
+                      )),
                 ),
               );
             },
