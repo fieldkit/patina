@@ -489,6 +489,10 @@ class StationConfiguration extends ChangeNotifier {
     await api.configureWifiTransmission(
         deviceId: deviceId, config: const WifiTransmissionConfig(tokens: null));
   }
+
+  List<NetworkConfig> getStationNetworks(String deviceId) {
+    return knownStations.find(deviceId)?.ephemeral?.networks ?? List.empty();
+  }
 }
 
 abstract class Task {

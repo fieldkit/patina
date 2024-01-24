@@ -18,11 +18,18 @@ class ConfigureWiFiPage extends StatelessWidget {
 
   StationConfig get config => station.config!;
 
+  bool get bothSlotsFilled => station.ephemeral?.networks.length == 2;
+
   const ConfigureWiFiPage({super.key, required this.station});
 
-  Widget addNetworkOption(BuildContext context) {
-    final StationConfiguration configuration =
-        context.watch<StationConfiguration>();
+  Widget tooManyNetworks(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    return Text(localizations.networkNoMoreSlots);
+  }
+
+  Widget addNetworkButton(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
 
     return ElevatedButton(
         style: ButtonStyle(
@@ -32,35 +39,11 @@ class ConfigureWiFiPage extends StatelessWidget {
               const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
         ),
         child: Text(
-          "Add Network",
+          localizations.networkAddButton,
           style: WH.buttonStyle(18),
         ),
         onPressed: () async {
-          final navigator = Navigator.of(context);
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => WifiNetworkForm(
-                  onSave: (WifiNetwork network) async {
-                    Loggers.ui.i("$deviceId adding network");
-
-                    final overlay = context.loaderOverlay;
-                    overlay.show();
-                    try {
-                      await configuration.addNetwork(deviceId,
-                          station.ephemeral?.networks ?? List.empty(), network);
-                    } catch (e) {
-                      Loggers.ui.e("$deviceId $e");
-                    } finally {
-                      navigator.pop();
-                      overlay.hide();
-                    }
-                  },
-                  original:
-                      WifiNetwork(ssid: "", password: "", preferred: false)),
-            ),
-          );
+          await onAddNetwork(context);
         });
   }
 
@@ -69,53 +52,15 @@ class ConfigureWiFiPage extends StatelessWidget {
     final StationConfiguration configuration =
         context.watch<StationConfiguration>();
 
-    Loggers.ui.i("station ${station.ephemeral?.networks}");
-
-    final List<WifiNetworkListItem> networks = station.ephemeral?.networks
-            .where((network) => network.ssid.isNotEmpty)
-            .map((network) => WifiNetworkListItem(
-                network: network,
-                onRemove: () async {
-                  await showDialog(
-                      context: context,
-                      builder: (context) {
-                        final localizations = AppLocalizations.of(context)!;
-                        final navigator = Navigator.of(context);
-
-                        return AlertDialog(
-                          title:
-                              Text(localizations.confirmClearCalibrationTitle),
-                          content: Text(localizations.confirmDelete),
-                          actions: <Widget>[
-                            TextButton(
-                                onPressed: () {
-                                  navigator.pop();
-                                },
-                                child: Text(localizations.confirmCancel)),
-                            TextButton(
-                                onPressed: () async {
-                                  navigator.pop();
-
-                                  Loggers.ui.i("$deviceId remove network");
-                                  final overlay = context.loaderOverlay;
-                                  overlay.show();
-                                  try {
-                                    await configuration.removeNetwork(
-                                        deviceId, network);
-                                  } catch (e) {
-                                    Loggers.ui.e("$deviceId $e");
-                                  } finally {
-                                    overlay.hide();
-                                  }
-                                },
-                                child: Text(
-                                    AppLocalizations.of(context)!.confirmYes))
-                          ],
-                        );
-                      });
-                }))
-            .toList() ??
-        List.empty();
+    final List<WifiNetworkListItem> networks = configuration
+        .getStationNetworks(deviceId)
+        .where((network) => network.ssid.isNotEmpty)
+        .map((network) => WifiNetworkListItem(
+            network: network,
+            onRemove: () async {
+              await onRemoveNetwork(context, network);
+            }))
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -124,50 +69,84 @@ class ConfigureWiFiPage extends StatelessWidget {
       body: ListView(
           children: WH.divideWith(() => const Divider(), [
         ...networks,
-        addNetworkOption(context),
+        Container(
+            padding: const EdgeInsets.all(24.0),
+            child: bothSlotsFilled
+                ? tooManyNetworks(context)
+                : addNetworkButton(context)),
         ConfigureAutomaticUploadListItem(station: station),
       ])),
     );
   }
-}
 
-class ConfigureAutomaticUploadPage extends StatelessWidget {
-  final StationModel station;
-
-  StationConfig get config => station.config!;
-
-  const ConfigureAutomaticUploadPage({super.key, required this.station});
-
-  @override
-  Widget build(BuildContext context) {
+  Future<void> onAddNetwork(BuildContext context) async {
     final StationConfiguration configuration =
-        context.watch<AppState>().configuration;
+        context.read<StationConfiguration>();
+    final navigator = Navigator.of(context);
 
-    Loggers.ui.i("station $station $config");
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WifiNetworkForm(
+            onSave: (WifiNetwork network) async {
+              Loggers.ui.i("$deviceId adding network");
 
-    final enabled = station.ephemeral?.transmission?.enabled ?? false;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(config.name),
+              final overlay = context.loaderOverlay;
+              overlay.show();
+              try {
+                await configuration.addNetwork(deviceId,
+                    station.ephemeral?.networks ?? List.empty(), network);
+              } catch (e) {
+                Loggers.ui.e("$deviceId $e");
+              } finally {
+                navigator.pop();
+                overlay.hide();
+              }
+            },
+            original: WifiNetwork(ssid: "", password: "", preferred: false)),
       ),
-      body: WH.padPage(Column(children: [
-        if (!enabled)
-          WH.align(WH.vertical(ElevatedButton(
-              onPressed: () async {
-                Loggers.ui.i("wifi-upload:enable");
-                await configuration.enableWifiUploading(station.deviceId);
-              },
-              child: const Text("Enable")))),
-        if (enabled)
-          WH.align(WH.vertical(ElevatedButton(
-              onPressed: () async {
-                Loggers.ui.i("wifi-upload:disable");
-                await configuration.disableWifiUploading(station.deviceId);
-              },
-              child: const Text("Disable"))))
-      ])),
     );
+  }
+
+  Future<void> onRemoveNetwork(
+      BuildContext context, NetworkConfig network) async {
+    final StationConfiguration configuration =
+        context.read<StationConfiguration>();
+
+    await showDialog(
+        context: context,
+        builder: (context) {
+          final localizations = AppLocalizations.of(context)!;
+          final navigator = Navigator.of(context);
+
+          return AlertDialog(
+            title: Text(localizations.confirmClearCalibrationTitle),
+            content: Text(localizations.confirmDelete),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    navigator.pop();
+                  },
+                  child: Text(localizations.confirmCancel)),
+              TextButton(
+                  onPressed: () async {
+                    navigator.pop();
+
+                    Loggers.ui.i("$deviceId remove network");
+                    final overlay = context.loaderOverlay;
+                    overlay.show();
+                    try {
+                      await configuration.removeNetwork(deviceId, network);
+                    } catch (e) {
+                      Loggers.ui.e("$deviceId $e");
+                    } finally {
+                      overlay.hide();
+                    }
+                  },
+                  child: Text(AppLocalizations.of(context)!.confirmYes))
+            ],
+          );
+        });
   }
 }
 
@@ -183,34 +162,15 @@ class WifiNetworkListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return ListTile(
       title: Text(network.ssid),
-      onTap: () async {
-        onRemove();
-      },
-    );
-  }
-}
-
-class ConfigureAutomaticUploadListItem extends StatelessWidget {
-  final StationModel station;
-
-  const ConfigureAutomaticUploadListItem({super.key, required this.station});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(AppLocalizations.of(context)!.settingsAutomaticUpload),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConfigureAutomaticUploadPage(
-              station: station,
-            ),
-          ),
-        );
-      },
+      trailing: ElevatedButton(
+          child: Text(localizations.networkRemoveButton),
+          onPressed: () async {
+            onRemove();
+          }),
     );
   }
 }
@@ -289,28 +249,6 @@ class _WifiNetworkFormState extends State<WifiNetworkForm> {
                   final password = _formKey.currentState!.value['password'];
                   widget.onSave(WifiNetwork(
                       ssid: ssid, password: password, preferred: false));
-                  /*
-                  final overlay = context.loaderOverlay;
-                  final messenger = ScaffoldMessenger.of(context);
-                  final navigator = Navigator.of(context);
-                  final email = _formKey.currentState!.value['email'];
-                  final password = _formKey.currentState!.value['password'];
-                  overlay.show();
-                  try {
-                    final saved = await accounts.addOrUpdate(email, password);
-                    if (saved != null) {
-                      navigator.pop();
-                    } else {
-                      messenger.showSnackBar(SnackBar(
-                        content: Text(localizations.accountFormFail),
-                      ));
-                    }
-                  } catch (error) {
-                    Loggers.portal.e("$error");
-                  } finally {
-                    overlay.hide();
-                  }
-                  */
                 }
               },
               style: ButtonStyle(
@@ -331,6 +269,70 @@ class _WifiNetworkFormState extends State<WifiNetworkForm> {
               .toList(),
         ),
       ),
+    );
+  }
+}
+
+class ConfigureAutomaticUploadListItem extends StatelessWidget {
+  final StationModel station;
+
+  const ConfigureAutomaticUploadListItem({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.settingsAutomaticUpload),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConfigureAutomaticUploadPage(
+              station: station,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class ConfigureAutomaticUploadPage extends StatelessWidget {
+  final StationModel station;
+
+  StationConfig get config => station.config!;
+
+  const ConfigureAutomaticUploadPage({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final StationConfiguration configuration =
+        context.watch<AppState>().configuration;
+
+    Loggers.ui.i("station $station $config");
+
+    final enabled = station.ephemeral?.transmission?.enabled ?? false;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(config.name),
+      ),
+      body: WH.padPage(Column(children: [
+        if (!enabled)
+          WH.align(WH.vertical(ElevatedButton(
+              onPressed: () async {
+                Loggers.ui.i("wifi-upload:enable");
+                await configuration.enableWifiUploading(station.deviceId);
+              },
+              child: Text(localizations.networkAutomaticUploadEnable)))),
+        if (enabled)
+          WH.align(WH.vertical(ElevatedButton(
+              onPressed: () async {
+                Loggers.ui.i("wifi-upload:disable");
+                await configuration.disableWifiUploading(station.deviceId);
+              },
+              child: Text(localizations.networkAutomaticUploadDisable))))
+      ])),
     );
   }
 }
