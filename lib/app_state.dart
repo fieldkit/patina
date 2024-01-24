@@ -417,11 +417,68 @@ class AvailableFirmwareModel extends ChangeNotifier {
   }
 }
 
+class WifiNetwork {
+  String? ssid;
+  String? password;
+  bool preferred;
+
+  WifiNetwork(
+      {required this.ssid, required this.password, required this.preferred});
+}
+
 class StationConfiguration extends ChangeNotifier {
   final Native api;
+  final KnownStationsModel knownStations;
   final PortalAccounts portalAccounts;
 
-  StationConfiguration({required this.api, required this.portalAccounts});
+  StationConfiguration(
+      {required this.api,
+      required this.knownStations,
+      required this.portalAccounts}) {
+    knownStations.addListener(() {
+      notifyListeners();
+    });
+  }
+
+  Future<void> addNetwork(String deviceId, List<NetworkConfig> existing,
+      WifiNetwork network) async {
+    final int keeping = existing.isEmpty ? 1 : 0;
+    final List<WifiNetworkConfig> networks =
+        List<int>.generate(2, (i) => i).map((index) {
+      if (keeping == index) {
+        return WifiNetworkConfig(index: index, keeping: true, preferred: false);
+      } else {
+        return WifiNetworkConfig(
+            index: index,
+            keeping: false,
+            preferred: false,
+            ssid: network.ssid!,
+            password: network.password!);
+      }
+    }).toList();
+
+    await api.configureWifiNetworks(
+        deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
+  }
+
+  Future<void> removeNetwork(String deviceId, NetworkConfig network) async {
+    final List<WifiNetworkConfig> networks =
+        List<int>.generate(2, (i) => i).map((index) {
+      if (network.index == index) {
+        return WifiNetworkConfig(
+            index: index,
+            keeping: false,
+            preferred: false,
+            ssid: "",
+            password: "");
+      } else {
+        return WifiNetworkConfig(index: index, keeping: true, preferred: false);
+      }
+    }).toList();
+
+    await api.configureWifiNetworks(
+        deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
+  }
 
   Future<void> enableWifiUploading(String deviceId) async {
     final account = portalAccounts.getAccountForDevice(deviceId);
@@ -433,12 +490,23 @@ class StationConfiguration extends ChangeNotifier {
 
     await api.configureWifiTransmission(
         deviceId: deviceId,
-        config: WifiTransmissionConfig(tokens: account.tokens));
+        config: WifiTransmissionConfig(
+            tokens: account.tokens, schedule: const Schedule_Every(10 * 60)));
   }
 
   Future<void> disableWifiUploading(String deviceId) async {
     await api.configureWifiTransmission(
-        deviceId: deviceId, config: const WifiTransmissionConfig(tokens: null));
+        deviceId: deviceId,
+        config: const WifiTransmissionConfig(tokens: null, schedule: null));
+  }
+
+  List<NetworkConfig> getStationNetworks(String deviceId) {
+    return knownStations.find(deviceId)?.ephemeral?.networks ?? List.empty();
+  }
+
+  bool isAutomaticUploadEnabled(String deviceId) {
+    return knownStations.find(deviceId)?.ephemeral?.transmission?.enabled ??
+        false;
   }
 }
 
@@ -756,8 +824,8 @@ class AppState {
       portalAccounts: portalAccounts,
       dispatcher: dispatcher,
     );
-    final configurations =
-        StationConfiguration(api: api, portalAccounts: portalAccounts);
+    final configurations = StationConfiguration(
+        api: api, knownStations: knownStations, portalAccounts: portalAccounts);
     final updatePortal = UpdatePortal(api, portalAccounts, dispatcher);
     return AppState._(
       api,

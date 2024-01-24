@@ -1,4 +1,5 @@
 import 'package:caldor/calibration.dart';
+import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -119,10 +120,12 @@ class CalibrationPanel extends StatelessWidget {
     } else {
       navigator.pushReplacement(
         MaterialPageRoute(
-          builder: (context) => CalibrationPage(
-            config: nextConfig,
-            current: current,
-          ),
+          builder: (context) => ModuleProviders(
+              moduleIdentity: config.moduleIdentity,
+              child: CalibrationPage(
+                config: nextConfig,
+                current: current,
+              )),
         ),
       );
     }

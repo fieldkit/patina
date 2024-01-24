@@ -75,7 +75,6 @@
   "settingsTitle": "Settings",
 
   "settingsGeneral": "General",
-  "settingsNetworks": "Networks",
   "settingsFirmware": "Firmware",
   "settingsModules": "Modules",
   "settingsWifi": "WiFi",
@@ -84,6 +83,16 @@
   "endDeployment": "End Deployment",
   "forgetStation": "Forget Station",
   "settingsAutomaticUpload": "Automatic Upload Settings",
+
+  "networkAddButton": "Add Network",
+  "networkEditTitle": "WiFi Network",
+  "networkSaveButton": "Save",
+  "networkAutomaticUploadEnable": "Enable",
+  "networkAutomaticUploadDisable": "Disable",
+  "networkRemoveButton": "Remove",
+  "networkNoMoreSlots": "Unfortunately, there are only two WiFi network slots available.",
+  "wifiSsid": "SSID",
+  "wifiPassword": "Password",
 
   "firmwareTitle": "Firmware",
   "firmwareUpgrade": "Upgrade",

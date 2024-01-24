@@ -2972,6 +2972,210 @@ abstract class PortalError_Other implements PortalError {
 }
 
 /// @nodoc
+mixin _$Schedule {
+  int get field0 => throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int field0) every,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int field0)? every,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int field0)? every,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(Schedule_Every value) every,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(Schedule_Every value)? every,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(Schedule_Every value)? every,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $ScheduleCopyWith<Schedule> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ScheduleCopyWith<$Res> {
+  factory $ScheduleCopyWith(Schedule value, $Res Function(Schedule) then) =
+      _$ScheduleCopyWithImpl<$Res, Schedule>;
+  @useResult
+  $Res call({int field0});
+}
+
+/// @nodoc
+class _$ScheduleCopyWithImpl<$Res, $Val extends Schedule>
+    implements $ScheduleCopyWith<$Res> {
+  _$ScheduleCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_value.copyWith(
+      field0: null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$Schedule_EveryCopyWith<$Res>
+    implements $ScheduleCopyWith<$Res> {
+  factory _$$Schedule_EveryCopyWith(
+          _$Schedule_Every value, $Res Function(_$Schedule_Every) then) =
+      __$$Schedule_EveryCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int field0});
+}
+
+/// @nodoc
+class __$$Schedule_EveryCopyWithImpl<$Res>
+    extends _$ScheduleCopyWithImpl<$Res, _$Schedule_Every>
+    implements _$$Schedule_EveryCopyWith<$Res> {
+  __$$Schedule_EveryCopyWithImpl(
+      _$Schedule_Every _value, $Res Function(_$Schedule_Every) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$Schedule_Every(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$Schedule_Every implements Schedule_Every {
+  const _$Schedule_Every(this.field0);
+
+  @override
+  final int field0;
+
+  @override
+  String toString() {
+    return 'Schedule.every(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$Schedule_Every &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$Schedule_EveryCopyWith<_$Schedule_Every> get copyWith =>
+      __$$Schedule_EveryCopyWithImpl<_$Schedule_Every>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int field0) every,
+  }) {
+    return every(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int field0)? every,
+  }) {
+    return every?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int field0)? every,
+    required TResult orElse(),
+  }) {
+    if (every != null) {
+      return every(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(Schedule_Every value) every,
+  }) {
+    return every(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(Schedule_Every value)? every,
+  }) {
+    return every?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(Schedule_Every value)? every,
+    required TResult orElse(),
+  }) {
+    if (every != null) {
+      return every(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class Schedule_Every implements Schedule {
+  const factory Schedule_Every(final int field0) = _$Schedule_Every;
+
+  @override
+  int get field0;
+  @override
+  @JsonKey(ignore: true)
+  _$$Schedule_EveryCopyWith<_$Schedule_Every> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$TransferStatus {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
