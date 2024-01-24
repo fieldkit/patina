@@ -11,6 +11,7 @@ import '../diagnostics.dart';
 import '../meta.dart';
 import 'calibration_model.dart';
 import 'calibration_page.dart';
+import 'calibration_calculations.dart' as calibration_calc;
 
 class CalibrationSection extends StatelessWidget {
   final proto.CalibrationPoint point;
