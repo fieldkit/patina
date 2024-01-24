@@ -405,8 +405,27 @@ impl Sdk {
     ) -> Result<()> {
         if let Some(addr) = self.get_nearby_addr(&device_id).await? {
             let client = query::device::Client::new()?;
-            client
+            let status = client
                 .configure_wifi_transmission(&addr, config.into())
+                .await?;
+            self.nearby
+                .mark_finished_and_publish_reply(&device_id, status)
+                .await?;
+        }
+
+        Ok(())
+    }
+
+    async fn configure_wifi_networks(
+        &self,
+        device_id: DeviceId,
+        config: WifiNetworksConfig,
+    ) -> Result<()> {
+        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
+            let client = query::device::Client::new()?;
+            let status = client.configure_wifi_networks(&addr, config.into()).await?;
+            self.nearby
+                .mark_finished_and_publish_reply(&device_id, status)
                 .await?;
         }
 
@@ -505,6 +524,12 @@ pub fn add_or_update_station_in_portal(
 ) -> Result<Option<u32>, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.add_or_update_station_in_portal(tokens, station))
+    })?)
+}
+
+pub fn configure_wifi_networks(device_id: String, config: WifiNetworksConfig) -> Result<()> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.configure_wifi_networks(DeviceId(device_id.clone()), config))
     })?)
 }
 
@@ -656,6 +681,37 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
     }
 
     Ok(())
+}
+
+#[derive(Clone, Debug)]
+pub struct WifiNetworkConfig {
+    pub index: usize,
+    pub ssid: Option<String>,
+    pub password: Option<String>,
+    pub preferred: bool,
+    pub keeping: bool,
+}
+
+#[derive(Clone, Debug)]
+pub struct WifiNetworksConfig {
+    pub networks: Vec<WifiNetworkConfig>,
+}
+
+impl Into<device::ConfigureWifiNetworks> for WifiNetworksConfig {
+    fn into(self) -> device::ConfigureWifiNetworks {
+        device::ConfigureWifiNetworks {
+            networks: self
+                .networks
+                .into_iter()
+                .map(|n| device::WifiNetwork {
+                    ssid: n.ssid,
+                    password: n.password,
+                    default: n.preferred,
+                    keeping: n.keeping,
+                })
+                .collect(),
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -924,13 +980,29 @@ impl TryInto<EphemeralConfig> for HttpReply {
         let capabilities = DeviceCapabilities {
             udp: self
                 .network_settings
+                .as_ref()
                 .map(|s| s.supports_udp)
                 .unwrap_or(false),
         };
+        let networks = self
+            .network_settings
+            .as_ref()
+            .map(|ns| {
+                ns.networks
+                    .iter()
+                    .enumerate()
+                    .map(|(i, n)| NetworkConfig {
+                        index: i,
+                        ssid: n.ssid.clone(),
+                        preferred: n.preferred,
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
 
         Ok(EphemeralConfig {
             transmission,
-            networks: Vec::new(),
+            networks,
             capabilities,
         })
     }
@@ -938,7 +1010,9 @@ impl TryInto<EphemeralConfig> for HttpReply {
 
 #[derive(Clone, Debug)]
 pub struct NetworkConfig {
+    pub index: usize,
     pub ssid: String,
+    pub preferred: bool,
 }
 
 #[derive(Clone, Debug)]

@@ -22,6 +22,11 @@ pub fn wire_add_or_update_station_in_portal(port_: MessagePort, tokens: JsValue,
 }
 
 #[wasm_bindgen]
+pub fn wire_configure_wifi_networks(port_: MessagePort, device_id: String, config: JsValue) {
+    wire_configure_wifi_networks_impl(port_, device_id, config)
+}
+
+#[wasm_bindgen]
 pub fn wire_configure_wifi_transmission(port_: MessagePort, device_id: String, config: JsValue) {
     wire_configure_wifi_transmission_impl(port_, device_id, config)
 }
@@ -109,6 +114,15 @@ impl Wire2Api<Vec<RecordArchive>> for JsValue {
             .collect()
     }
 }
+impl Wire2Api<Vec<WifiNetworkConfig>> for JsValue {
+    fn wire2api(self) -> Vec<WifiNetworkConfig> {
+        self.dyn_into::<JsArray>()
+            .unwrap()
+            .iter()
+            .map(Wire2Api::wire2api)
+            .collect()
+    }
+}
 impl Wire2Api<LocalFirmware> for JsValue {
     fn wire2api(self) -> LocalFirmware {
         let self_ = self.dyn_into::<JsArray>().unwrap();
@@ -125,6 +139,11 @@ impl Wire2Api<LocalFirmware> for JsValue {
             module: self_.get(3).wire2api(),
             profile: self_.get(4).wire2api(),
         }
+    }
+}
+impl Wire2Api<Option<String>> for Option<String> {
+    fn wire2api(self) -> Option<String> {
+        self.map(Wire2Api::wire2api)
     }
 }
 impl Wire2Api<Option<Tokens>> for JsValue {
@@ -187,6 +206,38 @@ impl Wire2Api<Vec<u8>> for Box<[u8]> {
     }
 }
 
+impl Wire2Api<WifiNetworkConfig> for JsValue {
+    fn wire2api(self) -> WifiNetworkConfig {
+        let self_ = self.dyn_into::<JsArray>().unwrap();
+        assert_eq!(
+            self_.length(),
+            5,
+            "Expected 5 elements, got {}",
+            self_.length()
+        );
+        WifiNetworkConfig {
+            index: self_.get(0).wire2api(),
+            ssid: self_.get(1).wire2api(),
+            password: self_.get(2).wire2api(),
+            preferred: self_.get(3).wire2api(),
+            keeping: self_.get(4).wire2api(),
+        }
+    }
+}
+impl Wire2Api<WifiNetworksConfig> for JsValue {
+    fn wire2api(self) -> WifiNetworksConfig {
+        let self_ = self.dyn_into::<JsArray>().unwrap();
+        assert_eq!(
+            self_.length(),
+            1,
+            "Expected 1 elements, got {}",
+            self_.length()
+        );
+        WifiNetworksConfig {
+            networks: self_.get(0).wire2api(),
+        }
+    }
+}
 impl Wire2Api<WifiTransmissionConfig> for JsValue {
     fn wire2api(self) -> WifiTransmissionConfig {
         let self_ = self.dyn_into::<JsArray>().unwrap();
@@ -216,6 +267,11 @@ impl Wire2Api<bool> for JsValue {
 impl Wire2Api<i64> for JsValue {
     fn wire2api(self) -> i64 {
         ::std::convert::TryInto::try_into(self.dyn_into::<js_sys::BigInt>().unwrap()).unwrap()
+    }
+}
+impl Wire2Api<Option<String>> for JsValue {
+    fn wire2api(self) -> Option<String> {
+        (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
     }
 }
 impl Wire2Api<Option<u64>> for JsValue {

@@ -34,6 +34,15 @@ pub extern "C" fn wire_add_or_update_station_in_portal(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_configure_wifi_networks(
+    port_: i64,
+    device_id: *mut wire_uint_8_list,
+    config: *mut wire_WifiNetworksConfig,
+) {
+    wire_configure_wifi_networks_impl(port_, device_id, config)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_configure_wifi_transmission(
     port_: i64,
     device_id: *mut wire_uint_8_list,
@@ -134,6 +143,11 @@ pub extern "C" fn new_box_autoadd_u64_0(value: u64) -> *mut u64 {
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_wifi_networks_config_0() -> *mut wire_WifiNetworksConfig {
+    support::new_leak_box_ptr(wire_WifiNetworksConfig::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_box_autoadd_wifi_transmission_config_0() -> *mut wire_WifiTransmissionConfig {
     support::new_leak_box_ptr(wire_WifiTransmissionConfig::new_with_null_ptr())
 }
@@ -142,6 +156,15 @@ pub extern "C" fn new_box_autoadd_wifi_transmission_config_0() -> *mut wire_Wifi
 pub extern "C" fn new_list_record_archive_0(len: i32) -> *mut wire_list_record_archive {
     let wrap = wire_list_record_archive {
         ptr: support::new_leak_vec_ptr(<wire_RecordArchive>::new_with_null_ptr(), len),
+        len,
+    };
+    support::new_leak_box_ptr(wrap)
+}
+
+#[no_mangle]
+pub extern "C" fn new_list_wifi_network_config_0(len: i32) -> *mut wire_list_wifi_network_config {
+    let wrap = wire_list_wifi_network_config {
+        ptr: support::new_leak_vec_ptr(<wire_WifiNetworkConfig>::new_with_null_ptr(), len),
         len,
     };
     support::new_leak_box_ptr(wrap)
@@ -200,6 +223,12 @@ impl Wire2Api<u64> for *mut u64 {
         unsafe { *support::box_from_leak_ptr(self) }
     }
 }
+impl Wire2Api<WifiNetworksConfig> for *mut wire_WifiNetworksConfig {
+    fn wire2api(self) -> WifiNetworksConfig {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<WifiNetworksConfig>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<WifiTransmissionConfig> for *mut wire_WifiTransmissionConfig {
     fn wire2api(self) -> WifiTransmissionConfig {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -209,6 +238,15 @@ impl Wire2Api<WifiTransmissionConfig> for *mut wire_WifiTransmissionConfig {
 
 impl Wire2Api<Vec<RecordArchive>> for *mut wire_list_record_archive {
     fn wire2api(self) -> Vec<RecordArchive> {
+        let vec = unsafe {
+            let wrap = support::box_from_leak_ptr(self);
+            support::vec_from_leak_ptr(wrap.ptr, wrap.len)
+        };
+        vec.into_iter().map(Wire2Api::wire2api).collect()
+    }
+}
+impl Wire2Api<Vec<WifiNetworkConfig>> for *mut wire_list_wifi_network_config {
+    fn wire2api(self) -> Vec<WifiNetworkConfig> {
         let vec = unsafe {
             let wrap = support::box_from_leak_ptr(self);
             support::vec_from_leak_ptr(wrap.ptr, wrap.len)
@@ -264,6 +302,24 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
     }
 }
 
+impl Wire2Api<WifiNetworkConfig> for wire_WifiNetworkConfig {
+    fn wire2api(self) -> WifiNetworkConfig {
+        WifiNetworkConfig {
+            index: self.index.wire2api(),
+            ssid: self.ssid.wire2api(),
+            password: self.password.wire2api(),
+            preferred: self.preferred.wire2api(),
+            keeping: self.keeping.wire2api(),
+        }
+    }
+}
+impl Wire2Api<WifiNetworksConfig> for wire_WifiNetworksConfig {
+    fn wire2api(self) -> WifiNetworksConfig {
+        WifiNetworksConfig {
+            networks: self.networks.wire2api(),
+        }
+    }
+}
 impl Wire2Api<WifiTransmissionConfig> for wire_WifiTransmissionConfig {
     fn wire2api(self) -> WifiTransmissionConfig {
         WifiTransmissionConfig {
@@ -286,6 +342,13 @@ pub struct wire_AddOrUpdatePortalStation {
 #[derive(Clone)]
 pub struct wire_list_record_archive {
     ptr: *mut wire_RecordArchive,
+    len: i32,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_list_wifi_network_config {
+    ptr: *mut wire_WifiNetworkConfig,
     len: i32,
 }
 
@@ -327,6 +390,22 @@ pub struct wire_TransmissionToken {
 pub struct wire_uint_8_list {
     ptr: *mut u8,
     len: i32,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_WifiNetworkConfig {
+    index: usize,
+    ssid: *mut wire_uint_8_list,
+    password: *mut wire_uint_8_list,
+    preferred: bool,
+    keeping: bool,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_WifiNetworksConfig {
+    networks: *mut wire_list_wifi_network_config,
 }
 
 #[repr(C)]
@@ -424,6 +503,38 @@ impl NewWithNullPtr for wire_TransmissionToken {
 }
 
 impl Default for wire_TransmissionToken {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
+impl NewWithNullPtr for wire_WifiNetworkConfig {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            index: Default::default(),
+            ssid: core::ptr::null_mut(),
+            password: core::ptr::null_mut(),
+            preferred: Default::default(),
+            keeping: Default::default(),
+        }
+    }
+}
+
+impl Default for wire_WifiNetworkConfig {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
+impl NewWithNullPtr for wire_WifiNetworksConfig {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            networks: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl Default for wire_WifiNetworksConfig {
     fn default() -> Self {
         Self::new_with_null_ptr()
     }

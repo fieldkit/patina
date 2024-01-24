@@ -37,6 +37,13 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kAddOrUpdateStationInPortalConstMeta;
 
+  Future<void> configureWifiNetworks(
+      {required String deviceId,
+      required WifiNetworksConfig config,
+      dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kConfigureWifiNetworksConstMeta;
+
   Future<void> configureWifiTransmission(
       {required String deviceId,
       required WifiTransmissionConfig config,
@@ -263,10 +270,14 @@ class NearbyStation {
 }
 
 class NetworkConfig {
+  final int index;
   final String ssid;
+  final bool preferred;
 
   const NetworkConfig({
+    required this.index,
     required this.ssid,
+    required this.preferred,
   });
 }
 
@@ -446,6 +457,30 @@ class UploadProgress {
   const UploadProgress({
     required this.bytesUploaded,
     required this.totalBytes,
+  });
+}
+
+class WifiNetworkConfig {
+  final int index;
+  final String? ssid;
+  final String? password;
+  final bool preferred;
+  final bool keeping;
+
+  const WifiNetworkConfig({
+    required this.index,
+    this.ssid,
+    this.password,
+    required this.preferred,
+    required this.keeping,
+  });
+}
+
+class WifiNetworksConfig {
+  final List<WifiNetworkConfig> networks;
+
+  const WifiNetworksConfig({
+    required this.networks,
   });
 }
 

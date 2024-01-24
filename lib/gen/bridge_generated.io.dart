@@ -52,6 +52,14 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_WifiNetworksConfig>
+      api2wire_box_autoadd_wifi_networks_config(WifiNetworksConfig raw) {
+    final ptr = inner.new_box_autoadd_wifi_networks_config_0();
+    _api_fill_to_wire_wifi_networks_config(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_WifiTransmissionConfig>
       api2wire_box_autoadd_wifi_transmission_config(
           WifiTransmissionConfig raw) {
@@ -73,6 +81,21 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
       _api_fill_to_wire_record_archive(raw[i], ans.ref.ptr[i]);
     }
     return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_list_wifi_network_config> api2wire_list_wifi_network_config(
+      List<WifiNetworkConfig> raw) {
+    final ans = inner.new_list_wifi_network_config_0(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      _api_fill_to_wire_wifi_network_config(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_opt_String(String? raw) {
+    return raw == null ? ffi.nullptr : api2wire_String(raw);
   }
 
   @protected
@@ -125,6 +148,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     _api_fill_to_wire_tokens(apiObj, wireObj.ref);
   }
 
+  void _api_fill_to_wire_box_autoadd_wifi_networks_config(
+      WifiNetworksConfig apiObj, ffi.Pointer<wire_WifiNetworksConfig> wireObj) {
+    _api_fill_to_wire_wifi_networks_config(apiObj, wireObj.ref);
+  }
+
   void _api_fill_to_wire_box_autoadd_wifi_transmission_config(
       WifiTransmissionConfig apiObj,
       ffi.Pointer<wire_WifiTransmissionConfig> wireObj) {
@@ -163,6 +191,20 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
       TransmissionToken apiObj, wire_TransmissionToken wireObj) {
     wireObj.token = api2wire_String(apiObj.token);
     wireObj.url = api2wire_String(apiObj.url);
+  }
+
+  void _api_fill_to_wire_wifi_network_config(
+      WifiNetworkConfig apiObj, wire_WifiNetworkConfig wireObj) {
+    wireObj.index = api2wire_usize(apiObj.index);
+    wireObj.ssid = api2wire_opt_String(apiObj.ssid);
+    wireObj.password = api2wire_opt_String(apiObj.password);
+    wireObj.preferred = api2wire_bool(apiObj.preferred);
+    wireObj.keeping = api2wire_bool(apiObj.keeping);
+  }
+
+  void _api_fill_to_wire_wifi_networks_config(
+      WifiNetworksConfig apiObj, wire_WifiNetworksConfig wireObj) {
+    wireObj.networks = api2wire_list_wifi_network_config(apiObj.networks);
   }
 
   void _api_fill_to_wire_wifi_transmission_config(
@@ -343,6 +385,28 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _wire_add_or_update_station_in_portalPtr.asFunction<
           void Function(int, ffi.Pointer<wire_Tokens>,
               ffi.Pointer<wire_AddOrUpdatePortalStation>)>();
+
+  void wire_configure_wifi_networks(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> device_id,
+    ffi.Pointer<wire_WifiNetworksConfig> config,
+  ) {
+    return _wire_configure_wifi_networks(
+      port_,
+      device_id,
+      config,
+    );
+  }
+
+  late final _wire_configure_wifi_networksPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+                  ffi.Pointer<wire_WifiNetworksConfig>)>>(
+      'wire_configure_wifi_networks');
+  late final _wire_configure_wifi_networks =
+      _wire_configure_wifi_networksPtr.asFunction<
+          void Function(int, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_WifiNetworksConfig>)>();
 
   void wire_configure_wifi_transmission(
     int port_,
@@ -587,6 +651,18 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_u64_0 = _new_box_autoadd_u64_0Ptr
       .asFunction<ffi.Pointer<ffi.Uint64> Function(int)>();
 
+  ffi.Pointer<wire_WifiNetworksConfig>
+      new_box_autoadd_wifi_networks_config_0() {
+    return _new_box_autoadd_wifi_networks_config_0();
+  }
+
+  late final _new_box_autoadd_wifi_networks_config_0Ptr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<wire_WifiNetworksConfig> Function()>>(
+      'new_box_autoadd_wifi_networks_config_0');
+  late final _new_box_autoadd_wifi_networks_config_0 =
+      _new_box_autoadd_wifi_networks_config_0Ptr
+          .asFunction<ffi.Pointer<wire_WifiNetworksConfig> Function()>();
+
   ffi.Pointer<wire_WifiTransmissionConfig>
       new_box_autoadd_wifi_transmission_config_0() {
     return _new_box_autoadd_wifi_transmission_config_0();
@@ -614,6 +690,22 @@ class NativeWire implements FlutterRustBridgeWireBase {
               ffi.Int32)>>('new_list_record_archive_0');
   late final _new_list_record_archive_0 = _new_list_record_archive_0Ptr
       .asFunction<ffi.Pointer<wire_list_record_archive> Function(int)>();
+
+  ffi.Pointer<wire_list_wifi_network_config> new_list_wifi_network_config_0(
+    int len,
+  ) {
+    return _new_list_wifi_network_config_0(
+      len,
+    );
+  }
+
+  late final _new_list_wifi_network_config_0Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_list_wifi_network_config> Function(
+              ffi.Int32)>>('new_list_wifi_network_config_0');
+  late final _new_list_wifi_network_config_0 =
+      _new_list_wifi_network_config_0Ptr.asFunction<
+          ffi.Pointer<wire_list_wifi_network_config> Function(int)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
@@ -674,6 +766,32 @@ final class wire_AddOrUpdatePortalStation extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> location_name;
 
   external ffi.Pointer<wire_uint_8_list> status_pb;
+}
+
+final class wire_WifiNetworkConfig extends ffi.Struct {
+  @ffi.UintPtr()
+  external int index;
+
+  external ffi.Pointer<wire_uint_8_list> ssid;
+
+  external ffi.Pointer<wire_uint_8_list> password;
+
+  @ffi.Bool()
+  external bool preferred;
+
+  @ffi.Bool()
+  external bool keeping;
+}
+
+final class wire_list_wifi_network_config extends ffi.Struct {
+  external ffi.Pointer<wire_WifiNetworkConfig> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_WifiNetworksConfig extends ffi.Struct {
+  external ffi.Pointer<wire_list_wifi_network_config> networks;
 }
 
 final class wire_WifiTransmissionConfig extends ffi.Struct {

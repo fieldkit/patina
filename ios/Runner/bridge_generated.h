@@ -31,6 +31,23 @@ typedef struct wire_AddOrUpdatePortalStation {
   struct wire_uint_8_list *status_pb;
 } wire_AddOrUpdatePortalStation;
 
+typedef struct wire_WifiNetworkConfig {
+  uintptr_t index;
+  struct wire_uint_8_list *ssid;
+  struct wire_uint_8_list *password;
+  bool preferred;
+  bool keeping;
+} wire_WifiNetworkConfig;
+
+typedef struct wire_list_wifi_network_config {
+  struct wire_WifiNetworkConfig *ptr;
+  int32_t len;
+} wire_list_wifi_network_config;
+
+typedef struct wire_WifiNetworksConfig {
+  struct wire_list_wifi_network_config *networks;
+} wire_WifiNetworksConfig;
+
 typedef struct wire_WifiTransmissionConfig {
   struct wire_Tokens *tokens;
 } wire_WifiTransmissionConfig;
@@ -81,6 +98,10 @@ void wire_add_or_update_station_in_portal(int64_t port_,
                                           struct wire_Tokens *tokens,
                                           struct wire_AddOrUpdatePortalStation *station);
 
+void wire_configure_wifi_networks(int64_t port_,
+                                  struct wire_uint_8_list *device_id,
+                                  struct wire_WifiNetworksConfig *config);
+
 void wire_configure_wifi_transmission(int64_t port_,
                                       struct wire_uint_8_list *device_id,
                                       struct wire_WifiTransmissionConfig *config);
@@ -120,9 +141,13 @@ struct wire_Tokens *new_box_autoadd_tokens_0(void);
 
 uint64_t *new_box_autoadd_u64_0(uint64_t value);
 
+struct wire_WifiNetworksConfig *new_box_autoadd_wifi_networks_config_0(void);
+
 struct wire_WifiTransmissionConfig *new_box_autoadd_wifi_transmission_config_0(void);
 
 struct wire_list_record_archive *new_list_record_archive_0(int32_t len);
+
+struct wire_list_wifi_network_config *new_list_wifi_network_config_0(int32_t len);
 
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
@@ -134,6 +159,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_get_my_stations);
     dummy_var ^= ((int64_t) (void*) wire_authenticate_portal);
     dummy_var ^= ((int64_t) (void*) wire_add_or_update_station_in_portal);
+    dummy_var ^= ((int64_t) (void*) wire_configure_wifi_networks);
     dummy_var ^= ((int64_t) (void*) wire_configure_wifi_transmission);
     dummy_var ^= ((int64_t) (void*) wire_clear_calibration);
     dummy_var ^= ((int64_t) (void*) wire_calibrate);
@@ -148,8 +174,10 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_local_firmware_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_tokens_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_u64_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_wifi_networks_config_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_wifi_transmission_config_0);
     dummy_var ^= ((int64_t) (void*) new_list_record_archive_0);
+    dummy_var ^= ((int64_t) (void*) new_list_wifi_network_config_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

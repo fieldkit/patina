@@ -104,6 +104,29 @@ class NativeImpl implements Native {
         argNames: ["tokens", "station"],
       );
 
+  Future<void> configureWifiNetworks(
+      {required String deviceId,
+      required WifiNetworksConfig config,
+      dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    var arg1 = _platform.api2wire_box_autoadd_wifi_networks_config(config);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_configure_wifi_networks(port_, arg0, arg1),
+      parseSuccessData: _wire2api_unit,
+      parseErrorData: _wire2api_FrbAnyhowException,
+      constMeta: kConfigureWifiNetworksConstMeta,
+      argValues: [deviceId, config],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kConfigureWifiNetworksConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "configure_wifi_networks",
+        argNames: ["deviceId", "config"],
+      );
+
   Future<void> configureWifiTransmission(
       {required String deviceId,
       required WifiTransmissionConfig config,
@@ -575,10 +598,12 @@ class NativeImpl implements Native {
 
   NetworkConfig _wire2api_network_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 1)
-      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
     return NetworkConfig(
-      ssid: _wire2api_String(arr[0]),
+      index: _wire2api_usize(arr[0]),
+      ssid: _wire2api_String(arr[1]),
+      preferred: _wire2api_bool(arr[2]),
     );
   }
 
