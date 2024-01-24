@@ -715,8 +715,24 @@ impl Into<device::ConfigureWifiNetworks> for WifiNetworksConfig {
 }
 
 #[derive(Clone, Debug)]
+pub enum Schedule {
+    Every(u32),
+}
+
+impl Into<device::Schedule> for Schedule {
+    fn into(self) -> device::Schedule {
+        match self {
+            Schedule::Every(seconds) => {
+                device::Schedule::Every(std::time::Duration::from_secs(seconds as u64))
+            }
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct WifiTransmissionConfig {
     pub tokens: Option<Tokens>,
+    pub schedule: Option<Schedule>,
 }
 
 impl Into<device::ConfigureWifiTransmission> for WifiTransmissionConfig {
@@ -726,6 +742,7 @@ impl Into<device::ConfigureWifiTransmission> for WifiTransmissionConfig {
                 enabled: true,
                 token: Some(t.transmission.token.clone()),
                 url: Some(t.transmission.url.clone()),
+                schedule: self.schedule.map(|s| s.into()),
             })
             .unwrap_or(device::ConfigureWifiTransmission::default())
     }

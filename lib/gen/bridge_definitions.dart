@@ -303,6 +303,13 @@ class RecordArchive {
   });
 }
 
+@freezed
+sealed class Schedule with _$Schedule {
+  const factory Schedule.every(
+    int field0,
+  ) = Schedule_Every;
+}
+
 class SensorConfig {
   final int number;
   final String key;
@@ -486,8 +493,10 @@ class WifiNetworksConfig {
 
 class WifiTransmissionConfig {
   final Tokens? tokens;
+  final Schedule? schedule;
 
   const WifiTransmissionConfig({
     this.tokens,
+    this.schedule,
   });
 }

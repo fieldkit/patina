@@ -40,6 +40,13 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_Schedule> api2wire_box_autoadd_schedule(Schedule raw) {
+    final ptr = inner.new_box_autoadd_schedule_0();
+    _api_fill_to_wire_schedule(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_Tokens> api2wire_box_autoadd_tokens(Tokens raw) {
     final ptr = inner.new_box_autoadd_tokens_0();
     _api_fill_to_wire_tokens(raw, ptr.ref);
@@ -99,6 +106,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_Schedule> api2wire_opt_box_autoadd_schedule(Schedule? raw) {
+    return raw == null ? ffi.nullptr : api2wire_box_autoadd_schedule(raw);
+  }
+
+  @protected
   ffi.Pointer<wire_Tokens> api2wire_opt_box_autoadd_tokens(Tokens? raw) {
     return raw == null ? ffi.nullptr : api2wire_box_autoadd_tokens(raw);
   }
@@ -143,6 +155,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     _api_fill_to_wire_local_firmware(apiObj, wireObj.ref);
   }
 
+  void _api_fill_to_wire_box_autoadd_schedule(
+      Schedule apiObj, ffi.Pointer<wire_Schedule> wireObj) {
+    _api_fill_to_wire_schedule(apiObj, wireObj.ref);
+  }
+
   void _api_fill_to_wire_box_autoadd_tokens(
       Tokens apiObj, ffi.Pointer<wire_Tokens> wireObj) {
     _api_fill_to_wire_tokens(apiObj, wireObj.ref);
@@ -168,6 +185,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     wireObj.profile = api2wire_String(apiObj.profile);
   }
 
+  void _api_fill_to_wire_opt_box_autoadd_schedule(
+      Schedule? apiObj, ffi.Pointer<wire_Schedule> wireObj) {
+    if (apiObj != null) _api_fill_to_wire_box_autoadd_schedule(apiObj, wireObj);
+  }
+
   void _api_fill_to_wire_opt_box_autoadd_tokens(
       Tokens? apiObj, ffi.Pointer<wire_Tokens> wireObj) {
     if (apiObj != null) _api_fill_to_wire_box_autoadd_tokens(apiObj, wireObj);
@@ -179,6 +201,16 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     wireObj.path = api2wire_String(apiObj.path);
     wireObj.head = api2wire_i64(apiObj.head);
     wireObj.tail = api2wire_i64(apiObj.tail);
+  }
+
+  void _api_fill_to_wire_schedule(Schedule apiObj, wire_Schedule wireObj) {
+    if (apiObj is Schedule_Every) {
+      var pre_field0 = api2wire_u32(apiObj.field0);
+      wireObj.tag = 0;
+      wireObj.kind = inner.inflate_Schedule_Every();
+      wireObj.kind.ref.Every.ref.field0 = pre_field0;
+      return;
+    }
   }
 
   void _api_fill_to_wire_tokens(Tokens apiObj, wire_Tokens wireObj) {
@@ -210,6 +242,7 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   void _api_fill_to_wire_wifi_transmission_config(
       WifiTransmissionConfig apiObj, wire_WifiTransmissionConfig wireObj) {
     wireObj.tokens = api2wire_opt_box_autoadd_tokens(apiObj.tokens);
+    wireObj.schedule = api2wire_opt_box_autoadd_schedule(apiObj.schedule);
   }
 }
 
@@ -627,6 +660,16 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _new_box_autoadd_local_firmware_0Ptr
           .asFunction<ffi.Pointer<wire_LocalFirmware> Function()>();
 
+  ffi.Pointer<wire_Schedule> new_box_autoadd_schedule_0() {
+    return _new_box_autoadd_schedule_0();
+  }
+
+  late final _new_box_autoadd_schedule_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_Schedule> Function()>>(
+          'new_box_autoadd_schedule_0');
+  late final _new_box_autoadd_schedule_0 = _new_box_autoadd_schedule_0Ptr
+      .asFunction<ffi.Pointer<wire_Schedule> Function()>();
+
   ffi.Pointer<wire_Tokens> new_box_autoadd_tokens_0() {
     return _new_box_autoadd_tokens_0();
   }
@@ -722,6 +765,16 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _new_uint_8_list_0 = _new_uint_8_list_0Ptr
       .asFunction<ffi.Pointer<wire_uint_8_list> Function(int)>();
 
+  ffi.Pointer<ScheduleKind> inflate_Schedule_Every() {
+    return _inflate_Schedule_Every();
+  }
+
+  late final _inflate_Schedule_EveryPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ScheduleKind> Function()>>(
+          'inflate_Schedule_Every');
+  late final _inflate_Schedule_Every = _inflate_Schedule_EveryPtr
+      .asFunction<ffi.Pointer<ScheduleKind> Function()>();
+
   void free_WireSyncReturn(
     WireSyncReturn ptr,
   ) {
@@ -794,8 +847,26 @@ final class wire_WifiNetworksConfig extends ffi.Struct {
   external ffi.Pointer<wire_list_wifi_network_config> networks;
 }
 
+final class wire_Schedule_Every extends ffi.Struct {
+  @ffi.Uint32()
+  external int field0;
+}
+
+final class ScheduleKind extends ffi.Union {
+  external ffi.Pointer<wire_Schedule_Every> Every;
+}
+
+final class wire_Schedule extends ffi.Struct {
+  @ffi.Int32()
+  external int tag;
+
+  external ffi.Pointer<ScheduleKind> kind;
+}
+
 final class wire_WifiTransmissionConfig extends ffi.Struct {
   external ffi.Pointer<wire_Tokens> tokens;
+
+  external ffi.Pointer<wire_Schedule> schedule;
 }
 
 final class wire_RecordArchive extends ffi.Struct {

@@ -48,8 +48,22 @@ typedef struct wire_WifiNetworksConfig {
   struct wire_list_wifi_network_config *networks;
 } wire_WifiNetworksConfig;
 
+typedef struct wire_Schedule_Every {
+  uint32_t field0;
+} wire_Schedule_Every;
+
+typedef union ScheduleKind {
+  struct wire_Schedule_Every *Every;
+} ScheduleKind;
+
+typedef struct wire_Schedule {
+  int32_t tag;
+  union ScheduleKind *kind;
+} wire_Schedule;
+
 typedef struct wire_WifiTransmissionConfig {
   struct wire_Tokens *tokens;
+  struct wire_Schedule *schedule;
 } wire_WifiTransmissionConfig;
 
 typedef struct wire_RecordArchive {
@@ -137,6 +151,8 @@ struct wire_AddOrUpdatePortalStation *new_box_autoadd_add_or_update_portal_stati
 
 struct wire_LocalFirmware *new_box_autoadd_local_firmware_0(void);
 
+struct wire_Schedule *new_box_autoadd_schedule_0(void);
+
 struct wire_Tokens *new_box_autoadd_tokens_0(void);
 
 uint64_t *new_box_autoadd_u64_0(uint64_t value);
@@ -150,6 +166,8 @@ struct wire_list_record_archive *new_list_record_archive_0(int32_t len);
 struct wire_list_wifi_network_config *new_list_wifi_network_config_0(int32_t len);
 
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
+
+union ScheduleKind *inflate_Schedule_Every(void);
 
 void free_WireSyncReturn(WireSyncReturn ptr);
 
@@ -172,6 +190,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_create_log_sink);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_add_or_update_portal_station_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_local_firmware_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_schedule_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_tokens_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_u64_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_wifi_networks_config_0);
@@ -179,6 +198,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) new_list_record_archive_0);
     dummy_var ^= ((int64_t) (void*) new_list_wifi_network_config_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
+    dummy_var ^= ((int64_t) (void*) inflate_Schedule_Every);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);
     dummy_var ^= ((int64_t) (void*) get_dart_object);

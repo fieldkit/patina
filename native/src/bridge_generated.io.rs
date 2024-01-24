@@ -133,6 +133,11 @@ pub extern "C" fn new_box_autoadd_local_firmware_0() -> *mut wire_LocalFirmware 
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_schedule_0() -> *mut wire_Schedule {
+    support::new_leak_box_ptr(wire_Schedule::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_box_autoadd_tokens_0() -> *mut wire_Tokens {
     support::new_leak_box_ptr(wire_Tokens::new_with_null_ptr())
 }
@@ -212,6 +217,12 @@ impl Wire2Api<LocalFirmware> for *mut wire_LocalFirmware {
         Wire2Api::<LocalFirmware>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<Schedule> for *mut wire_Schedule {
+    fn wire2api(self) -> Schedule {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<Schedule>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<Tokens> for *mut wire_Tokens {
     fn wire2api(self) -> Tokens {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -276,6 +287,18 @@ impl Wire2Api<RecordArchive> for wire_RecordArchive {
         }
     }
 }
+impl Wire2Api<Schedule> for wire_Schedule {
+    fn wire2api(self) -> Schedule {
+        match self.tag {
+            0 => unsafe {
+                let ans = support::box_from_leak_ptr(self.kind);
+                let ans = support::box_from_leak_ptr(ans.Every);
+                Schedule::Every(ans.field0.wire2api())
+            },
+            _ => unreachable!(),
+        }
+    }
+}
 impl Wire2Api<Tokens> for wire_Tokens {
     fn wire2api(self) -> Tokens {
         Tokens {
@@ -324,6 +347,7 @@ impl Wire2Api<WifiTransmissionConfig> for wire_WifiTransmissionConfig {
     fn wire2api(self) -> WifiTransmissionConfig {
         WifiTransmissionConfig {
             tokens: self.tokens.wire2api(),
+            schedule: self.schedule.wire2api(),
         }
     }
 }
@@ -412,6 +436,25 @@ pub struct wire_WifiNetworksConfig {
 #[derive(Clone)]
 pub struct wire_WifiTransmissionConfig {
     tokens: *mut wire_Tokens,
+    schedule: *mut wire_Schedule,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_Schedule {
+    tag: i32,
+    kind: *mut ScheduleKind,
+}
+
+#[repr(C)]
+pub union ScheduleKind {
+    Every: *mut wire_Schedule_Every,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_Schedule_Every {
+    field0: u32,
 }
 
 // Section: impl NewWithNullPtr
@@ -476,6 +519,30 @@ impl Default for wire_RecordArchive {
     fn default() -> Self {
         Self::new_with_null_ptr()
     }
+}
+
+impl Default for wire_Schedule {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
+impl NewWithNullPtr for wire_Schedule {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            tag: -1,
+            kind: core::ptr::null_mut(),
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn inflate_Schedule_Every() -> *mut ScheduleKind {
+    support::new_leak_box_ptr(ScheduleKind {
+        Every: support::new_leak_box_ptr(wire_Schedule_Every {
+            field0: Default::default(),
+        }),
+    })
 }
 
 impl NewWithNullPtr for wire_Tokens {
@@ -544,6 +611,7 @@ impl NewWithNullPtr for wire_WifiTransmissionConfig {
     fn new_with_null_ptr() -> Self {
         Self {
             tokens: core::ptr::null_mut(),
+            schedule: core::ptr::null_mut(),
         }
     }
 }

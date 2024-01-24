@@ -490,12 +490,14 @@ class StationConfiguration extends ChangeNotifier {
 
     await api.configureWifiTransmission(
         deviceId: deviceId,
-        config: WifiTransmissionConfig(tokens: account.tokens));
+        config: WifiTransmissionConfig(
+            tokens: account.tokens, schedule: const Schedule_Every(10 * 60)));
   }
 
   Future<void> disableWifiUploading(String deviceId) async {
     await api.configureWifiTransmission(
-        deviceId: deviceId, config: const WifiTransmissionConfig(tokens: null));
+        deviceId: deviceId,
+        config: const WifiTransmissionConfig(tokens: null, schedule: null));
   }
 
   List<NetworkConfig> getStationNetworks(String deviceId) {

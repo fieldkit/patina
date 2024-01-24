@@ -308,6 +308,11 @@ impl Wire2Api<i64> for i64 {
     }
 }
 
+impl Wire2Api<u32> for u32 {
+    fn wire2api(self) -> u32 {
+        self
+    }
+}
 impl Wire2Api<u64> for u64 {
     fn wire2api(self) -> u64 {
         self

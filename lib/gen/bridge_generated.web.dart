@@ -48,6 +48,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic> api2wire_box_autoadd_schedule(Schedule raw) {
+    return api2wire_schedule(raw);
+  }
+
+  @protected
   List<dynamic> api2wire_box_autoadd_tokens(Tokens raw) {
     return api2wire_tokens(raw);
   }
@@ -101,6 +106,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic>? api2wire_opt_box_autoadd_schedule(Schedule? raw) {
+    return raw == null ? null : api2wire_box_autoadd_schedule(raw);
+  }
+
+  @protected
   List<dynamic>? api2wire_opt_box_autoadd_tokens(Tokens? raw) {
     return raw == null ? null : api2wire_box_autoadd_tokens(raw);
   }
@@ -118,6 +128,15 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
       api2wire_i64(raw.head),
       api2wire_i64(raw.tail)
     ];
+  }
+
+  @protected
+  List<dynamic> api2wire_schedule(Schedule raw) {
+    if (raw is Schedule_Every) {
+      return [0, api2wire_u32(raw.field0)];
+    }
+
+    throw Exception('unreachable');
   }
 
   @protected
@@ -161,7 +180,10 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
 
   @protected
   List<dynamic> api2wire_wifi_transmission_config(WifiTransmissionConfig raw) {
-    return [api2wire_opt_box_autoadd_tokens(raw.tokens)];
+    return [
+      api2wire_opt_box_autoadd_tokens(raw.tokens),
+      api2wire_opt_box_autoadd_schedule(raw.schedule)
+    ];
   }
 // Section: finalizer
 }

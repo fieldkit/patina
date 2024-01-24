@@ -146,6 +146,11 @@ impl Wire2Api<Option<String>> for Option<String> {
         self.map(Wire2Api::wire2api)
     }
 }
+impl Wire2Api<Option<Schedule>> for JsValue {
+    fn wire2api(self) -> Option<Schedule> {
+        (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
+    }
+}
 impl Wire2Api<Option<Tokens>> for JsValue {
     fn wire2api(self) -> Option<Tokens> {
         (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
@@ -166,6 +171,15 @@ impl Wire2Api<RecordArchive> for JsValue {
             path: self_.get(1).wire2api(),
             head: self_.get(2).wire2api(),
             tail: self_.get(3).wire2api(),
+        }
+    }
+}
+impl Wire2Api<Schedule> for JsValue {
+    fn wire2api(self) -> Schedule {
+        let self_ = self.unchecked_into::<JsArray>();
+        match self_.get(0).unchecked_into_f64() as _ {
+            0 => Schedule::Every(self_.get(1).wire2api()),
+            _ => unreachable!(),
         }
     }
 }
@@ -243,12 +257,13 @@ impl Wire2Api<WifiTransmissionConfig> for JsValue {
         let self_ = self.dyn_into::<JsArray>().unwrap();
         assert_eq!(
             self_.length(),
-            1,
-            "Expected 1 elements, got {}",
+            2,
+            "Expected 2 elements, got {}",
             self_.length()
         );
         WifiTransmissionConfig {
             tokens: self_.get(0).wire2api(),
+            schedule: self_.get(1).wire2api(),
         }
     }
 }
@@ -277,6 +292,11 @@ impl Wire2Api<Option<String>> for JsValue {
 impl Wire2Api<Option<u64>> for JsValue {
     fn wire2api(self) -> Option<u64> {
         (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
+    }
+}
+impl Wire2Api<u32> for JsValue {
+    fn wire2api(self) -> u32 {
+        self.unchecked_into_f64() as _
     }
 }
 impl Wire2Api<u64> for JsValue {

@@ -849,6 +849,11 @@ bool api2wire_bool(bool raw) {
 }
 
 @protected
+int api2wire_u32(int raw) {
+  return raw;
+}
+
+@protected
 int api2wire_u8(int raw) {
   return raw;
 }
