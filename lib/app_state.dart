@@ -503,6 +503,11 @@ class StationConfiguration extends ChangeNotifier {
   List<NetworkConfig> getStationNetworks(String deviceId) {
     return knownStations.find(deviceId)?.ephemeral?.networks ?? List.empty();
   }
+
+  bool isAutomaticUploadEnabled(String deviceId) {
+    return knownStations.find(deviceId)?.ephemeral?.transmission?.enabled ??
+        false;
+  }
 }
 
 abstract class Task {

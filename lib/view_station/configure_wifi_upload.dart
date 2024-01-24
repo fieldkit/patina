@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -7,24 +8,60 @@ import '../common_widgets.dart';
 import '../diagnostics.dart';
 import '../gen/ffi.dart';
 
-Widget enableButton(String deviceId, StationConfiguration configuration,
-    AppLocalizations localizations) {
-  return ElevatedButton(
-      onPressed: () async {
-        Loggers.ui.i("wifi-upload:enable");
-        await configuration.enableWifiUploading(deviceId);
-      },
-      child: Text(localizations.networkAutomaticUploadEnable));
+class EnableButton extends StatelessWidget {
+  final String deviceId;
+
+  const EnableButton({super.key, required this.deviceId});
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final StationConfiguration configuration =
+        context.read<StationConfiguration>();
+
+    return ElevatedButton(
+        onPressed: () async {
+          Loggers.ui.i("wifi-upload:disable");
+          final overlay = context.loaderOverlay;
+          overlay.show();
+          try {
+            await configuration.enableWifiUploading(deviceId);
+          } catch (e) {
+            Loggers.ui.e("error: $e");
+          } finally {
+            overlay.hide();
+          }
+        },
+        child: Text(localizations.networkAutomaticUploadEnable));
+  }
 }
 
-Widget disableButton(String deviceId, StationConfiguration configuration,
-    AppLocalizations localizations) {
-  return ElevatedButton(
-      onPressed: () async {
-        Loggers.ui.i("wifi-upload:disable");
-        await configuration.disableWifiUploading(deviceId);
-      },
-      child: Text(localizations.networkAutomaticUploadDisable));
+class DisableButton extends StatelessWidget {
+  final String deviceId;
+
+  const DisableButton({super.key, required this.deviceId});
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final StationConfiguration configuration =
+        context.read<StationConfiguration>();
+
+    return ElevatedButton(
+        onPressed: () async {
+          Loggers.ui.i("wifi-upload:disable");
+          final overlay = context.loaderOverlay;
+          overlay.show();
+          try {
+            await configuration.disableWifiUploading(deviceId);
+          } catch (e) {
+            Loggers.ui.e("error: $e");
+          } finally {
+            overlay.hide();
+          }
+        },
+        child: Text(localizations.networkAutomaticUploadDisable));
+  }
 }
 
 class ConfigureAutomaticUploadListItem extends StatelessWidget {
@@ -36,27 +73,11 @@ class ConfigureAutomaticUploadListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final StationConfiguration configuration =
-        context.watch<AppState>().configuration;
-
     return ListTile(
       title: Text(AppLocalizations.of(context)!.settingsAutomaticUpload),
-      /*
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConfigureAutomaticUploadPage(
-              station: station,
-            ),
-          ),
-        );
-      },
-      */
       trailing: enabled
-          ? disableButton(station.deviceId, configuration, localizations)
-          : enableButton(station.deviceId, configuration, localizations),
+          ? DisableButton(deviceId: station.deviceId)
+          : EnableButton(deviceId: station.deviceId),
     );
   }
 }
@@ -70,13 +91,13 @@ class ConfigureAutomaticUploadPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
     final StationConfiguration configuration =
         context.watch<StationConfiguration>();
 
     Loggers.ui.i("station $station $config");
 
-    final enabled = station.ephemeral?.transmission?.enabled ?? false;
+    final bool enabled =
+        configuration.isAutomaticUploadEnabled(station.deviceId);
 
     return Scaffold(
       appBar: AppBar(
@@ -84,11 +105,9 @@ class ConfigureAutomaticUploadPage extends StatelessWidget {
       ),
       body: WH.padPage(Column(children: [
         if (!enabled)
-          WH.align(WH.vertical(
-              enableButton(station.deviceId, configuration, localizations))),
+          WH.align(WH.vertical(EnableButton(deviceId: station.deviceId))),
         if (enabled)
-          WH.align(WH.vertical(
-              disableButton(station.deviceId, configuration, localizations)))
+          WH.align(WH.vertical(DisableButton(deviceId: station.deviceId)))
       ])),
     );
   }
