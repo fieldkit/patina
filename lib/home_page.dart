@@ -107,6 +107,8 @@ class _HomePageState extends State<HomePage> {
                             ChangeNotifierProvider.value(
                                 value: state.moduleConfigurations),
                             ChangeNotifierProvider.value(
+                                value: state.configuration),
+                            ChangeNotifierProvider.value(
                                 value: state.knownStations),
                             ChangeNotifierProvider.value(value: state.firmware),
                             ChangeNotifierProvider.value(

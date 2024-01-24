@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:fk/view_station/configure_wifi_networks.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -419,9 +420,57 @@ class AvailableFirmwareModel extends ChangeNotifier {
 
 class StationConfiguration extends ChangeNotifier {
   final Native api;
+  final KnownStationsModel knownStations;
   final PortalAccounts portalAccounts;
 
-  StationConfiguration({required this.api, required this.portalAccounts});
+  StationConfiguration(
+      {required this.api,
+      required this.knownStations,
+      required this.portalAccounts}) {
+    knownStations.addListener(() {
+      notifyListeners();
+    });
+  }
+
+  Future<void> addNetwork(String deviceId, List<NetworkConfig> existing,
+      WifiNetwork network) async {
+    final int keeping = existing.isEmpty ? 1 : 0;
+    final List<WifiNetworkConfig> networks =
+        List<int>.generate(2, (i) => i).map((index) {
+      if (keeping == index) {
+        return WifiNetworkConfig(index: index, keeping: true, preferred: false);
+      } else {
+        return WifiNetworkConfig(
+            index: index,
+            keeping: false,
+            preferred: false,
+            ssid: network.ssid!,
+            password: network.password!);
+      }
+    }).toList();
+
+    await api.configureWifiNetworks(
+        deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
+  }
+
+  Future<void> removeNetwork(String deviceId, NetworkConfig network) async {
+    final List<WifiNetworkConfig> networks =
+        List<int>.generate(2, (i) => i).map((index) {
+      if (network.index == index) {
+        return WifiNetworkConfig(
+            index: index,
+            keeping: false,
+            preferred: false,
+            ssid: "",
+            password: "");
+      } else {
+        return WifiNetworkConfig(index: index, keeping: true, preferred: false);
+      }
+    }).toList();
+
+    await api.configureWifiNetworks(
+        deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
+  }
 
   Future<void> enableWifiUploading(String deviceId) async {
     final account = portalAccounts.getAccountForDevice(deviceId);
@@ -756,8 +805,8 @@ class AppState {
       portalAccounts: portalAccounts,
       dispatcher: dispatcher,
     );
-    final configurations =
-        StationConfiguration(api: api, portalAccounts: portalAccounts);
+    final configurations = StationConfiguration(
+        api: api, knownStations: knownStations, portalAccounts: portalAccounts);
     final updatePortal = UpdatePortal(api, portalAccounts, dispatcher);
     return AppState._(
       api,

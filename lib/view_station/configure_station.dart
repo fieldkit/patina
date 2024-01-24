@@ -3,11 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
-import '../common_widgets.dart';
-import '../diagnostics.dart';
 import '../gen/ffi.dart';
 import '../unknown_station_page.dart';
 
+import 'configure_wifi_networks.dart';
 import 'firmware_page.dart';
 
 class ConfigureStationRoute extends StatelessWidget {
@@ -64,17 +63,22 @@ class ConfigureStationPage extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            title: Text(AppLocalizations.of(context)!.settingsNetworks),
+            title: Text(AppLocalizations.of(context)!.settingsWifi),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ConfigureNetworksPage(
+                  builder: (context) => ConfigureWiFiPage(
                     station: station,
                   ),
                 ),
               );
             },
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.settingsLora),
+            onTap: () {},
           ),
           const Divider(),
           ConfigureAutomaticUploadListItem(station: station),
@@ -109,128 +113,6 @@ class ConfigureStationPage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class ConfigureNetworksPage extends StatelessWidget {
-  final StationModel station;
-
-  StationConfig get config => station.config!;
-
-  const ConfigureNetworksPage({super.key, required this.station});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(config.name),
-      ),
-      body: ListView(children: [
-        ListTile(
-          title: Text(AppLocalizations.of(context)!.settingsWifi),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ConfigureWiFiPage(
-                  station: station,
-                ),
-              ),
-            );
-          },
-        ),
-        const Divider(),
-        ListTile(
-          title: Text(AppLocalizations.of(context)!.settingsLora),
-          onTap: () {},
-        ),
-        const Divider(),
-      ]),
-    );
-  }
-}
-
-class ConfigureAutomaticUploadListItem extends StatelessWidget {
-  final StationModel station;
-
-  const ConfigureAutomaticUploadListItem({super.key, required this.station});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(AppLocalizations.of(context)!.settingsAutomaticUpload),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConfigureAutomaticUploadPage(
-              station: station,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class ConfigureWiFiPage extends StatelessWidget {
-  final StationModel station;
-
-  StationConfig get config => station.config!;
-
-  const ConfigureWiFiPage({super.key, required this.station});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(config.name),
-      ),
-      body: ListView(children: [
-        ConfigureAutomaticUploadListItem(station: station),
-        const Divider(),
-      ]),
-    );
-  }
-}
-
-class ConfigureAutomaticUploadPage extends StatelessWidget {
-  final StationModel station;
-
-  StationConfig get config => station.config!;
-
-  const ConfigureAutomaticUploadPage({super.key, required this.station});
-
-  @override
-  Widget build(BuildContext context) {
-    final StationConfiguration configuration =
-        context.watch<AppState>().configuration;
-
-    Loggers.ui.i("station $station $config");
-
-    final enabled = station.ephemeral?.transmission?.enabled ?? false;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(config.name),
-      ),
-      body: WH.padPage(Column(children: [
-        if (!enabled)
-          WH.align(WH.vertical(ElevatedButton(
-              onPressed: () async {
-                Loggers.ui.i("wifi-upload:enable");
-                await configuration.enableWifiUploading(station.deviceId);
-              },
-              child: const Text("Enable")))),
-        if (enabled)
-          WH.align(WH.vertical(ElevatedButton(
-              onPressed: () async {
-                Loggers.ui.i("wifi-upload:disable");
-                await configuration.disableWifiUploading(station.deviceId);
-              },
-              child: const Text("Disable"))))
-      ])),
     );
   }
 }
