@@ -16,9 +16,13 @@ import 'calibration_calculations.dart' as calibration_calc;
 class CalibrationSection extends StatelessWidget {
   final proto.Calibration calibration;
   final proto.CalibrationPoint point;
+  final String? uom;
 
   const CalibrationSection(
-      {super.key, required this.point, required this.calibration});
+      {super.key,
+      required this.point,
+      required this.calibration,
+      required this.uom});
 
   double _determineFontSize(double screenWidth) {
     if (screenWidth < 320) {
@@ -46,13 +50,6 @@ class CalibrationSection extends StatelessWidget {
     double fontSize = _determineFontSize(screenWidth);
     double containerPadding = _determineContainerPadding(screenWidth);
     double arrowSize = screenWidth < 360 ? 30 : 40;
-    var valueStyle = TextStyle(
-      fontSize: fontSize,
-      fontWeight: FontWeight.normal,
-      fontFamily: "Avenir",
-    );
-
-    Text value(double val) => Text(val.toStringAsFixed(2), style: valueStyle);
 
     return Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -67,7 +64,7 @@ class CalibrationSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Standard: ${point.references[0].toStringAsFixed(2)}", // TODO l10n
+              "Standard: ${point.references[0].toStringAsFixed(1)} $uom", // TODO l10n
               style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -83,7 +80,11 @@ class CalibrationSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      value(point.uncalibrated[0]),
+                      Text("${point.uncalibrated[0].toStringAsFixed(1)} $uom",
+                          style: TextStyle(
+                            fontSize: fontSize,
+                            fontFamily: "Avenir",
+                          )),
                       Text(
                         AppLocalizations.of(context)!.uncalibrated,
                         style: const TextStyle(
@@ -105,10 +106,12 @@ class CalibrationSection extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            value(calibration_calc.calibrateValue(
-                                calibration.type,
-                                point.uncalibrated[0],
-                                calibration.points)),
+                            Text(
+                                "${calibration_calc.calibrateValue(calibration.type, point.uncalibrated[0], calibration.points).toStringAsFixed(1)} $uom",
+                                style: TextStyle(
+                                  fontSize: fontSize,
+                                  fontFamily: "Avenir",
+                                )),
                             Text(
                               AppLocalizations.of(context)!.calibrated,
                               style: const TextStyle(
@@ -129,15 +132,17 @@ class CalibrationSection extends StatelessWidget {
 
 class CalibrationWidget extends StatelessWidget {
   final proto.Calibration calibration;
+  final String? uom;
 
-  const CalibrationWidget({super.key, required this.calibration});
+  const CalibrationWidget({super.key, required this.calibration, this.uom});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ...calibration.points
-            .map((p) => CalibrationSection(point: p, calibration: calibration))
+            .map((p) => CalibrationSection(
+                point: p, calibration: calibration, uom: uom))
             .toList(),
       ],
     );
@@ -182,6 +187,7 @@ class ClearCalibrationPage extends StatelessWidget {
     final calibrations = moduleConfiguration.calibrations;
     final outerNavigator = Navigator.of(context);
     final localized = LocalizedModule.get(module);
+    final uom = module.calibrationSensor?.calibratedUom;
     final bay = AppLocalizations.of(context)!.bayNumber(module.position);
 
     return Scaffold(
@@ -189,8 +195,7 @@ class ClearCalibrationPage extends StatelessWidget {
           title: Text(
               "${AppLocalizations.of(context)!.calibrationTitle} - ${localized.name}"),
         ),
-        body: LayoutBuilder(// Use LayoutBuilder to get available width
-            builder: (context, constraints) {
+        body: LayoutBuilder(builder: (context, constraints) {
           return ListView(
               children: <Widget>[
             Row(children: [
@@ -218,7 +223,8 @@ class ClearCalibrationPage extends StatelessWidget {
                       child: TimeWidget(calibration: c)))
                   .toList(),
             ),
-            ...calibrations.map((c) => CalibrationWidget(calibration: c)),
+            ...calibrations
+                .map((c) => CalibrationWidget(calibration: c, uom: uom)),
             ButtonBar(
               alignment: MainAxisAlignment.spaceAround,
               buttonMinWidth: 100,
