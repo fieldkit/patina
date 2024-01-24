@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:fk/view_station/configure_wifi_networks.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -416,6 +415,15 @@ class AvailableFirmwareModel extends ChangeNotifier {
     await api.upgradeStation(
         deviceId: deviceId, firmware: firmware, swap: false);
   }
+}
+
+class WifiNetwork {
+  String? ssid;
+  String? password;
+  bool preferred;
+
+  WifiNetwork(
+      {required this.ssid, required this.password, required this.preferred});
 }
 
 class StationConfiguration extends ChangeNotifier {

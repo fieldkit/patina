@@ -81,8 +81,6 @@ class ConfigureStationPage extends StatelessWidget {
             onTap: () {},
           ),
           const Divider(),
-          ConfigureAutomaticUploadListItem(station: station),
-          const Divider(),
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsFirmware),
             onTap: () {
