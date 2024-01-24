@@ -14,9 +14,11 @@ import 'calibration_page.dart';
 import 'calibration_calculations.dart' as calibration_calc;
 
 class CalibrationSection extends StatelessWidget {
+  final proto.Calibration calibration;
   final proto.CalibrationPoint point;
 
-  const CalibrationSection({super.key, required this.point});
+  const CalibrationSection(
+      {super.key, required this.point, required this.calibration});
 
   double _determineFontSize(double screenWidth) {
     if (screenWidth < 320) {
@@ -103,9 +105,12 @@ class CalibrationSection extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            value(point.factory[0]),
+                            value(calibration_calc.calibrateValue(
+                                calibration.type,
+                                point.uncalibrated[0],
+                                calibration.points)),
                             Text(
-                              AppLocalizations.of(context)!.factory,
+                              AppLocalizations.of(context)!.calibrated,
                               style: const TextStyle(
                                 fontFamily: "Avenir",
                                 fontSize: 14,
@@ -131,7 +136,9 @@ class CalibrationWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ...calibration.points.map((p) => CalibrationSection(point: p)).toList(),
+        ...calibration.points
+            .map((p) => CalibrationSection(point: p, calibration: calibration))
+            .toList(),
       ],
     );
   }
