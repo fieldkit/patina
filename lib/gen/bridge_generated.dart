@@ -150,6 +150,29 @@ class NativeImpl implements Native {
         argNames: ["deviceId", "config"],
       );
 
+  Future<void> configureLoraTransmission(
+      {required String deviceId,
+      required LoraTransmissionConfig config,
+      dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    var arg1 = _platform.api2wire_box_autoadd_lora_transmission_config(config);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_configure_lora_transmission(port_, arg0, arg1),
+      parseSuccessData: _wire2api_unit,
+      parseErrorData: _wire2api_FrbAnyhowException,
+      constMeta: kConfigureLoraTransmissionConstMeta,
+      argValues: [deviceId, config],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kConfigureLoraTransmissionConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "configure_lora_transmission",
+        argNames: ["deviceId", "config"],
+      );
+
   Future<void> clearCalibration(
       {required String deviceId, required int module, dynamic hint}) {
     var arg0 = _platform.api2wire_String(deviceId);
@@ -392,6 +415,10 @@ class NativeImpl implements Native {
     return _wire2api_firmware_download_status(raw);
   }
 
+  LoraConfig _wire2api_box_autoadd_lora_config(dynamic raw) {
+    return _wire2api_lora_config(raw);
+  }
+
   SensorValue _wire2api_box_autoadd_sensor_value(dynamic raw) {
     return _wire2api_sensor_value(raw);
   }
@@ -486,12 +513,13 @@ class NativeImpl implements Native {
 
   EphemeralConfig _wire2api_ephemeral_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 3)
-      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return EphemeralConfig(
       transmission: _wire2api_opt_box_autoadd_transmission_config(arr[0]),
       networks: _wire2api_list_network_config(arr[1]),
-      capabilities: _wire2api_device_capabilities(arr[2]),
+      lora: _wire2api_opt_box_autoadd_lora_config(arr[2]),
+      capabilities: _wire2api_device_capabilities(arr[3]),
     );
   }
 
@@ -526,6 +554,10 @@ class NativeImpl implements Native {
       label: _wire2api_String(arr[0]),
       time: _wire2api_i64(arr[1]),
     );
+  }
+
+  int _wire2api_i32(dynamic raw) {
+    return raw as int;
   }
 
   int _wire2api_i64(dynamic raw) {
@@ -573,6 +605,23 @@ class NativeImpl implements Native {
     );
   }
 
+  LoraBand _wire2api_lora_band(dynamic raw) {
+    return LoraBand.values[raw as int];
+  }
+
+  LoraConfig _wire2api_lora_config(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return LoraConfig(
+      band: _wire2api_lora_band(arr[0]),
+      deviceEui: _wire2api_uint_8_list(arr[1]),
+      appKey: _wire2api_uint_8_list(arr[2]),
+      joinEui: _wire2api_uint_8_list(arr[3]),
+      deviceAddress: _wire2api_uint_8_list(arr[4]),
+    );
+  }
+
   ModuleConfig _wire2api_module_config(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 5)
@@ -609,6 +658,10 @@ class NativeImpl implements Native {
 
   EphemeralConfig? _wire2api_opt_box_autoadd_ephemeral_config(dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_ephemeral_config(raw);
+  }
+
+  LoraConfig? _wire2api_opt_box_autoadd_lora_config(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_lora_config(raw);
   }
 
   SensorValue? _wire2api_opt_box_autoadd_sensor_value(dynamic raw) {

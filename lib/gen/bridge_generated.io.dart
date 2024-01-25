@@ -40,6 +40,15 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_LoraTransmissionConfig>
+      api2wire_box_autoadd_lora_transmission_config(
+          LoraTransmissionConfig raw) {
+    final ptr = inner.new_box_autoadd_lora_transmission_config_0();
+    _api_fill_to_wire_lora_transmission_config(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_Schedule> api2wire_box_autoadd_schedule(Schedule raw) {
     final ptr = inner.new_box_autoadd_schedule_0();
     _api_fill_to_wire_schedule(raw, ptr.ref);
@@ -51,6 +60,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     final ptr = inner.new_box_autoadd_tokens_0();
     _api_fill_to_wire_tokens(raw, ptr.ref);
     return ptr;
+  }
+
+  @protected
+  ffi.Pointer<ffi.Uint32> api2wire_box_autoadd_u32(int raw) {
+    return inner.new_box_autoadd_u32_0(api2wire_u32(raw));
   }
 
   @protected
@@ -116,8 +130,18 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<ffi.Uint32> api2wire_opt_box_autoadd_u32(int? raw) {
+    return raw == null ? ffi.nullptr : api2wire_box_autoadd_u32(raw);
+  }
+
+  @protected
   ffi.Pointer<ffi.Uint64> api2wire_opt_box_autoadd_u64(int? raw) {
     return raw == null ? ffi.nullptr : api2wire_box_autoadd_u64(raw);
+  }
+
+  @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_opt_uint_8_list(Uint8List? raw) {
+    return raw == null ? ffi.nullptr : api2wire_uint_8_list(raw);
   }
 
   @protected
@@ -155,6 +179,12 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     _api_fill_to_wire_local_firmware(apiObj, wireObj.ref);
   }
 
+  void _api_fill_to_wire_box_autoadd_lora_transmission_config(
+      LoraTransmissionConfig apiObj,
+      ffi.Pointer<wire_LoraTransmissionConfig> wireObj) {
+    _api_fill_to_wire_lora_transmission_config(apiObj, wireObj.ref);
+  }
+
   void _api_fill_to_wire_box_autoadd_schedule(
       Schedule apiObj, ffi.Pointer<wire_Schedule> wireObj) {
     _api_fill_to_wire_schedule(apiObj, wireObj.ref);
@@ -183,6 +213,14 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     wireObj.time = api2wire_i64(apiObj.time);
     wireObj.module = api2wire_String(apiObj.module);
     wireObj.profile = api2wire_String(apiObj.profile);
+  }
+
+  void _api_fill_to_wire_lora_transmission_config(
+      LoraTransmissionConfig apiObj, wire_LoraTransmissionConfig wireObj) {
+    wireObj.band = api2wire_opt_box_autoadd_u32(apiObj.band);
+    wireObj.app_key = api2wire_opt_uint_8_list(apiObj.appKey);
+    wireObj.join_eui = api2wire_opt_uint_8_list(apiObj.joinEui);
+    wireObj.schedule = api2wire_opt_box_autoadd_schedule(apiObj.schedule);
   }
 
   void _api_fill_to_wire_opt_box_autoadd_schedule(
@@ -463,6 +501,28 @@ class NativeWire implements FlutterRustBridgeWireBase {
           void Function(int, ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_WifiTransmissionConfig>)>();
 
+  void wire_configure_lora_transmission(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> device_id,
+    ffi.Pointer<wire_LoraTransmissionConfig> config,
+  ) {
+    return _wire_configure_lora_transmission(
+      port_,
+      device_id,
+      config,
+    );
+  }
+
+  late final _wire_configure_lora_transmissionPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+                  ffi.Pointer<wire_LoraTransmissionConfig>)>>(
+      'wire_configure_lora_transmission');
+  late final _wire_configure_lora_transmission =
+      _wire_configure_lora_transmissionPtr.asFunction<
+          void Function(int, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_LoraTransmissionConfig>)>();
+
   void wire_clear_calibration(
     int port_,
     ffi.Pointer<wire_uint_8_list> device_id,
@@ -660,6 +720,19 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _new_box_autoadd_local_firmware_0Ptr
           .asFunction<ffi.Pointer<wire_LocalFirmware> Function()>();
 
+  ffi.Pointer<wire_LoraTransmissionConfig>
+      new_box_autoadd_lora_transmission_config_0() {
+    return _new_box_autoadd_lora_transmission_config_0();
+  }
+
+  late final _new_box_autoadd_lora_transmission_config_0Ptr = _lookup<
+          ffi
+          .NativeFunction<ffi.Pointer<wire_LoraTransmissionConfig> Function()>>(
+      'new_box_autoadd_lora_transmission_config_0');
+  late final _new_box_autoadd_lora_transmission_config_0 =
+      _new_box_autoadd_lora_transmission_config_0Ptr
+          .asFunction<ffi.Pointer<wire_LoraTransmissionConfig> Function()>();
+
   ffi.Pointer<wire_Schedule> new_box_autoadd_schedule_0() {
     return _new_box_autoadd_schedule_0();
   }
@@ -679,6 +752,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
           'new_box_autoadd_tokens_0');
   late final _new_box_autoadd_tokens_0 = _new_box_autoadd_tokens_0Ptr
       .asFunction<ffi.Pointer<wire_Tokens> Function()>();
+
+  ffi.Pointer<ffi.Uint32> new_box_autoadd_u32_0(
+    int value,
+  ) {
+    return _new_box_autoadd_u32_0(
+      value,
+    );
+  }
+
+  late final _new_box_autoadd_u32_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Uint32> Function(ffi.Uint32)>>(
+          'new_box_autoadd_u32_0');
+  late final _new_box_autoadd_u32_0 = _new_box_autoadd_u32_0Ptr
+      .asFunction<ffi.Pointer<ffi.Uint32> Function(int)>();
 
   ffi.Pointer<ffi.Uint64> new_box_autoadd_u64_0(
     int value,
@@ -865,6 +952,16 @@ final class wire_Schedule extends ffi.Struct {
 
 final class wire_WifiTransmissionConfig extends ffi.Struct {
   external ffi.Pointer<wire_Tokens> tokens;
+
+  external ffi.Pointer<wire_Schedule> schedule;
+}
+
+final class wire_LoraTransmissionConfig extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint32> band;
+
+  external ffi.Pointer<wire_uint_8_list> app_key;
+
+  external ffi.Pointer<wire_uint_8_list> join_eui;
 
   external ffi.Pointer<wire_Schedule> schedule;
 }

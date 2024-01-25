@@ -81,6 +81,7 @@ dependencies:
   package_info_plus: ^4.2.0
   ansi_styles: ^0.3.2+1
   circular_countdown_timer: ^0.2.3
+  convert: ^3.1.1
 
 dev_dependencies:
   flutter_test:

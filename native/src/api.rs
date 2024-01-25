@@ -398,6 +398,22 @@ impl Sdk {
         }))
     }
 
+    async fn configure_wifi_networks(
+        &self,
+        device_id: DeviceId,
+        config: WifiNetworksConfig,
+    ) -> Result<()> {
+        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
+            let client = query::device::Client::new()?;
+            let status = client.configure_wifi_networks(&addr, config.into()).await?;
+            self.nearby
+                .mark_finished_and_publish_reply(&device_id, status)
+                .await?;
+        }
+
+        Ok(())
+    }
+
     async fn configure_wifi_transmission(
         &self,
         device_id: DeviceId,
@@ -416,14 +432,16 @@ impl Sdk {
         Ok(())
     }
 
-    async fn configure_wifi_networks(
+    async fn configure_lora_transmission(
         &self,
         device_id: DeviceId,
-        config: WifiNetworksConfig,
+        config: LoraTransmissionConfig,
     ) -> Result<()> {
         if let Some(addr) = self.get_nearby_addr(&device_id).await? {
             let client = query::device::Client::new()?;
-            let status = client.configure_wifi_networks(&addr, config.into()).await?;
+            let status = client
+                .configure_lora_transmission(&addr, config.into())
+                .await?;
             self.nearby
                 .mark_finished_and_publish_reply(&device_id, status)
                 .await?;
@@ -539,6 +557,15 @@ pub fn configure_wifi_transmission(
 ) -> Result<()> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.configure_wifi_transmission(DeviceId(device_id.clone()), config))
+    })?)
+}
+
+pub fn configure_lora_transmission(
+    device_id: String,
+    config: LoraTransmissionConfig,
+) -> Result<()> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.configure_lora_transmission(DeviceId(device_id.clone()), config))
     })?)
 }
 
@@ -745,6 +772,26 @@ impl Into<device::ConfigureWifiTransmission> for WifiTransmissionConfig {
                 schedule: self.schedule.map(|s| s.into()),
             })
             .unwrap_or(device::ConfigureWifiTransmission::default())
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct LoraTransmissionConfig {
+    pub band: Option<u32>,
+    pub app_key: Option<Vec<u8>>,
+    pub join_eui: Option<Vec<u8>>,
+    pub schedule: Option<Schedule>,
+}
+
+impl Into<device::ConfigureLoraTransmission> for LoraTransmissionConfig {
+    fn into(self) -> device::ConfigureLoraTransmission {
+        device::ConfigureLoraTransmission {
+            enabled: true,
+            schedule: self.schedule.map(|s| s.into()),
+            app_key: self.app_key,
+            join_eui: self.join_eui,
+            band: self.band,
+        }
     }
 }
 
@@ -974,9 +1021,25 @@ pub struct NearbyStation {
 }
 
 #[derive(Clone, Debug)]
+pub enum LoraBand {
+    F915Mhz,
+    F868Mhz,
+}
+
+#[derive(Clone, Debug)]
+pub struct LoraConfig {
+    pub band: LoraBand,
+    pub device_eui: Vec<u8>,
+    pub app_key: Vec<u8>,
+    pub join_eui: Vec<u8>,
+    pub device_address: Vec<u8>,
+}
+
+#[derive(Clone, Debug)]
 pub struct EphemeralConfig {
     pub transmission: Option<TransmissionConfig>,
     pub networks: Vec<NetworkConfig>,
+    pub lora: Option<LoraConfig>,
     pub capabilities: DeviceCapabilities,
 }
 
@@ -1017,9 +1080,22 @@ impl TryInto<EphemeralConfig> for HttpReply {
             })
             .unwrap_or_default();
 
+        let lora = self.lora_settings.map(|ls| LoraConfig {
+            band: match ls.frequency_band {
+                915 => LoraBand::F915Mhz,
+                868 => LoraBand::F868Mhz,
+                _ => LoraBand::F915Mhz, // Controversial default?
+            },
+            device_eui: ls.device_eui,
+            app_key: ls.app_key,
+            join_eui: ls.join_eui,
+            device_address: ls.device_address,
+        });
+
         Ok(EphemeralConfig {
             transmission,
             networks,
+            lora,
             capabilities,
         })
     }

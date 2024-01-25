@@ -128,6 +128,24 @@ fn wire_configure_wifi_transmission_impl(
         },
     )
 }
+fn wire_configure_lora_transmission_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+    config: impl Wire2Api<LoraTransmissionConfig> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, (), _>(
+        WrapInfo {
+            debug_name: "configure_lora_transmission",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            let api_config = config.wire2api();
+            move |task_callback| configure_lora_transmission(api_device_id, api_config)
+        },
+    )
+}
 fn wire_clear_calibration_impl(
     port_: MessagePort,
     device_id: impl Wire2Api<String> + UnwindSafe,
@@ -442,6 +460,7 @@ impl support::IntoDart for EphemeralConfig {
         vec![
             self.transmission.into_dart(),
             self.networks.into_into_dart().into_dart(),
+            self.lora.into_dart(),
             self.capabilities.into_into_dart().into_dart(),
         ]
         .into_dart()
@@ -503,6 +522,41 @@ impl support::IntoDart for LocalFirmware {
 }
 impl support::IntoDartExceptPrimitive for LocalFirmware {}
 impl rust2dart::IntoIntoDart<LocalFirmware> for LocalFirmware {
+    fn into_into_dart(self) -> Self {
+        self
+    }
+}
+
+impl support::IntoDart for LoraBand {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::F915Mhz => 0,
+            Self::F868Mhz => 1,
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LoraBand {}
+impl rust2dart::IntoIntoDart<LoraBand> for LoraBand {
+    fn into_into_dart(self) -> Self {
+        self
+    }
+}
+
+impl support::IntoDart for LoraConfig {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.band.into_into_dart().into_dart(),
+            self.device_eui.into_into_dart().into_dart(),
+            self.app_key.into_into_dart().into_dart(),
+            self.join_eui.into_into_dart().into_dart(),
+            self.device_address.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LoraConfig {}
+impl rust2dart::IntoIntoDart<LoraConfig> for LoraConfig {
     fn into_into_dart(self) -> Self {
         self
     }

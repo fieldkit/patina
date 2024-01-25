@@ -7,6 +7,7 @@ import '../app_state.dart';
 import '../gen/ffi.dart';
 import '../unknown_station_page.dart';
 
+import 'configure_lora.dart';
 import 'configure_wifi_networks.dart';
 import 'firmware_page.dart';
 
@@ -83,7 +84,16 @@ class ConfigureStationPage extends StatelessWidget {
           const Divider(),
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsLora),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StationProviders(
+                      deviceId: station.deviceId,
+                      child: const ConfigureLoraPage()),
+                ),
+              );
+            },
           ),
           const Divider(),
           ListTile(
