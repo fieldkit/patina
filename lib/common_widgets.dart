@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -96,6 +97,11 @@ class GenericListItemHeader extends StatelessWidget {
 class WH {
   static const pagePadding = EdgeInsets.symmetric(horizontal: 10, vertical: 6);
 
+  static List<Widget> divideWith(
+      Widget Function() divider, List<Widget> widgets) {
+    return widgets.map((el) => [el, divider()]).flattened.toList();
+  }
+
   static Align align(Widget child) =>
       Align(alignment: Alignment.topLeft, child: child);
 
@@ -126,6 +132,12 @@ class WH {
 
   static LinearProgressIndicator progressBar(double value) =>
       LinearProgressIndicator(value: value);
+
+  static TextStyle buttonStyle(double size) => TextStyle(
+        fontFamily: 'Avenir',
+        fontSize: size,
+        fontWeight: FontWeight.w500,
+      );
 }
 
 class OopsBug extends StatelessWidget {

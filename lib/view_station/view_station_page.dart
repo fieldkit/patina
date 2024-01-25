@@ -1,3 +1,4 @@
+import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,8 @@ class ViewStationRoute extends StatelessWidget {
         if (station == null) {
           return const NoSuchStationPage();
         } else {
-          return ViewStationPage(station: station);
+          return StationProviders(
+              deviceId: deviceId, child: ViewStationPage(station: station));
         }
       },
     );

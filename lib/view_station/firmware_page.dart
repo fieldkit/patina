@@ -1,4 +1,5 @@
 import 'package:fk_data_protocol/fk-data.pb.dart';
+import 'package:fk/diagnostics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';

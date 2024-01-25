@@ -71,7 +71,7 @@ pub async fn cache_firmware(
     storage_path: String,
     publish_tx: Sender<DomainMessage>,
     tokens: Option<Tokens>,
-) -> Result<FirmwareDownloadStatus> {
+) -> Result<FirmwareDownloadStatus, PortalError> {
     let task = CheckForAndCacheFirmware {
         portal_base_url,
         storage_path,

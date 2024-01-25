@@ -37,6 +37,13 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kAddOrUpdateStationInPortalConstMeta;
 
+  Future<void> configureWifiNetworks(
+      {required String deviceId,
+      required WifiNetworksConfig config,
+      dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kConfigureWifiNetworksConstMeta;
+
   Future<void> configureWifiTransmission(
       {required String deviceId,
       required WifiTransmissionConfig config,
@@ -263,11 +270,23 @@ class NearbyStation {
 }
 
 class NetworkConfig {
+  final int index;
   final String ssid;
+  final bool preferred;
 
   const NetworkConfig({
+    required this.index,
     required this.ssid,
+    required this.preferred,
   });
+}
+
+@freezed
+sealed class PortalError with _$PortalError implements FrbException {
+  const factory PortalError.authentication() = PortalError_Authentication;
+  const factory PortalError.other(
+    String field0,
+  ) = PortalError_Other;
 }
 
 class RecordArchive {
@@ -282,6 +301,13 @@ class RecordArchive {
     required this.head,
     required this.tail,
   });
+}
+
+@freezed
+sealed class Schedule with _$Schedule {
+  const factory Schedule.every(
+    int field0,
+  ) = Schedule_Every;
 }
 
 class SensorConfig {
@@ -441,10 +467,36 @@ class UploadProgress {
   });
 }
 
+class WifiNetworkConfig {
+  final int index;
+  final String? ssid;
+  final String? password;
+  final bool preferred;
+  final bool keeping;
+
+  const WifiNetworkConfig({
+    required this.index,
+    this.ssid,
+    this.password,
+    required this.preferred,
+    required this.keeping,
+  });
+}
+
+class WifiNetworksConfig {
+  final List<WifiNetworkConfig> networks;
+
+  const WifiNetworksConfig({
+    required this.networks,
+  });
+}
+
 class WifiTransmissionConfig {
   final Tokens? tokens;
+  final Schedule? schedule;
 
   const WifiTransmissionConfig({
     this.tokens,
+    this.schedule,
   });
 }

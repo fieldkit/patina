@@ -109,14 +109,16 @@ class FlowScreenWidget extends StatelessWidget {
   Widget build(context) {
     Loggers.ui.i("screen: $screen");
 
-    return WillPopScope(
-        onWillPop: () async {
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) async {
+          // Check if onBack is provided
+          final onBack = this.onBack;
           if (onBack != null) {
-            // Check if onBack is provided
-            onBack!(); // Use the onBack function if provided
-            return false; // Prevent the default behavior (pop)
+            onBack(); // Use the onBack function if provided
+          } else {
+            Navigator.of(context).pop();
           }
-          return true; // Allow the default behavior if onBack is not provided
         },
         child: Scaffold(
             appBar: AppBar(
