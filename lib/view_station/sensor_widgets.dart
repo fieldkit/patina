@@ -25,22 +25,26 @@ class DisplaySensorValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double valueSize = screenWidth < 360 ? 18 : 24;
+    double unitsSize = screenWidth < 360 ? 10 : 12;
+
     var valueFormatter = NumberFormat("0.##");
-    var valueStyle = const TextStyle(
-      fontSize: 32,
+    var valueStyle = TextStyle(
+      fontSize: valueSize,
       color: AppColors.primaryColor,
       fontWeight: FontWeight.bold,
     );
-    var unitsStyle = const TextStyle(
-      fontSize: 14,
-      color: Color.fromRGBO(64, 64, 64, 1),
+    var unitsStyle = TextStyle(
+      fontSize: unitsSize,
+      color: const Color.fromRGBO(64, 64, 64, 1),
       fontWeight: FontWeight.normal,
     );
     var value = sensor.value?.value;
     var uom = localized.uom;
 
     var suffix = Container(
-        padding: const EdgeInsets.only(left: 6),
+        padding: const EdgeInsets.only(left: 4),
         child: Text(uom, style: unitsStyle));
 
     if (value == null) {
@@ -75,7 +79,10 @@ class SensorInfo extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: DisplaySensorValue(
                           sensor: sensor, localized: localized)),
-                  Row(children: [Text(localized.name)])
+                  Text(
+                    localized.name,
+                    textAlign: TextAlign.left,
+                  )
                 ]))));
   }
 }
@@ -83,35 +90,25 @@ class SensorInfo extends StatelessWidget {
 class SensorsGrid extends StatelessWidget {
   final List<Widget> children;
 
-  const SensorsGrid({super.key, required this.children});
+  const SensorsGrid({Key? key, required this.children}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final List<TableRow> rows = List.empty(growable: true);
-    final iter = children.iterator;
-    while (true) {
-      final List<Widget> columns = List.empty(growable: true);
-      var finished = false;
-      if (iter.moveNext()) {
-        columns.add(iter.current);
-        if (iter.moveNext()) {
-          columns.add(iter.current);
-        } else {
-          columns.add(Container());
-          finished = true;
-        }
+    double screenWidth = MediaQuery.of(context).size.width;
+    double boxSize = screenWidth < 240 ? screenWidth : (screenWidth / 2.3);
 
-        rows.add(TableRow(children: columns));
-      } else {
-        finished = true;
-      }
-
-      if (finished) {
-        break;
-      }
-    }
-
-    return Table(children: rows);
+    return Wrap(
+      alignment: WrapAlignment.start,
+      children: children.map((child) {
+        return Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: SizedBox(
+            width: boxSize,
+            child: child,
+          ),
+        );
+      }).toList(),
+    );
   }
 }
 
