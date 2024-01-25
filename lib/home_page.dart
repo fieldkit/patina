@@ -51,9 +51,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   _checkIfFirstTimeToday() async {
-    Loggers.ui.i(dotenv.env['SHOW_WELCOME_SCREEN']);
     bool showWelcomeScreen = dotenv.env['SHOW_WELCOME_SCREEN'] == 'true';
     if (showWelcomeScreen) {
+      Loggers.ui.i("Forced welcome screen");
       // For testing welcome screen
       final prefs = await SharedPreferences.getInstance();
       final prefsHelper = PrefsHelper(prefs);

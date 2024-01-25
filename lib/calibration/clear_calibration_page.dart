@@ -1,4 +1,5 @@
 import 'package:fk/gen/bridge_definitions.dart';
+import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -319,7 +320,11 @@ class ClearCalibrationPage extends StatelessWidget {
                                         outerNavigator.push(
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                CalibrationPage(config: config),
+                                                ModuleProviders(
+                                                    moduleIdentity:
+                                                        config.moduleIdentity,
+                                                    child: CalibrationPage(
+                                                        config: config)),
                                           ),
                                         );
                                       } catch (e) {
@@ -331,6 +336,17 @@ class ClearCalibrationPage extends StatelessWidget {
                               ],
                             );
                           });
+                    }),
+                ElevatedButton(
+                    child: const Text("Keep"), // TODO l10n
+                    onPressed: () {
+                      Loggers.cal.i("keeping calibration");
+                      final navigator = Navigator.of(context);
+                      navigator.push(
+                        MaterialPageRoute(
+                          builder: (context) => CalibrationPage(config: config),
+                        ),
+                      );
                     }),
               ].map(WH.padPage).toList(),
             )
