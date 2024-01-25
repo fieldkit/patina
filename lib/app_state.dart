@@ -431,18 +431,24 @@ class StationConfiguration extends ChangeNotifier {
   final Native api;
   final KnownStationsModel knownStations;
   final PortalAccounts portalAccounts;
+  final String deviceId;
+
+  StationModel get config => knownStations.find(deviceId)!;
+
+  String get name => config.config!.name;
 
   StationConfiguration(
       {required this.api,
       required this.knownStations,
-      required this.portalAccounts}) {
+      required this.portalAccounts,
+      required this.deviceId}) {
     knownStations.addListener(() {
       notifyListeners();
     });
   }
 
-  Future<void> addNetwork(String deviceId, List<NetworkConfig> existing,
-      WifiNetwork network) async {
+  Future<void> addNetwork(
+      List<NetworkConfig> existing, WifiNetwork network) async {
     final int keeping = existing.isEmpty ? 1 : 0;
     final List<WifiNetworkConfig> networks =
         List<int>.generate(2, (i) => i).map((index) {
@@ -462,7 +468,7 @@ class StationConfiguration extends ChangeNotifier {
         deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
   }
 
-  Future<void> removeNetwork(String deviceId, NetworkConfig network) async {
+  Future<void> removeNetwork(NetworkConfig network) async {
     final List<WifiNetworkConfig> networks =
         List<int>.generate(2, (i) => i).map((index) {
       if (network.index == index) {
@@ -481,7 +487,7 @@ class StationConfiguration extends ChangeNotifier {
         deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
   }
 
-  Future<void> enableWifiUploading(String deviceId) async {
+  Future<void> enableWifiUploading() async {
     final account = portalAccounts.getAccountForDevice(deviceId);
     if (account == null) {
       Loggers.state.i(
@@ -495,20 +501,19 @@ class StationConfiguration extends ChangeNotifier {
             tokens: account.tokens, schedule: const Schedule_Every(10 * 60)));
   }
 
-  Future<void> disableWifiUploading(String deviceId) async {
+  Future<void> disableWifiUploading() async {
     await api.configureWifiTransmission(
         deviceId: deviceId,
         config: const WifiTransmissionConfig(tokens: null, schedule: null));
   }
 
-  List<NetworkConfig> getStationNetworks(String deviceId) {
-    return knownStations.find(deviceId)?.ephemeral?.networks ?? List.empty();
-  }
+  List<NetworkConfig> get networks =>
+      config.ephemeral?.networks ?? List.empty();
 
-  bool isAutomaticUploadEnabled(String deviceId) {
-    return knownStations.find(deviceId)?.ephemeral?.transmission?.enabled ??
-        false;
-  }
+  bool get isAutomaticUploadEnabled =>
+      config.ephemeral?.transmission?.enabled ?? false;
+
+  LoraConfig? get loraConfig => config.ephemeral?.lora;
 }
 
 abstract class Task {
@@ -792,7 +797,6 @@ class AppState {
   final Native api;
   final AppEventDispatcher dispatcher;
   final AvailableFirmwareModel firmware;
-  final StationConfiguration configuration;
   final KnownStationsModel knownStations;
   final StationOperations stationOperations;
   final ModuleConfigurations moduleConfigurations;
@@ -809,7 +813,6 @@ class AppState {
       this.firmware,
       this.stationOperations,
       this.tasks,
-      this.configuration,
       this.updatePortal);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
@@ -825,8 +828,6 @@ class AppState {
       portalAccounts: portalAccounts,
       dispatcher: dispatcher,
     );
-    final configurations = StationConfiguration(
-        api: api, knownStations: knownStations, portalAccounts: portalAccounts);
     final updatePortal = UpdatePortal(api, portalAccounts, dispatcher);
     return AppState._(
       api,
@@ -837,9 +838,16 @@ class AppState {
       firmware,
       stationOperations,
       tasks,
-      configurations,
       updatePortal,
     );
+  }
+
+  StationConfiguration configurationFor(deviceId) {
+    return StationConfiguration(
+        api: api,
+        knownStations: knownStations,
+        portalAccounts: portalAccounts,
+        deviceId: deviceId);
   }
 }
 
