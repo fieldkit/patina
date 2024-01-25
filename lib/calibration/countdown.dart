@@ -1,34 +1,66 @@
+import 'dart:async';
 import 'dart:math';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../diagnostics.dart';
 
-class CountdownTimer {
+class CountdownTimer extends ChangeNotifier {
   static const Duration period = Duration(seconds: 1);
   static const Duration trailing = Duration(seconds: 5);
 
-  final DateTime started;
-  final DateTime now = DateTime.now().toUtc();
   final Duration expected;
 
-  Duration elapsed;
+  DateTime _now = DateTime.now().toUtc();
+  DateTime? _started;
   bool skipped = false;
-  bool get done => elapsed >= expected || skipped;
 
-  DateTime get finished => started.add(expected);
+  CountdownTimer({required this.expected, this.skipped = false});
 
-  bool get wasDone {
-    final finallyDone = started.add(expected).add(trailing);
-    return now.isAfter(finallyDone);
+  bool get started => _started != null;
+
+  Duration? get elapsed {
+    final DateTime? started = _started;
+    if (started == null) {
+      return null;
+    }
+    return _now.difference(started);
   }
 
-  CountdownTimer({required this.expected, required this.started, required this.elapsed, this.skipped = false});
+  DateTime? get finished {
+    final DateTime? started = _started;
+    if (started == null) {
+      return null;
+    }
+    return started.add(expected);
+  }
+
+  bool get done {
+    final elapsed = this.elapsed;
+    if (elapsed == null) {
+      return false;
+    }
+    return elapsed >= expected || skipped;
+  }
+
+  bool get wasDone {
+    final started = _started;
+    if (started == null) {
+      return false;
+    }
+    final finallyDone = started.add(expected).add(trailing);
+    return _now.isAfter(finallyDone);
+  }
 
   String toStringRemaining() {
-    return toMinutesSecondsString([(expected - elapsed).inSeconds, 0].reduce(max));
+    final Duration? elapsed = this.elapsed;
+    if (elapsed == null) {
+      return "--:--";
+    }
+    return toMinutesSecondsString(
+        [(expected - elapsed).inSeconds, 0].reduce(max));
   }
 
   String toMinutesSecondsString(int total) {
@@ -37,20 +69,82 @@ class CountdownTimer {
     return "${minutes.toString().padLeft(2, "0")}:${seconds.toString().padLeft(2, "0")}";
   }
 
+  void start(DateTime now) {
+    if (_started == null) {
+      Loggers.cal.i("timer: started");
+      _started = _now;
+      notifyListeners();
+    }
+  }
+
   void skip() {
     if (!skipped) {
       Loggers.cal.i("timer: skipped");
       skipped = true;
+      notifyListeners();
     }
   }
 
-  CountdownTimer tick(Duration newElapsed) {
-    elapsed = newElapsed;
+  CountdownTimer tick(DateTime now) {
+    _now = now;
+    notifyListeners();
     return this;
   }
 
-  bool isValueFresh(DateTime time) {
-    return time.isAfter(finished) || skipped;
+  bool finishedBefore(DateTime time) {
+    final DateTime? after = finished;
+    if (after == null) {
+      return false;
+    }
+    return time.isAfter(after) || skipped;
+  }
+}
+
+class FrozenCountdown extends StatelessWidget {
+  const FrozenCountdown({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final countdown = context.read<CountdownTimer>();
+    final screenSize = MediaQuery.of(context).size;
+
+    return CircularCountDownTimer(
+      width: screenSize.width * 0.3,
+      height: screenSize.width * 0.3,
+      duration: countdown.expected.inSeconds,
+      initialDuration: 0,
+      fillColor: const Color.fromRGBO(61, 126, 195, 1),
+      ringColor: Colors.grey,
+      strokeWidth: 10,
+      textFormat: CountdownTextFormat.MM_SS,
+      isReverse: true,
+      strokeCap: StrokeCap.butt,
+      textStyle: const TextStyle(fontSize: 30.0),
+      autoStart: false,
+    );
+  }
+}
+
+class LiveCountdown extends StatelessWidget {
+  const LiveCountdown({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final countdown = context.watch<CountdownTimer>();
+    final screenSize = MediaQuery.of(context).size;
+
+    return CircularCountDownTimer(
+      width: screenSize.width * 0.3,
+      height: screenSize.width * 0.3,
+      duration: countdown.expected.inSeconds,
+      fillColor: const Color.fromRGBO(61, 126, 195, 1),
+      ringColor: Colors.grey,
+      strokeWidth: 10,
+      textFormat: CountdownTextFormat.MM_SS,
+      isReverse: true,
+      strokeCap: StrokeCap.butt,
+      textStyle: const TextStyle(fontSize: 30.0),
+    );
   }
 }
 
@@ -60,49 +154,45 @@ class DisplayCountdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final countdown = context.watch<CountdownTimer>();
-    return IntrinsicHeight(
-        child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(Icons.access_time, size: 60),
-        const VerticalDivider(
-          width: 10,
-          thickness: 1,
-          color: Colors.grey,
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(countdown.toStringRemaining(), style: const TextStyle(fontSize: 18)),
-            Text(AppLocalizations.of(context)!.minSec, style: const TextStyle(fontSize: 14))
-          ],
-        )
-      ],
-    ));
+
+    if (countdown.started) {
+      return const LiveCountdown();
+    } else {
+      return const FrozenCountdown();
+    }
   }
 }
 
-class ProvideCountdown extends StatelessWidget {
+class ProvideCountdown extends StatefulWidget {
   final Duration duration;
   final Widget child;
 
-  const ProvideCountdown({super.key, required this.duration, required this.child});
+  const ProvideCountdown(
+      {super.key, required this.duration, required this.child});
+
+  @override
+  State<StatefulWidget> createState() => _CountdownState();
+}
+
+class _CountdownState extends State<ProvideCountdown> {
+  Timer? _timer;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final started = DateTime.now().toUtc();
-    return StreamProvider(
-        initialData: CountdownTimer(expected: duration, started: started, elapsed: Duration.zero),
-        updateShouldNotify: (previous, value) => true,
-        create: (BuildContext context) {
-          final countdown = CountdownTimer(
-            expected: duration,
-            started: started,
-            elapsed: const Duration(seconds: 0),
-          );
-          return Stream<CountdownTimer>.periodic(CountdownTimer.period, (c) => countdown.tick(Duration(seconds: c + 1)))
-              .takeWhile((e) => !e.wasDone);
+    return ChangeNotifierProvider<CountdownTimer>(
+        create: (context) {
+          final countdown = CountdownTimer(expected: widget.duration);
+          _timer = Timer.periodic(CountdownTimer.period, (timer) {
+            countdown.tick(DateTime.now());
+          });
+          return countdown;
         },
-        child: child);
+        child: widget.child);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:fk/diagnostics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +48,12 @@ class FirmwareItem extends StatelessWidget {
   final VoidCallback onUpgrade;
   final bool canUpgrade;
 
-  const FirmwareItem({super.key, required this.comparison, required this.operations, required this.onUpgrade, required this.canUpgrade});
+  const FirmwareItem(
+      {super.key,
+      required this.comparison,
+      required this.operations,
+      required this.onUpgrade,
+      required this.canUpgrade});
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +63,8 @@ class FirmwareItem extends StatelessWidget {
 
     GenericListItemHeader header() {
       if (comparison.newer) {
-        return GenericListItemHeader(title: title, subtitle: formatter.format(comparison.time));
+        return GenericListItemHeader(
+            title: title, subtitle: formatter.format(comparison.time));
       } else {
         return GenericListItemHeader(
           title: title,
@@ -68,14 +75,20 @@ class FirmwareItem extends StatelessWidget {
       }
     }
 
-    pad(child) => Container(width: double.infinity, padding: const EdgeInsets.all(10), child: child);
+    pad(child) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(10),
+        child: child);
 
     return ExpandableBorderedListItem(
         header: header(),
         expanded: comparison.newer || operations.isNotEmpty,
         children: [
-          ElevatedButton(onPressed: canUpgrade ? onUpgrade : null, child: Text(localizations.firmwareUpgrade)),
-          ...operations.map((operation) => UpgradeProgressWidget(operation: operation))
+          ElevatedButton(
+              onPressed: canUpgrade ? onUpgrade : null,
+              child: Text(localizations.firmwareUpgrade)),
+          ...operations
+              .map((operation) => UpgradeProgressWidget(operation: operation))
         ].map((child) => pad(child)).toList());
   }
 }
@@ -98,12 +111,17 @@ class StationFirmwarePage extends StatelessWidget {
         .where((firmware) => firmware.module == "fk-core")
         .map((firmware) => FirmwareItem(
             comparison: FirmwareComparison.compare(firmware, config.firmware),
-            operations: operations.where((op) => op.firmwareId == firmware.id).toList(),
-            canUpgrade: station.connected && !busy && operations.where((op) => op.busy).isEmpty,
+            operations:
+                operations.where((op) => op.firmwareId == firmware.id).toList(),
+            canUpgrade: station.connected &&
+                !busy &&
+                operations.where((op) => op.busy).isEmpty,
             onUpgrade: () async {
               await availableFirmware.upgrade(config.deviceId, firmware);
             }))
         .toList();
+
+    Loggers.ui.i("firmware: ${availableFirmware.firmware}");
 
     return Scaffold(
       appBar: AppBar(

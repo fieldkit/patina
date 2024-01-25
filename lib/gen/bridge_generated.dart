@@ -67,7 +67,7 @@ class NativeImpl implements Native {
       callFfi: (port_) =>
           _platform.inner.wire_authenticate_portal(port_, arg0, arg1),
       parseSuccessData: _wire2api_authenticated,
-      parseErrorData: _wire2api_FrbAnyhowException,
+      parseErrorData: _wire2api_portal_error,
       constMeta: kAuthenticatePortalConstMeta,
       argValues: [email, password],
       hint: hint,
@@ -91,7 +91,7 @@ class NativeImpl implements Native {
       callFfi: (port_) => _platform.inner
           .wire_add_or_update_station_in_portal(port_, arg0, arg1),
       parseSuccessData: _wire2api_opt_box_autoadd_u32,
-      parseErrorData: _wire2api_FrbAnyhowException,
+      parseErrorData: _wire2api_portal_error,
       constMeta: kAddOrUpdateStationInPortalConstMeta,
       argValues: [tokens, station],
       hint: hint,
@@ -102,6 +102,29 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "add_or_update_station_in_portal",
         argNames: ["tokens", "station"],
+      );
+
+  Future<void> configureWifiNetworks(
+      {required String deviceId,
+      required WifiNetworksConfig config,
+      dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    var arg1 = _platform.api2wire_box_autoadd_wifi_networks_config(config);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_configure_wifi_networks(port_, arg0, arg1),
+      parseSuccessData: _wire2api_unit,
+      parseErrorData: _wire2api_FrbAnyhowException,
+      constMeta: kConfigureWifiNetworksConstMeta,
+      argValues: [deviceId, config],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kConfigureWifiNetworksConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "configure_wifi_networks",
+        argNames: ["deviceId", "config"],
       );
 
   Future<void> configureWifiTransmission(
@@ -178,7 +201,7 @@ class NativeImpl implements Native {
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) => _platform.inner.wire_validate_tokens(port_, arg0),
       parseSuccessData: _wire2api_authenticated,
-      parseErrorData: _wire2api_FrbAnyhowException,
+      parseErrorData: _wire2api_portal_error,
       constMeta: kValidateTokensConstMeta,
       argValues: [tokens],
       hint: hint,
@@ -224,7 +247,7 @@ class NativeImpl implements Native {
       callFfi: (port_) =>
           _platform.inner.wire_start_upload(port_, arg0, arg1, arg2),
       parseSuccessData: _wire2api_transfer_progress,
-      parseErrorData: _wire2api_FrbAnyhowException,
+      parseErrorData: _wire2api_portal_error,
       constMeta: kStartUploadConstMeta,
       argValues: [deviceId, tokens, files],
       hint: hint,
@@ -242,7 +265,7 @@ class NativeImpl implements Native {
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) => _platform.inner.wire_cache_firmware(port_, arg0),
       parseSuccessData: _wire2api_firmware_download_status,
-      parseErrorData: _wire2api_FrbAnyhowException,
+      parseErrorData: _wire2api_portal_error,
       constMeta: kCacheFirmwareConstMeta,
       argValues: [tokens],
       hint: hint,
@@ -575,10 +598,12 @@ class NativeImpl implements Native {
 
   NetworkConfig _wire2api_network_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 1)
-      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
     return NetworkConfig(
-      ssid: _wire2api_String(arr[0]),
+      index: _wire2api_usize(arr[0]),
+      ssid: _wire2api_String(arr[1]),
+      preferred: _wire2api_bool(arr[2]),
     );
   }
 
@@ -601,6 +626,19 @@ class NativeImpl implements Native {
 
   Uint8List? _wire2api_opt_uint_8_list(dynamic raw) {
     return raw == null ? null : _wire2api_uint_8_list(raw);
+  }
+
+  PortalError _wire2api_portal_error(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return PortalError_Authentication();
+      case 1:
+        return PortalError_Other(
+          _wire2api_String(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   RecordArchive _wire2api_record_archive(dynamic raw) {
@@ -807,6 +845,11 @@ class NativeImpl implements Native {
 
 @protected
 bool api2wire_bool(bool raw) {
+  return raw;
+}
+
+@protected
+int api2wire_u32(int raw) {
   return raw;
 }
 

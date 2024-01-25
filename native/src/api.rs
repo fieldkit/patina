@@ -17,7 +17,7 @@ use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 use discovery::{DeviceId, Discovered, Discovery};
 use query::{
     device::{self, HttpReply},
-    portal::{DecodedToken, PortalError, StatusCode},
+    portal::{DecodedToken, StatusCode},
 };
 use store::Db;
 
@@ -222,7 +222,11 @@ impl Sdk {
             .collect::<Result<Vec<_>>>()?)
     }
 
-    async fn authenticate_portal(&self, email: String, password: String) -> Result<Authenticated> {
+    async fn authenticate_portal(
+        &self,
+        email: String,
+        password: String,
+    ) -> Result<Authenticated, PortalError> {
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let tokens = client
             .login(query::portal::LoginPayload {
@@ -246,7 +250,7 @@ impl Sdk {
         &self,
         tokens: Tokens,
         station: AddOrUpdatePortalStation,
-    ) -> Result<Option<u32>> {
+    ) -> Result<Option<u32>, PortalError> {
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let authenticated = client.to_authenticated(tokens.into())?;
 
@@ -256,7 +260,7 @@ impl Sdk {
             .map(|s| s.id))
     }
 
-    async fn validate_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
+    async fn validate_tokens(&self, tokens: Tokens) -> Result<Authenticated, PortalError> {
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let client = client.to_authenticated(tokens.clone().into())?;
 
@@ -274,7 +278,7 @@ impl Sdk {
                 email: ourselves.email,
                 tokens,
             }),
-            Err(PortalError::HttpStatus(StatusCode::UNAUTHORIZED)) => {
+            Err(query::portal::PortalError::HttpStatus(StatusCode::UNAUTHORIZED)) => {
                 Ok(self.refresh_tokens(tokens).await?)
             }
             Err(e) => {
@@ -284,7 +288,7 @@ impl Sdk {
         }
     }
 
-    async fn refresh_tokens(&self, tokens: Tokens) -> Result<Authenticated> {
+    async fn refresh_tokens(&self, tokens: Tokens) -> Result<Authenticated, PortalError> {
         let refresh_token = tokens.refresh_token()?;
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let refreshed = client.use_refresh_token(&refresh_token).await?;
@@ -324,7 +328,7 @@ impl Sdk {
         device_id: DeviceId,
         tokens: Tokens,
         files: Vec<RecordArchive>,
-    ) -> Result<TransferProgress> {
+    ) -> Result<TransferProgress, PortalError> {
         info!("{:?} start upload", &device_id);
 
         tokio::task::spawn({
@@ -401,8 +405,27 @@ impl Sdk {
     ) -> Result<()> {
         if let Some(addr) = self.get_nearby_addr(&device_id).await? {
             let client = query::device::Client::new()?;
-            client
+            let status = client
                 .configure_wifi_transmission(&addr, config.into())
+                .await?;
+            self.nearby
+                .mark_finished_and_publish_reply(&device_id, status)
+                .await?;
+        }
+
+        Ok(())
+    }
+
+    async fn configure_wifi_networks(
+        &self,
+        device_id: DeviceId,
+        config: WifiNetworksConfig,
+    ) -> Result<()> {
+        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
+            let client = query::device::Client::new()?;
+            let status = client.configure_wifi_networks(&addr, config.into()).await?;
+            self.nearby
+                .mark_finished_and_publish_reply(&device_id, status)
                 .await?;
         }
 
@@ -437,7 +460,10 @@ impl Sdk {
         Ok(())
     }
 
-    async fn cache_firmware(&self, tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> {
+    async fn cache_firmware(
+        &self,
+        tokens: Option<Tokens>,
+    ) -> Result<FirmwareDownloadStatus, PortalError> {
         crate::firmware::cache_firmware(
             self.portal_base_url.clone(),
             self.storage_path.clone(),
@@ -486,7 +512,7 @@ pub fn get_my_stations() -> Result<Vec<StationConfig>> {
     Ok(with_runtime(|rt, sdk| rt.block_on(sdk.get_my_stations()))?)
 }
 
-pub fn authenticate_portal(email: String, password: String) -> Result<Authenticated> {
+pub fn authenticate_portal(email: String, password: String) -> Result<Authenticated, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.authenticate_portal(email, password))
     })?)
@@ -495,9 +521,15 @@ pub fn authenticate_portal(email: String, password: String) -> Result<Authentica
 pub fn add_or_update_station_in_portal(
     tokens: Tokens,
     station: AddOrUpdatePortalStation,
-) -> Result<Option<u32>> {
+) -> Result<Option<u32>, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.add_or_update_station_in_portal(tokens, station))
+    })?)
+}
+
+pub fn configure_wifi_networks(device_id: String, config: WifiNetworksConfig) -> Result<()> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.configure_wifi_networks(DeviceId(device_id.clone()), config))
     })?)
 }
 
@@ -522,7 +554,7 @@ pub fn calibrate(device_id: String, module: usize, data: Vec<u8>) -> Result<()> 
     })?)
 }
 
-pub fn validate_tokens(tokens: Tokens) -> Result<Authenticated> {
+pub fn validate_tokens(tokens: Tokens) -> Result<Authenticated, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.validate_tokens(tokens))
     })?)
@@ -538,13 +570,13 @@ pub fn start_upload(
     device_id: String,
     tokens: Tokens,
     files: Vec<RecordArchive>,
-) -> Result<TransferProgress> {
+) -> Result<TransferProgress, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.start_upload(DeviceId(device_id.clone()), tokens, files))
     })?)
 }
 
-pub fn cache_firmware(tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus> {
+pub fn cache_firmware(tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus, PortalError> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.cache_firmware(tokens))
     })?)
@@ -570,7 +602,7 @@ fn start_runtime() -> Result<Runtime> {
     Ok(rt)
 }
 
-fn with_runtime<R>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R>) -> Result<R> {
+fn with_runtime<R, E>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R, E>) -> Result<R, E> {
     let mut sdk_guard = SDK.lock().expect("Get sdk");
     let sdk = sdk_guard.as_mut().expect("Sdk present");
 
@@ -652,8 +684,55 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
 }
 
 #[derive(Clone, Debug)]
+pub struct WifiNetworkConfig {
+    pub index: usize,
+    pub ssid: Option<String>,
+    pub password: Option<String>,
+    pub preferred: bool,
+    pub keeping: bool,
+}
+
+#[derive(Clone, Debug)]
+pub struct WifiNetworksConfig {
+    pub networks: Vec<WifiNetworkConfig>,
+}
+
+impl Into<device::ConfigureWifiNetworks> for WifiNetworksConfig {
+    fn into(self) -> device::ConfigureWifiNetworks {
+        device::ConfigureWifiNetworks {
+            networks: self
+                .networks
+                .into_iter()
+                .map(|n| device::WifiNetwork {
+                    ssid: n.ssid,
+                    password: n.password,
+                    default: n.preferred,
+                    keeping: n.keeping,
+                })
+                .collect(),
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum Schedule {
+    Every(u32),
+}
+
+impl Into<device::Schedule> for Schedule {
+    fn into(self) -> device::Schedule {
+        match self {
+            Schedule::Every(seconds) => {
+                device::Schedule::Every(std::time::Duration::from_secs(seconds as u64))
+            }
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct WifiTransmissionConfig {
     pub tokens: Option<Tokens>,
+    pub schedule: Option<Schedule>,
 }
 
 impl Into<device::ConfigureWifiTransmission> for WifiTransmissionConfig {
@@ -663,6 +742,7 @@ impl Into<device::ConfigureWifiTransmission> for WifiTransmissionConfig {
                 enabled: true,
                 token: Some(t.transmission.token.clone()),
                 url: Some(t.transmission.url.clone()),
+                schedule: self.schedule.map(|s| s.into()),
             })
             .unwrap_or(device::ConfigureWifiTransmission::default())
     }
@@ -704,11 +784,11 @@ impl Tokens {
         }
     }
 
-    fn decoded(&self) -> Result<DecodedToken, PortalError> {
+    fn decoded(&self) -> Result<DecodedToken, query::portal::PortalError> {
         DecodedToken::decode(&self.token)
     }
 
-    fn refresh_token(&self) -> Result<String> {
+    fn refresh_token(&self) -> Result<String, query::portal::PortalError> {
         Ok(self.decoded()?.refresh_token)
     }
 }
@@ -917,13 +997,29 @@ impl TryInto<EphemeralConfig> for HttpReply {
         let capabilities = DeviceCapabilities {
             udp: self
                 .network_settings
+                .as_ref()
                 .map(|s| s.supports_udp)
                 .unwrap_or(false),
         };
+        let networks = self
+            .network_settings
+            .as_ref()
+            .map(|ns| {
+                ns.networks
+                    .iter()
+                    .enumerate()
+                    .map(|(i, n)| NetworkConfig {
+                        index: i,
+                        ssid: n.ssid.clone(),
+                        preferred: n.preferred,
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
 
         Ok(EphemeralConfig {
             transmission,
-            networks: Vec::new(),
+            networks,
             capabilities,
         })
     }
@@ -931,7 +1027,9 @@ impl TryInto<EphemeralConfig> for HttpReply {
 
 #[derive(Clone, Debug)]
 pub struct NetworkConfig {
+    pub index: usize,
     pub ssid: String,
+    pub preferred: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -1006,3 +1104,22 @@ impl TryInto<StationConfig> for StationAndConnection {
 
 #[derive(Error, Debug)]
 pub enum SdkMappingError {}
+
+#[derive(Error, Debug)]
+pub enum PortalError {
+    #[error("Authentication")]
+    Authentication,
+    #[error("Other")]
+    Other(String),
+}
+
+impl From<query::portal::PortalError> for PortalError {
+    fn from(value: query::portal::PortalError) -> Self {
+        if let query::portal::PortalError::HttpStatus(status) = value {
+            if status.is_client_error() {
+                return PortalError::Authentication;
+            }
+        }
+        return PortalError::Other(value.to_string());
+    }
+}

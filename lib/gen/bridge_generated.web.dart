@@ -48,6 +48,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic> api2wire_box_autoadd_schedule(Schedule raw) {
+    return api2wire_schedule(raw);
+  }
+
+  @protected
   List<dynamic> api2wire_box_autoadd_tokens(Tokens raw) {
     return api2wire_tokens(raw);
   }
@@ -55,6 +60,12 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   @protected
   Object api2wire_box_autoadd_u64(int raw) {
     return api2wire_u64(raw);
+  }
+
+  @protected
+  List<dynamic> api2wire_box_autoadd_wifi_networks_config(
+      WifiNetworksConfig raw) {
+    return api2wire_wifi_networks_config(raw);
   }
 
   @protected
@@ -74,6 +85,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic> api2wire_list_wifi_network_config(List<WifiNetworkConfig> raw) {
+    return raw.map(api2wire_wifi_network_config).toList();
+  }
+
+  @protected
   List<dynamic> api2wire_local_firmware(LocalFirmware raw) {
     return [
       api2wire_i64(raw.id),
@@ -82,6 +98,16 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
       api2wire_String(raw.module),
       api2wire_String(raw.profile)
     ];
+  }
+
+  @protected
+  String? api2wire_opt_String(String? raw) {
+    return raw == null ? null : api2wire_String(raw);
+  }
+
+  @protected
+  List<dynamic>? api2wire_opt_box_autoadd_schedule(Schedule? raw) {
+    return raw == null ? null : api2wire_box_autoadd_schedule(raw);
   }
 
   @protected
@@ -102,6 +128,15 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
       api2wire_i64(raw.head),
       api2wire_i64(raw.tail)
     ];
+  }
+
+  @protected
+  List<dynamic> api2wire_schedule(Schedule raw) {
+    if (raw is Schedule_Every) {
+      return [0, api2wire_u32(raw.field0)];
+    }
+
+    throw Exception('unreachable');
   }
 
   @protected
@@ -128,8 +163,27 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic> api2wire_wifi_network_config(WifiNetworkConfig raw) {
+    return [
+      api2wire_usize(raw.index),
+      api2wire_opt_String(raw.ssid),
+      api2wire_opt_String(raw.password),
+      api2wire_bool(raw.preferred),
+      api2wire_bool(raw.keeping)
+    ];
+  }
+
+  @protected
+  List<dynamic> api2wire_wifi_networks_config(WifiNetworksConfig raw) {
+    return [api2wire_list_wifi_network_config(raw.networks)];
+  }
+
+  @protected
   List<dynamic> api2wire_wifi_transmission_config(WifiTransmissionConfig raw) {
-    return [api2wire_opt_box_autoadd_tokens(raw.tokens)];
+    return [
+      api2wire_opt_box_autoadd_tokens(raw.tokens),
+      api2wire_opt_box_autoadd_schedule(raw.schedule)
+    ];
   }
 // Section: finalizer
 }
@@ -154,6 +208,9 @@ class NativeWasmModule implements WasmModule {
 
   external dynamic /* void */ wire_add_or_update_station_in_portal(
       NativePortType port_, List<dynamic> tokens, List<dynamic> station);
+
+  external dynamic /* void */ wire_configure_wifi_networks(
+      NativePortType port_, String device_id, List<dynamic> config);
 
   external dynamic /* void */ wire_configure_wifi_transmission(
       NativePortType port_, String device_id, List<dynamic> config);
@@ -204,6 +261,10 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_add_or_update_station_in_portal(
           NativePortType port_, List<dynamic> tokens, List<dynamic> station) =>
       wasmModule.wire_add_or_update_station_in_portal(port_, tokens, station);
+
+  void wire_configure_wifi_networks(
+          NativePortType port_, String device_id, List<dynamic> config) =>
+      wasmModule.wire_configure_wifi_networks(port_, device_id, config);
 
   void wire_configure_wifi_transmission(
           NativePortType port_, String device_id, List<dynamic> config) =>

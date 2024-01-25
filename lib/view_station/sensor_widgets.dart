@@ -1,3 +1,4 @@
+import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +10,7 @@ import '../calibration/calibration_page.dart';
 import '../calibration/clear_calibration_page.dart';
 import '../gen/ffi.dart';
 import '../meta.dart';
+import 'package:fk/constants.dart';
 
 class DisplaySensorValue extends StatelessWidget {
   final SensorConfig sensor;
@@ -25,15 +27,17 @@ class DisplaySensorValue extends StatelessWidget {
   Widget build(BuildContext context) {
     final valueFormatter = NumberFormat("0.##");
     var valueStyle = const TextStyle(
-        fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold);
-
+      fontSize: 32,
+      color: AppColors.primaryColor,
+      fontWeight: FontWeight.bold,
+    );
     var unitsStyle = const TextStyle(
-        fontSize: 18,
-        color: Color.fromRGBO(64, 64, 64, 1),
-        fontWeight: FontWeight.normal);
-
-    final value = sensor.value?.value;
-    final uom = localized.uom;
+      fontSize: 14,
+      color: Color.fromRGBO(64, 64, 64, 1),
+      fontWeight: FontWeight.normal,
+    );
+    var value = sensor.value?.value;
+    var uom = localized.uom;
 
     var suffix = Container(
         padding: const EdgeInsets.only(left: 6),
@@ -131,7 +135,6 @@ class ModuleInfo extends StatelessWidget {
                   if (moduleConfigurations.find(module.identity).isCalibrated) {
                     return ClearCalibrationPage(config: config, module: module);
                   } else {
-                    // return ClearCalibrationPage(config: config);
                     return CalibrationPage(config: config);
                   }
                 }
@@ -139,7 +142,9 @@ class ModuleInfo extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => calibrationPage(),
+                    builder: (context) => ModuleProviders(
+                        moduleIdentity: module.identity,
+                        child: calibrationPage()),
                   ),
                 );
               },

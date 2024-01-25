@@ -27,9 +27,11 @@ class _MapState extends State<Map> {
   MapController mapController = MapController();
 
   @override
-  void initState() {
-    super.initState();
-    _getUserLocation();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final localizations = AppLocalizations.of(context)!;
+    _getUserLocation(scaffoldMessenger, localizations);
   }
 
   void _navigateToFullscreen() {
@@ -40,7 +42,8 @@ class _MapState extends State<Map> {
     ));
   }
 
-  Future<void> _getUserLocation() async {
+  Future<void> _getUserLocation(ScaffoldMessengerState scaffoldMessenger,
+      AppLocalizations localizations) async {
     // lyokone/location doesn't support Linux, silences noisy exception at startup.
     if (Platform.isLinux) {
       return;
@@ -63,9 +66,11 @@ class _MapState extends State<Map> {
 
       mapController.move(_userLocation!, 12);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.locationDenied)),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text(localizations.locationDenied)),
+        );
+      });
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:caldor/calibration.dart';
+import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +14,7 @@ import 'calibration_model.dart';
 import 'countdown.dart';
 import 'number_form.dart';
 
-enum CanContinue { form, timer, staleValue, yes }
+enum CanContinue { ready, form, countdown, staleValue, yes }
 
 class CalibrationPage extends StatelessWidget {
   final ActiveCalibration active = ActiveCalibration();
@@ -119,10 +120,12 @@ class CalibrationPanel extends StatelessWidget {
     } else {
       navigator.pushReplacement(
         MaterialPageRoute(
-          builder: (context) => CalibrationPage(
-            config: nextConfig,
-            current: current,
-          ),
+          builder: (context) => ModuleProviders(
+              moduleIdentity: config.moduleIdentity,
+              child: CalibrationPage(
+                config: nextConfig,
+                current: current,
+              )),
         ),
       );
     }
@@ -130,27 +133,27 @@ class CalibrationPanel extends StatelessWidget {
 
   CanContinue canContinue(SensorConfig sensor, Standard standard,
       ActiveCalibration active, CountdownTimer countdown) {
+    if (!countdown.started) {
+      return CanContinue.ready;
+    }
+
     if (!standard.acceptable && active.invalid) {
       return CanContinue.form;
     }
+
     if (countdown.done) {
-      final sensorTime = sensor.value?.time;
-      final untilOrAfter = (sensorTime != null)
-          ? countdown.finished.difference(sensorTime)
-          : null;
-      Loggers.cal.i(
-          "elapsed=${countdown.elapsed} skipped=${countdown.skipped} finished=${countdown.finished} untilOrAfter=$untilOrAfter sensor-time=$sensorTime sensor-cal=${sensor.value?.value} sensor-uncal=${sensor.value?.uncalibrated}");
       final time = sensor.value?.time;
       if (time == null) {
         return CanContinue.staleValue;
       } else {
-        if (countdown.isValueFresh(time)) {
+        if (countdown.finishedBefore(time)) {
           return CanContinue.yes;
         }
         return CanContinue.staleValue;
       }
     }
-    return CanContinue.timer;
+
+    return CanContinue.countdown;
   }
 
   @override
@@ -167,6 +170,7 @@ class CalibrationPanel extends StatelessWidget {
     return CalibrationWait(
       config: config,
       sensor: sensor,
+      onStartTimer: () => countdown.start(DateTime.now()),
       canContinue: canContinue(sensor, config.standard, active, countdown),
       onCalibrateAndContinue: () =>
           calibrateAndContinue(context, sensor, current, active),
@@ -178,6 +182,7 @@ class CalibrationPanel extends StatelessWidget {
 class CalibrationWait extends StatelessWidget {
   final CalibrationPointConfig config;
   final SensorConfig sensor;
+  final VoidCallback onStartTimer;
   final VoidCallback onCalibrateAndContinue;
   final VoidCallback onSkipTimer;
   final CanContinue canContinue;
@@ -186,29 +191,44 @@ class CalibrationWait extends StatelessWidget {
       {super.key,
       required this.config,
       required this.sensor,
+      required this.onStartTimer,
       required this.onCalibrateAndContinue,
       required this.canContinue,
       required this.onSkipTimer});
 
   Widget continueWidget(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final buttonStyle = ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 150, vertical: 20));
 
     switch (canContinue) {
+      case CanContinue.ready:
+        return ElevatedButton(
+            onPressed: onStartTimer,
+            style: buttonStyle,
+            child: Text(localizations.calibrationStartTimer));
       case CanContinue.yes:
         return ElevatedButton(
             onPressed: () => onCalibrateAndContinue(),
+            style: buttonStyle,
             child: Text(localizations.calibrateButton));
       case CanContinue.form:
         return ElevatedButton(
-            onPressed: null, child: Text(localizations.waitingOnForm));
-      case CanContinue.timer:
+            onPressed: null,
+            style: buttonStyle,
+            child: Text(localizations.waitingOnForm));
+      case CanContinue.countdown:
         return GestureDetector(
             onLongPress: onSkipTimer,
             child: ElevatedButton(
-                onPressed: null, child: Text(localizations.waitingOnTimer)));
+                onPressed: null,
+                style: buttonStyle,
+                child: Text(localizations.waitingOnTimer)));
       case CanContinue.staleValue:
         return ElevatedButton(
-            onPressed: null, child: Text(localizations.waitingOnReading));
+            onPressed: null,
+            style: buttonStyle,
+            child: Text(localizations.waitingOnReading));
     }
   }
 
@@ -219,8 +239,22 @@ class CalibrationWait extends StatelessWidget {
         sensor: sensor,
         standard: config.standard,
       ),
-      const DisplayCountdown(),
       continueWidget(context),
+      Padding(
+        padding: const EdgeInsets.all(20),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          color: Colors.grey[200],
+          child: Text(
+            AppLocalizations.of(context)!.calibrationMessage,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              color: Colors.black54,
+            ),
+          ),
+        ),
+      ),
     ];
 
     return Center(
@@ -247,16 +281,37 @@ class FixedStandardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Container(
-            decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color.fromRGBO(212, 212, 212, 1),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 30),
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(
+              color: const Color.fromRGBO(212, 212, 212, 1),
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(25))),
+        padding: const EdgeInsetsDirectional.fromSTEB(60, 6, 60, 6),
+        child: RichText(
+          text: TextSpan(
+            style: DefaultTextStyle.of(context).style,
+            children: <TextSpan>[
+              TextSpan(
+                text: standard.value.toString(),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black45,
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(5))),
-            padding: const EdgeInsets.all(8),
-            child: Text(localizations.standardValue(
-                sensor.calibratedUom, standard.value))));
+              ),
+              TextSpan(
+                text: localizations.standardValue2(sensor.calibratedUom),
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -292,8 +347,34 @@ class CurrentReadingAndStandard extends StatelessWidget {
     final localized = LocalizedSensor.get(sensor);
     final sensorValue = DisplaySensorValue(
         sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
+
     return Column(children: [
-      sensorValue,
+      Padding(
+        padding: const EdgeInsets.fromLTRB(20, 30, 20, 40),
+        child: Text(
+          AppLocalizations.of(context)!.countdownInstructions,
+          textAlign: TextAlign.center,
+        ),
+      ),
+      const DisplayCountdown(),
+      Padding(
+          padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Align(
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Text(AppLocalizations.of(context)!.sensorValue,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black54,
+                      )),
+                  sensorValue,
+                ],
+              ),
+            ),
+          )),
       StandardWidget(standard: standard, sensor: sensor),
     ]);
   }
