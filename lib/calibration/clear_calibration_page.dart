@@ -26,11 +26,21 @@ class CalibrationSection extends StatelessWidget {
 
   double _determineFontSize(double screenWidth) {
     if (screenWidth < 320) {
-      return 16;
+      return 12;
     } else if (screenWidth < 480) {
-      return 20;
+      return 16;
     } else {
-      return 26;
+      return 24;
+    }
+  }
+
+  double _determineLabelSize(double screenWidth) {
+    if (screenWidth < 320) {
+      return 10;
+    } else if (screenWidth < 480) {
+      return 12;
+    } else {
+      return 18;
     }
   }
 
@@ -48,8 +58,9 @@ class CalibrationSection extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double fontSize = _determineFontSize(screenWidth);
+    double labelSize = _determineLabelSize(screenWidth);
     double containerPadding = _determineContainerPadding(screenWidth);
-    double arrowSize = screenWidth < 360 ? 30 : 40;
+    double arrowSize = screenWidth < 360 ? 25 : 40;
 
     return Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -63,12 +74,23 @@ class CalibrationSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Standard: ${point.references[0].toStringAsFixed(1)} $uom", // TODO l10n
-              style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: "Avenir"),
+            OverflowBar(
+              alignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  "${AppLocalizations.of(context)!.standardTitle}: ${point.references[0].toStringAsFixed(1)} $uom",
+                  style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: "Avenir"),
+                ),
+                Text(
+                    "${AppLocalizations.of(context)!.voltage}: ${point.uncalibrated[0].toStringAsFixed(1)} V",
+                    style: const TextStyle(
+                      fontFamily: "Avenir",
+                      fontSize: 12,
+                    )),
+              ],
             ),
             const SizedBox(height: 8),
             Row(
@@ -80,16 +102,16 @@ class CalibrationSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("${point.uncalibrated[0].toStringAsFixed(1)} $uom",
+                      Text("${point.factory[0].toStringAsFixed(1)} $uom",
                           style: TextStyle(
                             fontSize: fontSize,
                             fontFamily: "Avenir",
                           )),
                       Text(
-                        AppLocalizations.of(context)!.uncalibrated,
-                        style: const TextStyle(
+                        AppLocalizations.of(context)!.factory,
+                        style: TextStyle(
+                          fontSize: labelSize,
                           fontFamily: "Avenir",
-                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -114,9 +136,9 @@ class CalibrationSection extends StatelessWidget {
                                 )),
                             Text(
                               AppLocalizations.of(context)!.calibrated,
-                              style: const TextStyle(
+                              style: TextStyle(
+                                fontSize: labelSize,
                                 fontFamily: "Avenir",
-                                fontSize: 14,
                               ),
                             ),
                           ],
@@ -157,18 +179,36 @@ class TimeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final time = DateTime.fromMillisecondsSinceEpoch(calibration.time * 1000);
-    final DateFormat formatter = DateFormat('hh:mm a yyyy-MM-dd');
-    final formatted = formatter.format(time);
+    final DateFormat formatter1 = DateFormat('yyyy-MM-dd');
+    final DateFormat formatter2 = DateFormat('hh:mm a ');
+    final formatted = formatter1.format(time);
     return Container(
-      decoration: BoxDecoration(
-          border: Border.all(
-            color: const Color.fromRGBO(212, 212, 212, 1),
+        decoration: BoxDecoration(
+            color: Colors.grey[100],
+            border: Border.all(
+              color: const Color.fromRGBO(212, 212, 212, 1),
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(5))),
+        padding: const EdgeInsets.all(8),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(
+            children: [
+              Text(formatted,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      fontFamily: "Avenir")),
+              const Text(" "),
+              Text(formatter2.format(time),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 12,
+                      fontFamily: "Avenir")),
+            ],
           ),
-          borderRadius: const BorderRadius.all(Radius.circular(5))),
-      padding: const EdgeInsets.all(8),
-      child:
-          Text(formatted, style: const TextStyle(fontWeight: FontWeight.w300)),
-    );
+          const Text(("Last Calibrated"),
+              style: TextStyle(fontSize: 12, fontFamily: "Avenir")),
+        ]));
   }
 }
 
@@ -203,13 +243,19 @@ class ClearCalibrationPage extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        localized.name,
-                        style: const TextStyle(fontSize: 18),
-                      )),
-                  Text(bay),
+                  SizedBox(
+                    width: constraints.maxWidth - 70,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            localized.name,
+                            style: const TextStyle(fontSize: 18),
+                          )),
+                    ),
+                  ),
+                  Text(bay, style: const TextStyle(fontSize: 11)),
                 ],
               ),
             ]),
@@ -219,7 +265,7 @@ class ClearCalibrationPage extends StatelessWidget {
               runSpacing: 4.0,
               children: calibrations
                   .map((c) => SizedBox(
-                      width: (constraints.maxWidth / calibrations.length) - 100,
+                      width: constraints.maxWidth,
                       child: TimeWidget(calibration: c)))
                   .toList(),
             ),

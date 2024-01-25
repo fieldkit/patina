@@ -63,6 +63,8 @@
   "factory": "Factory",
   "uncalibrated": "Uncalibrated",
   "calibrated": "Calibrated",
+  "voltage": "Voltage",
+  "standardTitle": "Standard",
   "waitingOnTimer": "Waiting on Timer",
   "waitingOnReading": "Waiting for Fresh Reading",
   "waitingOnForm": "Values Required",
