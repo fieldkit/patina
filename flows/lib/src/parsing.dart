@@ -31,7 +31,10 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
 
   Builder<T, T> paragraph();
   Builder<T, T> header({required int depth});
-  Builder<T, T> image({required List<int> indices, required String? sizing, required String alt});
+  Builder<T, T> image(
+      {required List<int> indices,
+      required String? sizing,
+      required String alt});
   Builder<T, T> link({required String href});
   Builder<T, T> unordered();
   Builder<T, T> listItem();
@@ -43,7 +46,8 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
   Builder<T, T> tableCell();
 
   List<T> parseString(String markdownContent) {
-    md.Document document = md.Document(blockSyntaxes: [md.TableSyntax()], encodeHtml: false);
+    md.Document document =
+        md.Document(blockSyntaxes: [md.TableSyntax()], encodeHtml: false);
     List<String> lines = markdownContent.split('\n');
     for (md.Node node in document.parseLines(lines)) {
       node.accept(this);
@@ -62,17 +66,16 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
       case "h1":
         builders.add(header(depth: 1));
         break;
+      // Treat h2 and below as paragraphs
       case "h2":
-        builders.add(header(depth: 2));
-        break;
       case "h3":
-        builders.add(header(depth: 3));
-        break;
       case "h4":
-        builders.add(header(depth: 4));
-        break;
       case "h5":
-        builders.add(header(depth: 5));
+      case "h6":
+      case "h7":
+      case "h8":
+      case "h9":
+        builders.add(paragraph());
         break;
       case "img":
         final String source = element.attributes["src"]!;
@@ -132,7 +135,8 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
       logger?.i("created $widget");
 
       final children = builder.children();
-      assert(children.isEmpty, "tag '${element.tag}' still has unused children: $children");
+      assert(children.isEmpty,
+          "tag '${element.tag}' still has unused children: $children");
       if (builders.isEmpty) {
         parsed.add(widget);
       } else {
@@ -176,7 +180,10 @@ class MarkdownVerifyParser extends MarkdownParser {
   }
 
   @override
-  Builder image({required List<int> indices, required String? sizing, required String alt}) {
+  Builder image(
+      {required List<int> indices,
+      required String? sizing,
+      required String alt}) {
     return OkBuilder(name: "image indices=$indices alt=$alt sizing=$sizing");
   }
 

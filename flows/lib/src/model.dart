@@ -40,7 +40,9 @@ class Simple {
     final logoData = data['logo'] as Map<String, dynamic>?;
     final logo = logoData != null ? Image.fromJson(logoData) : null;
     final imagesData = data['images'] as List<dynamic>?;
-    final images = imagesData != null ? imagesData.map((imageData) => Image.fromJson(imageData)).toList() : <Image>[];
+    final images = imagesData != null
+        ? imagesData.map((imageData) => Image.fromJson(imageData)).toList()
+        : <Image>[];
 
     return Simple(body: body, images: images, logo: logo);
   }
@@ -93,7 +95,9 @@ class Screen {
     final headerData = data["header"] as Map<String, dynamic>?;
     final header = headerData != null ? Header.fromJson(headerData) : null;
     final simpleData = data["simple"] as List<dynamic>?;
-    final simple = simpleData != null ? simpleData.map((row) => Simple.fromJson(row)).toList() : List<Simple>.empty();
+    final simple = simpleData != null
+        ? simpleData.map((row) => Simple.fromJson(row)).toList()
+        : List<Simple>.empty();
 
     return Screen(
         id: id,
@@ -120,7 +124,8 @@ class ContentFlows {
     final screensData = parsed["data"]["screens"] as List<dynamic>;
 
     final flows = flowsData.map((flowData) => Flow.fromJson(flowData)).toList();
-    final screens = screensData.map((screenData) => Screen.fromJson(screenData)).toList();
+    final screens =
+        screensData.map((screenData) => Screen.fromJson(screenData)).toList();
 
     return ContentFlows(flows: flows, screens: screens);
   }

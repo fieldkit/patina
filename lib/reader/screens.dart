@@ -129,68 +129,69 @@ class FlowScreenWidget extends StatelessWidget {
               ),
               title: Text(screen.header?.title ?? ""),
             ),
-            body: Column(children: [
-              ...screen.simple.expand((simple) {
-                List<Widget> widgets = [];
-                // Add markdown content widget if the body is not null or empty
-                if ((simple.body).isNotEmpty) {
-                  widgets.add(FlowSimpleScreenWidget(screen: simple));
-                }
-                // Add carousel widget if there are any images
-                if (simple.images.isNotEmpty) {
-                  widgets.add(FlowImagesWidget(screen: simple));
-                }
-                return widgets;
-              }).toList(),
-              Container(
-                margin: const EdgeInsets.all(10.0), // CSS-like margin
+            body: Padding(
+                padding: const EdgeInsets.all(20.0),
                 child: Column(children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding:
-                          const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
-                      backgroundColor:
-                          AppColors.primaryColor, // CSS background-color
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(2.0), // CSS border-radius
+                  ...screen.simple.expand((simple) {
+                    List<Widget> widgets = [];
+                    // Add markdown content widget if the body is not null or empty
+                    if ((simple.body).isNotEmpty) {
+                      widgets.add(FlowSimpleScreenWidget(screen: simple));
+                    }
+                    // Add carousel widget if there are any images
+                    if (simple.images.isNotEmpty) {
+                      widgets.add(FlowImagesWidget(screen: simple));
+                    }
+                    return widgets;
+                  }).toList(),
+                  Container(
+                    margin: const EdgeInsets.all(10.0),
+                    child: Column(children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding:
+                              const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
+                          backgroundColor: AppColors.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(2.0),
+                          ),
+                        ),
+                        onPressed: onForward,
+                        child: Text(
+                          screen.forward,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: 'Avenir',
+                            fontSize: 18.0,
+                            color: Colors.white,
+                            letterSpacing: 0.1,
+                          ),
+                        ),
+                      ),
+                    ]),
+                  ),
+                  if (screen.skip != null)
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        padding:
+                            const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
+                      ),
+                      onPressed: onSkip,
+                      child: Text(
+                        screen.skip!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Avenir',
+                          fontSize: 15.0,
+                          color: Colors.grey[850],
+                          letterSpacing: 0.1,
+                        ),
                       ),
                     ),
-                    onPressed: onForward,
-                    child: Text(
-                      screen.forward,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 18.0,
-                        color: Colors.white,
-                        letterSpacing: 0.1,
-                      ),
-                    ),
-                  ),
-                ]),
-              ),
-              if (screen.skip != null)
-                TextButton(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
-                  ),
-                  onPressed: onSkip,
-                  child: Text(
-                    screen.skip!,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Avenir',
-                      fontSize: 15.0,
-                      color: Colors.grey[850], // Dark gray
-                      letterSpacing: 0.1,
-                    ),
-                  ),
-                ),
-              if (screen.guideTitle != null)
-                ElevatedButton(
-                    onPressed: onGuide, child: Text(screen.guideTitle!)),
-            ])));
+                  if (screen.guideTitle != null)
+                    ElevatedButton(
+                        onPressed: onGuide, child: Text(screen.guideTitle!)),
+                ]))));
   }
 }
 
