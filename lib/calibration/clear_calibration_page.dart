@@ -13,17 +13,20 @@ import '../meta.dart';
 import 'calibration_model.dart';
 import 'calibration_page.dart';
 import 'calibration_calculations.dart' as calibration_calc;
+import 'package:caldor/calibration.dart' as caldor;
 
 class CalibrationSection extends StatelessWidget {
   final proto.Calibration calibration;
   final proto.CalibrationPoint point;
   final String? uom;
+  final ModuleConfig module;
 
   const CalibrationSection(
       {super.key,
       required this.point,
       required this.calibration,
-      required this.uom});
+      required this.uom,
+      required this.module});
 
   double _determineFontSize(double screenWidth) {
     if (screenWidth < 320) {
@@ -156,17 +159,19 @@ class CalibrationSection extends StatelessWidget {
 class CalibrationWidget extends StatelessWidget {
   final proto.Calibration calibration;
   final String? uom;
+  final ModuleConfig module;
 
-  const CalibrationWidget({super.key, required this.calibration, this.uom});
+  const CalibrationWidget(
+      {super.key, required this.calibration, this.uom, required this.module});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ...calibration.points
-            .map((p) => CalibrationSection(
-                point: p, calibration: calibration, uom: uom))
-            .toList(),
+        ...calibration.points.map(
+          (p) => CalibrationSection(
+              module: module, point: p, calibration: calibration, uom: uom),
+        )
       ],
     );
   }
@@ -270,8 +275,8 @@ class ClearCalibrationPage extends StatelessWidget {
                       child: TimeWidget(calibration: c)))
                   .toList(),
             ),
-            ...calibrations
-                .map((c) => CalibrationWidget(calibration: c, uom: uom)),
+            ...calibrations.map((c) =>
+                CalibrationWidget(calibration: c, module: module, uom: uom)),
             ButtonBar(
               alignment: MainAxisAlignment.spaceAround,
               buttonMinWidth: 100,
