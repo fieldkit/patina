@@ -58,13 +58,6 @@ class CalibrationWidget extends StatelessWidget {
       fontSize: 16,
       fontWeight: FontWeight.normal,
     );
-    /*
-    var unitsStyle = const TextStyle(
-      fontSize: 18,
-      color: Color.fromRGBO(64, 64, 64, 1),
-      fontWeight: FontWeight.normal,
-    );
-    */
 
     Text header(String label) => Text(label, style: headerStyle);
     Text value(String value) => Text(value, style: valueStyle);
