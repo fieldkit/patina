@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
+import 'package:fk/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -29,7 +30,41 @@ class ConfigureLoraPage extends StatelessWidget {
         body: ListView(children: [
           if (loraConfig != null && !loraConfig.available)
             const MissingLoraModule(),
-          if (loraConfig != null) CurrentLoraConfig(loraConfig: loraConfig)
+          if (loraConfig != null)
+            DisplayLoraConfiguration(loraConfig: loraConfig)
+        ]));
+  }
+}
+
+class LoraConfigurationFormPage extends StatelessWidget {
+  final void Function(LoraTransmissionConfig) onSave;
+  final LoraConfig loraConfig;
+
+  const LoraConfigurationFormPage(
+      {super.key, required this.loraConfig, required this.onSave});
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(localizations.loraConfigurationTitle),
+        ),
+        body: ListView(children: [
+          LoraNetworkForm(
+            config: LoraTransmissionConfig(
+                band: loraConfig.band.toFrequencyInteger(),
+                appKey: loraConfig.appKey,
+                joinEui: loraConfig.joinEui),
+            onSave: (saving) async {
+              onSave(LoraTransmissionConfig(
+                  band: saving.band,
+                  appKey: saving.appKey,
+                  joinEui: saving.joinEui,
+                  schedule: const Schedule_Every(60 * 60)));
+            },
+          )
         ]));
   }
 }
@@ -50,79 +85,90 @@ class MissingLoraModule extends StatelessWidget {
   }
 }
 
-class CurrentLoraConfig extends StatelessWidget {
+class DisplayLoraConfiguration extends StatelessWidget {
   final LoraConfig loraConfig;
 
-  const CurrentLoraConfig({super.key, required this.loraConfig});
+  const DisplayLoraConfiguration({super.key, required this.loraConfig});
 
   @override
   Widget build(BuildContext context) {
+    final StationConfiguration configuration =
+        context.read<StationConfiguration>();
+
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    return Column(children: [
-      WH.padColumn(Column(children: [
-        WH.align(Text(localizations.loraBand)),
-        WH.align(Text(loraConfig.band.toLabel())),
-        WH.align(LabelledHexString(
-            label: localizations.loraDeviceEui, bytes: loraConfig.deviceEui)),
-        WH.align(LabelledHexString(
-            label: localizations.loraDeviceAddress,
-            bytes: loraConfig.deviceAddress)),
-        WH.align(LabelledHexString(
-            label: localizations.loraAppKey, bytes: loraConfig.appKey)),
-        WH.align(LabelledHexString(
-            label: localizations.loraJoinEui, bytes: loraConfig.joinEui)),
-        if (loraConfig.networkSessionKey.isNotEmpty)
-          WH.align(LabelledHexString(
-              label: localizations.loraNetworkKey,
-              bytes: loraConfig.networkSessionKey)),
-        if (loraConfig.appSessionKey.isNotEmpty)
-          WH.align(LabelledHexString(
-              label: localizations.loraSessionKey,
-              bytes: loraConfig.appSessionKey)),
-      ])),
-      LoraNetworkForm(
-        config: LoraTransmissionConfig(
-            band: loraConfig.band.toFrequencyInteger(),
-            appKey: loraConfig.appKey,
-            joinEui: loraConfig.joinEui),
-        onSave: (saving) async {
-          Loggers.ui.i("save $saving");
+    return WH.padColumn(Column(children: [
+      Text(localizations.loraBand, style: labelStyle()),
+      Text(loraConfig.band.toLabel()),
+      LabelledHexString(
+          label: localizations.loraDeviceEui, bytes: loraConfig.deviceEui),
+      LabelledHexString(
+          label: localizations.loraDeviceAddress,
+          bytes: loraConfig.deviceAddress),
+      LabelledHexString(
+          label: localizations.loraAppKey, bytes: loraConfig.appKey),
+      LabelledHexString(
+          label: localizations.loraJoinEui, bytes: loraConfig.joinEui),
+      if (loraConfig.networkSessionKey.isNotEmpty)
+        LabelledHexString(
+            label: localizations.loraNetworkKey,
+            bytes: loraConfig.networkSessionKey),
+      if (loraConfig.appSessionKey.isNotEmpty)
+        LabelledHexString(
+            label: localizations.loraSessionKey,
+            bytes: loraConfig.appSessionKey),
+      ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor:
+              MaterialStateProperty.all<Color>(AppColors.primaryColor),
+          padding: MaterialStateProperty.all<EdgeInsets>(
+              const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
+        ),
+        child: Text(
+          "Edit",
+          style: WH.buttonStyle(18),
+        ),
+        onPressed: () async {
+          final navigator = Navigator.of(context);
 
-          final StationConfiguration configuration =
-              context.read<StationConfiguration>();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LoraConfigurationFormPage(
+                  loraConfig: loraConfig,
+                  onSave: (LoraTransmissionConfig config) async {
+                    final overlay = context.loaderOverlay;
+                    overlay.show();
+                    try {
+                      await configuration
+                          .configureLora(config); // TODO Schedule
+                    } finally {
+                      navigator.pop();
 
-          final overlay = context.loaderOverlay;
-          overlay.show();
-          try {
-            await configuration.configureLora(LoraTransmissionConfig(
-                band: saving.band,
-                appKey: saving.appKey,
-                joinEui: saving.joinEui,
-                schedule: const Schedule_Every(60 * 60))); // TODO Schedule
-          } finally {
-            overlay.hide();
-          }
+                      overlay.hide();
+                    }
+                  },
+                ),
+              ));
         },
-      ),
-    ]);
+      )
+    ]));
   }
 }
 
-class DisplayLoraBand extends StatelessWidget {
-  final LoraBand band;
+class LabelledHexString extends StatelessWidget {
+  final String label;
+  final Uint8List bytes;
 
-  const DisplayLoraBand({super.key, required this.band});
+  const LabelledHexString(
+      {super.key, required this.label, required this.bytes});
 
   @override
   Widget build(BuildContext context) {
-    if (band == LoraBand.F868Mhz) {
-      return const Text("868MHz");
-    }
-    if (band == LoraBand.F915Mhz) {
-      return const Text("915MHz");
-    }
-    return const Text("None");
+    return Column(children: [
+      WH.align(Text(label, style: labelStyle())),
+      WH.align(HexString(bytes: bytes)),
+    ]);
   }
 }
 
@@ -141,18 +187,6 @@ class HexString extends StatelessWidget {
   }
 }
 
-class LabelledHexString extends StatelessWidget {
-  final String label;
-  final Uint8List bytes;
-
-  const LabelledHexString(
-      {super.key, required this.label, required this.bytes});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: [
-      WH.align(Text(label)),
-      WH.align(HexString(bytes: bytes)),
-    ]);
-  }
+TextStyle labelStyle() {
+  return const TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
 }

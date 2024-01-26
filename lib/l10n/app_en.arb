@@ -102,6 +102,7 @@
   "loraNetworkKey": "Network Key",
   "loraSessionKey": "Session Key",
   "loraNoModule": "No LoRa module detected.",
+  "loraConfigurationTitle": "LoRa Configuration",
 
   "hexStringValidationFailed": "Expected a valid hex string.",
 
