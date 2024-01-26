@@ -437,6 +437,14 @@ class StationConfiguration extends ChangeNotifier {
 
   String get name => config.config!.name;
 
+  List<NetworkConfig> get networks =>
+      config.ephemeral?.networks ?? List.empty();
+
+  bool get isAutomaticUploadEnabled =>
+      config.ephemeral?.transmission?.enabled ?? false;
+
+  LoraConfig? get loraConfig => config.ephemeral?.lora;
+
   StationConfiguration(
       {required this.api,
       required this.knownStations,
@@ -507,13 +515,9 @@ class StationConfiguration extends ChangeNotifier {
         config: const WifiTransmissionConfig(tokens: null, schedule: null));
   }
 
-  List<NetworkConfig> get networks =>
-      config.ephemeral?.networks ?? List.empty();
-
-  bool get isAutomaticUploadEnabled =>
-      config.ephemeral?.transmission?.enabled ?? false;
-
-  LoraConfig? get loraConfig => config.ephemeral?.lora;
+  Future<void> configureLora(LoraTransmissionConfig config) async {
+    await api.configureLoraTransmission(deviceId: deviceId, config: config);
+  }
 }
 
 abstract class Task {

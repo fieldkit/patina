@@ -5,6 +5,7 @@ import 'package:fk/common_widgets.dart';
 import 'package:fk/diagnostics.dart';
 import 'package:fk/gen/ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 import '../app_state.dart';
@@ -41,18 +42,39 @@ class CurrentLoraConfig extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(children: [
       WH.padColumn(Column(children: [
+        WH.align(const Text("Band")),
+        WH.align(Text(loraConfig.band.toLabel())),
         WH.align(const Text("Device EUI")),
         WH.align(HexString(bytes: loraConfig.deviceEui)),
         WH.align(const Text("Device Address")),
         WH.align(HexString(bytes: loraConfig.deviceAddress)),
+        WH.align(const Text("App Key")),
+        WH.align(HexString(bytes: loraConfig.appKey)),
+        WH.align(const Text("Join EUI")),
+        WH.align(HexString(bytes: loraConfig.joinEui)),
       ])),
       LoraNetworkForm(
         config: LoraTransmissionConfig(
             band: loraConfig.band.toFrequencyInteger(),
             appKey: loraConfig.appKey,
             joinEui: loraConfig.joinEui),
-        onSave: (saving) {
+        onSave: (saving) async {
           Loggers.ui.i("save $saving");
+
+          final StationConfiguration configuration =
+              context.read<StationConfiguration>();
+
+          final overlay = context.loaderOverlay;
+          overlay.show();
+          try {
+            await configuration.configureLora(LoraTransmissionConfig(
+                band: saving.band,
+                appKey: saving.appKey,
+                joinEui: saving.joinEui,
+                schedule: const Schedule_Every(60 * 60))); // TODO Schedule
+          } finally {
+            overlay.hide();
+          }
         },
       ),
     ]);
