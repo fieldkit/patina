@@ -546,11 +546,14 @@ impl rust2dart::IntoIntoDart<LoraBand> for LoraBand {
 impl support::IntoDart for LoraConfig {
     fn into_dart(self) -> support::DartAbi {
         vec![
+            self.available.into_into_dart().into_dart(),
             self.band.into_into_dart().into_dart(),
             self.device_eui.into_into_dart().into_dart(),
             self.app_key.into_into_dart().into_dart(),
             self.join_eui.into_into_dart().into_dart(),
             self.device_address.into_into_dart().into_dart(),
+            self.network_session_key.into_into_dart().into_dart(),
+            self.app_session_key.into_into_dart().into_dart(),
         ]
         .into_dart()
     }

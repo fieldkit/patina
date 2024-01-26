@@ -27,7 +27,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return FormBuilder(
       key: _formKey,
@@ -53,7 +53,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
             validator: FormBuilderValidators.compose([
               FormBuilderValidators.required(),
               FormBuilderValidators.equalLength(32),
-              hexString(),
+              hexString(errorText: localizations.hexStringValidationFailed),
             ]),
           ),
           FormBuilderTextField(
@@ -66,7 +66,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
             validator: FormBuilderValidators.compose([
               FormBuilderValidators.required(),
               FormBuilderValidators.equalLength(16),
-              hexString(),
+              hexString(errorText: localizations.hexStringValidationFailed),
             ]),
           ),
           ElevatedButton(
@@ -125,4 +125,20 @@ extension FormHelpers on LoraBand {
     }
     return LoraBand.F915Mhz;
   }
+}
+
+/// [FormFieldValidator] that requires the field be a valid hex string.
+FormFieldValidator<T> hexString<T>({
+  String? errorText,
+}) {
+  return (T? valueCandidate) {
+    if (valueCandidate is String) {
+      try {
+        hex.decode(valueCandidate);
+      } catch (e) {
+        return errorText ?? "Expected a valid hex string.";
+      }
+    }
+    return null;
+  };
 }

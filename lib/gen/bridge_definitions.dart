@@ -258,18 +258,24 @@ enum LoraBand {
 }
 
 class LoraConfig {
+  final bool available;
   final LoraBand band;
   final Uint8List deviceEui;
   final Uint8List appKey;
   final Uint8List joinEui;
   final Uint8List deviceAddress;
+  final Uint8List networkSessionKey;
+  final Uint8List appSessionKey;
 
   const LoraConfig({
+    required this.available,
     required this.band,
     required this.deviceEui,
     required this.appKey,
     required this.joinEui,
     required this.deviceAddress,
+    required this.networkSessionKey,
+    required this.appSessionKey,
   });
 }
 

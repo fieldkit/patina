@@ -611,14 +611,17 @@ class NativeImpl implements Native {
 
   LoraConfig _wire2api_lora_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 8)
+      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
     return LoraConfig(
-      band: _wire2api_lora_band(arr[0]),
-      deviceEui: _wire2api_uint_8_list(arr[1]),
-      appKey: _wire2api_uint_8_list(arr[2]),
-      joinEui: _wire2api_uint_8_list(arr[3]),
-      deviceAddress: _wire2api_uint_8_list(arr[4]),
+      available: _wire2api_bool(arr[0]),
+      band: _wire2api_lora_band(arr[1]),
+      deviceEui: _wire2api_uint_8_list(arr[2]),
+      appKey: _wire2api_uint_8_list(arr[3]),
+      joinEui: _wire2api_uint_8_list(arr[4]),
+      deviceAddress: _wire2api_uint_8_list(arr[5]),
+      networkSessionKey: _wire2api_uint_8_list(arr[6]),
+      appSessionKey: _wire2api_uint_8_list(arr[7]),
     );
   }
 

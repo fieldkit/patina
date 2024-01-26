@@ -94,6 +94,17 @@
   "wifiSsid": "SSID",
   "wifiPassword": "Password",
 
+  "loraBand": "Band",
+  "loraAppKey": "App Key",
+  "loraJoinEui": "Join EUI",
+  "loraDeviceEui": "Device EUI",
+  "loraDeviceAddress": "Device Address",
+  "loraNetworkKey": "Network Key",
+  "loraSessionKey": "Session Key",
+  "loraNoModule": "No LoRa module detected.",
+
+  "hexStringValidationFailed": "Expected a valid hex string.",
+
   "firmwareTitle": "Firmware",
   "firmwareUpgrade": "Upgrade",
   "firmwareStarting": "Starting...",

@@ -1028,11 +1028,14 @@ pub enum LoraBand {
 
 #[derive(Clone, Debug)]
 pub struct LoraConfig {
+    pub available: bool,
     pub band: LoraBand,
     pub device_eui: Vec<u8>,
     pub app_key: Vec<u8>,
     pub join_eui: Vec<u8>,
     pub device_address: Vec<u8>,
+    pub network_session_key: Vec<u8>,
+    pub app_session_key: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
@@ -1081,6 +1084,7 @@ impl TryInto<EphemeralConfig> for HttpReply {
             .unwrap_or_default();
 
         let lora = self.lora_settings.map(|ls| LoraConfig {
+            available: ls.available,
             band: match ls.frequency_band {
                 915 => LoraBand::F915Mhz,
                 868 => LoraBand::F868Mhz,
@@ -1090,6 +1094,8 @@ impl TryInto<EphemeralConfig> for HttpReply {
             app_key: ls.app_key,
             join_eui: ls.join_eui,
             device_address: ls.device_address,
+            network_session_key: ls.network_session_key,
+            app_session_key: ls.app_session_key,
         });
 
         Ok(EphemeralConfig {

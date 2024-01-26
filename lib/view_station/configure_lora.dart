@@ -1,12 +1,13 @@
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
-import 'package:fk/common_widgets.dart';
-
-import 'package:fk/diagnostics.dart';
-import 'package:fk/gen/ffi.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:provider/provider.dart';
+
+import 'package:fk/diagnostics.dart';
+import 'package:fk/common_widgets.dart';
+import 'package:fk/gen/ffi.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
 import 'lora_network_form.dart';
@@ -21,15 +22,31 @@ class ConfigureLoraPage extends StatelessWidget {
 
     final LoraConfig? loraConfig = configuration.loraConfig;
 
-    Loggers.ui.i("lora $loraConfig");
-
     return Scaffold(
         appBar: AppBar(
           title: Text(configuration.name),
         ),
         body: ListView(children: [
+          if (loraConfig != null && !loraConfig.available)
+            const MissingLoraModule(),
           if (loraConfig != null) CurrentLoraConfig(loraConfig: loraConfig)
         ]));
+  }
+}
+
+class MissingLoraModule extends StatelessWidget {
+  const MissingLoraModule({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        child: Text(
+          localizations.loraNoModule,
+          style: const TextStyle(fontSize: 18, color: Colors.red),
+        ));
   }
 }
 
@@ -40,18 +57,29 @@ class CurrentLoraConfig extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
     return Column(children: [
       WH.padColumn(Column(children: [
-        WH.align(const Text("Band")),
+        WH.align(Text(localizations.loraBand)),
         WH.align(Text(loraConfig.band.toLabel())),
-        WH.align(const Text("Device EUI")),
-        WH.align(HexString(bytes: loraConfig.deviceEui)),
-        WH.align(const Text("Device Address")),
-        WH.align(HexString(bytes: loraConfig.deviceAddress)),
-        WH.align(const Text("App Key")),
-        WH.align(HexString(bytes: loraConfig.appKey)),
-        WH.align(const Text("Join EUI")),
-        WH.align(HexString(bytes: loraConfig.joinEui)),
+        WH.align(LabelledHexString(
+            label: localizations.loraDeviceEui, bytes: loraConfig.deviceEui)),
+        WH.align(LabelledHexString(
+            label: localizations.loraDeviceAddress,
+            bytes: loraConfig.deviceAddress)),
+        WH.align(LabelledHexString(
+            label: localizations.loraAppKey, bytes: loraConfig.appKey)),
+        WH.align(LabelledHexString(
+            label: localizations.loraJoinEui, bytes: loraConfig.joinEui)),
+        if (loraConfig.networkSessionKey.isNotEmpty)
+          WH.align(LabelledHexString(
+              label: localizations.loraNetworkKey,
+              bytes: loraConfig.networkSessionKey)),
+        if (loraConfig.appSessionKey.isNotEmpty)
+          WH.align(LabelledHexString(
+              label: localizations.loraSessionKey,
+              bytes: loraConfig.appSessionKey)),
       ])),
       LoraNetworkForm(
         config: LoraTransmissionConfig(
@@ -113,18 +141,18 @@ class HexString extends StatelessWidget {
   }
 }
 
-/// [FormFieldValidator] that requires the field be a valid hex string.
-FormFieldValidator<T> hexString<T>({
-  String? errorText,
-}) {
-  return (T? valueCandidate) {
-    if (valueCandidate is String) {
-      try {
-        hex.decode(valueCandidate);
-      } catch (e) {
-        return errorText ?? "Expected a valid hex string.";
-      }
-    }
-    return null;
-  };
+class LabelledHexString extends StatelessWidget {
+  final String label;
+  final Uint8List bytes;
+
+  const LabelledHexString(
+      {super.key, required this.label, required this.bytes});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      WH.align(Text(label)),
+      WH.align(HexString(bytes: bytes)),
+    ]);
+  }
 }
