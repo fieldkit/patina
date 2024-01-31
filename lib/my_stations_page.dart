@@ -130,6 +130,8 @@ class StationCard extends StatelessWidget {
       image: AssetImage(station.connected
           ? "resources/images/Icon_Station_Connected.png"
           : "resources/images/Icon_Station_Not_Connected.png"),
+      width: 60,
+      height: 60,
     );
     final tinyOperations =
         operations.map((op) => TinyOperation(operation: op)).toList();

@@ -112,10 +112,9 @@ class FlowScreenWidget extends StatelessWidget {
     return PopScope(
         canPop: false,
         onPopInvoked: (bool didPop) async {
-          // Check if onBack is provided
           final onBack = this.onBack;
           if (onBack != null) {
-            onBack(); // Use the onBack function if provided
+            onBack();
           } else {
             Navigator.of(context).pop();
           }
