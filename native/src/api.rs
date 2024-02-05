@@ -787,6 +787,7 @@ impl Into<device::ConfigureLoraTransmission> for LoraTransmissionConfig {
     fn into(self) -> device::ConfigureLoraTransmission {
         device::ConfigureLoraTransmission {
             enabled: true,
+            verify: false,
             schedule: self.schedule.map(|s| s.into()),
             app_key: self.app_key,
             join_eui: self.join_eui,
