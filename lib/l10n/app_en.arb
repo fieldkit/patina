@@ -88,6 +88,9 @@
   "eventUnknown": "Unknown Event",
   "eventRestart": "Restart Event",
   "eventLora": "LoRa Event",
+  "eventTime": "Time",
+  "eventCode": "Code",
+  "eventReason": "Reason",
 
   "networkAddButton": "Add Network",
   "networkEditTitle": "WiFi Network",

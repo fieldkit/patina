@@ -77,9 +77,9 @@ class LoraEventWidget extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     return Column(children: [
       Text(localizations.eventLora, style: eventHeaderStyle()),
-      WH.align(Text("Time", style: labelStyle())),
+      WH.align(Text(localizations.eventTime, style: labelStyle())),
       WH.align(Text(formatter.format(event.time))),
-      WH.align(Text("Code", style: labelStyle())),
+      WH.align(Text(localizations.eventCode, style: labelStyle())),
       WH.align(Text(event.code.toString()))
     ]);
   }
@@ -96,9 +96,9 @@ class RestartEventWidget extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     return Column(children: [
       Text(localizations.eventRestart, style: eventHeaderStyle()),
-      WH.align(Text("Time", style: labelStyle())),
+      WH.align(Text(localizations.eventTime, style: labelStyle())),
       WH.align(Text(formatter.format(event.time))),
-      WH.align(Text("Reason", style: labelStyle())),
+      WH.align(Text(localizations.eventReason, style: labelStyle())),
       WH.align(Text(event.reason))
     ]);
   }
