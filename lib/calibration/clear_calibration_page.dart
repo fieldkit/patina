@@ -12,7 +12,6 @@ import '../diagnostics.dart';
 import '../meta.dart';
 import 'calibration_model.dart';
 import 'calibration_page.dart';
-import 'calibration_calculations.dart' as calibration_calc;
 import 'package:caldor/calibration.dart' as caldor;
 
 class CalibrationSection extends StatelessWidget {
@@ -133,7 +132,7 @@ class CalibrationSection extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                "${calibration_calc.calibrateValue(calibration.type, point.uncalibrated[0], calibration.points).toStringAsFixed(1)} $uom",
+                                "${"caldor.calibrateValue(calibration.type, point.uncalibrated[0], calibration.points).toStringAsFixed(1)"} $uom", //TODO: Unstringify value
                                 style: TextStyle(
                                   fontSize: fontSize,
                                   fontFamily: "Avenir",
