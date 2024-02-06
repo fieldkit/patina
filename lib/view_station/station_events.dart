@@ -92,9 +92,12 @@ class RestartEventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:MM:SS');
     final localizations = AppLocalizations.of(context)!;
     return Column(children: [
       Text(localizations.eventRestart, style: eventHeaderStyle()),
+      WH.align(Text("Time", style: labelStyle())),
+      WH.align(Text(formatter.format(event.time))),
       WH.align(Text("Reason", style: labelStyle())),
       WH.align(Text(event.reason))
     ]);

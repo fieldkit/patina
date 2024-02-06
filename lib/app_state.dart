@@ -430,6 +430,8 @@ class WifiNetwork {
 class Event {
   final proto.Event data;
 
+  DateTime get time => DateTime.fromMillisecondsSinceEpoch(data.time * 1000);
+
   Event({required this.data});
 
   static Event from(proto.Event e) {
@@ -490,8 +492,6 @@ class LoraEvent extends Event {
     if (data.code == 3) return LoraCode.confirmedSend;
     return LoraCode.unknown;
   }
-
-  DateTime get time => DateTime.fromMillisecondsSinceEpoch(data.time * 1000);
 
   LoraEvent({required super.data});
 }
