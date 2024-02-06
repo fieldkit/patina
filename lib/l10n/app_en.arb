@@ -85,6 +85,9 @@
   "settingsAutomaticUpload": "Automatic Upload Settings",
   "settingsEvents": "Events",
 
+  "settingsLoraEdit": "Edit",
+  "settingsLoraVerify": "Verify",
+
   "eventUnknown": "Unknown Event",
   "eventRestart": "Restart Event",
   "eventLora": "LoRa Event",

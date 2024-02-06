@@ -599,6 +599,10 @@ class StationConfiguration extends ChangeNotifier {
   Future<void> configureLora(LoraTransmissionConfig config) async {
     await api.configureLoraTransmission(deviceId: deviceId, config: config);
   }
+
+  Future<void> verifyLora() async {
+    await api.verifyLoraTransmission(deviceId: deviceId);
+  }
 }
 
 abstract class Task {

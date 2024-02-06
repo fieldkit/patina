@@ -146,6 +146,22 @@ fn wire_configure_lora_transmission_impl(
         },
     )
 }
+fn wire_verify_lora_transmission_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, (), _>(
+        WrapInfo {
+            debug_name: "verify_lora_transmission",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            move |task_callback| verify_lora_transmission(api_device_id)
+        },
+    )
+}
 fn wire_clear_calibration_impl(
     port_: MessagePort,
     device_id: impl Wire2Api<String> + UnwindSafe,

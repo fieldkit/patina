@@ -16,7 +16,7 @@ use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
 use query::{
-    device::{self, HttpReply},
+    device::{self, ConfigureLoraTransmission, HttpReply},
     portal::{DecodedToken, StatusCode},
 };
 use store::Db;
@@ -450,6 +450,28 @@ impl Sdk {
         Ok(())
     }
 
+    async fn verify_lora_transmission(&self, device_id: DeviceId) -> Result<()> {
+        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
+            let client = query::device::Client::new()?;
+            let config = ConfigureLoraTransmission {
+                enabled: true,
+                verify: true,
+                app_key: None,
+                join_eui: None,
+                band: None,
+                schedule: None,
+            };
+            let status = client
+                .configure_lora_transmission(&addr, config.into())
+                .await?;
+            self.nearby
+                .mark_finished_and_publish_reply(&device_id, status)
+                .await?;
+        }
+
+        Ok(())
+    }
+
     async fn clear_calibration(&self, device_id: DeviceId, module: usize) -> Result<()> {
         info!("clear-calibration: {:?} {:?}", device_id, module);
         if let Some(addr) = self.get_nearby_addr(&device_id).await? {
@@ -566,6 +588,12 @@ pub fn configure_lora_transmission(
 ) -> Result<()> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.configure_lora_transmission(DeviceId(device_id.clone()), config))
+    })?)
+}
+
+pub fn verify_lora_transmission(device_id: String) -> Result<()> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.verify_lora_transmission(DeviceId(device_id.clone())))
     })?)
 }
 

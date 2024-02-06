@@ -173,6 +173,26 @@ class NativeImpl implements Native {
         argNames: ["deviceId", "config"],
       );
 
+  Future<void> verifyLoraTransmission(
+      {required String deviceId, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_verify_lora_transmission(port_, arg0),
+      parseSuccessData: _wire2api_unit,
+      parseErrorData: _wire2api_FrbAnyhowException,
+      constMeta: kVerifyLoraTransmissionConstMeta,
+      argValues: [deviceId],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kVerifyLoraTransmissionConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "verify_lora_transmission",
+        argNames: ["deviceId"],
+      );
+
   Future<void> clearCalibration(
       {required String deviceId, required int module, dynamic hint}) {
     var arg0 = _platform.api2wire_String(deviceId);

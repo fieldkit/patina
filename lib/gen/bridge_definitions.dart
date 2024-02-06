@@ -58,6 +58,10 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kConfigureLoraTransmissionConstMeta;
 
+  Future<void> verifyLoraTransmission({required String deviceId, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kVerifyLoraTransmissionConstMeta;
+
   Future<void> clearCalibration(
       {required String deviceId, required int module, dynamic hint});
 

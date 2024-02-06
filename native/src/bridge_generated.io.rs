@@ -61,6 +61,11 @@ pub extern "C" fn wire_configure_lora_transmission(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_verify_lora_transmission(port_: i64, device_id: *mut wire_uint_8_list) {
+    wire_verify_lora_transmission_impl(port_, device_id)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_clear_calibration(
     port_: i64,
     device_id: *mut wire_uint_8_list,

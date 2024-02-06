@@ -37,6 +37,11 @@ pub fn wire_configure_lora_transmission(port_: MessagePort, device_id: String, c
 }
 
 #[wasm_bindgen]
+pub fn wire_verify_lora_transmission(port_: MessagePort, device_id: String) {
+    wire_verify_lora_transmission_impl(port_, device_id)
+}
+
+#[wasm_bindgen]
 pub fn wire_clear_calibration(port_: MessagePort, device_id: String, module: usize) {
     wire_clear_calibration_impl(port_, device_id, module)
 }

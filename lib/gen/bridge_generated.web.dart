@@ -249,6 +249,9 @@ class NativeWasmModule implements WasmModule {
   external dynamic /* void */ wire_configure_lora_transmission(
       NativePortType port_, String device_id, List<dynamic> config);
 
+  external dynamic /* void */ wire_verify_lora_transmission(
+      NativePortType port_, String device_id);
+
   external dynamic /* void */ wire_clear_calibration(
       NativePortType port_, String device_id, int module);
 
@@ -307,6 +310,9 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_configure_lora_transmission(
           NativePortType port_, String device_id, List<dynamic> config) =>
       wasmModule.wire_configure_lora_transmission(port_, device_id, config);
+
+  void wire_verify_lora_transmission(NativePortType port_, String device_id) =>
+      wasmModule.wire_verify_lora_transmission(port_, device_id);
 
   void wire_clear_calibration(
           NativePortType port_, String device_id, int module) =>

@@ -116,6 +116,7 @@ class DisplayLoraConfiguration extends StatelessWidget {
         LabelledHexString(
             label: localizations.loraSessionKey,
             bytes: loraConfig.appSessionKey),
+      const Divider(),
       ElevatedButton(
         style: ButtonStyle(
           backgroundColor:
@@ -124,7 +125,7 @@ class DisplayLoraConfiguration extends StatelessWidget {
               const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
         ),
         child: Text(
-          "Edit",
+          localizations.settingsLoraEdit,
           style: WH.buttonStyle(18),
         ),
         onPressed: () async {
@@ -149,6 +150,28 @@ class DisplayLoraConfiguration extends StatelessWidget {
                   },
                 ),
               ));
+        },
+      ),
+      const Divider(),
+      ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor:
+              MaterialStateProperty.all<Color>(AppColors.primaryColor),
+          padding: MaterialStateProperty.all<EdgeInsets>(
+              const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
+        ),
+        child: Text(
+          localizations.settingsLoraVerify,
+          style: WH.buttonStyle(18),
+        ),
+        onPressed: () async {
+          final overlay = context.loaderOverlay;
+          overlay.show();
+          try {
+            await configuration.verifyLora();
+          } finally {
+            overlay.hide();
+          }
         },
       )
     ]));

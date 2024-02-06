@@ -523,6 +523,23 @@ class NativeWire implements FlutterRustBridgeWireBase {
           void Function(int, ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_LoraTransmissionConfig>)>();
 
+  void wire_verify_lora_transmission(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> device_id,
+  ) {
+    return _wire_verify_lora_transmission(
+      port_,
+      device_id,
+    );
+  }
+
+  late final _wire_verify_lora_transmissionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_verify_lora_transmission');
+  late final _wire_verify_lora_transmission = _wire_verify_lora_transmissionPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
   void wire_clear_calibration(
     int port_,
     ffi.Pointer<wire_uint_8_list> device_id,

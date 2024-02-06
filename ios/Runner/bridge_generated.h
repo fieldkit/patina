@@ -131,6 +131,8 @@ void wire_configure_lora_transmission(int64_t port_,
                                       struct wire_uint_8_list *device_id,
                                       struct wire_LoraTransmissionConfig *config);
 
+void wire_verify_lora_transmission(int64_t port_, struct wire_uint_8_list *device_id);
+
 void wire_clear_calibration(int64_t port_, struct wire_uint_8_list *device_id, uintptr_t module);
 
 void wire_calibrate(int64_t port_,
@@ -195,6 +197,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_configure_wifi_networks);
     dummy_var ^= ((int64_t) (void*) wire_configure_wifi_transmission);
     dummy_var ^= ((int64_t) (void*) wire_configure_lora_transmission);
+    dummy_var ^= ((int64_t) (void*) wire_verify_lora_transmission);
     dummy_var ^= ((int64_t) (void*) wire_clear_calibration);
     dummy_var ^= ((int64_t) (void*) wire_calibrate);
     dummy_var ^= ((int64_t) (void*) wire_validate_tokens);
