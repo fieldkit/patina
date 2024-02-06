@@ -26,22 +26,26 @@ class DisplaySensorValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final valueFormatter = NumberFormat("0.##");
-    var valueStyle = const TextStyle(
-        fontSize: 18,
-        color: AppColors.primaryColor,
-        fontWeight: FontWeight.bold);
+    double screenWidth = MediaQuery.of(context).size.width;
+    double valueSize = screenWidth < 360 ? 18 : 24;
+    double unitsSize = screenWidth < 360 ? 10 : 12;
 
-    var unitsStyle = const TextStyle(
-        fontSize: 18,
-        color: Color.fromRGBO(64, 64, 64, 1),
-        fontWeight: FontWeight.normal);
-
-    final value = sensor.value?.value;
-    final uom = localized.uom;
+    var valueFormatter = NumberFormat("0.##");
+    var valueStyle = TextStyle(
+      fontSize: valueSize,
+      color: AppColors.primaryColor,
+      fontWeight: FontWeight.bold,
+    );
+    var unitsStyle = TextStyle(
+      fontSize: unitsSize,
+      color: const Color.fromRGBO(64, 64, 64, 1),
+      fontWeight: FontWeight.normal,
+    );
+    var value = sensor.value?.value;
+    var uom = localized.uom;
 
     var suffix = Container(
-        padding: const EdgeInsets.only(left: 6),
+        padding: const EdgeInsets.only(left: 4),
         child: Text(uom, style: unitsStyle));
 
     if (value == null) {
@@ -76,7 +80,10 @@ class SensorInfo extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: DisplaySensorValue(
                           sensor: sensor, localized: localized)),
-                  Row(children: [Text(localized.name)])
+                  Text(
+                    localized.name,
+                    textAlign: TextAlign.left,
+                  )
                 ]))));
   }
 }
@@ -84,24 +91,25 @@ class SensorInfo extends StatelessWidget {
 class SensorsGrid extends StatelessWidget {
   final List<Widget> children;
 
-  const SensorsGrid({super.key, required this.children});
+  const SensorsGrid({Key? key, required this.children}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Table(children: _generateRows());
-  }
+    double screenWidth = MediaQuery.of(context).size.width;
+    double boxSize = screenWidth < 240 ? screenWidth : (screenWidth / 2.3);
 
-  List<TableRow> _generateRows() {
-    final List<TableRow> rows = [];
-    for (int i = 0; i < children.length; i += 2) {
-      rows.add(TableRow(
-        children: [
-          children[i],
-          if (i + 1 < children.length) children[i + 1] else Container(),
-        ],
-      ));
-    }
-    return rows;
+    return Wrap(
+      alignment: WrapAlignment.start,
+      children: children.map((child) {
+        return Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: SizedBox(
+            width: boxSize,
+            child: child,
+          ),
+        );
+      }).toList(),
+    );
   }
 }
 
