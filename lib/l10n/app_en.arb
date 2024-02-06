@@ -104,6 +104,7 @@
   "networkNoMoreSlots": "Unfortunately, there are only two WiFi network slots available.",
   "wifiSsid": "SSID",
   "wifiPassword": "Password",
+  "confirmRemoveNetwork": "Remove Network",
 
   "loraBand": "Band",
   "loraAppKey": "App Key",

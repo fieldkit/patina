@@ -117,7 +117,7 @@ class ConfigureWiFiPage extends StatelessWidget {
           final navigator = Navigator.of(context);
 
           return AlertDialog(
-            title: Text(localizations.confirmClearCalibrationTitle),
+            title: Text(localizations.confirmRemoveNetwork),
             content: Text(localizations.confirmDelete),
             actions: <Widget>[
               TextButton(
