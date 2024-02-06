@@ -5,7 +5,6 @@ import 'package:fk/common_widgets.dart';
 import 'package:fk/constants.dart';
 import 'package:fk/diagnostics.dart';
 import 'package:fk/gen/ffi.dart';
-import 'package:fk/view_station/configure_lora.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';

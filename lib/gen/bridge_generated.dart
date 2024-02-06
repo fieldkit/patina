@@ -513,13 +513,14 @@ class NativeImpl implements Native {
 
   EphemeralConfig _wire2api_ephemeral_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return EphemeralConfig(
       transmission: _wire2api_opt_box_autoadd_transmission_config(arr[0]),
       networks: _wire2api_list_network_config(arr[1]),
       lora: _wire2api_opt_box_autoadd_lora_config(arr[2]),
       capabilities: _wire2api_device_capabilities(arr[3]),
+      events: _wire2api_uint_8_list(arr[4]),
     );
   }
 

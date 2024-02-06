@@ -1045,6 +1045,7 @@ pub struct EphemeralConfig {
     pub networks: Vec<NetworkConfig>,
     pub lora: Option<LoraConfig>,
     pub capabilities: DeviceCapabilities,
+    pub events: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
@@ -1104,6 +1105,7 @@ impl TryInto<EphemeralConfig> for HttpReply {
             networks,
             lora,
             capabilities,
+            events: self.events,
         })
     }
 }

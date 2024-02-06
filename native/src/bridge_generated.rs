@@ -462,6 +462,7 @@ impl support::IntoDart for EphemeralConfig {
             self.networks.into_into_dart().into_dart(),
             self.lora.into_dart(),
             self.capabilities.into_into_dart().into_dart(),
+            self.events.into_into_dart().into_dart(),
         ]
         .into_dart()
     }

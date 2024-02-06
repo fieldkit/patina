@@ -83,6 +83,11 @@
   "endDeployment": "End Deployment",
   "forgetStation": "Forget Station",
   "settingsAutomaticUpload": "Automatic Upload Settings",
+  "settingsEvents": "Events",
+
+  "eventUnknown": "Unknown Event",
+  "eventRestart": "Restart Event",
+  "eventLora": "LoRa Event",
 
   "networkAddButton": "Add Network",
   "networkEditTitle": "WiFi Network",

@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
-import 'package:fk/diagnostics.dart';
 import 'package:fk/common_widgets.dart';
 import 'package:fk/gen/ffi.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

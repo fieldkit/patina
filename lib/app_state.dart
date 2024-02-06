@@ -427,6 +427,75 @@ class WifiNetwork {
       {required this.ssid, required this.password, required this.preferred});
 }
 
+class Event {
+  final proto.Event data;
+
+  Event({required this.data});
+
+  static Event from(proto.Event e) {
+    if (e.system == proto.EventSystem.EVENT_SYSTEM_LORA) {
+      return LoraEvent(data: e);
+    }
+    if (e.system == proto.EventSystem.EVENT_SYSTEM_RESTART) {
+      return RestartEvent(data: e);
+    }
+    return UnknownEvent(data: e);
+  }
+}
+
+class UnknownEvent extends Event {
+  UnknownEvent({required super.data});
+}
+
+class RestartEvent extends Event {
+  /*
+  enum ResetReason {
+      FK_RESET_REASON_POR    = 1,
+      FK_RESET_REASON_BOD12  = 2,
+      FK_RESET_REASON_BOD33  = 4,
+      FK_RESET_REASON_NVM    = 8,
+      FK_RESET_REASON_EXT    = 16,
+      FK_RESET_REASON_WDT    = 32,
+      FK_RESET_REASON_SYST   = 64,
+      FK_RESET_REASON_BACKUP = 128
+  };
+  */
+
+  String get reason {
+    if (data.code == 1) return "POR";
+    if (data.code == 2) return "BOD12";
+    if (data.code == 4) return "BOD33";
+    if (data.code == 8) return "NVM";
+    if (data.code == 16) return "EXT";
+    if (data.code == 32) return "WDT";
+    if (data.code == 64) return "SYST";
+    if (data.code == 128) return "BACKUP";
+    return "Unknown";
+  }
+
+  RestartEvent({required super.data});
+}
+
+enum LoraCode {
+  joinOk,
+  joinFail,
+  confirmedSend,
+  unknown,
+}
+
+class LoraEvent extends Event {
+  LoraCode get code {
+    if (data.code == 1) return LoraCode.joinOk;
+    if (data.code == 2) return LoraCode.joinFail;
+    if (data.code == 3) return LoraCode.confirmedSend;
+    return LoraCode.unknown;
+  }
+
+  DateTime get time => DateTime.fromMillisecondsSinceEpoch(data.time * 1000);
+
+  LoraEvent({required super.data});
+}
+
 class StationConfiguration extends ChangeNotifier {
   final Native api;
   final KnownStationsModel knownStations;
@@ -453,6 +522,18 @@ class StationConfiguration extends ChangeNotifier {
     knownStations.addListener(() {
       notifyListeners();
     });
+  }
+
+  List<Event> events() {
+    final Uint8List? bytes = config.ephemeral?.events;
+    if (bytes == null) {
+      return List.empty();
+    }
+    final CodedBufferReader reader = CodedBufferReader(bytes);
+    final List<int> delimited = reader.readBytes();
+    final proto.DataRecord record = proto.DataRecord.fromBuffer(delimited);
+    Loggers.state.i("Events $record");
+    return record.events.map((e) => Event.from(e)).toList();
   }
 
   Future<void> addNetwork(

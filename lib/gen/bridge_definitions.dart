@@ -203,12 +203,14 @@ class EphemeralConfig {
   final List<NetworkConfig> networks;
   final LoraConfig? lora;
   final DeviceCapabilities capabilities;
+  final Uint8List events;
 
   const EphemeralConfig({
     this.transmission,
     required this.networks,
     this.lora,
     required this.capabilities,
+    required this.events,
   });
 }
 
