@@ -164,7 +164,6 @@ class StationFirmwarePage extends StatelessWidget {
               Text(station.config!.name, style: const TextStyle(fontSize: 18)),
           subtitle: Text(
               AppLocalizations.of(context)!.firmwareVersion(firmwareVersion)),
-          // TODO: Remove trailing text for connnected to match old app design
           trailing: Text(
               station.connected
                   ? AppLocalizations.of(context)!.firmwareConnected
@@ -179,7 +178,9 @@ class StationFirmwarePage extends StatelessWidget {
       BuildContext context,
       AppLocalizations localizations,
       AvailableFirmwareModel availableFirmware) {
-    final isFirmwareUpToDate = _checkIfFirmwareIsUpToDate(availableFirmware);
+    final isFirmwareUpToDate = FirmwareComparison.compare(
+            availableFirmware.firmware.last, config.firmware)
+        .newer;
     final firmwareReleaseDate = _formatFirmwareReleaseDate();
     return Card(
       shadowColor: Colors.white,
@@ -192,7 +193,7 @@ class StationFirmwarePage extends StatelessWidget {
                 ? AppLocalizations.of(context)!.firmwareUpdated
                 : AppLocalizations.of(context)!.firmwareNotUpdated),
             subtitle: Text(AppLocalizations.of(context)!.firmwareReleased(
-                firmwareReleaseDate))), // TODO: Fix release date, currently 1970
+                firmwareReleaseDate))), // TODO: Double check that the date is actually fix, was just shorted
       ),
     );
   }
@@ -201,7 +202,9 @@ class StationFirmwarePage extends StatelessWidget {
       BuildContext context,
       AppLocalizations localizations,
       AvailableFirmwareModel availableFirmware) {
-    final isFirmwareUpToDate = _checkIfFirmwareIsUpToDate(availableFirmware);
+    final isFirmwareUpToDate = FirmwareComparison.compare(
+            availableFirmware.firmware.last, config.firmware)
+        .newer;
     return Padding(
       padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
       child: ElevatedButton(
@@ -209,11 +212,8 @@ class StationFirmwarePage extends StatelessWidget {
           isFirmwareUpToDate
               ? null
               : () async {
-                  // Logic to initiate firmware update
                   await availableFirmware.upgrade(
-                      config.deviceId,
-                      availableFirmware
-                          .firmware.last); // Jacob, is this correct?
+                      config.deviceId, availableFirmware.firmware.last);
                 };
         },
         style: TextButton.styleFrom(
@@ -255,16 +255,6 @@ class StationFirmwarePage extends StatelessWidget {
               await availableFirmware.upgrade(config.deviceId, firmware);
             }))
         .toList();
-  }
-
-  bool _checkIfFirmwareIsUpToDate(AvailableFirmwareModel availableFirmware) {
-    for (var firmware in availableFirmware.firmware) {
-      var comparison = FirmwareComparison.compare(firmware, config.firmware);
-      if (comparison.newer) {
-        return false;
-      }
-    }
-    return true;
   }
 
   String _formatFirmwareReleaseDate() {
