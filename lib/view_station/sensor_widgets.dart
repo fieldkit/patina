@@ -32,8 +32,8 @@ class DisplaySensorValue extends StatelessWidget {
     var valueFormatter = NumberFormat("0.##");
     var valueStyle = TextStyle(
       fontSize: valueSize,
-      color: AppColors.primaryColor,
-      fontWeight: FontWeight.bold,
+      color: Colors.black54,
+      fontWeight: FontWeight.w500,
     );
     var unitsStyle = TextStyle(
       fontSize: unitsSize,
@@ -182,7 +182,9 @@ class ModuleInfo extends StatelessWidget {
   }
 
   Widget _buildCalibrationButton(
-      BuildContext context, LocalizedModule localized) {
+      //TODO: Not refrenced
+      BuildContext context,
+      LocalizedModule localized) {
     if (!localized.canCalibrate) return const SizedBox.shrink();
 
     return Container(
