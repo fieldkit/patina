@@ -117,7 +117,8 @@ class StationFirmwarePage extends StatelessWidget {
           _buildStationCard(context, localizations),
           _buildFirmwareUpdateCard(context, localizations, availableFirmware),
           _buildFirmwareActionButton(context, localizations, availableFirmware),
-          _buildQuickTipCard(context, localizations),
+          // _buildQuickTipCard(context, localizations), // Hide the quick tip card for now
+          // TODO: Add quick tip card back once internet connection is available
           ..._buildFirmwareItems(availableFirmware, operations, busy, context)
         ],
       ),
