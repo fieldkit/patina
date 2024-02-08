@@ -55,6 +55,10 @@
   "sensorValue": "Sensor Value:",
   "oopsBugTitle": "Oops, bug?",
   "minSec": "min sec",
+  "calibrationDelete": "Delete",
+  "calibrationBack": "Back",
+  "factory": "Factory",
+  "uncalibrated": "Uncalibrated",
   "countdownInstructions": "Tap the Calibrate button to record the sensor value and the standard value.",
   "calibrationMessage": "Recording these values together allows us to later calibrate the sensor.",
 

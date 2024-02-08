@@ -405,6 +405,7 @@ class AvailableFirmwareModel extends ChangeNotifier {
       {required this.api, required AppEventDispatcher dispatcher}) {
     dispatcher
         .addListener<DomainMessage_AvailableFirmware>((availableFirmware) {
+      Loggers.state.i("DomainMessage_AvailableFirmware: $availableFirmware");
       _firmware.clear();
       _firmware.addAll(availableFirmware.field0);
       notifyListeners();
@@ -413,7 +414,7 @@ class AvailableFirmwareModel extends ChangeNotifier {
 
   Future<void> upgrade(String deviceId, LocalFirmware firmware) async {
     await api.upgradeStation(
-        deviceId: deviceId, firmware: firmware, swap: false);
+        deviceId: deviceId, firmware: firmware, swap: true);
   }
 }
 
