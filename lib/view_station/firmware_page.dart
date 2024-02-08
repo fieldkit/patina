@@ -61,18 +61,21 @@ class FirmwareItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final title = comparison.label;
-    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:MM:SS');
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
 
     GenericListItemHeader header() {
       if (comparison.newer) {
         return GenericListItemHeader(
-            title: title, subtitle: formatter.format(comparison.time));
+            title: AppLocalizations.of(context)!.firmwareVersion(title),
+            subtitle: AppLocalizations.of(context)!
+                .firmwareReleased(formatter.format(comparison.time)));
       } else {
         return GenericListItemHeader(
-          title: title,
-          subtitle: formatter.format(comparison.time),
-          titleStyle: const TextStyle(color: Colors.grey),
-          subtitleStyle: const TextStyle(color: Colors.grey),
+          title: AppLocalizations.of(context)!.firmwareVersion(title),
+          subtitle: AppLocalizations.of(context)!
+              .firmwareReleased(formatter.format(comparison.time)),
+          titleStyle: const TextStyle(color: Colors.black54, fontSize: 16),
+          subtitleStyle: const TextStyle(color: Colors.black54),
         );
       }
     }
@@ -87,8 +90,11 @@ class FirmwareItem extends StatelessWidget {
         expanded: comparison.newer || operations.isNotEmpty,
         children: [
           ElevatedButton(
-              onPressed: canUpgrade ? onUpgrade : null,
-              child: Text(localizations.firmwareUpgrade)),
+            onPressed: canUpgrade ? onUpgrade : null,
+            child: Text(comparison.newer
+                ? localizations.firmwareUpgrade
+                : localizations.firmwareSwitch),
+          ),
           ...operations
               .map((operation) => UpgradeProgressWidget(operation: operation))
         ].map((child) => pad(child)).toList());
@@ -118,7 +124,7 @@ class StationFirmwarePage extends StatelessWidget {
           _buildFirmwareUpdateCard(context, localizations, availableFirmware),
           _buildFirmwareActionButton(context, localizations, availableFirmware),
           // _buildQuickTipCard(context, localizations), // Hide the quick tip card for now
-          // TODO: Add quick tip card back once internet connection is available
+          // TODO: Add quick tip card back once internet connection is available not just on restart for updates
           ..._buildFirmwareItems(availableFirmware, operations, busy, context)
         ],
       ),
@@ -164,7 +170,8 @@ class StationFirmwarePage extends StatelessWidget {
           title:
               Text(station.config!.name, style: const TextStyle(fontSize: 18)),
           subtitle: Text(
-              AppLocalizations.of(context)!.firmwareVersion(firmwareVersion)),
+              AppLocalizations.of(context)!.firmwareVersion(firmwareVersion),
+              style: const TextStyle(fontSize: 14)),
           trailing: Text(
               station.connected
                   ? AppLocalizations.of(context)!.firmwareConnected
@@ -179,9 +186,15 @@ class StationFirmwarePage extends StatelessWidget {
       BuildContext context,
       AppLocalizations localizations,
       AvailableFirmwareModel availableFirmware) {
-    final isFirmwareUpToDate = FirmwareComparison.compare(
-            availableFirmware.firmware.last, config.firmware)
-        .newer;
+    bool isFirmwareNewer = false;
+    LocalFirmware? newFirmware;
+    for (var firmware in availableFirmware.firmware) {
+      if (FirmwareComparison.compare(firmware, config.firmware).newer) {
+        isFirmwareNewer = true;
+        newFirmware = firmware;
+        break;
+      }
+    }
     final firmwareReleaseDate = _formatFirmwareReleaseDate();
     return Card(
       shadowColor: Colors.white,
@@ -190,7 +203,7 @@ class StationFirmwarePage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ListTile(
             tileColor: Colors.white,
-            title: Text(isFirmwareUpToDate
+            title: Text(!isFirmwareNewer
                 ? AppLocalizations.of(context)!.firmwareUpdated
                 : AppLocalizations.of(context)!.firmwareNotUpdated),
             subtitle: Text(AppLocalizations.of(context)!.firmwareReleased(
@@ -203,26 +216,30 @@ class StationFirmwarePage extends StatelessWidget {
       BuildContext context,
       AppLocalizations localizations,
       AvailableFirmwareModel availableFirmware) {
-    final isFirmwareUpToDate = FirmwareComparison.compare(
-            availableFirmware.firmware.last, config.firmware)
-        .newer;
+    bool isFirmwareNewer = false;
+    LocalFirmware? newFirmware;
+    for (var firmware in availableFirmware.firmware) {
+      if (FirmwareComparison.compare(firmware, config.firmware).newer) {
+        isFirmwareNewer = true;
+        newFirmware = firmware;
+        break;
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
       child: ElevatedButton(
-        onPressed: () {
-          isFirmwareUpToDate
-              ? null
-              : () async {
-                  await availableFirmware.upgrade(
-                      config.deviceId, availableFirmware.firmware.last);
-                };
-        },
-        style: TextButton.styleFrom(
+        onPressed: isFirmwareNewer
+            ? () async {
+                await availableFirmware.upgrade(config.deviceId,
+                    newFirmware ?? availableFirmware.firmware.last);
+              }
+            : null,
+        style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryColor,
-          side: const BorderSide(color: AppColors.primaryColor, width: 1),
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 18.0),
         ),
-        child: Text(AppLocalizations.of(context)!.firmwareUpdate,
+        child: Text(localizations.firmwareUpdate,
             style: const TextStyle(color: Colors.white, fontSize: 16)),
       ),
     );

@@ -102,6 +102,7 @@
 
   "firmwareTitle": "Firmware",
   "firmwareUpgrade": "Upgrade",
+  "firmwareSwitch": "Switch",
   "firmwareStarting": "Starting...",
   "firmwareUploading": "Uploading...",
   "firmwareRestarting": "Restarting...",
@@ -114,8 +115,8 @@
   "firmwareNotUpdated": "Firmware is Not Up to Date",
   "firmwareUpdate": "Update Firmware",
   "firmwareCheck": "Check for New Firmware",
-  "firmwareVersion": "Firmware version {firmwareVersion}",
-  "firmwareReleased": "Version released {firmwareReleaseDate}",
+  "firmwareVersion": "Firmware version: {firmwareVersion}",
+  "firmwareReleased": "Version released: {firmwareReleaseDate}",
   "quickTip": "Quick Tip",
   "firmwareTip": "Make sure you are connected to the internet before checking for new firmware.",
 
