@@ -421,7 +421,7 @@ class ActiveCalibrationStandardForm extends StatelessWidget {
 extension CalibrationSensors on ModuleConfig {
   SensorConfig? get calibrationSensor {
     if (key.startsWith("modules.water")) {
-      return sensors[0];
+      return sensors.sorted((a, b) => a.number.compareTo(b.number)).first;
     }
     return null;
   }

@@ -78,6 +78,8 @@ pub async fn cache_firmware(
         publish_tx,
         tokens,
     };
+    info!("cache_firwmare");
+
     tokio::task::spawn(async move {
         match task.run().await {
             Err(e) => warn!("Error caching firmware: {:?}", e),
@@ -227,6 +229,8 @@ async fn wait_for_station_restart(addr: &str) -> Result<()> {
 }
 
 async fn check_cached_firmware(storage_path: &str) -> Result<Vec<Firmware>> {
+    info!("check_cached_firmware");
+
     let mut found = Vec::new();
     let pattern = format!("{}/firmware*.json", storage_path);
     for path in glob::glob(&pattern)? {
@@ -244,6 +248,8 @@ async fn publish_available_firmware(
     publish_tx: Sender<DomainMessage>,
 ) -> Result<()> {
     use itertools::*;
+
+    info!("publish_available_firmware");
 
     let firmware = check_cached_firmware(storage_path).await?;
     let local = firmware
@@ -341,9 +347,7 @@ async fn cache_firmware_and_json_if_newer(
         publish_available_firmware(storage_path, publish_tx.clone()).await?;
     }
 
-    if firmwares.is_empty() {
-        publish_available_firmware(storage_path, publish_tx.clone()).await?;
-    }
+    publish_available_firmware(storage_path, publish_tx.clone()).await?;
 
     Ok(())
 }
