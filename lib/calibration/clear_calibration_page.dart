@@ -1,44 +1,90 @@
+import 'package:fk/gen/bridge_definitions.dart';
 import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
 
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
+import '../meta.dart';
 import 'calibration_model.dart';
 import 'calibration_page.dart';
 
-class CalibrationTable extends StatelessWidget {
-  final proto.Calibration calibration;
-  final List<Widget> Function() header;
-  final List<Widget> Function(proto.CalibrationPoint) row;
+class CalibrationSection extends StatelessWidget {
+  final proto.CalibrationPoint point;
 
-  const CalibrationTable(
-      {super.key,
-      required this.calibration,
-      required this.header,
-      required this.row});
+  const CalibrationSection({super.key, required this.point});
 
   @override
   Widget build(BuildContext context) {
-    TableRow makeRow(List<Widget> children) => TableRow(
-        children: children
-            .map((c) => Padding(padding: const EdgeInsets.all(5), child: c))
-            .toList());
+    var valueStyle = const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.normal,
+    );
 
-    final points = calibration.points.map((p) => makeRow(row(p))).toList();
+    Text value(double val) => Text(val.toStringAsFixed(2), style: valueStyle);
 
-    return Table(
-        border: TableBorder.all(),
-        columnWidths: const <int, TableColumnWidth>{
-          0: FlexColumnWidth(),
-          1: FlexColumnWidth(),
-          2: FlexColumnWidth(),
-        },
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        children: <TableRow>[makeRow(header()), ...points]);
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: const Color.fromRGBO(212, 212, 212, 1),
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "${AppLocalizations.of(context)!.calibrationBack}: ${point.references[0].toStringAsFixed(2)}",
+            style: const TextStyle(fontSize: 20),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(AppLocalizations.of(context)!.factory),
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color.fromRGBO(212, 212, 212, 1),
+                        ),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(5))),
+                    padding: const EdgeInsets.all(8),
+                    child: value(point.factory[0]),
+                  ),
+                ],
+              ),
+              const Icon(Icons.arrow_forward, size: 40, color: Colors.black54),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(AppLocalizations.of(context)!.uncalibrated),
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color.fromRGBO(212, 212, 212, 1),
+                        ),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(5))),
+                    padding: const EdgeInsets.all(8),
+                    child: value(point.uncalibrated[0]),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -49,65 +95,36 @@ class CalibrationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var headerStyle = const TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-    );
-
-    var valueStyle = const TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.normal,
-    );
-    /*
-    var unitsStyle = const TextStyle(
-      fontSize: 18,
-      color: Color.fromRGBO(64, 64, 64, 1),
-      fontWeight: FontWeight.normal,
-    );
-    */
-
-    Text header(String label) => Text(label, style: headerStyle);
-    Text value(String value) => Text(value, style: valueStyle);
-
     final time = DateTime.fromMillisecondsSinceEpoch(calibration.time * 1000);
-    final formatted = time.toIso8601String();
+    final DateFormat formatter = DateFormat('HH:mm yyyy-MM-dd');
+    final formatted = formatter.format(time);
 
-    final properties = Column(
-      children: [
-        Text(formatted),
-        Text("Kind = ${calibration.kind}"),
-        Text("${calibration.type}")
-      ]
-          .map((c) =>
-              WH.align(Padding(padding: const EdgeInsets.all(5), child: c)))
-          .toList(),
+    final properties = Container(
+      decoration: BoxDecoration(
+          border: Border.all(
+            color: const Color.fromRGBO(212, 212, 212, 1),
+          ),
+          borderRadius: const BorderRadius.all(Radius.circular(5))),
+      padding: const EdgeInsets.all(8),
+      child:
+          Text(formatted, style: const TextStyle(fontWeight: FontWeight.w300)),
     );
 
-    final table = CalibrationTable(
-        calibration: calibration,
-        header: () {
-          return [
-            header("Standard"),
-            header("Factory"),
-            header("Uncalibrated"),
-          ];
-        },
-        row: (p) {
-          return [
-            value(p.references[0].toStringAsFixed(2)),
-            value(p.factory[0].toStringAsFixed(2)),
-            value(p.uncalibrated[0].toStringAsFixed(2)),
-          ];
-        });
-
-    return Column(children: [properties, table]);
+    return Column(
+      children: [
+        properties,
+        ...calibration.points.map((p) => CalibrationSection(point: p)).toList(),
+      ],
+    );
   }
 }
 
 class ClearCalibrationPage extends StatelessWidget {
   final CalibrationPointConfig config;
+  final ModuleConfig module;
 
-  const ClearCalibrationPage({super.key, required this.config});
+  const ClearCalibrationPage(
+      {super.key, required this.config, required this.module});
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +133,8 @@ class ClearCalibrationPage extends StatelessWidget {
         moduleConfigurations.find(config.moduleIdentity);
     final calibrations = moduleConfiguration.calibrations;
     final outerNavigator = Navigator.of(context);
+    final localized = LocalizedModule.get(module);
+    final bay = AppLocalizations.of(context)!.bayNumber(module.position);
 
     return Scaffold(
         appBar: AppBar(
@@ -123,11 +142,35 @@ class ClearCalibrationPage extends StatelessWidget {
         ),
         body: ListView(
             children: <Widget>[
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+            Image(image: localized.icon, width: 50, height: 50),
+            Text(localized.name),
+            Text(bay),
+          ]),
           ...calibrations.map((c) => CalibrationWidget(calibration: c)),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(
-                  child: const Text("Clear"),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(AppLocalizations.of(context)!.calibrationBack),
+                  ),
+                  onPressed: () {
+                    Loggers.cal.i("keeping calibration");
+                    final navigator = Navigator.of(context);
+                    navigator.push(
+                      MaterialPageRoute(
+                        builder: (context) => CalibrationPage(config: config),
+                      ),
+                    );
+                  }),
+              ElevatedButton(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child:
+                        Text(AppLocalizations.of(context)!.calibrationDelete),
+                  ),
                   onPressed: () async {
                     showDialog(
                         context: context,
@@ -171,17 +214,6 @@ class ClearCalibrationPage extends StatelessWidget {
                             ],
                           );
                         });
-                  }),
-              ElevatedButton(
-                  child: const Text("Keep"), // TODO l10n
-                  onPressed: () {
-                    Loggers.cal.i("keeping calibration");
-                    final navigator = Navigator.of(context);
-                    navigator.push(
-                      MaterialPageRoute(
-                        builder: (context) => CalibrationPage(config: config),
-                      ),
-                    );
                   }),
             ].map(WH.padPage).toList(),
           )
