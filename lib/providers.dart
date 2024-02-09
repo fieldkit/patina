@@ -13,7 +13,7 @@ class StationProviders extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppState state = context.read<AppState>();
     return MultiProvider(providers: [
-      ChangeNotifierProvider.value(value: state.configuration),
+      ChangeNotifierProvider.value(value: state.configurationFor(deviceId)),
     ], child: child);
   }
 }
@@ -31,7 +31,8 @@ class ModuleProviders extends StatelessWidget {
     final ModuleAndStation stationAndModule =
         state.knownStations.findModule(moduleIdentity)!;
     return MultiProvider(providers: [
-      ChangeNotifierProvider.value(value: state.configuration),
+      ChangeNotifierProvider.value(
+          value: state.configurationFor(stationAndModule.station.deviceId)),
     ], child: child);
   }
 }

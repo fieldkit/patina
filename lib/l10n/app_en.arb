@@ -83,6 +83,17 @@
   "endDeployment": "End Deployment",
   "forgetStation": "Forget Station",
   "settingsAutomaticUpload": "Automatic Upload Settings",
+  "settingsEvents": "Events",
+
+  "settingsLoraEdit": "Edit",
+  "settingsLoraVerify": "Verify",
+
+  "eventUnknown": "Unknown Event",
+  "eventRestart": "Restart Event",
+  "eventLora": "LoRa Event",
+  "eventTime": "Time",
+  "eventCode": "Code",
+  "eventReason": "Reason",
 
   "networkAddButton": "Add Network",
   "networkEditTitle": "WiFi Network",
@@ -93,6 +104,19 @@
   "networkNoMoreSlots": "Unfortunately, there are only two WiFi network slots available.",
   "wifiSsid": "SSID",
   "wifiPassword": "Password",
+  "confirmRemoveNetwork": "Remove Network",
+
+  "loraBand": "Band",
+  "loraAppKey": "App Key",
+  "loraJoinEui": "Join EUI",
+  "loraDeviceEui": "Device EUI",
+  "loraDeviceAddress": "Device Address",
+  "loraNetworkKey": "Network Key",
+  "loraSessionKey": "Session Key",
+  "loraNoModule": "No LoRa module detected.",
+  "loraConfigurationTitle": "LoRa Configuration",
+
+  "hexStringValidationFailed": "Expected a valid hex string.",
 
   "firmwareTitle": "Firmware",
   "firmwareUpgrade": "Upgrade",
