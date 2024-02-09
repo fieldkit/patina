@@ -65,13 +65,13 @@ dependencies:
   caldor:
     git:
       url: https://gitlab.com/fieldkit/libraries/caldor.git
-      ref: 'main'
+      ref: 'a8f146af3c84c9cd11cd90268e658f29db6849da'
   flows:
     path: './flows'
   fk_data_protocol:
     git:
       url: https://gitlab.com/fieldkit/libraries/data-protocol.git
-      ref: 5db13c9c986f4f6a69b24aca7024bd55f07f8110
+      ref: '13d5785bdcc53ea74a2215f5149d6d576c5ac1c4'
       path: dart
   logger: ^1.4.0
   flutter_dotenv: ^5.1.0

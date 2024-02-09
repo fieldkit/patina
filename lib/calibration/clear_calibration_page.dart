@@ -132,7 +132,7 @@ class CalibrationSection extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                "${"caldor.calibrateValue(calibration.type, point.uncalibrated[0], calibration.points).toStringAsFixed(1)"} $uom", //TODO: Unstringify value
+                                "${caldor.calibrateValue(calibration.type, point.uncalibrated[0], calibration.points).toStringAsFixed(1)} $uom", //TODO: Unstringify value
                                 style: TextStyle(
                                   fontSize: fontSize,
                                   fontFamily: "Avenir",
