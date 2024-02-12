@@ -405,6 +405,7 @@ class AvailableFirmwareModel extends ChangeNotifier {
       {required this.api, required AppEventDispatcher dispatcher}) {
     dispatcher
         .addListener<DomainMessage_AvailableFirmware>((availableFirmware) {
+      Loggers.state.i("DomainMessage_AvailableFirmware: $availableFirmware");
       _firmware.clear();
       _firmware.addAll(availableFirmware.field0);
       notifyListeners();
@@ -413,7 +414,7 @@ class AvailableFirmwareModel extends ChangeNotifier {
 
   Future<void> upgrade(String deviceId, LocalFirmware firmware) async {
     await api.upgradeStation(
-        deviceId: deviceId, firmware: firmware, swap: false);
+        deviceId: deviceId, firmware: firmware, swap: true);
   }
 }
 
@@ -426,22 +427,117 @@ class WifiNetwork {
       {required this.ssid, required this.password, required this.preferred});
 }
 
+class Event {
+  final proto.Event data;
+
+  DateTime get time => DateTime.fromMillisecondsSinceEpoch(data.time * 1000);
+
+  Event({required this.data});
+
+  static Event from(proto.Event e) {
+    if (e.system == proto.EventSystem.EVENT_SYSTEM_LORA) {
+      return LoraEvent(data: e);
+    }
+    if (e.system == proto.EventSystem.EVENT_SYSTEM_RESTART) {
+      return RestartEvent(data: e);
+    }
+    return UnknownEvent(data: e);
+  }
+}
+
+class UnknownEvent extends Event {
+  UnknownEvent({required super.data});
+}
+
+class RestartEvent extends Event {
+  /*
+  enum ResetReason {
+      FK_RESET_REASON_POR    = 1,
+      FK_RESET_REASON_BOD12  = 2,
+      FK_RESET_REASON_BOD33  = 4,
+      FK_RESET_REASON_NVM    = 8,
+      FK_RESET_REASON_EXT    = 16,
+      FK_RESET_REASON_WDT    = 32,
+      FK_RESET_REASON_SYST   = 64,
+      FK_RESET_REASON_BACKUP = 128
+  };
+  */
+
+  String get reason {
+    if (data.code == 1) return "POR";
+    if (data.code == 2) return "BOD12";
+    if (data.code == 4) return "BOD33";
+    if (data.code == 8) return "NVM";
+    if (data.code == 16) return "EXT";
+    if (data.code == 32) return "WDT";
+    if (data.code == 64) return "SYST";
+    if (data.code == 128) return "BACKUP";
+    return "Unknown";
+  }
+
+  RestartEvent({required super.data});
+}
+
+enum LoraCode {
+  joinOk,
+  joinFail,
+  confirmedSend,
+  unknown,
+}
+
+class LoraEvent extends Event {
+  LoraCode get code {
+    if (data.code == 1) return LoraCode.joinOk;
+    if (data.code == 2) return LoraCode.joinFail;
+    if (data.code == 3) return LoraCode.confirmedSend;
+    return LoraCode.unknown;
+  }
+
+  LoraEvent({required super.data});
+}
+
 class StationConfiguration extends ChangeNotifier {
   final Native api;
   final KnownStationsModel knownStations;
   final PortalAccounts portalAccounts;
+  final String deviceId;
+
+  StationModel get config => knownStations.find(deviceId)!;
+
+  String get name => config.config!.name;
+
+  List<NetworkConfig> get networks =>
+      config.ephemeral?.networks ?? List.empty();
+
+  bool get isAutomaticUploadEnabled =>
+      config.ephemeral?.transmission?.enabled ?? false;
+
+  LoraConfig? get loraConfig => config.ephemeral?.lora;
 
   StationConfiguration(
       {required this.api,
       required this.knownStations,
-      required this.portalAccounts}) {
+      required this.portalAccounts,
+      required this.deviceId}) {
     knownStations.addListener(() {
       notifyListeners();
     });
   }
 
-  Future<void> addNetwork(String deviceId, List<NetworkConfig> existing,
-      WifiNetwork network) async {
+  List<Event> events() {
+    final Uint8List? bytes = config.ephemeral?.events;
+    if (bytes == null) {
+      return List.empty();
+    }
+    final CodedBufferReader reader = CodedBufferReader(bytes);
+    final List<int> delimited = reader.readBytes();
+    final proto.DataRecord record = proto.DataRecord.fromBuffer(delimited);
+    Loggers.state.i("Events $record");
+    return record.events.map((e) => Event.from(e)).toList();
+  }
+
+  Future<void> addNetwork(
+      List<NetworkConfig> existing, WifiNetwork network) async {
     final int keeping = existing.isEmpty ? 1 : 0;
     final List<WifiNetworkConfig> networks =
         List<int>.generate(2, (i) => i).map((index) {
@@ -461,7 +557,7 @@ class StationConfiguration extends ChangeNotifier {
         deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
   }
 
-  Future<void> removeNetwork(String deviceId, NetworkConfig network) async {
+  Future<void> removeNetwork(NetworkConfig network) async {
     final List<WifiNetworkConfig> networks =
         List<int>.generate(2, (i) => i).map((index) {
       if (network.index == index) {
@@ -480,7 +576,7 @@ class StationConfiguration extends ChangeNotifier {
         deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
   }
 
-  Future<void> enableWifiUploading(String deviceId) async {
+  Future<void> enableWifiUploading() async {
     final account = portalAccounts.getAccountForDevice(deviceId);
     if (account == null) {
       Loggers.state.i(
@@ -494,19 +590,18 @@ class StationConfiguration extends ChangeNotifier {
             tokens: account.tokens, schedule: const Schedule_Every(10 * 60)));
   }
 
-  Future<void> disableWifiUploading(String deviceId) async {
+  Future<void> disableWifiUploading() async {
     await api.configureWifiTransmission(
         deviceId: deviceId,
         config: const WifiTransmissionConfig(tokens: null, schedule: null));
   }
 
-  List<NetworkConfig> getStationNetworks(String deviceId) {
-    return knownStations.find(deviceId)?.ephemeral?.networks ?? List.empty();
+  Future<void> configureLora(LoraTransmissionConfig config) async {
+    await api.configureLoraTransmission(deviceId: deviceId, config: config);
   }
 
-  bool isAutomaticUploadEnabled(String deviceId) {
-    return knownStations.find(deviceId)?.ephemeral?.transmission?.enabled ??
-        false;
+  Future<void> verifyLora() async {
+    await api.verifyLoraTransmission(deviceId: deviceId);
   }
 }
 
@@ -791,7 +886,6 @@ class AppState {
   final Native api;
   final AppEventDispatcher dispatcher;
   final AvailableFirmwareModel firmware;
-  final StationConfiguration configuration;
   final KnownStationsModel knownStations;
   final StationOperations stationOperations;
   final ModuleConfigurations moduleConfigurations;
@@ -808,7 +902,6 @@ class AppState {
       this.firmware,
       this.stationOperations,
       this.tasks,
-      this.configuration,
       this.updatePortal);
 
   static AppState build(Native api, AppEventDispatcher dispatcher) {
@@ -824,8 +917,6 @@ class AppState {
       portalAccounts: portalAccounts,
       dispatcher: dispatcher,
     );
-    final configurations = StationConfiguration(
-        api: api, knownStations: knownStations, portalAccounts: portalAccounts);
     final updatePortal = UpdatePortal(api, portalAccounts, dispatcher);
     return AppState._(
       api,
@@ -836,9 +927,16 @@ class AppState {
       firmware,
       stationOperations,
       tasks,
-      configurations,
       updatePortal,
     );
+  }
+
+  StationConfiguration configurationFor(deviceId) {
+    return StationConfiguration(
+        api: api,
+        knownStations: knownStations,
+        portalAccounts: portalAccounts,
+        deviceId: deviceId);
   }
 }
 

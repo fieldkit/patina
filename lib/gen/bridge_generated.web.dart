@@ -48,6 +48,12 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic> api2wire_box_autoadd_lora_transmission_config(
+      LoraTransmissionConfig raw) {
+    return api2wire_lora_transmission_config(raw);
+  }
+
+  @protected
   List<dynamic> api2wire_box_autoadd_schedule(Schedule raw) {
     return api2wire_schedule(raw);
   }
@@ -55,6 +61,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   @protected
   List<dynamic> api2wire_box_autoadd_tokens(Tokens raw) {
     return api2wire_tokens(raw);
+  }
+
+  @protected
+  int api2wire_box_autoadd_u32(int raw) {
+    return api2wire_u32(raw);
   }
 
   @protected
@@ -101,6 +112,16 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic> api2wire_lora_transmission_config(LoraTransmissionConfig raw) {
+    return [
+      api2wire_opt_box_autoadd_u32(raw.band),
+      api2wire_opt_uint_8_list(raw.appKey),
+      api2wire_opt_uint_8_list(raw.joinEui),
+      api2wire_opt_box_autoadd_schedule(raw.schedule)
+    ];
+  }
+
+  @protected
   String? api2wire_opt_String(String? raw) {
     return raw == null ? null : api2wire_String(raw);
   }
@@ -116,8 +137,18 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  int? api2wire_opt_box_autoadd_u32(int? raw) {
+    return raw == null ? null : api2wire_box_autoadd_u32(raw);
+  }
+
+  @protected
   Object? api2wire_opt_box_autoadd_u64(int? raw) {
     return raw == null ? null : api2wire_box_autoadd_u64(raw);
+  }
+
+  @protected
+  Uint8List? api2wire_opt_uint_8_list(Uint8List? raw) {
+    return raw == null ? null : api2wire_uint_8_list(raw);
   }
 
   @protected
@@ -215,6 +246,12 @@ class NativeWasmModule implements WasmModule {
   external dynamic /* void */ wire_configure_wifi_transmission(
       NativePortType port_, String device_id, List<dynamic> config);
 
+  external dynamic /* void */ wire_configure_lora_transmission(
+      NativePortType port_, String device_id, List<dynamic> config);
+
+  external dynamic /* void */ wire_verify_lora_transmission(
+      NativePortType port_, String device_id);
+
   external dynamic /* void */ wire_clear_calibration(
       NativePortType port_, String device_id, int module);
 
@@ -269,6 +306,13 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_configure_wifi_transmission(
           NativePortType port_, String device_id, List<dynamic> config) =>
       wasmModule.wire_configure_wifi_transmission(port_, device_id, config);
+
+  void wire_configure_lora_transmission(
+          NativePortType port_, String device_id, List<dynamic> config) =>
+      wasmModule.wire_configure_lora_transmission(port_, device_id, config);
+
+  void wire_verify_lora_transmission(NativePortType port_, String device_id) =>
+      wasmModule.wire_verify_lora_transmission(port_, device_id);
 
   void wire_clear_calibration(
           NativePortType port_, String device_id, int module) =>

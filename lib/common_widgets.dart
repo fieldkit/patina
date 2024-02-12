@@ -138,6 +138,11 @@ class WH {
         fontSize: size,
         fontWeight: FontWeight.w500,
       );
+
+  static TextStyle monoStyle(double size) => TextStyle(
+      fontSize: size,
+      fontFamily: "monospace",
+      fontFamilyFallback: const ["Courier"]);
 }
 
 class OopsBug extends StatelessWidget {
