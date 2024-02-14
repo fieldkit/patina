@@ -45,6 +45,8 @@
   },
   "syncUpgradeRequiredMessage": "An upgrade is required to sync data from this station.",
   "syncManageFirmware": "Manage Firmware",
+  "quickTip": "Quick Tip",
+
 
   "myStationsTitle": "My Stations",
   "readyToDeploy": "Ready to deploy",
@@ -74,6 +76,10 @@
   "uncalibrated": "Uncalibrated",
   "standard": "Standard",
   "minSec": "min sec",
+  "calibrationDelete": "Delete",
+  "calibrationBack": "Back",
+  "factory": "Factory",
+  "uncalibrated": "Uncalibrated",
   "countdownInstructions": "Tap the Calibrate button to record the sensor value and the standard value.",
   "calibrationMessage": "Recording these values together allows us to later calibrate the sensor.",
   "standardFieldLabel": "Standard",
@@ -127,11 +133,27 @@
 
   "firmwareTitle": "Firmware",
   "firmwareUpgrade": "Upgrade",
+  "firmwareSwitch": "Switch",
   "firmwareStarting": "Starting...",
   "firmwareUploading": "Uploading...",
   "firmwareRestarting": "Restarting...",
   "firmwareCompleted": "Completed",
   "firmwareFailed": "Failed!",
+  "firmwareConnected": "Connected",
+  "firmwareNotConnected": "Not Connected",
+  "firmwareVersion": "Firmware Version",
+  "firmwareUpdated": "Firmware is Up to Date",
+  "firmwareNotUpdated": "Firmware is Not Up to Date",
+  "firmwareUpdate": "Update Firmware",
+  "firmwareCheck": "Check for New Firmware",
+  "firmwareVersion": "Firmware version: {firmwareVersion}",
+  "firmwareReleased": "Version released: {firmwareReleaseDate}",
+  "quickTip": "Quick Tip",
+  "firmwareTip": "Make sure you are connected to the internet before checking for new firmware.",
+
+
+
+
 
   "settingsAccounts": "Accounts",
   "accountsTitle": "Accounts",

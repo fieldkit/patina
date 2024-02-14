@@ -40,7 +40,7 @@ class CalibrationSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "${AppLocalizations.of(context)!.calibrationBack}: ${point.references[0].toStringAsFixed(2)}", // TODO l10n
+            "${AppLocalizations.of(context)!.calibrationBack}: ${point.references[0].toStringAsFixed(2)}",
             style: const TextStyle(fontSize: 20),
           ),
           const SizedBox(height: 8),
