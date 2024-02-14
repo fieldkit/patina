@@ -51,6 +51,17 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kConfigureWifiTransmissionConstMeta;
 
+  Future<void> configureLoraTransmission(
+      {required String deviceId,
+      required LoraTransmissionConfig config,
+      dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kConfigureLoraTransmissionConstMeta;
+
+  Future<void> verifyLoraTransmission({required String deviceId, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kVerifyLoraTransmissionConstMeta;
+
   Future<void> clearCalibration(
       {required String deviceId, required int module, dynamic hint});
 
@@ -194,12 +205,16 @@ class DownloadProgress {
 class EphemeralConfig {
   final TransmissionConfig? transmission;
   final List<NetworkConfig> networks;
+  final LoraConfig? lora;
   final DeviceCapabilities capabilities;
+  final Uint8List events;
 
   const EphemeralConfig({
     this.transmission,
     required this.networks,
+    this.lora,
     required this.capabilities,
+    required this.events,
   });
 }
 
@@ -240,6 +255,47 @@ class LocalFirmware {
     required this.time,
     required this.module,
     required this.profile,
+  });
+}
+
+enum LoraBand {
+  F915Mhz,
+  F868Mhz,
+}
+
+class LoraConfig {
+  final bool available;
+  final LoraBand band;
+  final Uint8List deviceEui;
+  final Uint8List appKey;
+  final Uint8List joinEui;
+  final Uint8List deviceAddress;
+  final Uint8List networkSessionKey;
+  final Uint8List appSessionKey;
+
+  const LoraConfig({
+    required this.available,
+    required this.band,
+    required this.deviceEui,
+    required this.appKey,
+    required this.joinEui,
+    required this.deviceAddress,
+    required this.networkSessionKey,
+    required this.appSessionKey,
+  });
+}
+
+class LoraTransmissionConfig {
+  final int? band;
+  final Uint8List? appKey;
+  final Uint8List? joinEui;
+  final Schedule? schedule;
+
+  const LoraTransmissionConfig({
+    this.band,
+    this.appKey,
+    this.joinEui,
+    this.schedule,
   });
 }
 

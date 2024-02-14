@@ -14,8 +14,6 @@ import 'wifi_network_form.dart';
 class ConfigureWiFiPage extends StatelessWidget {
   final StationModel station;
 
-  String get deviceId => station.deviceId;
-
   StationConfig get config => station.config!;
 
   bool get bothSlotsFilled => station.ephemeral?.networks.length == 2;
@@ -52,8 +50,7 @@ class ConfigureWiFiPage extends StatelessWidget {
     final StationConfiguration configuration =
         context.watch<StationConfiguration>();
 
-    final List<WifiNetworkListItem> networks = configuration
-        .getStationNetworks(deviceId)
+    final List<WifiNetworkListItem> networks = configuration.networks
         .where((network) => network.ssid.isNotEmpty)
         .map((network) => WifiNetworkListItem(
             network: network,
@@ -74,7 +71,7 @@ class ConfigureWiFiPage extends StatelessWidget {
             child: bothSlotsFilled
                 ? tooManyNetworks(context)
                 : addNetworkButton(context)),
-        ConfigureAutomaticUploadListItem(station: station),
+        const ConfigureAutomaticUploadListItem(),
       ])),
     );
   }
@@ -89,15 +86,15 @@ class ConfigureWiFiPage extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => WifiNetworkForm(
             onSave: (WifiNetwork network) async {
-              Loggers.ui.i("$deviceId adding network");
+              Loggers.ui.i("adding network");
 
               final overlay = context.loaderOverlay;
               overlay.show();
               try {
-                await configuration.addNetwork(deviceId,
+                await configuration.addNetwork(
                     station.ephemeral?.networks ?? List.empty(), network);
               } catch (e) {
-                Loggers.ui.e("$deviceId $e");
+                Loggers.ui.e("$e");
               } finally {
                 navigator.pop();
                 overlay.hide();
@@ -120,7 +117,7 @@ class ConfigureWiFiPage extends StatelessWidget {
           final navigator = Navigator.of(context);
 
           return AlertDialog(
-            title: Text(localizations.confirmClearCalibrationTitle),
+            title: Text(localizations.confirmRemoveNetwork),
             content: Text(localizations.confirmDelete),
             actions: <Widget>[
               TextButton(
@@ -132,13 +129,13 @@ class ConfigureWiFiPage extends StatelessWidget {
                   onPressed: () async {
                     navigator.pop();
 
-                    Loggers.ui.i("$deviceId remove network");
+                    Loggers.ui.i("remove network");
                     final overlay = context.loaderOverlay;
                     overlay.show();
                     try {
-                      await configuration.removeNetwork(deviceId, network);
+                      await configuration.removeNetwork(network);
                     } catch (e) {
-                      Loggers.ui.e("$deviceId $e");
+                      Loggers.ui.e("$e");
                     } finally {
                       overlay.hide();
                     }

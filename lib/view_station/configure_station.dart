@@ -7,8 +7,10 @@ import '../app_state.dart';
 import '../gen/ffi.dart';
 import '../unknown_station_page.dart';
 
+import 'configure_lora.dart';
 import 'configure_wifi_networks.dart';
 import 'firmware_page.dart';
+import 'station_events.dart';
 
 class ConfigureStationRoute extends StatelessWidget {
   final String deviceId;
@@ -83,7 +85,16 @@ class ConfigureStationPage extends StatelessWidget {
           const Divider(),
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsLora),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StationProviders(
+                      deviceId: station.deviceId,
+                      child: const ConfigureLoraPage()),
+                ),
+              );
+            },
           ),
           const Divider(),
           ListTile(
@@ -116,6 +127,21 @@ class ConfigureStationPage extends StatelessWidget {
             title: Text(AppLocalizations.of(context)!.forgetStation),
             onTap: () {},
           ),
+          const Divider(),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.settingsEvents),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StationProviders(
+                      deviceId: station.deviceId,
+                      child: const ViewStationEventsPage()),
+                ),
+              );
+            },
+          ),
+          const Divider(),
         ],
       ),
     );

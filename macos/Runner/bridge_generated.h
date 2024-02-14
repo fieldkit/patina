@@ -66,6 +66,13 @@ typedef struct wire_WifiTransmissionConfig {
   struct wire_Schedule *schedule;
 } wire_WifiTransmissionConfig;
 
+typedef struct wire_LoraTransmissionConfig {
+  uint32_t *band;
+  struct wire_uint_8_list *app_key;
+  struct wire_uint_8_list *join_eui;
+  struct wire_Schedule *schedule;
+} wire_LoraTransmissionConfig;
+
 typedef struct wire_RecordArchive {
   struct wire_uint_8_list *device_id;
   struct wire_uint_8_list *path;
@@ -120,6 +127,12 @@ void wire_configure_wifi_transmission(int64_t port_,
                                       struct wire_uint_8_list *device_id,
                                       struct wire_WifiTransmissionConfig *config);
 
+void wire_configure_lora_transmission(int64_t port_,
+                                      struct wire_uint_8_list *device_id,
+                                      struct wire_LoraTransmissionConfig *config);
+
+void wire_verify_lora_transmission(int64_t port_, struct wire_uint_8_list *device_id);
+
 void wire_clear_calibration(int64_t port_, struct wire_uint_8_list *device_id, uintptr_t module);
 
 void wire_calibrate(int64_t port_,
@@ -151,9 +164,13 @@ struct wire_AddOrUpdatePortalStation *new_box_autoadd_add_or_update_portal_stati
 
 struct wire_LocalFirmware *new_box_autoadd_local_firmware_0(void);
 
+struct wire_LoraTransmissionConfig *new_box_autoadd_lora_transmission_config_0(void);
+
 struct wire_Schedule *new_box_autoadd_schedule_0(void);
 
 struct wire_Tokens *new_box_autoadd_tokens_0(void);
+
+uint32_t *new_box_autoadd_u32_0(uint32_t value);
 
 uint64_t *new_box_autoadd_u64_0(uint64_t value);
 
@@ -179,6 +196,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_add_or_update_station_in_portal);
     dummy_var ^= ((int64_t) (void*) wire_configure_wifi_networks);
     dummy_var ^= ((int64_t) (void*) wire_configure_wifi_transmission);
+    dummy_var ^= ((int64_t) (void*) wire_configure_lora_transmission);
+    dummy_var ^= ((int64_t) (void*) wire_verify_lora_transmission);
     dummy_var ^= ((int64_t) (void*) wire_clear_calibration);
     dummy_var ^= ((int64_t) (void*) wire_calibrate);
     dummy_var ^= ((int64_t) (void*) wire_validate_tokens);
@@ -190,8 +209,10 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_create_log_sink);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_add_or_update_portal_station_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_local_firmware_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_lora_transmission_config_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_schedule_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_tokens_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_u32_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_u64_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_wifi_networks_config_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_wifi_transmission_config_0);

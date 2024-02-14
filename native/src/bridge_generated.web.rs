@@ -32,6 +32,16 @@ pub fn wire_configure_wifi_transmission(port_: MessagePort, device_id: String, c
 }
 
 #[wasm_bindgen]
+pub fn wire_configure_lora_transmission(port_: MessagePort, device_id: String, config: JsValue) {
+    wire_configure_lora_transmission_impl(port_, device_id, config)
+}
+
+#[wasm_bindgen]
+pub fn wire_verify_lora_transmission(port_: MessagePort, device_id: String) {
+    wire_verify_lora_transmission_impl(port_, device_id)
+}
+
+#[wasm_bindgen]
 pub fn wire_clear_calibration(port_: MessagePort, device_id: String, module: usize) {
     wire_clear_calibration_impl(port_, device_id, module)
 }
@@ -141,6 +151,23 @@ impl Wire2Api<LocalFirmware> for JsValue {
         }
     }
 }
+impl Wire2Api<LoraTransmissionConfig> for JsValue {
+    fn wire2api(self) -> LoraTransmissionConfig {
+        let self_ = self.dyn_into::<JsArray>().unwrap();
+        assert_eq!(
+            self_.length(),
+            4,
+            "Expected 4 elements, got {}",
+            self_.length()
+        );
+        LoraTransmissionConfig {
+            band: self_.get(0).wire2api(),
+            app_key: self_.get(1).wire2api(),
+            join_eui: self_.get(2).wire2api(),
+            schedule: self_.get(3).wire2api(),
+        }
+    }
+}
 impl Wire2Api<Option<String>> for Option<String> {
     fn wire2api(self) -> Option<String> {
         self.map(Wire2Api::wire2api)
@@ -157,6 +184,11 @@ impl Wire2Api<Option<Tokens>> for JsValue {
     }
 }
 
+impl Wire2Api<Option<Vec<u8>>> for Option<Box<[u8]>> {
+    fn wire2api(self) -> Option<Vec<u8>> {
+        self.map(Wire2Api::wire2api)
+    }
+}
 impl Wire2Api<RecordArchive> for JsValue {
     fn wire2api(self) -> RecordArchive {
         let self_ = self.dyn_into::<JsArray>().unwrap();
@@ -289,8 +321,18 @@ impl Wire2Api<Option<String>> for JsValue {
         (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
     }
 }
+impl Wire2Api<Option<u32>> for JsValue {
+    fn wire2api(self) -> Option<u32> {
+        (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
+    }
+}
 impl Wire2Api<Option<u64>> for JsValue {
     fn wire2api(self) -> Option<u64> {
+        (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
+    }
+}
+impl Wire2Api<Option<Vec<u8>>> for JsValue {
+    fn wire2api(self) -> Option<Vec<u8>> {
         (!self.is_undefined() && !self.is_null()).then(|| self.wire2api())
     }
 }
