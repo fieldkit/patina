@@ -67,7 +67,7 @@ dependencies:
       url: https://gitlab.com/fieldkit/libraries/caldor.git
       ref: 'a8f146af3c84c9cd11cd90268e658f29db6849da'
   flows:
-    path: './flows'
+    path: "./flows"
   fk_data_protocol:
     git:
       url: https://gitlab.com/fieldkit/libraries/data-protocol.git
@@ -81,6 +81,7 @@ dependencies:
   package_info_plus: ^5.0.1
   ansi_styles: ^0.3.2+1
   circular_countdown_timer: ^0.2.3
+  convert: ^3.1.1
 
 dev_dependencies:
   flutter_test:
@@ -117,14 +118,14 @@ flutter:
 
   # This is NOT recursive by default.
   assets:
-  - resources/
-  - resources/images/
-  - resources/images/art/
-  - resources/images/battery/
-  - resources/images/memory/
-  - resources/flows/
-  - resources/flows/uploads/
-  - .env
+    - resources/
+    - resources/images/
+    - resources/images/art/
+    - resources/images/battery/
+    - resources/images/memory/
+    - resources/flows/
+    - resources/flows/uploads/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

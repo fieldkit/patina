@@ -6,12 +6,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
-import '../gen/ffi.dart';
 
 class EnableButton extends StatelessWidget {
-  final String deviceId;
-
-  const EnableButton({super.key, required this.deviceId});
+  const EnableButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +22,7 @@ class EnableButton extends StatelessWidget {
           final overlay = context.loaderOverlay;
           overlay.show();
           try {
-            await configuration.enableWifiUploading(deviceId);
+            await configuration.enableWifiUploading();
           } catch (e) {
             Loggers.ui.e("error: $e");
           } finally {
@@ -37,9 +34,7 @@ class EnableButton extends StatelessWidget {
 }
 
 class DisableButton extends StatelessWidget {
-  final String deviceId;
-
-  const DisableButton({super.key, required this.deviceId});
+  const DisableButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +48,7 @@ class DisableButton extends StatelessWidget {
           final overlay = context.loaderOverlay;
           overlay.show();
           try {
-            await configuration.disableWifiUploading(deviceId);
+            await configuration.disableWifiUploading();
           } catch (e) {
             Loggers.ui.e("error: $e");
           } finally {
@@ -65,49 +60,40 @@ class DisableButton extends StatelessWidget {
 }
 
 class ConfigureAutomaticUploadListItem extends StatelessWidget {
-  final StationModel station;
-
-  bool get enabled => station.ephemeral?.transmission?.enabled ?? false;
-
-  const ConfigureAutomaticUploadListItem({super.key, required this.station});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(AppLocalizations.of(context)!.settingsAutomaticUpload),
-      trailing: enabled
-          ? DisableButton(deviceId: station.deviceId)
-          : EnableButton(deviceId: station.deviceId),
-    );
-  }
-}
-
-class ConfigureAutomaticUploadPage extends StatelessWidget {
-  final StationModel station;
-
-  StationConfig get config => station.config!;
-
-  const ConfigureAutomaticUploadPage({super.key, required this.station});
+  const ConfigureAutomaticUploadListItem({super.key});
 
   @override
   Widget build(BuildContext context) {
     final StationConfiguration configuration =
         context.watch<StationConfiguration>();
 
-    Loggers.ui.i("station $station $config");
-
     final bool enabled =
-        configuration.isAutomaticUploadEnabled(station.deviceId);
+        configuration.config.ephemeral?.transmission?.enabled ?? false;
+
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.settingsAutomaticUpload),
+      trailing: enabled ? const DisableButton() : const EnableButton(),
+    );
+  }
+}
+
+class ConfigureAutomaticUploadPage extends StatelessWidget {
+  const ConfigureAutomaticUploadPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final StationConfiguration configuration =
+        context.watch<StationConfiguration>();
+
+    final bool enabled = configuration.isAutomaticUploadEnabled;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(config.name),
+        title: Text(configuration.name),
       ),
       body: WH.padPage(Column(children: [
-        if (!enabled)
-          WH.align(WH.vertical(EnableButton(deviceId: station.deviceId))),
-        if (enabled)
-          WH.align(WH.vertical(DisableButton(deviceId: station.deviceId)))
+        if (!enabled) WH.align(WH.vertical(const EnableButton())),
+        if (enabled) WH.align(WH.vertical(const DisableButton()))
       ])),
     );
   }

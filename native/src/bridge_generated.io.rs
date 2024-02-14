@@ -52,6 +52,20 @@ pub extern "C" fn wire_configure_wifi_transmission(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_configure_lora_transmission(
+    port_: i64,
+    device_id: *mut wire_uint_8_list,
+    config: *mut wire_LoraTransmissionConfig,
+) {
+    wire_configure_lora_transmission_impl(port_, device_id, config)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_verify_lora_transmission(port_: i64, device_id: *mut wire_uint_8_list) {
+    wire_verify_lora_transmission_impl(port_, device_id)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_clear_calibration(
     port_: i64,
     device_id: *mut wire_uint_8_list,
@@ -133,6 +147,11 @@ pub extern "C" fn new_box_autoadd_local_firmware_0() -> *mut wire_LocalFirmware 
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_lora_transmission_config_0() -> *mut wire_LoraTransmissionConfig {
+    support::new_leak_box_ptr(wire_LoraTransmissionConfig::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_box_autoadd_schedule_0() -> *mut wire_Schedule {
     support::new_leak_box_ptr(wire_Schedule::new_with_null_ptr())
 }
@@ -140,6 +159,11 @@ pub extern "C" fn new_box_autoadd_schedule_0() -> *mut wire_Schedule {
 #[no_mangle]
 pub extern "C" fn new_box_autoadd_tokens_0() -> *mut wire_Tokens {
     support::new_leak_box_ptr(wire_Tokens::new_with_null_ptr())
+}
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_u32_0(value: u32) -> *mut u32 {
+    support::new_leak_box_ptr(value)
 }
 
 #[no_mangle]
@@ -217,6 +241,12 @@ impl Wire2Api<LocalFirmware> for *mut wire_LocalFirmware {
         Wire2Api::<LocalFirmware>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<LoraTransmissionConfig> for *mut wire_LoraTransmissionConfig {
+    fn wire2api(self) -> LoraTransmissionConfig {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<LoraTransmissionConfig>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<Schedule> for *mut wire_Schedule {
     fn wire2api(self) -> Schedule {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -227,6 +257,11 @@ impl Wire2Api<Tokens> for *mut wire_Tokens {
     fn wire2api(self) -> Tokens {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
         Wire2Api::<Tokens>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<u32> for *mut u32 {
+    fn wire2api(self) -> u32 {
+        unsafe { *support::box_from_leak_ptr(self) }
     }
 }
 impl Wire2Api<u64> for *mut u64 {
@@ -273,6 +308,16 @@ impl Wire2Api<LocalFirmware> for wire_LocalFirmware {
             time: self.time.wire2api(),
             module: self.module.wire2api(),
             profile: self.profile.wire2api(),
+        }
+    }
+}
+impl Wire2Api<LoraTransmissionConfig> for wire_LoraTransmissionConfig {
+    fn wire2api(self) -> LoraTransmissionConfig {
+        LoraTransmissionConfig {
+            band: self.band.wire2api(),
+            app_key: self.app_key.wire2api(),
+            join_eui: self.join_eui.wire2api(),
+            schedule: self.schedule.wire2api(),
         }
     }
 }
@@ -388,6 +433,15 @@ pub struct wire_LocalFirmware {
 
 #[repr(C)]
 #[derive(Clone)]
+pub struct wire_LoraTransmissionConfig {
+    band: *mut u32,
+    app_key: *mut wire_uint_8_list,
+    join_eui: *mut wire_uint_8_list,
+    schedule: *mut wire_Schedule,
+}
+
+#[repr(C)]
+#[derive(Clone)]
 pub struct wire_RecordArchive {
     device_id: *mut wire_uint_8_list,
     path: *mut wire_uint_8_list,
@@ -499,6 +553,23 @@ impl NewWithNullPtr for wire_LocalFirmware {
 }
 
 impl Default for wire_LocalFirmware {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
+impl NewWithNullPtr for wire_LoraTransmissionConfig {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            band: core::ptr::null_mut(),
+            app_key: core::ptr::null_mut(),
+            join_eui: core::ptr::null_mut(),
+            schedule: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl Default for wire_LoraTransmissionConfig {
     fn default() -> Self {
         Self::new_with_null_ptr()
     }

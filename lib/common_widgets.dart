@@ -76,12 +76,13 @@ class GenericListItemHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maybeTrailing = trailing;
     final top = WH.align(WH.padPage(Row(children: [
-      Text(title,
-          style: titleStyle ??
-              const TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
-      if (maybeTrailing != null) maybeTrailing
+      Expanded(
+        child: Text(title,
+            style: titleStyle ??
+                const TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
+      ),
+      if (trailing != null) trailing!,
     ])));
 
     if (subtitle == null) {
@@ -138,6 +139,11 @@ class WH {
         fontSize: size,
         fontWeight: FontWeight.w500,
       );
+
+  static TextStyle monoStyle(double size) => TextStyle(
+      fontSize: size,
+      fontFamily: "monospace",
+      fontFamilyFallback: const ["Courier"]);
 }
 
 class OopsBug extends StatelessWidget {
