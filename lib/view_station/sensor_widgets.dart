@@ -5,12 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:fk/app_state.dart';
 import 'package:provider/provider.dart';
 
+import 'package:fk/constants.dart';
+
 import '../calibration/calibration_model.dart';
 import '../calibration/calibration_page.dart';
 import '../calibration/clear_calibration_page.dart';
 import '../gen/ffi.dart';
 import '../meta.dart';
-import 'package:fk/constants.dart';
 
 class DisplaySensorValue extends StatelessWidget {
   final SensorConfig sensor;

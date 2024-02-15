@@ -1,5 +1,6 @@
 import 'package:flows/flows.dart';
-import 'package:flutter/material.dart' show BuildContext, Column, Row, StatelessWidget, Text, TextStyle, Widget;
+import 'package:flutter/material.dart'
+    show BuildContext, Column, Row, StatelessWidget, Text, TextStyle, Widget;
 
 class MarkdownWidgetParser extends MarkdownParser<Widget> {
   MarkdownWidgetParser({super.logger});
@@ -19,7 +20,10 @@ class MarkdownWidgetParser extends MarkdownParser<Widget> {
   }
 
   @override
-  Builder<Widget, Widget> image({required List<int> indices, required String? sizing, required String alt}) {
+  Builder<Widget, Widget> image(
+      {required List<int> indices,
+      required String? sizing,
+      required String alt}) {
     return _ImageBuilder(indices: indices, sizing: sizing, alt: alt);
   }
 
@@ -85,11 +89,16 @@ class MarkdownHeaderWidget extends StatelessWidget {
   final int depth;
   final List<Widget> children;
 
-  const MarkdownHeaderWidget({super.key, required this.text, required this.depth, required this.children});
+  const MarkdownHeaderWidget(
+      {super.key,
+      required this.text,
+      required this.depth,
+      required this.children});
 
   @override
   Widget build(BuildContext context) {
-    return Text(text, style: const TextStyle(fontFamily: 'Avenir', fontSize: 20.0));  // Increased font size to 20
+    return Text(text,
+        style: const TextStyle(fontFamily: 'Avenir', fontSize: 20.0));
   }
 }
 
@@ -97,7 +106,8 @@ class MarkdownParagraphWidget extends StatelessWidget {
   final String text;
   final List<Widget> children;
 
-  const MarkdownParagraphWidget({super.key, required this.text, required this.children});
+  const MarkdownParagraphWidget(
+      {super.key, required this.text, required this.children});
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +120,8 @@ class MarkdownImageWidget extends StatelessWidget {
   final String? sizing;
   final String alt;
 
-  const MarkdownImageWidget({super.key, required this.indices, this.sizing, required this.alt});
+  const MarkdownImageWidget(
+      {super.key, required this.indices, this.sizing, required this.alt});
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +236,8 @@ class _HeaderBuilder extends Builder<MarkdownHeaderWidget, Widget> {
 
   @override
   MarkdownHeaderWidget build() {
-    return MarkdownHeaderWidget(text: text ?? "", depth: depth, children: children());
+    return MarkdownHeaderWidget(
+        text: text ?? "", depth: depth, children: children());
   }
 }
 
@@ -241,7 +253,8 @@ class _ImageBuilder extends Builder<MarkdownImageWidget, Widget> {
   final String? sizing;
   final String alt;
 
-  _ImageBuilder({required this.sizing, required this.alt, required this.indices});
+  _ImageBuilder(
+      {required this.sizing, required this.alt, required this.indices});
 
   @override
   MarkdownImageWidget build() {
@@ -302,7 +315,8 @@ class _TableRowBuilder extends Builder<MarkdownTableRowWidget, Widget> {
   }
 }
 
-class _TableHeaderCellBuilder extends Builder<MarkdownTableHeaderCellWidget, Widget> {
+class _TableHeaderCellBuilder
+    extends Builder<MarkdownTableHeaderCellWidget, Widget> {
   @override
   MarkdownTableHeaderCellWidget build() {
     return MarkdownTableHeaderCellWidget(text: text ?? "");

@@ -199,7 +199,8 @@ class CalibrationWait extends StatelessWidget {
   Widget continueWidget(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final buttonStyle = ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 150, vertical: 20));
+        minimumSize: const Size(200, 50),
+        padding: const EdgeInsets.symmetric(vertical: 20));
 
     switch (canContinue) {
       case CanContinue.ready:
