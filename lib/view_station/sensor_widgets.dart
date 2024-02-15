@@ -5,12 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:fk/app_state.dart';
 import 'package:provider/provider.dart';
 
+import 'package:fk/constants.dart';
+
 import '../calibration/calibration_model.dart';
 import '../calibration/calibration_page.dart';
 import '../calibration/clear_calibration_page.dart';
 import '../gen/ffi.dart';
 import '../meta.dart';
-import 'package:fk/constants.dart';
 
 class DisplaySensorValue extends StatelessWidget {
   final SensorConfig sensor;
@@ -112,9 +113,8 @@ class SensorsGrid extends StatelessWidget {
   }
 }
 
-int defaultSensorSorter(SensorConfig a, SensorConfig b) {
-  return a.number.compareTo(b.number);
-}
+int defaultSensorSorter(SensorConfig a, SensorConfig b) =>
+    a.number.compareTo(b.number);
 
 class ModuleInfo extends StatelessWidget {
   final ModuleConfig module;
@@ -163,19 +163,52 @@ class ModuleInfo extends StatelessWidget {
         : const SizedBox.shrink();
 
     return Container(
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            border: Border.all(
-              color: const Color.fromRGBO(212, 212, 212, 1),
-            ),
-            borderRadius: const BorderRadius.all(Radius.circular(5))),
-        child: Column(children: [
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          border: Border.all(
+            color: const Color.fromRGBO(212, 212, 212, 1),
+          ),
+          borderRadius: const BorderRadius.all(Radius.circular(5))),
+      child: Column(
+        children: [
           ListTile(
               leading: Image(image: localized.icon),
               title: Text(localized.name),
               subtitle: Text(bay)),
           maybeCalibration,
           SensorsGrid(children: sensors),
-        ]));
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalibrationButton(
+      BuildContext context, LocalizedModule localized) {
+    if (!localized.canCalibrate) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => _calibrationPage(context, localized)),
+          );
+        },
+        child: Text(AppLocalizations.of(context)!.calibrateButton),
+      ),
+    );
+  }
+
+  Widget _calibrationPage(BuildContext context, LocalizedModule localized) {
+    final moduleConfigurations = context.read<AppState>().moduleConfigurations;
+    final config = CalibrationPointConfig.fromTemplate(
+        module.identity, localized.calibrationTemplate!);
+
+    return moduleConfigurations.find(module.identity).isCalibrated
+        ? ClearCalibrationPage(config: config, module: module)
+        : CalibrationPage(config: config);
   }
 }

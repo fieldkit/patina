@@ -57,7 +57,7 @@ class NoStationsHelpWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
           child: Text(
-            localizations.connectStation,
+            localizations.connectStation, // TODO: Make Functional
             style: const TextStyle(
               fontFamily: 'Avenir',
               fontSize: 22.0,

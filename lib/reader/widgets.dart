@@ -98,8 +98,7 @@ class MarkdownHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text,
-        style: const TextStyle(
-            fontFamily: 'Avenir', fontSize: 20.0)); // Increased font size to 20
+        style: const TextStyle(fontFamily: 'Avenir', fontSize: 20.0));
   }
 }
 

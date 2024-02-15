@@ -35,28 +35,28 @@ dependencies:
   cupertino_icons: ^1.0.2
   carousel_slider: ^4.2.1
   ffi: ^2.0.2
-  flutter_rust_bridge: 1.82.1
-  flutter_map: ^3.0.0
-  freezed_annotation: 2.2.0
-  freezed: 2.3.3
+  flutter_rust_bridge: ^1.82.6
+  flutter_map: ^4.0.0
+  freezed_annotation: ^2.4.1
+  freezed: ^2.4.6
   latlong2: ^0.8.1
   udp: ^5.0.3
   http: ^0.13.5
   protobuf: ^3.1.0
   fixnum: ^1.0.1
   provider: ^6.0.4
-  uuid: ^3.0.7
+  uuid: ^4.3.3
   meta: ^1.10.0
   intl: ^0.18.0
   markdown: ^7.1.0
-  flutter_secure_storage: ^8.0.0
+  flutter_secure_storage: ^9.0.0
   flutter_form_builder: ^9.0.0
   form_builder_validators: ^9.0.0
   path_provider: ^2.0.15
   flutter_markdown: ^0.6.14
   flutter_localizations:
     sdk: flutter
-  loader_overlay: ^2.2.0
+  loader_overlay: ^4.0.0
   collection: ^1.17.1
   data: ^0.12.0
   url_launcher: ^6.1.11
@@ -65,20 +65,20 @@ dependencies:
   caldor:
     git:
       url: https://gitlab.com/fieldkit/libraries/caldor.git
-      ref: 2568c514f4b3553843ee8490bf32c73bea34b842
+      ref: 'a8f146af3c84c9cd11cd90268e658f29db6849da'
   flows:
     path: "./flows"
   fk_data_protocol:
     git:
       url: https://gitlab.com/fieldkit/libraries/data-protocol.git
-      ref: 13d5785bdcc53ea74a2215f5149d6d576c5ac1c4
+      ref: '13d5785bdcc53ea74a2215f5149d6d576c5ac1c4'
       path: dart
   logger: ^1.4.0
   flutter_dotenv: ^5.1.0
   location: ^5.0.3
   shared_preferences: ^2.2.1
-  flutter_map_location_marker: ^5.3.0
-  package_info_plus: ^4.2.0
+  flutter_map_location_marker: ^6.0.0
+  package_info_plus: ^5.0.1
   ansi_styles: ^0.3.2+1
   circular_countdown_timer: ^0.2.3
   convert: ^3.1.1
@@ -92,9 +92,9 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  build_runner: 2.4.4
-  flutter_lints: ^2.0.0
-  ffigen: ^8.0.0
+  build_runner: ^2.4.8
+  flutter_lints: ^3.0.1
+  ffigen: ^11.0.0
   test: ^1.24.3
   mockito: ^5.4.2
 
