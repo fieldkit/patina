@@ -1034,6 +1034,7 @@ pub struct SensorConfig {
     pub calibrated_uom: String,
     pub uncalibrated_uom: String,
     pub value: Option<SensorValue>,
+    pub previous_value: Option<SensorValue>,
 }
 
 #[derive(Clone, Debug)]
@@ -1202,6 +1203,11 @@ impl TryInto<StationConfig> for StationAndConnection {
                             key: sensor.key,
                             calibrated_uom: sensor.calibrated_uom,
                             uncalibrated_uom: sensor.uncalibrated_uom,
+                            previous_value: sensor.value.clone().map(|v| SensorValue {
+                                time: v.time,
+                                value: v.value,
+                                uncalibrated: v.uncalibrated,
+                            }),
                             value: sensor.value.map(|v| SensorValue {
                                 time: v.time,
                                 value: v.value,

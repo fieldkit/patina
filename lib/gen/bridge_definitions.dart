@@ -373,6 +373,7 @@ class SensorConfig {
   final String calibratedUom;
   final String uncalibratedUom;
   final SensorValue? value;
+  final SensorValue? previousValue;
 
   const SensorConfig({
     required this.number,
@@ -381,6 +382,7 @@ class SensorConfig {
     required this.calibratedUom,
     required this.uncalibratedUom,
     this.value,
+    this.previousValue,
   });
 }
 

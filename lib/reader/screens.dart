@@ -97,13 +97,12 @@ class FlowScreenWidget extends StatelessWidget {
   final VoidCallback? onBack;
 
   const FlowScreenWidget(
-      {Key? key,
+      {super.key,
       required this.screen,
       this.onForward,
       this.onSkip,
       this.onGuide,
-      this.onBack})
-      : super(key: key);
+      this.onBack});
 
   @override
   Widget build(context) {
@@ -141,7 +140,7 @@ class FlowScreenWidget extends StatelessWidget {
                   widgets.add(FlowImagesWidget(screen: simple));
                 }
                 return widgets;
-              }).toList(),
+              }),
               Container(
                 margin: const EdgeInsets.all(10.0), // CSS-like margin
                 child: Column(children: [
@@ -208,7 +207,7 @@ class FlowSimpleScreenWidget extends StatelessWidget {
 class FlowImagesWidget extends StatefulWidget {
   final flows.Simple screen;
 
-  const FlowImagesWidget({Key? key, required this.screen}) : super(key: key);
+  const FlowImagesWidget({super.key, required this.screen});
 
   @override
   // ignore: library_private_types_in_public_api

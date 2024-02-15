@@ -677,6 +677,7 @@ impl support::IntoDart for SensorConfig {
             self.calibrated_uom.into_into_dart().into_dart(),
             self.uncalibrated_uom.into_into_dart().into_dart(),
             self.value.into_dart(),
+            self.previous_value.into_dart(),
         ]
         .into_dart()
     }

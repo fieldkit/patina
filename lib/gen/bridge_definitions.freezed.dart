@@ -12,7 +12,7 @@ part of 'bridge_definitions.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$DomainMessage {
@@ -134,25 +134,27 @@ class _$DomainMessageCopyWithImpl<$Res, $Val extends DomainMessage>
 }
 
 /// @nodoc
-abstract class _$$DomainMessage_PreAccountCopyWith<$Res> {
-  factory _$$DomainMessage_PreAccountCopyWith(_$DomainMessage_PreAccount value,
-          $Res Function(_$DomainMessage_PreAccount) then) =
-      __$$DomainMessage_PreAccountCopyWithImpl<$Res>;
+abstract class _$$DomainMessage_PreAccountImplCopyWith<$Res> {
+  factory _$$DomainMessage_PreAccountImplCopyWith(
+          _$DomainMessage_PreAccountImpl value,
+          $Res Function(_$DomainMessage_PreAccountImpl) then) =
+      __$$DomainMessage_PreAccountImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$DomainMessage_PreAccountCopyWithImpl<$Res>
-    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_PreAccount>
-    implements _$$DomainMessage_PreAccountCopyWith<$Res> {
-  __$$DomainMessage_PreAccountCopyWithImpl(_$DomainMessage_PreAccount _value,
-      $Res Function(_$DomainMessage_PreAccount) _then)
+class __$$DomainMessage_PreAccountImplCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_PreAccountImpl>
+    implements _$$DomainMessage_PreAccountImplCopyWith<$Res> {
+  __$$DomainMessage_PreAccountImplCopyWithImpl(
+      _$DomainMessage_PreAccountImpl _value,
+      $Res Function(_$DomainMessage_PreAccountImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
-  const _$DomainMessage_PreAccount();
+class _$DomainMessage_PreAccountImpl implements DomainMessage_PreAccount {
+  const _$DomainMessage_PreAccountImpl();
 
   @override
   String toString() {
@@ -160,10 +162,10 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DomainMessage_PreAccount);
+            other is _$DomainMessage_PreAccountImpl);
   }
 
   @override
@@ -292,26 +294,27 @@ class _$DomainMessage_PreAccount implements DomainMessage_PreAccount {
 }
 
 abstract class DomainMessage_PreAccount implements DomainMessage {
-  const factory DomainMessage_PreAccount() = _$DomainMessage_PreAccount;
+  const factory DomainMessage_PreAccount() = _$DomainMessage_PreAccountImpl;
 }
 
 /// @nodoc
-abstract class _$$DomainMessage_NearbyStationsCopyWith<$Res> {
-  factory _$$DomainMessage_NearbyStationsCopyWith(
-          _$DomainMessage_NearbyStations value,
-          $Res Function(_$DomainMessage_NearbyStations) then) =
-      __$$DomainMessage_NearbyStationsCopyWithImpl<$Res>;
+abstract class _$$DomainMessage_NearbyStationsImplCopyWith<$Res> {
+  factory _$$DomainMessage_NearbyStationsImplCopyWith(
+          _$DomainMessage_NearbyStationsImpl value,
+          $Res Function(_$DomainMessage_NearbyStationsImpl) then) =
+      __$$DomainMessage_NearbyStationsImplCopyWithImpl<$Res>;
   @useResult
   $Res call({List<NearbyStation> field0});
 }
 
 /// @nodoc
-class __$$DomainMessage_NearbyStationsCopyWithImpl<$Res>
-    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_NearbyStations>
-    implements _$$DomainMessage_NearbyStationsCopyWith<$Res> {
-  __$$DomainMessage_NearbyStationsCopyWithImpl(
-      _$DomainMessage_NearbyStations _value,
-      $Res Function(_$DomainMessage_NearbyStations) _then)
+class __$$DomainMessage_NearbyStationsImplCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res,
+        _$DomainMessage_NearbyStationsImpl>
+    implements _$$DomainMessage_NearbyStationsImplCopyWith<$Res> {
+  __$$DomainMessage_NearbyStationsImplCopyWithImpl(
+      _$DomainMessage_NearbyStationsImpl _value,
+      $Res Function(_$DomainMessage_NearbyStationsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -319,7 +322,7 @@ class __$$DomainMessage_NearbyStationsCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$DomainMessage_NearbyStations(
+    return _then(_$DomainMessage_NearbyStationsImpl(
       null == field0
           ? _value._field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -330,8 +333,9 @@ class __$$DomainMessage_NearbyStationsCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
-  const _$DomainMessage_NearbyStations(final List<NearbyStation> field0)
+class _$DomainMessage_NearbyStationsImpl
+    implements DomainMessage_NearbyStations {
+  const _$DomainMessage_NearbyStationsImpl(final List<NearbyStation> field0)
       : _field0 = field0;
 
   final List<NearbyStation> _field0;
@@ -348,10 +352,10 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DomainMessage_NearbyStations &&
+            other is _$DomainMessage_NearbyStationsImpl &&
             const DeepCollectionEquality().equals(other._field0, _field0));
   }
 
@@ -362,9 +366,10 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DomainMessage_NearbyStationsCopyWith<_$DomainMessage_NearbyStations>
-      get copyWith => __$$DomainMessage_NearbyStationsCopyWithImpl<
-          _$DomainMessage_NearbyStations>(this, _$identity);
+  _$$DomainMessage_NearbyStationsImplCopyWith<
+          _$DomainMessage_NearbyStationsImpl>
+      get copyWith => __$$DomainMessage_NearbyStationsImplCopyWithImpl<
+          _$DomainMessage_NearbyStationsImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -490,31 +495,33 @@ class _$DomainMessage_NearbyStations implements DomainMessage_NearbyStations {
 
 abstract class DomainMessage_NearbyStations implements DomainMessage {
   const factory DomainMessage_NearbyStations(final List<NearbyStation> field0) =
-      _$DomainMessage_NearbyStations;
+      _$DomainMessage_NearbyStationsImpl;
 
   List<NearbyStation> get field0;
   @JsonKey(ignore: true)
-  _$$DomainMessage_NearbyStationsCopyWith<_$DomainMessage_NearbyStations>
+  _$$DomainMessage_NearbyStationsImplCopyWith<
+          _$DomainMessage_NearbyStationsImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$DomainMessage_StationRefreshedCopyWith<$Res> {
-  factory _$$DomainMessage_StationRefreshedCopyWith(
-          _$DomainMessage_StationRefreshed value,
-          $Res Function(_$DomainMessage_StationRefreshed) then) =
-      __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>;
+abstract class _$$DomainMessage_StationRefreshedImplCopyWith<$Res> {
+  factory _$$DomainMessage_StationRefreshedImplCopyWith(
+          _$DomainMessage_StationRefreshedImpl value,
+          $Res Function(_$DomainMessage_StationRefreshedImpl) then) =
+      __$$DomainMessage_StationRefreshedImplCopyWithImpl<$Res>;
   @useResult
   $Res call({StationConfig field0, EphemeralConfig? field1, String field2});
 }
 
 /// @nodoc
-class __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>
-    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_StationRefreshed>
-    implements _$$DomainMessage_StationRefreshedCopyWith<$Res> {
-  __$$DomainMessage_StationRefreshedCopyWithImpl(
-      _$DomainMessage_StationRefreshed _value,
-      $Res Function(_$DomainMessage_StationRefreshed) _then)
+class __$$DomainMessage_StationRefreshedImplCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res,
+        _$DomainMessage_StationRefreshedImpl>
+    implements _$$DomainMessage_StationRefreshedImplCopyWith<$Res> {
+  __$$DomainMessage_StationRefreshedImplCopyWithImpl(
+      _$DomainMessage_StationRefreshedImpl _value,
+      $Res Function(_$DomainMessage_StationRefreshedImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -524,7 +531,7 @@ class __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>
     Object? field1 = freezed,
     Object? field2 = null,
   }) {
-    return _then(_$DomainMessage_StationRefreshed(
+    return _then(_$DomainMessage_StationRefreshedImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -543,9 +550,10 @@ class __$$DomainMessage_StationRefreshedCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_StationRefreshed
+class _$DomainMessage_StationRefreshedImpl
     implements DomainMessage_StationRefreshed {
-  const _$DomainMessage_StationRefreshed(this.field0, this.field1, this.field2);
+  const _$DomainMessage_StationRefreshedImpl(
+      this.field0, this.field1, this.field2);
 
   @override
   final StationConfig field0;
@@ -560,10 +568,10 @@ class _$DomainMessage_StationRefreshed
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DomainMessage_StationRefreshed &&
+            other is _$DomainMessage_StationRefreshedImpl &&
             (identical(other.field0, field0) || other.field0 == field0) &&
             (identical(other.field1, field1) || other.field1 == field1) &&
             (identical(other.field2, field2) || other.field2 == field2));
@@ -575,9 +583,10 @@ class _$DomainMessage_StationRefreshed
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DomainMessage_StationRefreshedCopyWith<_$DomainMessage_StationRefreshed>
-      get copyWith => __$$DomainMessage_StationRefreshedCopyWithImpl<
-          _$DomainMessage_StationRefreshed>(this, _$identity);
+  _$$DomainMessage_StationRefreshedImplCopyWith<
+          _$DomainMessage_StationRefreshedImpl>
+      get copyWith => __$$DomainMessage_StationRefreshedImplCopyWithImpl<
+          _$DomainMessage_StationRefreshedImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -705,33 +714,35 @@ abstract class DomainMessage_StationRefreshed implements DomainMessage {
   const factory DomainMessage_StationRefreshed(
       final StationConfig field0,
       final EphemeralConfig? field1,
-      final String field2) = _$DomainMessage_StationRefreshed;
+      final String field2) = _$DomainMessage_StationRefreshedImpl;
 
   StationConfig get field0;
   EphemeralConfig? get field1;
   String get field2;
   @JsonKey(ignore: true)
-  _$$DomainMessage_StationRefreshedCopyWith<_$DomainMessage_StationRefreshed>
+  _$$DomainMessage_StationRefreshedImplCopyWith<
+          _$DomainMessage_StationRefreshedImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$DomainMessage_UploadProgressCopyWith<$Res> {
-  factory _$$DomainMessage_UploadProgressCopyWith(
-          _$DomainMessage_UploadProgress value,
-          $Res Function(_$DomainMessage_UploadProgress) then) =
-      __$$DomainMessage_UploadProgressCopyWithImpl<$Res>;
+abstract class _$$DomainMessage_UploadProgressImplCopyWith<$Res> {
+  factory _$$DomainMessage_UploadProgressImplCopyWith(
+          _$DomainMessage_UploadProgressImpl value,
+          $Res Function(_$DomainMessage_UploadProgressImpl) then) =
+      __$$DomainMessage_UploadProgressImplCopyWithImpl<$Res>;
   @useResult
   $Res call({TransferProgress field0});
 }
 
 /// @nodoc
-class __$$DomainMessage_UploadProgressCopyWithImpl<$Res>
-    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_UploadProgress>
-    implements _$$DomainMessage_UploadProgressCopyWith<$Res> {
-  __$$DomainMessage_UploadProgressCopyWithImpl(
-      _$DomainMessage_UploadProgress _value,
-      $Res Function(_$DomainMessage_UploadProgress) _then)
+class __$$DomainMessage_UploadProgressImplCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res,
+        _$DomainMessage_UploadProgressImpl>
+    implements _$$DomainMessage_UploadProgressImplCopyWith<$Res> {
+  __$$DomainMessage_UploadProgressImplCopyWithImpl(
+      _$DomainMessage_UploadProgressImpl _value,
+      $Res Function(_$DomainMessage_UploadProgressImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -739,7 +750,7 @@ class __$$DomainMessage_UploadProgressCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$DomainMessage_UploadProgress(
+    return _then(_$DomainMessage_UploadProgressImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -750,8 +761,9 @@ class __$$DomainMessage_UploadProgressCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_UploadProgress implements DomainMessage_UploadProgress {
-  const _$DomainMessage_UploadProgress(this.field0);
+class _$DomainMessage_UploadProgressImpl
+    implements DomainMessage_UploadProgress {
+  const _$DomainMessage_UploadProgressImpl(this.field0);
 
   @override
   final TransferProgress field0;
@@ -762,10 +774,10 @@ class _$DomainMessage_UploadProgress implements DomainMessage_UploadProgress {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DomainMessage_UploadProgress &&
+            other is _$DomainMessage_UploadProgressImpl &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -775,9 +787,10 @@ class _$DomainMessage_UploadProgress implements DomainMessage_UploadProgress {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DomainMessage_UploadProgressCopyWith<_$DomainMessage_UploadProgress>
-      get copyWith => __$$DomainMessage_UploadProgressCopyWithImpl<
-          _$DomainMessage_UploadProgress>(this, _$identity);
+  _$$DomainMessage_UploadProgressImplCopyWith<
+          _$DomainMessage_UploadProgressImpl>
+      get copyWith => __$$DomainMessage_UploadProgressImplCopyWithImpl<
+          _$DomainMessage_UploadProgressImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -903,31 +916,33 @@ class _$DomainMessage_UploadProgress implements DomainMessage_UploadProgress {
 
 abstract class DomainMessage_UploadProgress implements DomainMessage {
   const factory DomainMessage_UploadProgress(final TransferProgress field0) =
-      _$DomainMessage_UploadProgress;
+      _$DomainMessage_UploadProgressImpl;
 
   TransferProgress get field0;
   @JsonKey(ignore: true)
-  _$$DomainMessage_UploadProgressCopyWith<_$DomainMessage_UploadProgress>
+  _$$DomainMessage_UploadProgressImplCopyWith<
+          _$DomainMessage_UploadProgressImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$DomainMessage_DownloadProgressCopyWith<$Res> {
-  factory _$$DomainMessage_DownloadProgressCopyWith(
-          _$DomainMessage_DownloadProgress value,
-          $Res Function(_$DomainMessage_DownloadProgress) then) =
-      __$$DomainMessage_DownloadProgressCopyWithImpl<$Res>;
+abstract class _$$DomainMessage_DownloadProgressImplCopyWith<$Res> {
+  factory _$$DomainMessage_DownloadProgressImplCopyWith(
+          _$DomainMessage_DownloadProgressImpl value,
+          $Res Function(_$DomainMessage_DownloadProgressImpl) then) =
+      __$$DomainMessage_DownloadProgressImplCopyWithImpl<$Res>;
   @useResult
   $Res call({TransferProgress field0});
 }
 
 /// @nodoc
-class __$$DomainMessage_DownloadProgressCopyWithImpl<$Res>
-    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_DownloadProgress>
-    implements _$$DomainMessage_DownloadProgressCopyWith<$Res> {
-  __$$DomainMessage_DownloadProgressCopyWithImpl(
-      _$DomainMessage_DownloadProgress _value,
-      $Res Function(_$DomainMessage_DownloadProgress) _then)
+class __$$DomainMessage_DownloadProgressImplCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res,
+        _$DomainMessage_DownloadProgressImpl>
+    implements _$$DomainMessage_DownloadProgressImplCopyWith<$Res> {
+  __$$DomainMessage_DownloadProgressImplCopyWithImpl(
+      _$DomainMessage_DownloadProgressImpl _value,
+      $Res Function(_$DomainMessage_DownloadProgressImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -935,7 +950,7 @@ class __$$DomainMessage_DownloadProgressCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$DomainMessage_DownloadProgress(
+    return _then(_$DomainMessage_DownloadProgressImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -946,9 +961,9 @@ class __$$DomainMessage_DownloadProgressCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_DownloadProgress
+class _$DomainMessage_DownloadProgressImpl
     implements DomainMessage_DownloadProgress {
-  const _$DomainMessage_DownloadProgress(this.field0);
+  const _$DomainMessage_DownloadProgressImpl(this.field0);
 
   @override
   final TransferProgress field0;
@@ -959,10 +974,10 @@ class _$DomainMessage_DownloadProgress
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DomainMessage_DownloadProgress &&
+            other is _$DomainMessage_DownloadProgressImpl &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -972,9 +987,10 @@ class _$DomainMessage_DownloadProgress
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DomainMessage_DownloadProgressCopyWith<_$DomainMessage_DownloadProgress>
-      get copyWith => __$$DomainMessage_DownloadProgressCopyWithImpl<
-          _$DomainMessage_DownloadProgress>(this, _$identity);
+  _$$DomainMessage_DownloadProgressImplCopyWith<
+          _$DomainMessage_DownloadProgressImpl>
+      get copyWith => __$$DomainMessage_DownloadProgressImplCopyWithImpl<
+          _$DomainMessage_DownloadProgressImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1100,20 +1116,21 @@ class _$DomainMessage_DownloadProgress
 
 abstract class DomainMessage_DownloadProgress implements DomainMessage {
   const factory DomainMessage_DownloadProgress(final TransferProgress field0) =
-      _$DomainMessage_DownloadProgress;
+      _$DomainMessage_DownloadProgressImpl;
 
   TransferProgress get field0;
   @JsonKey(ignore: true)
-  _$$DomainMessage_DownloadProgressCopyWith<_$DomainMessage_DownloadProgress>
+  _$$DomainMessage_DownloadProgressImplCopyWith<
+          _$DomainMessage_DownloadProgressImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$DomainMessage_FirmwareDownloadStatusCopyWith<$Res> {
-  factory _$$DomainMessage_FirmwareDownloadStatusCopyWith(
-          _$DomainMessage_FirmwareDownloadStatus value,
-          $Res Function(_$DomainMessage_FirmwareDownloadStatus) then) =
-      __$$DomainMessage_FirmwareDownloadStatusCopyWithImpl<$Res>;
+abstract class _$$DomainMessage_FirmwareDownloadStatusImplCopyWith<$Res> {
+  factory _$$DomainMessage_FirmwareDownloadStatusImplCopyWith(
+          _$DomainMessage_FirmwareDownloadStatusImpl value,
+          $Res Function(_$DomainMessage_FirmwareDownloadStatusImpl) then) =
+      __$$DomainMessage_FirmwareDownloadStatusImplCopyWithImpl<$Res>;
   @useResult
   $Res call({FirmwareDownloadStatus field0});
 
@@ -1121,13 +1138,13 @@ abstract class _$$DomainMessage_FirmwareDownloadStatusCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$DomainMessage_FirmwareDownloadStatusCopyWithImpl<$Res>
+class __$$DomainMessage_FirmwareDownloadStatusImplCopyWithImpl<$Res>
     extends _$DomainMessageCopyWithImpl<$Res,
-        _$DomainMessage_FirmwareDownloadStatus>
-    implements _$$DomainMessage_FirmwareDownloadStatusCopyWith<$Res> {
-  __$$DomainMessage_FirmwareDownloadStatusCopyWithImpl(
-      _$DomainMessage_FirmwareDownloadStatus _value,
-      $Res Function(_$DomainMessage_FirmwareDownloadStatus) _then)
+        _$DomainMessage_FirmwareDownloadStatusImpl>
+    implements _$$DomainMessage_FirmwareDownloadStatusImplCopyWith<$Res> {
+  __$$DomainMessage_FirmwareDownloadStatusImplCopyWithImpl(
+      _$DomainMessage_FirmwareDownloadStatusImpl _value,
+      $Res Function(_$DomainMessage_FirmwareDownloadStatusImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1135,7 +1152,7 @@ class __$$DomainMessage_FirmwareDownloadStatusCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$DomainMessage_FirmwareDownloadStatus(
+    return _then(_$DomainMessage_FirmwareDownloadStatusImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -1154,9 +1171,9 @@ class __$$DomainMessage_FirmwareDownloadStatusCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_FirmwareDownloadStatus
+class _$DomainMessage_FirmwareDownloadStatusImpl
     implements DomainMessage_FirmwareDownloadStatus {
-  const _$DomainMessage_FirmwareDownloadStatus(this.field0);
+  const _$DomainMessage_FirmwareDownloadStatusImpl(this.field0);
 
   @override
   final FirmwareDownloadStatus field0;
@@ -1167,10 +1184,10 @@ class _$DomainMessage_FirmwareDownloadStatus
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DomainMessage_FirmwareDownloadStatus &&
+            other is _$DomainMessage_FirmwareDownloadStatusImpl &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -1180,10 +1197,10 @@ class _$DomainMessage_FirmwareDownloadStatus
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DomainMessage_FirmwareDownloadStatusCopyWith<
-          _$DomainMessage_FirmwareDownloadStatus>
-      get copyWith => __$$DomainMessage_FirmwareDownloadStatusCopyWithImpl<
-          _$DomainMessage_FirmwareDownloadStatus>(this, _$identity);
+  _$$DomainMessage_FirmwareDownloadStatusImplCopyWith<
+          _$DomainMessage_FirmwareDownloadStatusImpl>
+      get copyWith => __$$DomainMessage_FirmwareDownloadStatusImplCopyWithImpl<
+          _$DomainMessage_FirmwareDownloadStatusImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1310,32 +1327,33 @@ class _$DomainMessage_FirmwareDownloadStatus
 abstract class DomainMessage_FirmwareDownloadStatus implements DomainMessage {
   const factory DomainMessage_FirmwareDownloadStatus(
           final FirmwareDownloadStatus field0) =
-      _$DomainMessage_FirmwareDownloadStatus;
+      _$DomainMessage_FirmwareDownloadStatusImpl;
 
   FirmwareDownloadStatus get field0;
   @JsonKey(ignore: true)
-  _$$DomainMessage_FirmwareDownloadStatusCopyWith<
-          _$DomainMessage_FirmwareDownloadStatus>
+  _$$DomainMessage_FirmwareDownloadStatusImplCopyWith<
+          _$DomainMessage_FirmwareDownloadStatusImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$DomainMessage_UpgradeProgressCopyWith<$Res> {
-  factory _$$DomainMessage_UpgradeProgressCopyWith(
-          _$DomainMessage_UpgradeProgress value,
-          $Res Function(_$DomainMessage_UpgradeProgress) then) =
-      __$$DomainMessage_UpgradeProgressCopyWithImpl<$Res>;
+abstract class _$$DomainMessage_UpgradeProgressImplCopyWith<$Res> {
+  factory _$$DomainMessage_UpgradeProgressImplCopyWith(
+          _$DomainMessage_UpgradeProgressImpl value,
+          $Res Function(_$DomainMessage_UpgradeProgressImpl) then) =
+      __$$DomainMessage_UpgradeProgressImplCopyWithImpl<$Res>;
   @useResult
   $Res call({UpgradeProgress field0});
 }
 
 /// @nodoc
-class __$$DomainMessage_UpgradeProgressCopyWithImpl<$Res>
-    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_UpgradeProgress>
-    implements _$$DomainMessage_UpgradeProgressCopyWith<$Res> {
-  __$$DomainMessage_UpgradeProgressCopyWithImpl(
-      _$DomainMessage_UpgradeProgress _value,
-      $Res Function(_$DomainMessage_UpgradeProgress) _then)
+class __$$DomainMessage_UpgradeProgressImplCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res,
+        _$DomainMessage_UpgradeProgressImpl>
+    implements _$$DomainMessage_UpgradeProgressImplCopyWith<$Res> {
+  __$$DomainMessage_UpgradeProgressImplCopyWithImpl(
+      _$DomainMessage_UpgradeProgressImpl _value,
+      $Res Function(_$DomainMessage_UpgradeProgressImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1343,7 +1361,7 @@ class __$$DomainMessage_UpgradeProgressCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$DomainMessage_UpgradeProgress(
+    return _then(_$DomainMessage_UpgradeProgressImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -1354,8 +1372,9 @@ class __$$DomainMessage_UpgradeProgressCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
-  const _$DomainMessage_UpgradeProgress(this.field0);
+class _$DomainMessage_UpgradeProgressImpl
+    implements DomainMessage_UpgradeProgress {
+  const _$DomainMessage_UpgradeProgressImpl(this.field0);
 
   @override
   final UpgradeProgress field0;
@@ -1366,10 +1385,10 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DomainMessage_UpgradeProgress &&
+            other is _$DomainMessage_UpgradeProgressImpl &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -1379,9 +1398,10 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DomainMessage_UpgradeProgressCopyWith<_$DomainMessage_UpgradeProgress>
-      get copyWith => __$$DomainMessage_UpgradeProgressCopyWithImpl<
-          _$DomainMessage_UpgradeProgress>(this, _$identity);
+  _$$DomainMessage_UpgradeProgressImplCopyWith<
+          _$DomainMessage_UpgradeProgressImpl>
+      get copyWith => __$$DomainMessage_UpgradeProgressImplCopyWithImpl<
+          _$DomainMessage_UpgradeProgressImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1507,31 +1527,33 @@ class _$DomainMessage_UpgradeProgress implements DomainMessage_UpgradeProgress {
 
 abstract class DomainMessage_UpgradeProgress implements DomainMessage {
   const factory DomainMessage_UpgradeProgress(final UpgradeProgress field0) =
-      _$DomainMessage_UpgradeProgress;
+      _$DomainMessage_UpgradeProgressImpl;
 
   UpgradeProgress get field0;
   @JsonKey(ignore: true)
-  _$$DomainMessage_UpgradeProgressCopyWith<_$DomainMessage_UpgradeProgress>
+  _$$DomainMessage_UpgradeProgressImplCopyWith<
+          _$DomainMessage_UpgradeProgressImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$DomainMessage_AvailableFirmwareCopyWith<$Res> {
-  factory _$$DomainMessage_AvailableFirmwareCopyWith(
-          _$DomainMessage_AvailableFirmware value,
-          $Res Function(_$DomainMessage_AvailableFirmware) then) =
-      __$$DomainMessage_AvailableFirmwareCopyWithImpl<$Res>;
+abstract class _$$DomainMessage_AvailableFirmwareImplCopyWith<$Res> {
+  factory _$$DomainMessage_AvailableFirmwareImplCopyWith(
+          _$DomainMessage_AvailableFirmwareImpl value,
+          $Res Function(_$DomainMessage_AvailableFirmwareImpl) then) =
+      __$$DomainMessage_AvailableFirmwareImplCopyWithImpl<$Res>;
   @useResult
   $Res call({List<LocalFirmware> field0});
 }
 
 /// @nodoc
-class __$$DomainMessage_AvailableFirmwareCopyWithImpl<$Res>
-    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_AvailableFirmware>
-    implements _$$DomainMessage_AvailableFirmwareCopyWith<$Res> {
-  __$$DomainMessage_AvailableFirmwareCopyWithImpl(
-      _$DomainMessage_AvailableFirmware _value,
-      $Res Function(_$DomainMessage_AvailableFirmware) _then)
+class __$$DomainMessage_AvailableFirmwareImplCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res,
+        _$DomainMessage_AvailableFirmwareImpl>
+    implements _$$DomainMessage_AvailableFirmwareImplCopyWith<$Res> {
+  __$$DomainMessage_AvailableFirmwareImplCopyWithImpl(
+      _$DomainMessage_AvailableFirmwareImpl _value,
+      $Res Function(_$DomainMessage_AvailableFirmwareImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1539,7 +1561,7 @@ class __$$DomainMessage_AvailableFirmwareCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$DomainMessage_AvailableFirmware(
+    return _then(_$DomainMessage_AvailableFirmwareImpl(
       null == field0
           ? _value._field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -1550,9 +1572,9 @@ class __$$DomainMessage_AvailableFirmwareCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_AvailableFirmware
+class _$DomainMessage_AvailableFirmwareImpl
     implements DomainMessage_AvailableFirmware {
-  const _$DomainMessage_AvailableFirmware(final List<LocalFirmware> field0)
+  const _$DomainMessage_AvailableFirmwareImpl(final List<LocalFirmware> field0)
       : _field0 = field0;
 
   final List<LocalFirmware> _field0;
@@ -1569,10 +1591,10 @@ class _$DomainMessage_AvailableFirmware
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DomainMessage_AvailableFirmware &&
+            other is _$DomainMessage_AvailableFirmwareImpl &&
             const DeepCollectionEquality().equals(other._field0, _field0));
   }
 
@@ -1583,9 +1605,10 @@ class _$DomainMessage_AvailableFirmware
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DomainMessage_AvailableFirmwareCopyWith<_$DomainMessage_AvailableFirmware>
-      get copyWith => __$$DomainMessage_AvailableFirmwareCopyWithImpl<
-          _$DomainMessage_AvailableFirmware>(this, _$identity);
+  _$$DomainMessage_AvailableFirmwareImplCopyWith<
+          _$DomainMessage_AvailableFirmwareImpl>
+      get copyWith => __$$DomainMessage_AvailableFirmwareImplCopyWithImpl<
+          _$DomainMessage_AvailableFirmwareImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1711,31 +1734,33 @@ class _$DomainMessage_AvailableFirmware
 
 abstract class DomainMessage_AvailableFirmware implements DomainMessage {
   const factory DomainMessage_AvailableFirmware(
-      final List<LocalFirmware> field0) = _$DomainMessage_AvailableFirmware;
+      final List<LocalFirmware> field0) = _$DomainMessage_AvailableFirmwareImpl;
 
   List<LocalFirmware> get field0;
   @JsonKey(ignore: true)
-  _$$DomainMessage_AvailableFirmwareCopyWith<_$DomainMessage_AvailableFirmware>
+  _$$DomainMessage_AvailableFirmwareImplCopyWith<
+          _$DomainMessage_AvailableFirmwareImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$DomainMessage_RecordArchivesCopyWith<$Res> {
-  factory _$$DomainMessage_RecordArchivesCopyWith(
-          _$DomainMessage_RecordArchives value,
-          $Res Function(_$DomainMessage_RecordArchives) then) =
-      __$$DomainMessage_RecordArchivesCopyWithImpl<$Res>;
+abstract class _$$DomainMessage_RecordArchivesImplCopyWith<$Res> {
+  factory _$$DomainMessage_RecordArchivesImplCopyWith(
+          _$DomainMessage_RecordArchivesImpl value,
+          $Res Function(_$DomainMessage_RecordArchivesImpl) then) =
+      __$$DomainMessage_RecordArchivesImplCopyWithImpl<$Res>;
   @useResult
   $Res call({List<RecordArchive> field0});
 }
 
 /// @nodoc
-class __$$DomainMessage_RecordArchivesCopyWithImpl<$Res>
-    extends _$DomainMessageCopyWithImpl<$Res, _$DomainMessage_RecordArchives>
-    implements _$$DomainMessage_RecordArchivesCopyWith<$Res> {
-  __$$DomainMessage_RecordArchivesCopyWithImpl(
-      _$DomainMessage_RecordArchives _value,
-      $Res Function(_$DomainMessage_RecordArchives) _then)
+class __$$DomainMessage_RecordArchivesImplCopyWithImpl<$Res>
+    extends _$DomainMessageCopyWithImpl<$Res,
+        _$DomainMessage_RecordArchivesImpl>
+    implements _$$DomainMessage_RecordArchivesImplCopyWith<$Res> {
+  __$$DomainMessage_RecordArchivesImplCopyWithImpl(
+      _$DomainMessage_RecordArchivesImpl _value,
+      $Res Function(_$DomainMessage_RecordArchivesImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1743,7 +1768,7 @@ class __$$DomainMessage_RecordArchivesCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$DomainMessage_RecordArchives(
+    return _then(_$DomainMessage_RecordArchivesImpl(
       null == field0
           ? _value._field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -1754,8 +1779,9 @@ class __$$DomainMessage_RecordArchivesCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_RecordArchives implements DomainMessage_RecordArchives {
-  const _$DomainMessage_RecordArchives(final List<RecordArchive> field0)
+class _$DomainMessage_RecordArchivesImpl
+    implements DomainMessage_RecordArchives {
+  const _$DomainMessage_RecordArchivesImpl(final List<RecordArchive> field0)
       : _field0 = field0;
 
   final List<RecordArchive> _field0;
@@ -1772,10 +1798,10 @@ class _$DomainMessage_RecordArchives implements DomainMessage_RecordArchives {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DomainMessage_RecordArchives &&
+            other is _$DomainMessage_RecordArchivesImpl &&
             const DeepCollectionEquality().equals(other._field0, _field0));
   }
 
@@ -1786,9 +1812,10 @@ class _$DomainMessage_RecordArchives implements DomainMessage_RecordArchives {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DomainMessage_RecordArchivesCopyWith<_$DomainMessage_RecordArchives>
-      get copyWith => __$$DomainMessage_RecordArchivesCopyWithImpl<
-          _$DomainMessage_RecordArchives>(this, _$identity);
+  _$$DomainMessage_RecordArchivesImplCopyWith<
+          _$DomainMessage_RecordArchivesImpl>
+      get copyWith => __$$DomainMessage_RecordArchivesImplCopyWithImpl<
+          _$DomainMessage_RecordArchivesImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1914,11 +1941,12 @@ class _$DomainMessage_RecordArchives implements DomainMessage_RecordArchives {
 
 abstract class DomainMessage_RecordArchives implements DomainMessage {
   const factory DomainMessage_RecordArchives(final List<RecordArchive> field0) =
-      _$DomainMessage_RecordArchives;
+      _$DomainMessage_RecordArchivesImpl;
 
   List<RecordArchive> get field0;
   @JsonKey(ignore: true)
-  _$$DomainMessage_RecordArchivesCopyWith<_$DomainMessage_RecordArchives>
+  _$$DomainMessage_RecordArchivesImplCopyWith<
+          _$DomainMessage_RecordArchivesImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -2003,29 +2031,29 @@ class _$FirmwareDownloadStatusCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$FirmwareDownloadStatus_CheckingCopyWith<$Res> {
-  factory _$$FirmwareDownloadStatus_CheckingCopyWith(
-          _$FirmwareDownloadStatus_Checking value,
-          $Res Function(_$FirmwareDownloadStatus_Checking) then) =
-      __$$FirmwareDownloadStatus_CheckingCopyWithImpl<$Res>;
+abstract class _$$FirmwareDownloadStatus_CheckingImplCopyWith<$Res> {
+  factory _$$FirmwareDownloadStatus_CheckingImplCopyWith(
+          _$FirmwareDownloadStatus_CheckingImpl value,
+          $Res Function(_$FirmwareDownloadStatus_CheckingImpl) then) =
+      __$$FirmwareDownloadStatus_CheckingImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$FirmwareDownloadStatus_CheckingCopyWithImpl<$Res>
+class __$$FirmwareDownloadStatus_CheckingImplCopyWithImpl<$Res>
     extends _$FirmwareDownloadStatusCopyWithImpl<$Res,
-        _$FirmwareDownloadStatus_Checking>
-    implements _$$FirmwareDownloadStatus_CheckingCopyWith<$Res> {
-  __$$FirmwareDownloadStatus_CheckingCopyWithImpl(
-      _$FirmwareDownloadStatus_Checking _value,
-      $Res Function(_$FirmwareDownloadStatus_Checking) _then)
+        _$FirmwareDownloadStatus_CheckingImpl>
+    implements _$$FirmwareDownloadStatus_CheckingImplCopyWith<$Res> {
+  __$$FirmwareDownloadStatus_CheckingImplCopyWithImpl(
+      _$FirmwareDownloadStatus_CheckingImpl _value,
+      $Res Function(_$FirmwareDownloadStatus_CheckingImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$FirmwareDownloadStatus_Checking
+class _$FirmwareDownloadStatus_CheckingImpl
     implements FirmwareDownloadStatus_Checking {
-  const _$FirmwareDownloadStatus_Checking();
+  const _$FirmwareDownloadStatus_CheckingImpl();
 
   @override
   String toString() {
@@ -2033,10 +2061,10 @@ class _$FirmwareDownloadStatus_Checking
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FirmwareDownloadStatus_Checking);
+            other is _$FirmwareDownloadStatus_CheckingImpl);
   }
 
   @override
@@ -2127,27 +2155,27 @@ class _$FirmwareDownloadStatus_Checking
 abstract class FirmwareDownloadStatus_Checking
     implements FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus_Checking() =
-      _$FirmwareDownloadStatus_Checking;
+      _$FirmwareDownloadStatus_CheckingImpl;
 }
 
 /// @nodoc
-abstract class _$$FirmwareDownloadStatus_DownloadingCopyWith<$Res> {
-  factory _$$FirmwareDownloadStatus_DownloadingCopyWith(
-          _$FirmwareDownloadStatus_Downloading value,
-          $Res Function(_$FirmwareDownloadStatus_Downloading) then) =
-      __$$FirmwareDownloadStatus_DownloadingCopyWithImpl<$Res>;
+abstract class _$$FirmwareDownloadStatus_DownloadingImplCopyWith<$Res> {
+  factory _$$FirmwareDownloadStatus_DownloadingImplCopyWith(
+          _$FirmwareDownloadStatus_DownloadingImpl value,
+          $Res Function(_$FirmwareDownloadStatus_DownloadingImpl) then) =
+      __$$FirmwareDownloadStatus_DownloadingImplCopyWithImpl<$Res>;
   @useResult
   $Res call({DownloadProgress field0});
 }
 
 /// @nodoc
-class __$$FirmwareDownloadStatus_DownloadingCopyWithImpl<$Res>
+class __$$FirmwareDownloadStatus_DownloadingImplCopyWithImpl<$Res>
     extends _$FirmwareDownloadStatusCopyWithImpl<$Res,
-        _$FirmwareDownloadStatus_Downloading>
-    implements _$$FirmwareDownloadStatus_DownloadingCopyWith<$Res> {
-  __$$FirmwareDownloadStatus_DownloadingCopyWithImpl(
-      _$FirmwareDownloadStatus_Downloading _value,
-      $Res Function(_$FirmwareDownloadStatus_Downloading) _then)
+        _$FirmwareDownloadStatus_DownloadingImpl>
+    implements _$$FirmwareDownloadStatus_DownloadingImplCopyWith<$Res> {
+  __$$FirmwareDownloadStatus_DownloadingImplCopyWithImpl(
+      _$FirmwareDownloadStatus_DownloadingImpl _value,
+      $Res Function(_$FirmwareDownloadStatus_DownloadingImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2155,7 +2183,7 @@ class __$$FirmwareDownloadStatus_DownloadingCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$FirmwareDownloadStatus_Downloading(
+    return _then(_$FirmwareDownloadStatus_DownloadingImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -2166,9 +2194,9 @@ class __$$FirmwareDownloadStatus_DownloadingCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$FirmwareDownloadStatus_Downloading
+class _$FirmwareDownloadStatus_DownloadingImpl
     implements FirmwareDownloadStatus_Downloading {
-  const _$FirmwareDownloadStatus_Downloading(this.field0);
+  const _$FirmwareDownloadStatus_DownloadingImpl(this.field0);
 
   @override
   final DownloadProgress field0;
@@ -2179,10 +2207,10 @@ class _$FirmwareDownloadStatus_Downloading
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FirmwareDownloadStatus_Downloading &&
+            other is _$FirmwareDownloadStatus_DownloadingImpl &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -2192,10 +2220,10 @@ class _$FirmwareDownloadStatus_Downloading
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$FirmwareDownloadStatus_DownloadingCopyWith<
-          _$FirmwareDownloadStatus_Downloading>
-      get copyWith => __$$FirmwareDownloadStatus_DownloadingCopyWithImpl<
-          _$FirmwareDownloadStatus_Downloading>(this, _$identity);
+  _$$FirmwareDownloadStatus_DownloadingImplCopyWith<
+          _$FirmwareDownloadStatus_DownloadingImpl>
+      get copyWith => __$$FirmwareDownloadStatus_DownloadingImplCopyWithImpl<
+          _$FirmwareDownloadStatus_DownloadingImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -2282,39 +2310,39 @@ class _$FirmwareDownloadStatus_Downloading
 abstract class FirmwareDownloadStatus_Downloading
     implements FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus_Downloading(
-      final DownloadProgress field0) = _$FirmwareDownloadStatus_Downloading;
+      final DownloadProgress field0) = _$FirmwareDownloadStatus_DownloadingImpl;
 
   DownloadProgress get field0;
   @JsonKey(ignore: true)
-  _$$FirmwareDownloadStatus_DownloadingCopyWith<
-          _$FirmwareDownloadStatus_Downloading>
+  _$$FirmwareDownloadStatus_DownloadingImplCopyWith<
+          _$FirmwareDownloadStatus_DownloadingImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$FirmwareDownloadStatus_OfflineCopyWith<$Res> {
-  factory _$$FirmwareDownloadStatus_OfflineCopyWith(
-          _$FirmwareDownloadStatus_Offline value,
-          $Res Function(_$FirmwareDownloadStatus_Offline) then) =
-      __$$FirmwareDownloadStatus_OfflineCopyWithImpl<$Res>;
+abstract class _$$FirmwareDownloadStatus_OfflineImplCopyWith<$Res> {
+  factory _$$FirmwareDownloadStatus_OfflineImplCopyWith(
+          _$FirmwareDownloadStatus_OfflineImpl value,
+          $Res Function(_$FirmwareDownloadStatus_OfflineImpl) then) =
+      __$$FirmwareDownloadStatus_OfflineImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$FirmwareDownloadStatus_OfflineCopyWithImpl<$Res>
+class __$$FirmwareDownloadStatus_OfflineImplCopyWithImpl<$Res>
     extends _$FirmwareDownloadStatusCopyWithImpl<$Res,
-        _$FirmwareDownloadStatus_Offline>
-    implements _$$FirmwareDownloadStatus_OfflineCopyWith<$Res> {
-  __$$FirmwareDownloadStatus_OfflineCopyWithImpl(
-      _$FirmwareDownloadStatus_Offline _value,
-      $Res Function(_$FirmwareDownloadStatus_Offline) _then)
+        _$FirmwareDownloadStatus_OfflineImpl>
+    implements _$$FirmwareDownloadStatus_OfflineImplCopyWith<$Res> {
+  __$$FirmwareDownloadStatus_OfflineImplCopyWithImpl(
+      _$FirmwareDownloadStatus_OfflineImpl _value,
+      $Res Function(_$FirmwareDownloadStatus_OfflineImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$FirmwareDownloadStatus_Offline
+class _$FirmwareDownloadStatus_OfflineImpl
     implements FirmwareDownloadStatus_Offline {
-  const _$FirmwareDownloadStatus_Offline();
+  const _$FirmwareDownloadStatus_OfflineImpl();
 
   @override
   String toString() {
@@ -2322,10 +2350,10 @@ class _$FirmwareDownloadStatus_Offline
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FirmwareDownloadStatus_Offline);
+            other is _$FirmwareDownloadStatus_OfflineImpl);
   }
 
   @override
@@ -2416,33 +2444,33 @@ class _$FirmwareDownloadStatus_Offline
 abstract class FirmwareDownloadStatus_Offline
     implements FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus_Offline() =
-      _$FirmwareDownloadStatus_Offline;
+      _$FirmwareDownloadStatus_OfflineImpl;
 }
 
 /// @nodoc
-abstract class _$$FirmwareDownloadStatus_CompletedCopyWith<$Res> {
-  factory _$$FirmwareDownloadStatus_CompletedCopyWith(
-          _$FirmwareDownloadStatus_Completed value,
-          $Res Function(_$FirmwareDownloadStatus_Completed) then) =
-      __$$FirmwareDownloadStatus_CompletedCopyWithImpl<$Res>;
+abstract class _$$FirmwareDownloadStatus_CompletedImplCopyWith<$Res> {
+  factory _$$FirmwareDownloadStatus_CompletedImplCopyWith(
+          _$FirmwareDownloadStatus_CompletedImpl value,
+          $Res Function(_$FirmwareDownloadStatus_CompletedImpl) then) =
+      __$$FirmwareDownloadStatus_CompletedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$FirmwareDownloadStatus_CompletedCopyWithImpl<$Res>
+class __$$FirmwareDownloadStatus_CompletedImplCopyWithImpl<$Res>
     extends _$FirmwareDownloadStatusCopyWithImpl<$Res,
-        _$FirmwareDownloadStatus_Completed>
-    implements _$$FirmwareDownloadStatus_CompletedCopyWith<$Res> {
-  __$$FirmwareDownloadStatus_CompletedCopyWithImpl(
-      _$FirmwareDownloadStatus_Completed _value,
-      $Res Function(_$FirmwareDownloadStatus_Completed) _then)
+        _$FirmwareDownloadStatus_CompletedImpl>
+    implements _$$FirmwareDownloadStatus_CompletedImplCopyWith<$Res> {
+  __$$FirmwareDownloadStatus_CompletedImplCopyWithImpl(
+      _$FirmwareDownloadStatus_CompletedImpl _value,
+      $Res Function(_$FirmwareDownloadStatus_CompletedImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$FirmwareDownloadStatus_Completed
+class _$FirmwareDownloadStatus_CompletedImpl
     implements FirmwareDownloadStatus_Completed {
-  const _$FirmwareDownloadStatus_Completed();
+  const _$FirmwareDownloadStatus_CompletedImpl();
 
   @override
   String toString() {
@@ -2450,10 +2478,10 @@ class _$FirmwareDownloadStatus_Completed
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FirmwareDownloadStatus_Completed);
+            other is _$FirmwareDownloadStatus_CompletedImpl);
   }
 
   @override
@@ -2544,32 +2572,33 @@ class _$FirmwareDownloadStatus_Completed
 abstract class FirmwareDownloadStatus_Completed
     implements FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus_Completed() =
-      _$FirmwareDownloadStatus_Completed;
+      _$FirmwareDownloadStatus_CompletedImpl;
 }
 
 /// @nodoc
-abstract class _$$FirmwareDownloadStatus_FailedCopyWith<$Res> {
-  factory _$$FirmwareDownloadStatus_FailedCopyWith(
-          _$FirmwareDownloadStatus_Failed value,
-          $Res Function(_$FirmwareDownloadStatus_Failed) then) =
-      __$$FirmwareDownloadStatus_FailedCopyWithImpl<$Res>;
+abstract class _$$FirmwareDownloadStatus_FailedImplCopyWith<$Res> {
+  factory _$$FirmwareDownloadStatus_FailedImplCopyWith(
+          _$FirmwareDownloadStatus_FailedImpl value,
+          $Res Function(_$FirmwareDownloadStatus_FailedImpl) then) =
+      __$$FirmwareDownloadStatus_FailedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$FirmwareDownloadStatus_FailedCopyWithImpl<$Res>
+class __$$FirmwareDownloadStatus_FailedImplCopyWithImpl<$Res>
     extends _$FirmwareDownloadStatusCopyWithImpl<$Res,
-        _$FirmwareDownloadStatus_Failed>
-    implements _$$FirmwareDownloadStatus_FailedCopyWith<$Res> {
-  __$$FirmwareDownloadStatus_FailedCopyWithImpl(
-      _$FirmwareDownloadStatus_Failed _value,
-      $Res Function(_$FirmwareDownloadStatus_Failed) _then)
+        _$FirmwareDownloadStatus_FailedImpl>
+    implements _$$FirmwareDownloadStatus_FailedImplCopyWith<$Res> {
+  __$$FirmwareDownloadStatus_FailedImplCopyWithImpl(
+      _$FirmwareDownloadStatus_FailedImpl _value,
+      $Res Function(_$FirmwareDownloadStatus_FailedImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$FirmwareDownloadStatus_Failed implements FirmwareDownloadStatus_Failed {
-  const _$FirmwareDownloadStatus_Failed();
+class _$FirmwareDownloadStatus_FailedImpl
+    implements FirmwareDownloadStatus_Failed {
+  const _$FirmwareDownloadStatus_FailedImpl();
 
   @override
   String toString() {
@@ -2577,10 +2606,10 @@ class _$FirmwareDownloadStatus_Failed implements FirmwareDownloadStatus_Failed {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FirmwareDownloadStatus_Failed);
+            other is _$FirmwareDownloadStatus_FailedImpl);
   }
 
   @override
@@ -2670,7 +2699,7 @@ class _$FirmwareDownloadStatus_Failed implements FirmwareDownloadStatus_Failed {
 
 abstract class FirmwareDownloadStatus_Failed implements FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus_Failed() =
-      _$FirmwareDownloadStatus_Failed;
+      _$FirmwareDownloadStatus_FailedImpl;
 }
 
 /// @nodoc
@@ -2734,27 +2763,27 @@ class _$PortalErrorCopyWithImpl<$Res, $Val extends PortalError>
 }
 
 /// @nodoc
-abstract class _$$PortalError_AuthenticationCopyWith<$Res> {
-  factory _$$PortalError_AuthenticationCopyWith(
-          _$PortalError_Authentication value,
-          $Res Function(_$PortalError_Authentication) then) =
-      __$$PortalError_AuthenticationCopyWithImpl<$Res>;
+abstract class _$$PortalError_AuthenticationImplCopyWith<$Res> {
+  factory _$$PortalError_AuthenticationImplCopyWith(
+          _$PortalError_AuthenticationImpl value,
+          $Res Function(_$PortalError_AuthenticationImpl) then) =
+      __$$PortalError_AuthenticationImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$PortalError_AuthenticationCopyWithImpl<$Res>
-    extends _$PortalErrorCopyWithImpl<$Res, _$PortalError_Authentication>
-    implements _$$PortalError_AuthenticationCopyWith<$Res> {
-  __$$PortalError_AuthenticationCopyWithImpl(
-      _$PortalError_Authentication _value,
-      $Res Function(_$PortalError_Authentication) _then)
+class __$$PortalError_AuthenticationImplCopyWithImpl<$Res>
+    extends _$PortalErrorCopyWithImpl<$Res, _$PortalError_AuthenticationImpl>
+    implements _$$PortalError_AuthenticationImplCopyWith<$Res> {
+  __$$PortalError_AuthenticationImplCopyWithImpl(
+      _$PortalError_AuthenticationImpl _value,
+      $Res Function(_$PortalError_AuthenticationImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$PortalError_Authentication implements PortalError_Authentication {
-  const _$PortalError_Authentication();
+class _$PortalError_AuthenticationImpl implements PortalError_Authentication {
+  const _$PortalError_AuthenticationImpl();
 
   @override
   String toString() {
@@ -2762,10 +2791,10 @@ class _$PortalError_Authentication implements PortalError_Authentication {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$PortalError_Authentication);
+            other is _$PortalError_AuthenticationImpl);
   }
 
   @override
@@ -2835,24 +2864,24 @@ class _$PortalError_Authentication implements PortalError_Authentication {
 }
 
 abstract class PortalError_Authentication implements PortalError {
-  const factory PortalError_Authentication() = _$PortalError_Authentication;
+  const factory PortalError_Authentication() = _$PortalError_AuthenticationImpl;
 }
 
 /// @nodoc
-abstract class _$$PortalError_OtherCopyWith<$Res> {
-  factory _$$PortalError_OtherCopyWith(
-          _$PortalError_Other value, $Res Function(_$PortalError_Other) then) =
-      __$$PortalError_OtherCopyWithImpl<$Res>;
+abstract class _$$PortalError_OtherImplCopyWith<$Res> {
+  factory _$$PortalError_OtherImplCopyWith(_$PortalError_OtherImpl value,
+          $Res Function(_$PortalError_OtherImpl) then) =
+      __$$PortalError_OtherImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String field0});
 }
 
 /// @nodoc
-class __$$PortalError_OtherCopyWithImpl<$Res>
-    extends _$PortalErrorCopyWithImpl<$Res, _$PortalError_Other>
-    implements _$$PortalError_OtherCopyWith<$Res> {
-  __$$PortalError_OtherCopyWithImpl(
-      _$PortalError_Other _value, $Res Function(_$PortalError_Other) _then)
+class __$$PortalError_OtherImplCopyWithImpl<$Res>
+    extends _$PortalErrorCopyWithImpl<$Res, _$PortalError_OtherImpl>
+    implements _$$PortalError_OtherImplCopyWith<$Res> {
+  __$$PortalError_OtherImplCopyWithImpl(_$PortalError_OtherImpl _value,
+      $Res Function(_$PortalError_OtherImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2860,7 +2889,7 @@ class __$$PortalError_OtherCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$PortalError_Other(
+    return _then(_$PortalError_OtherImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -2871,8 +2900,8 @@ class __$$PortalError_OtherCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$PortalError_Other implements PortalError_Other {
-  const _$PortalError_Other(this.field0);
+class _$PortalError_OtherImpl implements PortalError_Other {
+  const _$PortalError_OtherImpl(this.field0);
 
   @override
   final String field0;
@@ -2883,10 +2912,10 @@ class _$PortalError_Other implements PortalError_Other {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$PortalError_Other &&
+            other is _$PortalError_OtherImpl &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -2896,8 +2925,9 @@ class _$PortalError_Other implements PortalError_Other {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$PortalError_OtherCopyWith<_$PortalError_Other> get copyWith =>
-      __$$PortalError_OtherCopyWithImpl<_$PortalError_Other>(this, _$identity);
+  _$$PortalError_OtherImplCopyWith<_$PortalError_OtherImpl> get copyWith =>
+      __$$PortalError_OtherImplCopyWithImpl<_$PortalError_OtherImpl>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -2963,11 +2993,12 @@ class _$PortalError_Other implements PortalError_Other {
 }
 
 abstract class PortalError_Other implements PortalError {
-  const factory PortalError_Other(final String field0) = _$PortalError_Other;
+  const factory PortalError_Other(final String field0) =
+      _$PortalError_OtherImpl;
 
   String get field0;
   @JsonKey(ignore: true)
-  _$$PortalError_OtherCopyWith<_$PortalError_Other> get copyWith =>
+  _$$PortalError_OtherImplCopyWith<_$PortalError_OtherImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -3045,22 +3076,22 @@ class _$ScheduleCopyWithImpl<$Res, $Val extends Schedule>
 }
 
 /// @nodoc
-abstract class _$$Schedule_EveryCopyWith<$Res>
+abstract class _$$Schedule_EveryImplCopyWith<$Res>
     implements $ScheduleCopyWith<$Res> {
-  factory _$$Schedule_EveryCopyWith(
-          _$Schedule_Every value, $Res Function(_$Schedule_Every) then) =
-      __$$Schedule_EveryCopyWithImpl<$Res>;
+  factory _$$Schedule_EveryImplCopyWith(_$Schedule_EveryImpl value,
+          $Res Function(_$Schedule_EveryImpl) then) =
+      __$$Schedule_EveryImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int field0});
 }
 
 /// @nodoc
-class __$$Schedule_EveryCopyWithImpl<$Res>
-    extends _$ScheduleCopyWithImpl<$Res, _$Schedule_Every>
-    implements _$$Schedule_EveryCopyWith<$Res> {
-  __$$Schedule_EveryCopyWithImpl(
-      _$Schedule_Every _value, $Res Function(_$Schedule_Every) _then)
+class __$$Schedule_EveryImplCopyWithImpl<$Res>
+    extends _$ScheduleCopyWithImpl<$Res, _$Schedule_EveryImpl>
+    implements _$$Schedule_EveryImplCopyWith<$Res> {
+  __$$Schedule_EveryImplCopyWithImpl(
+      _$Schedule_EveryImpl _value, $Res Function(_$Schedule_EveryImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -3068,7 +3099,7 @@ class __$$Schedule_EveryCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$Schedule_Every(
+    return _then(_$Schedule_EveryImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -3079,8 +3110,8 @@ class __$$Schedule_EveryCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Schedule_Every implements Schedule_Every {
-  const _$Schedule_Every(this.field0);
+class _$Schedule_EveryImpl implements Schedule_Every {
+  const _$Schedule_EveryImpl(this.field0);
 
   @override
   final int field0;
@@ -3091,10 +3122,10 @@ class _$Schedule_Every implements Schedule_Every {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Schedule_Every &&
+            other is _$Schedule_EveryImpl &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -3104,8 +3135,9 @@ class _$Schedule_Every implements Schedule_Every {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$Schedule_EveryCopyWith<_$Schedule_Every> get copyWith =>
-      __$$Schedule_EveryCopyWithImpl<_$Schedule_Every>(this, _$identity);
+  _$$Schedule_EveryImplCopyWith<_$Schedule_EveryImpl> get copyWith =>
+      __$$Schedule_EveryImplCopyWithImpl<_$Schedule_EveryImpl>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -3165,13 +3197,13 @@ class _$Schedule_Every implements Schedule_Every {
 }
 
 abstract class Schedule_Every implements Schedule {
-  const factory Schedule_Every(final int field0) = _$Schedule_Every;
+  const factory Schedule_Every(final int field0) = _$Schedule_EveryImpl;
 
   @override
   int get field0;
   @override
   @JsonKey(ignore: true)
-  _$$Schedule_EveryCopyWith<_$Schedule_Every> get copyWith =>
+  _$$Schedule_EveryImplCopyWith<_$Schedule_EveryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -3260,25 +3292,27 @@ class _$TransferStatusCopyWithImpl<$Res, $Val extends TransferStatus>
 }
 
 /// @nodoc
-abstract class _$$TransferStatus_StartingCopyWith<$Res> {
-  factory _$$TransferStatus_StartingCopyWith(_$TransferStatus_Starting value,
-          $Res Function(_$TransferStatus_Starting) then) =
-      __$$TransferStatus_StartingCopyWithImpl<$Res>;
+abstract class _$$TransferStatus_StartingImplCopyWith<$Res> {
+  factory _$$TransferStatus_StartingImplCopyWith(
+          _$TransferStatus_StartingImpl value,
+          $Res Function(_$TransferStatus_StartingImpl) then) =
+      __$$TransferStatus_StartingImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$TransferStatus_StartingCopyWithImpl<$Res>
-    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Starting>
-    implements _$$TransferStatus_StartingCopyWith<$Res> {
-  __$$TransferStatus_StartingCopyWithImpl(_$TransferStatus_Starting _value,
-      $Res Function(_$TransferStatus_Starting) _then)
+class __$$TransferStatus_StartingImplCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_StartingImpl>
+    implements _$$TransferStatus_StartingImplCopyWith<$Res> {
+  __$$TransferStatus_StartingImplCopyWithImpl(
+      _$TransferStatus_StartingImpl _value,
+      $Res Function(_$TransferStatus_StartingImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$TransferStatus_Starting implements TransferStatus_Starting {
-  const _$TransferStatus_Starting();
+class _$TransferStatus_StartingImpl implements TransferStatus_Starting {
+  const _$TransferStatus_StartingImpl();
 
   @override
   String toString() {
@@ -3286,10 +3320,10 @@ class _$TransferStatus_Starting implements TransferStatus_Starting {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$TransferStatus_Starting);
+            other is _$TransferStatus_StartingImpl);
   }
 
   @override
@@ -3383,26 +3417,26 @@ class _$TransferStatus_Starting implements TransferStatus_Starting {
 }
 
 abstract class TransferStatus_Starting implements TransferStatus {
-  const factory TransferStatus_Starting() = _$TransferStatus_Starting;
+  const factory TransferStatus_Starting() = _$TransferStatus_StartingImpl;
 }
 
 /// @nodoc
-abstract class _$$TransferStatus_DownloadingCopyWith<$Res> {
-  factory _$$TransferStatus_DownloadingCopyWith(
-          _$TransferStatus_Downloading value,
-          $Res Function(_$TransferStatus_Downloading) then) =
-      __$$TransferStatus_DownloadingCopyWithImpl<$Res>;
+abstract class _$$TransferStatus_DownloadingImplCopyWith<$Res> {
+  factory _$$TransferStatus_DownloadingImplCopyWith(
+          _$TransferStatus_DownloadingImpl value,
+          $Res Function(_$TransferStatus_DownloadingImpl) then) =
+      __$$TransferStatus_DownloadingImplCopyWithImpl<$Res>;
   @useResult
   $Res call({DownloadProgress field0});
 }
 
 /// @nodoc
-class __$$TransferStatus_DownloadingCopyWithImpl<$Res>
-    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Downloading>
-    implements _$$TransferStatus_DownloadingCopyWith<$Res> {
-  __$$TransferStatus_DownloadingCopyWithImpl(
-      _$TransferStatus_Downloading _value,
-      $Res Function(_$TransferStatus_Downloading) _then)
+class __$$TransferStatus_DownloadingImplCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_DownloadingImpl>
+    implements _$$TransferStatus_DownloadingImplCopyWith<$Res> {
+  __$$TransferStatus_DownloadingImplCopyWithImpl(
+      _$TransferStatus_DownloadingImpl _value,
+      $Res Function(_$TransferStatus_DownloadingImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -3410,7 +3444,7 @@ class __$$TransferStatus_DownloadingCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$TransferStatus_Downloading(
+    return _then(_$TransferStatus_DownloadingImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -3421,8 +3455,8 @@ class __$$TransferStatus_DownloadingCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$TransferStatus_Downloading implements TransferStatus_Downloading {
-  const _$TransferStatus_Downloading(this.field0);
+class _$TransferStatus_DownloadingImpl implements TransferStatus_Downloading {
+  const _$TransferStatus_DownloadingImpl(this.field0);
 
   @override
   final DownloadProgress field0;
@@ -3433,10 +3467,10 @@ class _$TransferStatus_Downloading implements TransferStatus_Downloading {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$TransferStatus_Downloading &&
+            other is _$TransferStatus_DownloadingImpl &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -3446,9 +3480,9 @@ class _$TransferStatus_Downloading implements TransferStatus_Downloading {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$TransferStatus_DownloadingCopyWith<_$TransferStatus_Downloading>
-      get copyWith => __$$TransferStatus_DownloadingCopyWithImpl<
-          _$TransferStatus_Downloading>(this, _$identity);
+  _$$TransferStatus_DownloadingImplCopyWith<_$TransferStatus_DownloadingImpl>
+      get copyWith => __$$TransferStatus_DownloadingImplCopyWithImpl<
+          _$TransferStatus_DownloadingImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -3539,29 +3573,31 @@ class _$TransferStatus_Downloading implements TransferStatus_Downloading {
 
 abstract class TransferStatus_Downloading implements TransferStatus {
   const factory TransferStatus_Downloading(final DownloadProgress field0) =
-      _$TransferStatus_Downloading;
+      _$TransferStatus_DownloadingImpl;
 
   DownloadProgress get field0;
   @JsonKey(ignore: true)
-  _$$TransferStatus_DownloadingCopyWith<_$TransferStatus_Downloading>
+  _$$TransferStatus_DownloadingImplCopyWith<_$TransferStatus_DownloadingImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$TransferStatus_UploadingCopyWith<$Res> {
-  factory _$$TransferStatus_UploadingCopyWith(_$TransferStatus_Uploading value,
-          $Res Function(_$TransferStatus_Uploading) then) =
-      __$$TransferStatus_UploadingCopyWithImpl<$Res>;
+abstract class _$$TransferStatus_UploadingImplCopyWith<$Res> {
+  factory _$$TransferStatus_UploadingImplCopyWith(
+          _$TransferStatus_UploadingImpl value,
+          $Res Function(_$TransferStatus_UploadingImpl) then) =
+      __$$TransferStatus_UploadingImplCopyWithImpl<$Res>;
   @useResult
   $Res call({UploadProgress field0});
 }
 
 /// @nodoc
-class __$$TransferStatus_UploadingCopyWithImpl<$Res>
-    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Uploading>
-    implements _$$TransferStatus_UploadingCopyWith<$Res> {
-  __$$TransferStatus_UploadingCopyWithImpl(_$TransferStatus_Uploading _value,
-      $Res Function(_$TransferStatus_Uploading) _then)
+class __$$TransferStatus_UploadingImplCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_UploadingImpl>
+    implements _$$TransferStatus_UploadingImplCopyWith<$Res> {
+  __$$TransferStatus_UploadingImplCopyWithImpl(
+      _$TransferStatus_UploadingImpl _value,
+      $Res Function(_$TransferStatus_UploadingImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -3569,7 +3605,7 @@ class __$$TransferStatus_UploadingCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$TransferStatus_Uploading(
+    return _then(_$TransferStatus_UploadingImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -3580,8 +3616,8 @@ class __$$TransferStatus_UploadingCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$TransferStatus_Uploading implements TransferStatus_Uploading {
-  const _$TransferStatus_Uploading(this.field0);
+class _$TransferStatus_UploadingImpl implements TransferStatus_Uploading {
+  const _$TransferStatus_UploadingImpl(this.field0);
 
   @override
   final UploadProgress field0;
@@ -3592,10 +3628,10 @@ class _$TransferStatus_Uploading implements TransferStatus_Uploading {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$TransferStatus_Uploading &&
+            other is _$TransferStatus_UploadingImpl &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -3605,10 +3641,9 @@ class _$TransferStatus_Uploading implements TransferStatus_Uploading {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$TransferStatus_UploadingCopyWith<_$TransferStatus_Uploading>
-      get copyWith =>
-          __$$TransferStatus_UploadingCopyWithImpl<_$TransferStatus_Uploading>(
-              this, _$identity);
+  _$$TransferStatus_UploadingImplCopyWith<_$TransferStatus_UploadingImpl>
+      get copyWith => __$$TransferStatus_UploadingImplCopyWithImpl<
+          _$TransferStatus_UploadingImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -3699,35 +3734,36 @@ class _$TransferStatus_Uploading implements TransferStatus_Uploading {
 
 abstract class TransferStatus_Uploading implements TransferStatus {
   const factory TransferStatus_Uploading(final UploadProgress field0) =
-      _$TransferStatus_Uploading;
+      _$TransferStatus_UploadingImpl;
 
   UploadProgress get field0;
   @JsonKey(ignore: true)
-  _$$TransferStatus_UploadingCopyWith<_$TransferStatus_Uploading>
+  _$$TransferStatus_UploadingImplCopyWith<_$TransferStatus_UploadingImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$TransferStatus_ProcessingCopyWith<$Res> {
-  factory _$$TransferStatus_ProcessingCopyWith(
-          _$TransferStatus_Processing value,
-          $Res Function(_$TransferStatus_Processing) then) =
-      __$$TransferStatus_ProcessingCopyWithImpl<$Res>;
+abstract class _$$TransferStatus_ProcessingImplCopyWith<$Res> {
+  factory _$$TransferStatus_ProcessingImplCopyWith(
+          _$TransferStatus_ProcessingImpl value,
+          $Res Function(_$TransferStatus_ProcessingImpl) then) =
+      __$$TransferStatus_ProcessingImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$TransferStatus_ProcessingCopyWithImpl<$Res>
-    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Processing>
-    implements _$$TransferStatus_ProcessingCopyWith<$Res> {
-  __$$TransferStatus_ProcessingCopyWithImpl(_$TransferStatus_Processing _value,
-      $Res Function(_$TransferStatus_Processing) _then)
+class __$$TransferStatus_ProcessingImplCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_ProcessingImpl>
+    implements _$$TransferStatus_ProcessingImplCopyWith<$Res> {
+  __$$TransferStatus_ProcessingImplCopyWithImpl(
+      _$TransferStatus_ProcessingImpl _value,
+      $Res Function(_$TransferStatus_ProcessingImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$TransferStatus_Processing implements TransferStatus_Processing {
-  const _$TransferStatus_Processing();
+class _$TransferStatus_ProcessingImpl implements TransferStatus_Processing {
+  const _$TransferStatus_ProcessingImpl();
 
   @override
   String toString() {
@@ -3735,10 +3771,10 @@ class _$TransferStatus_Processing implements TransferStatus_Processing {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$TransferStatus_Processing);
+            other is _$TransferStatus_ProcessingImpl);
   }
 
   @override
@@ -3832,29 +3868,31 @@ class _$TransferStatus_Processing implements TransferStatus_Processing {
 }
 
 abstract class TransferStatus_Processing implements TransferStatus {
-  const factory TransferStatus_Processing() = _$TransferStatus_Processing;
+  const factory TransferStatus_Processing() = _$TransferStatus_ProcessingImpl;
 }
 
 /// @nodoc
-abstract class _$$TransferStatus_CompletedCopyWith<$Res> {
-  factory _$$TransferStatus_CompletedCopyWith(_$TransferStatus_Completed value,
-          $Res Function(_$TransferStatus_Completed) then) =
-      __$$TransferStatus_CompletedCopyWithImpl<$Res>;
+abstract class _$$TransferStatus_CompletedImplCopyWith<$Res> {
+  factory _$$TransferStatus_CompletedImplCopyWith(
+          _$TransferStatus_CompletedImpl value,
+          $Res Function(_$TransferStatus_CompletedImpl) then) =
+      __$$TransferStatus_CompletedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$TransferStatus_CompletedCopyWithImpl<$Res>
-    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Completed>
-    implements _$$TransferStatus_CompletedCopyWith<$Res> {
-  __$$TransferStatus_CompletedCopyWithImpl(_$TransferStatus_Completed _value,
-      $Res Function(_$TransferStatus_Completed) _then)
+class __$$TransferStatus_CompletedImplCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_CompletedImpl>
+    implements _$$TransferStatus_CompletedImplCopyWith<$Res> {
+  __$$TransferStatus_CompletedImplCopyWithImpl(
+      _$TransferStatus_CompletedImpl _value,
+      $Res Function(_$TransferStatus_CompletedImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$TransferStatus_Completed implements TransferStatus_Completed {
-  const _$TransferStatus_Completed();
+class _$TransferStatus_CompletedImpl implements TransferStatus_Completed {
+  const _$TransferStatus_CompletedImpl();
 
   @override
   String toString() {
@@ -3862,10 +3900,10 @@ class _$TransferStatus_Completed implements TransferStatus_Completed {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$TransferStatus_Completed);
+            other is _$TransferStatus_CompletedImpl);
   }
 
   @override
@@ -3959,29 +3997,30 @@ class _$TransferStatus_Completed implements TransferStatus_Completed {
 }
 
 abstract class TransferStatus_Completed implements TransferStatus {
-  const factory TransferStatus_Completed() = _$TransferStatus_Completed;
+  const factory TransferStatus_Completed() = _$TransferStatus_CompletedImpl;
 }
 
 /// @nodoc
-abstract class _$$TransferStatus_FailedCopyWith<$Res> {
-  factory _$$TransferStatus_FailedCopyWith(_$TransferStatus_Failed value,
-          $Res Function(_$TransferStatus_Failed) then) =
-      __$$TransferStatus_FailedCopyWithImpl<$Res>;
+abstract class _$$TransferStatus_FailedImplCopyWith<$Res> {
+  factory _$$TransferStatus_FailedImplCopyWith(
+          _$TransferStatus_FailedImpl value,
+          $Res Function(_$TransferStatus_FailedImpl) then) =
+      __$$TransferStatus_FailedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$TransferStatus_FailedCopyWithImpl<$Res>
-    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_Failed>
-    implements _$$TransferStatus_FailedCopyWith<$Res> {
-  __$$TransferStatus_FailedCopyWithImpl(_$TransferStatus_Failed _value,
-      $Res Function(_$TransferStatus_Failed) _then)
+class __$$TransferStatus_FailedImplCopyWithImpl<$Res>
+    extends _$TransferStatusCopyWithImpl<$Res, _$TransferStatus_FailedImpl>
+    implements _$$TransferStatus_FailedImplCopyWith<$Res> {
+  __$$TransferStatus_FailedImplCopyWithImpl(_$TransferStatus_FailedImpl _value,
+      $Res Function(_$TransferStatus_FailedImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$TransferStatus_Failed implements TransferStatus_Failed {
-  const _$TransferStatus_Failed();
+class _$TransferStatus_FailedImpl implements TransferStatus_Failed {
+  const _$TransferStatus_FailedImpl();
 
   @override
   String toString() {
@@ -3989,9 +4028,10 @@ class _$TransferStatus_Failed implements TransferStatus_Failed {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$TransferStatus_Failed);
+        (other.runtimeType == runtimeType &&
+            other is _$TransferStatus_FailedImpl);
   }
 
   @override
@@ -4085,7 +4125,7 @@ class _$TransferStatus_Failed implements TransferStatus_Failed {
 }
 
 abstract class TransferStatus_Failed implements TransferStatus {
-  const factory TransferStatus_Failed() = _$TransferStatus_Failed;
+  const factory TransferStatus_Failed() = _$TransferStatus_FailedImpl;
 }
 
 /// @nodoc
@@ -4167,25 +4207,27 @@ class _$UpgradeStatusCopyWithImpl<$Res, $Val extends UpgradeStatus>
 }
 
 /// @nodoc
-abstract class _$$UpgradeStatus_StartingCopyWith<$Res> {
-  factory _$$UpgradeStatus_StartingCopyWith(_$UpgradeStatus_Starting value,
-          $Res Function(_$UpgradeStatus_Starting) then) =
-      __$$UpgradeStatus_StartingCopyWithImpl<$Res>;
+abstract class _$$UpgradeStatus_StartingImplCopyWith<$Res> {
+  factory _$$UpgradeStatus_StartingImplCopyWith(
+          _$UpgradeStatus_StartingImpl value,
+          $Res Function(_$UpgradeStatus_StartingImpl) then) =
+      __$$UpgradeStatus_StartingImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$UpgradeStatus_StartingCopyWithImpl<$Res>
-    extends _$UpgradeStatusCopyWithImpl<$Res, _$UpgradeStatus_Starting>
-    implements _$$UpgradeStatus_StartingCopyWith<$Res> {
-  __$$UpgradeStatus_StartingCopyWithImpl(_$UpgradeStatus_Starting _value,
-      $Res Function(_$UpgradeStatus_Starting) _then)
+class __$$UpgradeStatus_StartingImplCopyWithImpl<$Res>
+    extends _$UpgradeStatusCopyWithImpl<$Res, _$UpgradeStatus_StartingImpl>
+    implements _$$UpgradeStatus_StartingImplCopyWith<$Res> {
+  __$$UpgradeStatus_StartingImplCopyWithImpl(
+      _$UpgradeStatus_StartingImpl _value,
+      $Res Function(_$UpgradeStatus_StartingImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$UpgradeStatus_Starting implements UpgradeStatus_Starting {
-  const _$UpgradeStatus_Starting();
+class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
+  const _$UpgradeStatus_StartingImpl();
 
   @override
   String toString() {
@@ -4193,9 +4235,10 @@ class _$UpgradeStatus_Starting implements UpgradeStatus_Starting {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$UpgradeStatus_Starting);
+        (other.runtimeType == runtimeType &&
+            other is _$UpgradeStatus_StartingImpl);
   }
 
   @override
@@ -4283,24 +4326,26 @@ class _$UpgradeStatus_Starting implements UpgradeStatus_Starting {
 }
 
 abstract class UpgradeStatus_Starting implements UpgradeStatus {
-  const factory UpgradeStatus_Starting() = _$UpgradeStatus_Starting;
+  const factory UpgradeStatus_Starting() = _$UpgradeStatus_StartingImpl;
 }
 
 /// @nodoc
-abstract class _$$UpgradeStatus_UploadingCopyWith<$Res> {
-  factory _$$UpgradeStatus_UploadingCopyWith(_$UpgradeStatus_Uploading value,
-          $Res Function(_$UpgradeStatus_Uploading) then) =
-      __$$UpgradeStatus_UploadingCopyWithImpl<$Res>;
+abstract class _$$UpgradeStatus_UploadingImplCopyWith<$Res> {
+  factory _$$UpgradeStatus_UploadingImplCopyWith(
+          _$UpgradeStatus_UploadingImpl value,
+          $Res Function(_$UpgradeStatus_UploadingImpl) then) =
+      __$$UpgradeStatus_UploadingImplCopyWithImpl<$Res>;
   @useResult
   $Res call({UploadProgress field0});
 }
 
 /// @nodoc
-class __$$UpgradeStatus_UploadingCopyWithImpl<$Res>
-    extends _$UpgradeStatusCopyWithImpl<$Res, _$UpgradeStatus_Uploading>
-    implements _$$UpgradeStatus_UploadingCopyWith<$Res> {
-  __$$UpgradeStatus_UploadingCopyWithImpl(_$UpgradeStatus_Uploading _value,
-      $Res Function(_$UpgradeStatus_Uploading) _then)
+class __$$UpgradeStatus_UploadingImplCopyWithImpl<$Res>
+    extends _$UpgradeStatusCopyWithImpl<$Res, _$UpgradeStatus_UploadingImpl>
+    implements _$$UpgradeStatus_UploadingImplCopyWith<$Res> {
+  __$$UpgradeStatus_UploadingImplCopyWithImpl(
+      _$UpgradeStatus_UploadingImpl _value,
+      $Res Function(_$UpgradeStatus_UploadingImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -4308,7 +4353,7 @@ class __$$UpgradeStatus_UploadingCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$UpgradeStatus_Uploading(
+    return _then(_$UpgradeStatus_UploadingImpl(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -4319,8 +4364,8 @@ class __$$UpgradeStatus_UploadingCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UpgradeStatus_Uploading implements UpgradeStatus_Uploading {
-  const _$UpgradeStatus_Uploading(this.field0);
+class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
+  const _$UpgradeStatus_UploadingImpl(this.field0);
 
   @override
   final UploadProgress field0;
@@ -4331,10 +4376,10 @@ class _$UpgradeStatus_Uploading implements UpgradeStatus_Uploading {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$UpgradeStatus_Uploading &&
+            other is _$UpgradeStatus_UploadingImpl &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -4344,9 +4389,9 @@ class _$UpgradeStatus_Uploading implements UpgradeStatus_Uploading {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$UpgradeStatus_UploadingCopyWith<_$UpgradeStatus_Uploading> get copyWith =>
-      __$$UpgradeStatus_UploadingCopyWithImpl<_$UpgradeStatus_Uploading>(
-          this, _$identity);
+  _$$UpgradeStatus_UploadingImplCopyWith<_$UpgradeStatus_UploadingImpl>
+      get copyWith => __$$UpgradeStatus_UploadingImplCopyWithImpl<
+          _$UpgradeStatus_UploadingImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -4431,34 +4476,36 @@ class _$UpgradeStatus_Uploading implements UpgradeStatus_Uploading {
 
 abstract class UpgradeStatus_Uploading implements UpgradeStatus {
   const factory UpgradeStatus_Uploading(final UploadProgress field0) =
-      _$UpgradeStatus_Uploading;
+      _$UpgradeStatus_UploadingImpl;
 
   UploadProgress get field0;
   @JsonKey(ignore: true)
-  _$$UpgradeStatus_UploadingCopyWith<_$UpgradeStatus_Uploading> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$UpgradeStatus_UploadingImplCopyWith<_$UpgradeStatus_UploadingImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$UpgradeStatus_RestartingCopyWith<$Res> {
-  factory _$$UpgradeStatus_RestartingCopyWith(_$UpgradeStatus_Restarting value,
-          $Res Function(_$UpgradeStatus_Restarting) then) =
-      __$$UpgradeStatus_RestartingCopyWithImpl<$Res>;
+abstract class _$$UpgradeStatus_RestartingImplCopyWith<$Res> {
+  factory _$$UpgradeStatus_RestartingImplCopyWith(
+          _$UpgradeStatus_RestartingImpl value,
+          $Res Function(_$UpgradeStatus_RestartingImpl) then) =
+      __$$UpgradeStatus_RestartingImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$UpgradeStatus_RestartingCopyWithImpl<$Res>
-    extends _$UpgradeStatusCopyWithImpl<$Res, _$UpgradeStatus_Restarting>
-    implements _$$UpgradeStatus_RestartingCopyWith<$Res> {
-  __$$UpgradeStatus_RestartingCopyWithImpl(_$UpgradeStatus_Restarting _value,
-      $Res Function(_$UpgradeStatus_Restarting) _then)
+class __$$UpgradeStatus_RestartingImplCopyWithImpl<$Res>
+    extends _$UpgradeStatusCopyWithImpl<$Res, _$UpgradeStatus_RestartingImpl>
+    implements _$$UpgradeStatus_RestartingImplCopyWith<$Res> {
+  __$$UpgradeStatus_RestartingImplCopyWithImpl(
+      _$UpgradeStatus_RestartingImpl _value,
+      $Res Function(_$UpgradeStatus_RestartingImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$UpgradeStatus_Restarting implements UpgradeStatus_Restarting {
-  const _$UpgradeStatus_Restarting();
+class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
+  const _$UpgradeStatus_RestartingImpl();
 
   @override
   String toString() {
@@ -4466,10 +4513,10 @@ class _$UpgradeStatus_Restarting implements UpgradeStatus_Restarting {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$UpgradeStatus_Restarting);
+            other is _$UpgradeStatus_RestartingImpl);
   }
 
   @override
@@ -4557,29 +4604,31 @@ class _$UpgradeStatus_Restarting implements UpgradeStatus_Restarting {
 }
 
 abstract class UpgradeStatus_Restarting implements UpgradeStatus {
-  const factory UpgradeStatus_Restarting() = _$UpgradeStatus_Restarting;
+  const factory UpgradeStatus_Restarting() = _$UpgradeStatus_RestartingImpl;
 }
 
 /// @nodoc
-abstract class _$$UpgradeStatus_CompletedCopyWith<$Res> {
-  factory _$$UpgradeStatus_CompletedCopyWith(_$UpgradeStatus_Completed value,
-          $Res Function(_$UpgradeStatus_Completed) then) =
-      __$$UpgradeStatus_CompletedCopyWithImpl<$Res>;
+abstract class _$$UpgradeStatus_CompletedImplCopyWith<$Res> {
+  factory _$$UpgradeStatus_CompletedImplCopyWith(
+          _$UpgradeStatus_CompletedImpl value,
+          $Res Function(_$UpgradeStatus_CompletedImpl) then) =
+      __$$UpgradeStatus_CompletedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$UpgradeStatus_CompletedCopyWithImpl<$Res>
-    extends _$UpgradeStatusCopyWithImpl<$Res, _$UpgradeStatus_Completed>
-    implements _$$UpgradeStatus_CompletedCopyWith<$Res> {
-  __$$UpgradeStatus_CompletedCopyWithImpl(_$UpgradeStatus_Completed _value,
-      $Res Function(_$UpgradeStatus_Completed) _then)
+class __$$UpgradeStatus_CompletedImplCopyWithImpl<$Res>
+    extends _$UpgradeStatusCopyWithImpl<$Res, _$UpgradeStatus_CompletedImpl>
+    implements _$$UpgradeStatus_CompletedImplCopyWith<$Res> {
+  __$$UpgradeStatus_CompletedImplCopyWithImpl(
+      _$UpgradeStatus_CompletedImpl _value,
+      $Res Function(_$UpgradeStatus_CompletedImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$UpgradeStatus_Completed implements UpgradeStatus_Completed {
-  const _$UpgradeStatus_Completed();
+class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
+  const _$UpgradeStatus_CompletedImpl();
 
   @override
   String toString() {
@@ -4587,10 +4636,10 @@ class _$UpgradeStatus_Completed implements UpgradeStatus_Completed {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$UpgradeStatus_Completed);
+            other is _$UpgradeStatus_CompletedImpl);
   }
 
   @override
@@ -4678,29 +4727,29 @@ class _$UpgradeStatus_Completed implements UpgradeStatus_Completed {
 }
 
 abstract class UpgradeStatus_Completed implements UpgradeStatus {
-  const factory UpgradeStatus_Completed() = _$UpgradeStatus_Completed;
+  const factory UpgradeStatus_Completed() = _$UpgradeStatus_CompletedImpl;
 }
 
 /// @nodoc
-abstract class _$$UpgradeStatus_FailedCopyWith<$Res> {
-  factory _$$UpgradeStatus_FailedCopyWith(_$UpgradeStatus_Failed value,
-          $Res Function(_$UpgradeStatus_Failed) then) =
-      __$$UpgradeStatus_FailedCopyWithImpl<$Res>;
+abstract class _$$UpgradeStatus_FailedImplCopyWith<$Res> {
+  factory _$$UpgradeStatus_FailedImplCopyWith(_$UpgradeStatus_FailedImpl value,
+          $Res Function(_$UpgradeStatus_FailedImpl) then) =
+      __$$UpgradeStatus_FailedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$UpgradeStatus_FailedCopyWithImpl<$Res>
-    extends _$UpgradeStatusCopyWithImpl<$Res, _$UpgradeStatus_Failed>
-    implements _$$UpgradeStatus_FailedCopyWith<$Res> {
-  __$$UpgradeStatus_FailedCopyWithImpl(_$UpgradeStatus_Failed _value,
-      $Res Function(_$UpgradeStatus_Failed) _then)
+class __$$UpgradeStatus_FailedImplCopyWithImpl<$Res>
+    extends _$UpgradeStatusCopyWithImpl<$Res, _$UpgradeStatus_FailedImpl>
+    implements _$$UpgradeStatus_FailedImplCopyWith<$Res> {
+  __$$UpgradeStatus_FailedImplCopyWithImpl(_$UpgradeStatus_FailedImpl _value,
+      $Res Function(_$UpgradeStatus_FailedImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$UpgradeStatus_Failed implements UpgradeStatus_Failed {
-  const _$UpgradeStatus_Failed();
+class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
+  const _$UpgradeStatus_FailedImpl();
 
   @override
   String toString() {
@@ -4708,9 +4757,10 @@ class _$UpgradeStatus_Failed implements UpgradeStatus_Failed {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$UpgradeStatus_Failed);
+        (other.runtimeType == runtimeType &&
+            other is _$UpgradeStatus_FailedImpl);
   }
 
   @override
@@ -4798,5 +4848,5 @@ class _$UpgradeStatus_Failed implements UpgradeStatus_Failed {
 }
 
 abstract class UpgradeStatus_Failed implements UpgradeStatus {
-  const factory UpgradeStatus_Failed() = _$UpgradeStatus_Failed;
+  const factory UpgradeStatus_Failed() = _$UpgradeStatus_FailedImpl;
 }

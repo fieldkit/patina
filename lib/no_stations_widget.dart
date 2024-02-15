@@ -36,8 +36,7 @@ List<MaybeBracketed> extractBracketedText(String text) {
 class NoStationsHelpWidget extends StatelessWidget {
   final bool showImage;
 
-  const NoStationsHelpWidget({Key? key, this.showImage = true})
-      : super(key: key);
+  const NoStationsHelpWidget({super.key, this.showImage = true});
 
   @override
   Widget build(BuildContext context) {
