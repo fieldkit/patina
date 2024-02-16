@@ -5,6 +5,7 @@ import 'package:flutter/material.dart'
         Column,
         CrossAxisAlignment,
         EdgeInsets,
+        InkWell,
         Padding,
         Row,
         SizedBox,
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart'
         Text,
         TextStyle,
         Widget;
+import 'package:url_launcher/url_launcher.dart';
 
 class MarkdownWidgetParser extends MarkdownParser<Widget> {
   MarkdownWidgetParser({super.logger});
@@ -161,7 +163,8 @@ class MarkdownLinkWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text("LINK");
+    final Uri uri = Uri.parse(href);
+    return InkWell(child: Text(text), onTap: () => launchUrl(uri));
   }
 }
 
