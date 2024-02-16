@@ -1,6 +1,17 @@
 import 'package:flows/flows.dart';
 import 'package:flutter/material.dart'
-    show BuildContext, Column, Row, StatelessWidget, Text, TextStyle, Widget;
+    show
+        BuildContext,
+        Column,
+        CrossAxisAlignment,
+        EdgeInsets,
+        Padding,
+        Row,
+        SizedBox,
+        StatelessWidget,
+        Text,
+        TextStyle,
+        Widget;
 
 class MarkdownWidgetParser extends MarkdownParser<Widget> {
   MarkdownWidgetParser({super.logger});
@@ -106,12 +117,25 @@ class MarkdownParagraphWidget extends StatelessWidget {
   final String text;
   final List<Widget> children;
 
-  const MarkdownParagraphWidget(
-      {super.key, required this.text, required this.children});
+  const MarkdownParagraphWidget({
+    super.key,
+    required this.text,
+    required this.children,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Text(text, style: const TextStyle(fontFamily: 'Avenir'));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(text, style: const TextStyle(fontFamily: 'Avenir')),
+        const SizedBox(height: 8),
+        ...children.map((child) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: child,
+            )),
+      ],
+    );
   }
 }
 

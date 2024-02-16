@@ -137,6 +137,7 @@ class FlowScreenWidget extends StatelessWidget {
                         if ((simple.body).isNotEmpty) {
                           widgets.add(FlowSimpleScreenWidget(screen: simple));
                         }
+
                         // Add carousel widget if there are any images
                         if (simple.images.isNotEmpty) {
                           widgets.add(FlowImagesWidget(screen: simple));
