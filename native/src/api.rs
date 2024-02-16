@@ -235,9 +235,13 @@ impl Sdk {
             })
             .await?;
 
+        info!("authenticating");
         let authenticated = client.to_authenticated(tokens.clone())?;
+        info!("authenticating:ourselves");
         let ourselves = authenticated.query_ourselves().await?;
+        info!("authenticating:transmission");
         let transmission = authenticated.issue_transmission_token().await?;
+        info!("authenticating:done");
 
         Ok(Authenticated {
             name: ourselves.name,
@@ -289,12 +293,16 @@ impl Sdk {
     }
 
     async fn refresh_tokens(&self, tokens: Tokens) -> Result<Authenticated, PortalError> {
+        info!("refreshing tokens");
         let refresh_token = tokens.refresh_token()?;
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let refreshed = client.use_refresh_token(&refresh_token).await?;
         let authenticated = client.to_authenticated(refreshed.clone())?;
+        info!("refreshing tokens:ourselves");
         let ourselves = authenticated.query_ourselves().await?;
+        info!("refreshing tokens:transmission");
         let transmission = authenticated.issue_transmission_token().await?;
+        info!("refreshing tokens:done");
         Ok(Authenticated {
             name: ourselves.name,
             email: ourselves.email,
@@ -1228,11 +1236,12 @@ pub enum PortalError {
 
 impl From<query::portal::PortalError> for PortalError {
     fn from(value: query::portal::PortalError) -> Self {
+        warn!("converting error: {:?}", value);
         if let query::portal::PortalError::HttpStatus(status) = value {
             if status.is_client_error() {
                 return PortalError::Authentication;
             }
         }
-        return PortalError::Other(value.to_string());
+        return PortalError::Other(format!("{:?}", value));
     }
 }
