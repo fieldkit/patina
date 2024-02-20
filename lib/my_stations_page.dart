@@ -127,8 +127,8 @@ class StationCard extends StatelessWidget {
         context.watch<StationOperations>().getBusy<Operation>(config.deviceId);
     final localizations = AppLocalizations.of(context)!;
     final icon = SizedBox(
-        width: 54.0, // Adjust the width as needed
-        height: 54.0, // Adjust the height as needed
+        width: 54.0,
+        height: 54.0,
         child: Image(
           image: AssetImage(station.connected
               ? "resources/images/Icon_Station_Connected.png"

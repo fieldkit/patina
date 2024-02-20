@@ -77,8 +77,7 @@ class WelcomeScreen extends StatelessWidget {
                       onDone(); // Call the onDone callback when the skip button is pressed
                     },
                     child: Text(
-                      AppLocalizations.of(context)!
-                          .skipInstructions, // Assuming you have the localization set up for 'skipInstructions'
+                      AppLocalizations.of(context)!.skipInstructions,
                       style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 16.0,
