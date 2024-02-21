@@ -526,14 +526,27 @@ class StationConfiguration extends ChangeNotifier {
 
   List<Event> events() {
     final Uint8List? bytes = config.ephemeral?.events;
-    if (bytes == null) {
+    if (bytes == null || bytes.isEmpty) {
       return List.empty();
     }
-    final CodedBufferReader reader = CodedBufferReader(bytes);
-    final List<int> delimited = reader.readBytes();
-    final proto.DataRecord record = proto.DataRecord.fromBuffer(delimited);
-    Loggers.state.i("Events $record");
-    return record.events.map((e) => Event.from(e)).toList();
+    try {
+      final CodedBufferReader reader = CodedBufferReader(bytes);
+      final List<int> delimited = reader.readBytes();
+      try {
+        final proto.DataRecord record = proto.DataRecord.fromBuffer(delimited);
+        Loggers.state.i("Events $record");
+        return record.events.map((e) => Event.from(e)).toList();
+      } catch (e) {
+        Loggers.state.w("Error reading events: $e");
+        Loggers.state.w("$bytes (${bytes.length})");
+        Loggers.state.i("$delimited (${delimited.length})");
+        return List.empty();
+      }
+    } catch (e) {
+      Loggers.state.w("Error reading events: $e");
+      Loggers.state.w("$bytes (${bytes.length})");
+      return List.empty();
+    }
   }
 
   Future<void> addNetwork(
