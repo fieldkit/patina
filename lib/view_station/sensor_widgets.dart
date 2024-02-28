@@ -91,7 +91,7 @@ class SensorInfo extends StatelessWidget {
 class SensorsGrid extends StatelessWidget {
   final List<Widget> children;
 
-  const SensorsGrid({Key? key, required this.children}) : super(key: key);
+  const SensorsGrid({super.key, required this.children});
 
   @override
   Widget build(BuildContext context) {
