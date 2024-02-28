@@ -710,6 +710,8 @@ class NativeImpl implements Native {
       case 0:
         return PortalError_Authentication();
       case 1:
+        return PortalError_Connecting();
+      case 2:
         return PortalError_Other(
           _wire2api_String(raw[1]),
         );

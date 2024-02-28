@@ -638,7 +638,8 @@ impl support::IntoDart for PortalError {
     fn into_dart(self) -> support::DartAbi {
         match self {
             Self::Authentication => vec![0.into_dart()],
-            Self::Other(field0) => vec![1.into_dart(), field0.into_into_dart().into_dart()],
+            Self::Connecting => vec![1.into_dart()],
+            Self::Other(field0) => vec![2.into_dart(), field0.into_into_dart().into_dart()],
         }
         .into_dart()
     }

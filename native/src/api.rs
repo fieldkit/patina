@@ -1230,18 +1230,26 @@ pub enum SdkMappingError {}
 pub enum PortalError {
     #[error("Authentication")]
     Authentication,
+    #[error("Connecting")]
+    Connecting,
     #[error("Other")]
     Other(String),
 }
 
 impl From<query::portal::PortalError> for PortalError {
     fn from(value: query::portal::PortalError) -> Self {
-        warn!("converting error: {:?}", value);
+        let description = format!("{:?}", value);
         if let query::portal::PortalError::HttpStatus(status) = value {
             if status.is_client_error() {
                 return PortalError::Authentication;
             }
         }
-        return PortalError::Other(format!("{:?}", value));
+        if let query::portal::PortalError::Request(error) = value {
+            if error.is_connect() {
+                return PortalError::Connecting;
+            }
+        }
+        warn!("other-portal-error: {:?}", description);
+        return PortalError::Other(description);
     }
 }

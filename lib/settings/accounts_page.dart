@@ -233,6 +233,10 @@ class AccountStatus extends StatelessWidget {
         width: double.infinity, margin: WH.pagePadding, child: Text(value));
 
     switch (validity) {
+      case Validity.connectivity:
+        return ColoredBox(
+            color: const Color.fromRGBO(250, 197, 89, 1),
+            child: text(localizations.accountConnectivity));
       case Validity.unknown:
         return ColoredBox(
             color: const Color.fromRGBO(250, 197, 89, 1),
@@ -272,15 +276,15 @@ class AccountItem extends StatelessWidget {
         header:
             GenericListItemHeader(title: account.email, subtitle: account.name),
         children: [
-          WH.align(
-              AccountStatus(validity: account.valid, active: account.active)),
+          WH.align(AccountStatus(
+              validity: account.validity, active: account.active)),
           WH.align(WH.padChildrenPage([
             Row(
               children: WH.padButtonsRow([
                 ElevatedButton(
                     onPressed: onDelete,
                     child: Text(localizations.accountDeleteButton)),
-                if (account.valid != Validity.valid)
+                if (account.validity != Validity.valid)
                   ElevatedButton(
                       onPressed: onLogin,
                       child: Text(localizations.accountRepairButton)),

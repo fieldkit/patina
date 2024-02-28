@@ -3,8 +3,8 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:exponential_back_off/exponential_back_off.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:uuid/uuid.dart';
 import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
@@ -31,34 +31,66 @@ class StationModel {
 }
 
 class UpdatePortal {
+  final Map<String, ExponentialBackOff> _active = {};
+  final Map<String, AddOrUpdatePortalStation> _updates = {};
+
   UpdatePortal(Native api, PortalAccounts portalAccounts,
       AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) async {
       final deviceId = refreshed.field0.deviceId;
+
+      // Always update what we'll be sending to the server. So when we do succeed it's the fresh data.
+      final name = refreshed.field0.name;
+      _updates[deviceId] = AddOrUpdatePortalStation(
+          name: name,
+          deviceId: deviceId,
+          locationName: "",
+          statusPb: refreshed.field2);
+
+      if (_active.containsKey(deviceId) &&
+          _active[deviceId]!.isProcessRunning()) {
+        Loggers.state.i("$deviceId $name portal update active");
+        return;
+      }
+
       final account = portalAccounts.getAccountForDevice(deviceId);
       final tokens = account?.tokens;
       if (account != null && tokens != null) {
-        final name = refreshed.field0.name;
-        try {
-          final idIfOk = await api.addOrUpdateStationInPortal(
-              tokens: tokens,
-              station: AddOrUpdatePortalStation(
-                  name: name,
-                  deviceId: deviceId,
-                  locationName: "",
-                  statusPb: refreshed.field2));
-          if (idIfOk == null) {
-            Loggers.main.w("$deviceId permissions-conflict");
+        final backOff = ExponentialBackOff(
+          interval: const Duration(milliseconds: 2000),
+          maxDelay: const Duration(seconds: 60 * 5),
+          maxAttempts: 10,
+          maxRandomizationFactor: 0.0,
+        );
+
+        _active[deviceId] = backOff;
+
+        final update = await backOff.start(
+            () async {
+              final idIfOk = await api.addOrUpdateStationInPortal(
+                  tokens: tokens, station: _updates[deviceId]!);
+              portalAccounts.markValid(account);
+              if (idIfOk == null) {
+                Loggers.main.w("$deviceId permissions-conflict");
+              } else {
+                Loggers.main.v("$deviceId refreshed portal-id=$idIfOk");
+              }
+            },
+            retryIf: (e) => e is PortalError_Connecting,
+            onRetry: (e) {
+              if (e is PortalError_Connecting) {
+                portalAccounts.markConnectivyIssue(account);
+              }
+            });
+
+        if (update.isLeft()) {
+          final error = update.getLeftValue();
+          if (error is PortalError_Authentication) {
+            Loggers.main.e("portal-error: auth $e");
+            await portalAccounts.validateAccount(account);
           } else {
-            Loggers.main.v("$deviceId refreshed portal-id=$idIfOk");
+            Loggers.main.e("portal-error: $error");
           }
-        } on PortalError_Authentication catch (e) {
-          Loggers.main.e("portal-error: auth $e");
-          await portalAccounts.validateAccount(account);
-        } on FrbAnyhowException catch (e) {
-          Loggers.main.e("portal-error: ${e.anyhow}");
-        } catch (e) {
-          Loggers.main.e("portal-error: $e");
         }
       } else {
         // TODO Warn user about lack of updates due to logged out.
@@ -94,7 +126,7 @@ class KnownStationsModel extends ChangeNotifier {
       station.ephemeral = refreshed.field1;
       station.connected = true;
       Loggers.state.i(
-          "${station.deviceId} ${station.config?.name} ${station.ephemeral?.capabilities.udp}");
+          "${station.deviceId} ${station.config?.name} udp=${station.ephemeral?.capabilities.udp} fw=${station.config?.firmware.label}/${station.config?.firmware.time}");
       notifyListeners();
     });
 
@@ -1049,6 +1081,7 @@ enum Validity {
   unknown,
   valid,
   invalid,
+  connectivity,
 }
 
 class PortalAccount extends ChangeNotifier {
@@ -1056,14 +1089,14 @@ class PortalAccount extends ChangeNotifier {
   final String name;
   final Tokens? tokens;
   final bool active;
-  final Validity valid;
+  final Validity validity;
 
   PortalAccount(
       {required this.email,
       required this.name,
       required this.tokens,
       required this.active,
-      this.valid = Validity.unknown});
+      this.validity = Validity.unknown});
 
   factory PortalAccount.fromJson(Map<String, dynamic> data) {
     final email = data['email'] as String;
@@ -1082,7 +1115,7 @@ class PortalAccount extends ChangeNotifier {
         name: authenticated.name,
         tokens: authenticated.tokens,
         active: true,
-        valid: Validity.valid);
+        validity: Validity.valid);
   }
 
   Map<String, dynamic> toJson() => {
@@ -1098,12 +1131,34 @@ class PortalAccount extends ChangeNotifier {
         name: name,
         tokens: null,
         active: active,
-        valid: Validity.invalid);
+        validity: Validity.invalid);
+  }
+
+  PortalAccount valid() {
+    return PortalAccount(
+        email: email,
+        name: name,
+        tokens: tokens,
+        active: active,
+        validity: Validity.valid);
+  }
+
+  PortalAccount connectivity() {
+    return PortalAccount(
+        email: email,
+        name: name,
+        tokens: tokens,
+        active: active,
+        validity: Validity.connectivity);
   }
 
   PortalAccount withActive(bool active) {
     return PortalAccount(
-        email: email, name: name, tokens: tokens, active: active, valid: valid);
+        email: email,
+        name: name,
+        tokens: tokens,
+        active: active,
+        validity: validity);
   }
 }
 
@@ -1233,9 +1288,12 @@ class PortalAccounts extends ChangeNotifier {
       try {
         _accounts.add(PortalAccount.fromAuthenticated(
             await api.validateTokens(tokens: tokens)));
-      } catch (e) {
+      } on PortalError_Authentication catch (e) {
         Loggers.state.e("Exception validating: $e");
         _accounts.add(account.invalid());
+      } catch (e) {
+        Loggers.state.e("Exception validating: $e");
+        _accounts.add(account.connectivity());
       }
       await _save();
       notifyListeners();
@@ -1270,6 +1328,18 @@ class PortalAccounts extends ChangeNotifier {
     final maybeTokens =
         _accounts.map((e) => e.tokens).where((e) => e != null).firstOrNull;
     return maybeTokens != null;
+  }
+
+  void markValid(PortalAccount account) {
+    _accounts.removeWhere((el) => el.email == account.email);
+    _accounts.add(account.valid());
+    notifyListeners();
+  }
+
+  void markConnectivyIssue(PortalAccount account) {
+    _accounts.removeWhere((el) => el.email == account.email);
+    _accounts.add(account.connectivity());
+    notifyListeners();
   }
 }
 
