@@ -837,23 +837,52 @@ class UploadTaskFactory extends TaskFactory<UploadTask> {
     final List<UploadTask> tasks = List.empty(growable: true);
     final byId = _archives.groupListsBy((a) => a.deviceId);
     for (final entry in byId.entries) {
-      final tokens = portalAccounts.getAccountForDevice(entry.key)?.tokens;
-      if (tokens != null) {
-        tasks.add(UploadTask(
-            deviceId: entry.key, files: entry.value, tokens: tokens));
+      final account = portalAccounts.getAccountForDevice(entry.key);
+      if (account != null) {
+        if (account.tokens == null) {
+          tasks.add(UploadTask(
+              deviceId: entry.key,
+              files: entry.value,
+              tokens: null,
+              problem: UploadProblem.authentication));
+        } else if (account.validity == Validity.connectivity) {
+          tasks.add(UploadTask(
+              deviceId: entry.key,
+              files: entry.value,
+              tokens: account.tokens,
+              problem: UploadProblem.connectivity));
+        } else {
+          tasks.add(UploadTask(
+              deviceId: entry.key,
+              files: entry.value,
+              tokens: account.tokens,
+              problem: UploadProblem.none));
+        }
       }
     }
     return tasks;
   }
 }
 
+enum UploadProblem {
+  none,
+  authentication,
+  connectivity,
+}
+
 class UploadTask extends Task {
   final String deviceId;
   final List<RecordArchive> files;
-  final Tokens tokens;
+  final Tokens? tokens;
+  final UploadProblem problem;
 
   UploadTask(
-      {required this.deviceId, required this.files, required this.tokens});
+      {required this.deviceId,
+      required this.files,
+      required this.tokens,
+      required this.problem});
+
+  bool get allowed => problem == UploadProblem.none;
 
   @override
   String toString() {

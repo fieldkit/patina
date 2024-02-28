@@ -32,7 +32,7 @@ class DataSyncTab extends StatelessWidget {
       },
       onUpload: (task) async {
         await knownStations.startUpload(
-            deviceId: task.deviceId, tokens: task.tokens, files: task.files);
+            deviceId: task.deviceId, tokens: task.tokens!, files: task.files);
       },
     );
   }
@@ -145,8 +145,9 @@ class DataSyncPage extends StatelessWidget {
         onDownload: (!busy && downloadTask != null)
             ? () => onDownload(downloadTask)
             : null,
-        onUpload:
-            (!busy && uploadTask != null) ? () => onUpload(uploadTask) : null,
+        onUpload: (!busy && uploadTask != null && uploadTask.allowed)
+            ? () => onUpload(uploadTask)
+            : null,
       );
     }).toList();
 
