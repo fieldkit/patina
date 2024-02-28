@@ -93,6 +93,8 @@ class KnownStationsModel extends ChangeNotifier {
       station.config = refreshed.field0;
       station.ephemeral = refreshed.field1;
       station.connected = true;
+      Loggers.state.i(
+          "${station.deviceId} ${station.config?.name} ${station.ephemeral?.capabilities.udp}");
       notifyListeners();
     });
 

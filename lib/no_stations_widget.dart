@@ -77,6 +77,27 @@ class NoStationsHelpWidget extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
+          child: ElevatedButton(
+            onPressed: () {
+              // TODO: Make this functional later
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFCE596B),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
+            ),
+            child: Text(
+              AppLocalizations.of(context)!.connectStation,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20.0,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+        ),
       ]),
     );
   }

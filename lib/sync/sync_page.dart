@@ -158,27 +158,6 @@ class DataSyncPage extends StatelessWidget {
           if (loginTasks.isNotEmpty) const LoginRequiredWidget(),
           if (stations.isEmpty) const NoStationsHelpWidget(showImage: true),
           ...stations,
-          Padding(
-            padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
-            child: ElevatedButton(
-              onPressed: () {
-                // TODO: Make this functional later
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 14.0),
-              ),
-              child: Text(
-                AppLocalizations.of(context)!.dataSyncButton,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 20.0,
-                ),
-              ),
-            ),
-          ),
         ]));
   }
 }
