@@ -123,7 +123,7 @@ Future<AppEnv> initializeCurrentEnv(
 
 class OurApp extends StatefulWidget {
   final AppEnv env;
-  const OurApp({Key? key, required this.env}) : super(key: key);
+  const OurApp({super.key, required this.env});
 
   @override
   State<StatefulWidget> createState() {
@@ -213,7 +213,8 @@ void main() async {
   final env = await initializeCurrentEnv(config, AppEventDispatcher());
 
   final refName = getCommitRefName();
-  logger.i("Initialized: $env $refName");
+  final sha = getCommitSha();
+  logger.i("Initialized: ref=$refName sha=$sha");
 
   runApp(OurApp(env: env));
 }

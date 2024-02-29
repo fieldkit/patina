@@ -107,6 +107,15 @@ class _HelpPageState extends State<HelpPage> {
                               AppLocalizations.of(context)!.developerBuild,
                           style: _textStyle,
                         ),
+                        TextSpan(
+                          text: '\n',
+                          style: _textStyle,
+                        ),
+                        TextSpan(
+                          text: getCommitSha() ??
+                              AppLocalizations.of(context)!.developerBuild,
+                          style: _textStyle,
+                        ),
                       ],
                     ),
                   )

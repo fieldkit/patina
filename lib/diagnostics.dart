@@ -10,6 +10,10 @@ String? getCommitRefName() {
   return dotenv.env['CI_COMMIT_REF_NAME'];
 }
 
+String? getCommitSha() {
+  return dotenv.env['CI_COMMIT_SHA'];
+}
+
 bool isAutomatedBuild() {
   return getCommitRefName() != null;
 }
