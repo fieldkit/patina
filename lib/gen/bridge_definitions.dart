@@ -340,6 +340,7 @@ class NetworkConfig {
 @freezed
 sealed class PortalError with _$PortalError implements FrbException {
   const factory PortalError.authentication() = PortalError_Authentication;
+  const factory PortalError.connecting() = PortalError_Connecting;
   const factory PortalError.other(
     String field0,
   ) = PortalError_Other;

@@ -2707,18 +2707,21 @@ mixin _$PortalError {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() authentication,
+    required TResult Function() connecting,
     required TResult Function(String field0) other,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? authentication,
+    TResult? Function()? connecting,
     TResult? Function(String field0)? other,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? authentication,
+    TResult Function()? connecting,
     TResult Function(String field0)? other,
     required TResult orElse(),
   }) =>
@@ -2726,18 +2729,21 @@ mixin _$PortalError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(PortalError_Authentication value) authentication,
+    required TResult Function(PortalError_Connecting value) connecting,
     required TResult Function(PortalError_Other value) other,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(PortalError_Authentication value)? authentication,
+    TResult? Function(PortalError_Connecting value)? connecting,
     TResult? Function(PortalError_Other value)? other,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(PortalError_Authentication value)? authentication,
+    TResult Function(PortalError_Connecting value)? connecting,
     TResult Function(PortalError_Other value)? other,
     required TResult orElse(),
   }) =>
@@ -2804,6 +2810,7 @@ class _$PortalError_AuthenticationImpl implements PortalError_Authentication {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() authentication,
+    required TResult Function() connecting,
     required TResult Function(String field0) other,
   }) {
     return authentication();
@@ -2813,6 +2820,7 @@ class _$PortalError_AuthenticationImpl implements PortalError_Authentication {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? authentication,
+    TResult? Function()? connecting,
     TResult? Function(String field0)? other,
   }) {
     return authentication?.call();
@@ -2822,6 +2830,7 @@ class _$PortalError_AuthenticationImpl implements PortalError_Authentication {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? authentication,
+    TResult Function()? connecting,
     TResult Function(String field0)? other,
     required TResult orElse(),
   }) {
@@ -2835,6 +2844,7 @@ class _$PortalError_AuthenticationImpl implements PortalError_Authentication {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(PortalError_Authentication value) authentication,
+    required TResult Function(PortalError_Connecting value) connecting,
     required TResult Function(PortalError_Other value) other,
   }) {
     return authentication(this);
@@ -2844,6 +2854,7 @@ class _$PortalError_AuthenticationImpl implements PortalError_Authentication {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(PortalError_Authentication value)? authentication,
+    TResult? Function(PortalError_Connecting value)? connecting,
     TResult? Function(PortalError_Other value)? other,
   }) {
     return authentication?.call(this);
@@ -2853,6 +2864,7 @@ class _$PortalError_AuthenticationImpl implements PortalError_Authentication {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(PortalError_Authentication value)? authentication,
+    TResult Function(PortalError_Connecting value)? connecting,
     TResult Function(PortalError_Other value)? other,
     required TResult orElse(),
   }) {
@@ -2865,6 +2877,117 @@ class _$PortalError_AuthenticationImpl implements PortalError_Authentication {
 
 abstract class PortalError_Authentication implements PortalError {
   const factory PortalError_Authentication() = _$PortalError_AuthenticationImpl;
+}
+
+/// @nodoc
+abstract class _$$PortalError_ConnectingImplCopyWith<$Res> {
+  factory _$$PortalError_ConnectingImplCopyWith(
+          _$PortalError_ConnectingImpl value,
+          $Res Function(_$PortalError_ConnectingImpl) then) =
+      __$$PortalError_ConnectingImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$PortalError_ConnectingImplCopyWithImpl<$Res>
+    extends _$PortalErrorCopyWithImpl<$Res, _$PortalError_ConnectingImpl>
+    implements _$$PortalError_ConnectingImplCopyWith<$Res> {
+  __$$PortalError_ConnectingImplCopyWithImpl(
+      _$PortalError_ConnectingImpl _value,
+      $Res Function(_$PortalError_ConnectingImpl) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$PortalError_ConnectingImpl implements PortalError_Connecting {
+  const _$PortalError_ConnectingImpl();
+
+  @override
+  String toString() {
+    return 'PortalError.connecting()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$PortalError_ConnectingImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() authentication,
+    required TResult Function() connecting,
+    required TResult Function(String field0) other,
+  }) {
+    return connecting();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? authentication,
+    TResult? Function()? connecting,
+    TResult? Function(String field0)? other,
+  }) {
+    return connecting?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? authentication,
+    TResult Function()? connecting,
+    TResult Function(String field0)? other,
+    required TResult orElse(),
+  }) {
+    if (connecting != null) {
+      return connecting();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(PortalError_Authentication value) authentication,
+    required TResult Function(PortalError_Connecting value) connecting,
+    required TResult Function(PortalError_Other value) other,
+  }) {
+    return connecting(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(PortalError_Authentication value)? authentication,
+    TResult? Function(PortalError_Connecting value)? connecting,
+    TResult? Function(PortalError_Other value)? other,
+  }) {
+    return connecting?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(PortalError_Authentication value)? authentication,
+    TResult Function(PortalError_Connecting value)? connecting,
+    TResult Function(PortalError_Other value)? other,
+    required TResult orElse(),
+  }) {
+    if (connecting != null) {
+      return connecting(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class PortalError_Connecting implements PortalError {
+  const factory PortalError_Connecting() = _$PortalError_ConnectingImpl;
 }
 
 /// @nodoc
@@ -2933,6 +3056,7 @@ class _$PortalError_OtherImpl implements PortalError_Other {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() authentication,
+    required TResult Function() connecting,
     required TResult Function(String field0) other,
   }) {
     return other(field0);
@@ -2942,6 +3066,7 @@ class _$PortalError_OtherImpl implements PortalError_Other {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? authentication,
+    TResult? Function()? connecting,
     TResult? Function(String field0)? other,
   }) {
     return other?.call(field0);
@@ -2951,6 +3076,7 @@ class _$PortalError_OtherImpl implements PortalError_Other {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? authentication,
+    TResult Function()? connecting,
     TResult Function(String field0)? other,
     required TResult orElse(),
   }) {
@@ -2964,6 +3090,7 @@ class _$PortalError_OtherImpl implements PortalError_Other {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(PortalError_Authentication value) authentication,
+    required TResult Function(PortalError_Connecting value) connecting,
     required TResult Function(PortalError_Other value) other,
   }) {
     return other(this);
@@ -2973,6 +3100,7 @@ class _$PortalError_OtherImpl implements PortalError_Other {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(PortalError_Authentication value)? authentication,
+    TResult? Function(PortalError_Connecting value)? connecting,
     TResult? Function(PortalError_Other value)? other,
   }) {
     return other?.call(this);
@@ -2982,6 +3110,7 @@ class _$PortalError_OtherImpl implements PortalError_Other {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(PortalError_Authentication value)? authentication,
+    TResult Function(PortalError_Connecting value)? connecting,
     TResult Function(PortalError_Other value)? other,
     required TResult orElse(),
   }) {

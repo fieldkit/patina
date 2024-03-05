@@ -32,7 +32,7 @@ class DataSyncTab extends StatelessWidget {
       },
       onUpload: (task) async {
         await knownStations.startUpload(
-            deviceId: task.deviceId, tokens: task.tokens, files: task.files);
+            deviceId: task.deviceId, tokens: task.tokens!, files: task.files);
       },
     );
   }
@@ -145,8 +145,9 @@ class DataSyncPage extends StatelessWidget {
         onDownload: (!busy && downloadTask != null)
             ? () => onDownload(downloadTask)
             : null,
-        onUpload:
-            (!busy && uploadTask != null) ? () => onUpload(uploadTask) : null,
+        onUpload: (!busy && uploadTask != null && uploadTask.allowed)
+            ? () => onUpload(uploadTask)
+            : null,
       );
     }).toList();
 
@@ -158,27 +159,6 @@ class DataSyncPage extends StatelessWidget {
           if (loginTasks.isNotEmpty) const LoginRequiredWidget(),
           if (stations.isEmpty) const NoStationsHelpWidget(showImage: true),
           ...stations,
-          Padding(
-            padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
-            child: ElevatedButton(
-              onPressed: () {
-                // TODO: Make this functional later
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 14.0),
-              ),
-              child: Text(
-                AppLocalizations.of(context)!.dataSyncButton,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 20.0,
-                ),
-              ),
-            ),
-          ),
         ]));
   }
 }
@@ -270,6 +250,7 @@ class StationSyncStatus extends StatelessWidget {
         WH.padBelowProgress(Text(localizations.syncWorking)),
       ]));
     }
+    Loggers.ui.i("udp=${station.ephemeral?.capabilities.udp}");
     if (station.ephemeral?.capabilities.udp ?? false) {
       return SyncOptions(onDownload: onDownload, onUpload: onUpload);
     }

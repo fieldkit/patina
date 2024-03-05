@@ -98,7 +98,8 @@ class HighLevelsDetails extends StatelessWidget {
           style: TextStyle(fontSize: 20, color: Colors.white),
         ));
 
-    return Column(
+    return Flex(
+      direction: Axis.vertical,
       children: [
         Container(
             padding: const EdgeInsets.only(top: 20),
@@ -126,7 +127,7 @@ class HighLevelsDetails extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           width: double.infinity,
           child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {}, // TODO: Implement Deploy
               child: Text(AppLocalizations.of(context)!.deployButton)),
         ),
         Column(children: modules)

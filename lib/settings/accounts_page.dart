@@ -26,56 +26,58 @@ class AccountsPage extends StatelessWidget {
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                AppLocalizations.of(context)!.accountsNoneCreatedTitle,
-                style: const TextStyle(
-                    fontSize: 20.0, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20.0), // Spacer
-              Image.asset('resources/flows/uploads/Fieldkit_couple2.png'),
-              const SizedBox(height: 20.0), // Spacer
-              Text(
-                AppLocalizations.of(context)!.accountsNoneCreatedMessage,
-                style: const TextStyle(fontSize: 16.0),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40.0), // Spacer
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditAccountPage(
-                          original: PortalAccount(
-                              email: "",
-                              name: "",
-                              tokens: null,
-                              active: false)),
-                    ),
-                  );
-                },
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(AppColors.primaryColor),
-                  padding: MaterialStateProperty.all<EdgeInsets>(
-                      const EdgeInsets.symmetric(
-                          vertical: 24.0, horizontal: 32.0)),
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.accountsAddButton,
+          child: ListView(children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.accountsNoneCreatedTitle,
                   style: const TextStyle(
-                    fontFamily: 'Avenir',
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w500,
+                      fontSize: 20.0, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20.0), // Spacer
+                Image.asset('resources/flows/uploads/Fieldkit_couple2.png'),
+                const SizedBox(height: 20.0), // Spacer
+                Text(
+                  AppLocalizations.of(context)!.accountsNoneCreatedMessage,
+                  style: const TextStyle(fontSize: 16.0),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40.0), // Spacer
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditAccountPage(
+                            original: PortalAccount(
+                                email: "",
+                                name: "",
+                                tokens: null,
+                                active: false)),
+                      ),
+                    );
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        AppColors.primaryColor),
+                    padding: MaterialStateProperty.all<EdgeInsets>(
+                        const EdgeInsets.symmetric(
+                            vertical: 24.0, horizontal: 32.0)),
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.accountsAddButton,
+                    style: const TextStyle(
+                      fontFamily: 'Avenir',
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            )
+          ]),
         ),
       );
     }
@@ -231,6 +233,10 @@ class AccountStatus extends StatelessWidget {
         width: double.infinity, margin: WH.pagePadding, child: Text(value));
 
     switch (validity) {
+      case Validity.connectivity:
+        return ColoredBox(
+            color: const Color.fromRGBO(250, 197, 89, 1),
+            child: text(localizations.accountConnectivity));
       case Validity.unknown:
         return ColoredBox(
             color: const Color.fromRGBO(250, 197, 89, 1),
@@ -270,15 +276,15 @@ class AccountItem extends StatelessWidget {
         header:
             GenericListItemHeader(title: account.email, subtitle: account.name),
         children: [
-          WH.align(
-              AccountStatus(validity: account.valid, active: account.active)),
+          WH.align(AccountStatus(
+              validity: account.validity, active: account.active)),
           WH.align(WH.padChildrenPage([
             Row(
               children: WH.padButtonsRow([
                 ElevatedButton(
                     onPressed: onDelete,
                     child: Text(localizations.accountDeleteButton)),
-                if (account.valid != Validity.valid)
+                if (account.validity != Validity.valid)
                   ElevatedButton(
                       onPressed: onLogin,
                       child: Text(localizations.accountRepairButton)),

@@ -16,7 +16,6 @@
   "dataLoginMessage": "To upload data you need to login:",
 
   "dataSyncTitle": "Data",
-  "dataSyncButton": "Add a Station",
   "connectStation": "Connect a Station",
   "noStationsDescription": "You have no stations. Add a station to start collection data.",
   "stationScan": "Double tap to scan for stations.",
@@ -179,6 +178,7 @@
   "accountDefault": "This is your default account.",
   "accountInvalid": "Something is wrong with this account.",
   "accountUnknown": "Odd, not sure about this account. Bug?",
+  "accountConnectivity": "There was an issue connecting with this account. If the issue was network related this will correct itself.",
 
   "bayNumber": "Bay #{bay}",
   "configureButton": "Configure",

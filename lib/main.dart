@@ -213,7 +213,8 @@ void main() async {
   final env = await initializeCurrentEnv(config, AppEventDispatcher());
 
   final refName = getCommitRefName();
-  logger.i("Initialized: $env $refName");
+  final sha = getCommitSha();
+  logger.i("Initialized: ref=$refName sha=$sha");
 
   runApp(OurApp(env: env));
 }

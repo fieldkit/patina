@@ -73,7 +73,7 @@ class LoraEventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:MM:SS');
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
     final localizations = AppLocalizations.of(context)!;
     return Column(children: [
       Text(localizations.eventLora, style: eventHeaderStyle()),
@@ -92,7 +92,7 @@ class RestartEventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:MM:SS');
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
     final localizations = AppLocalizations.of(context)!;
     return Column(children: [
       Text(localizations.eventRestart, style: eventHeaderStyle()),

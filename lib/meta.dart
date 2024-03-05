@@ -42,10 +42,14 @@ class LocalizedModule {
             name: "Dissolved Oxygen Module");
       case "modules.water.ec":
         return LocalizedModule(
-            key: module.key, icon: const AssetImage("resources/images/icon_module_water_ec.png"), name: "Conductivity Module");
+            key: module.key,
+            icon: const AssetImage("resources/images/icon_module_water_ec.png"),
+            name: "Conductivity Module");
       case "modules.water.depth":
         return LocalizedModule(
-            key: module.key, icon: const AssetImage("resources/images/icon_module_generic.png"), name: "Water Depth Module");
+            key: module.key,
+            icon: const AssetImage("resources/images/icon_module_generic.png"),
+            name: "Water Depth Module");
       case "modules.weather":
         return LocalizedModule(
             key: module.key,
@@ -61,6 +65,11 @@ class LocalizedModule {
             key: module.key,
             icon: const AssetImage("resources/images/icon_module_generic.png"),
             name: "Random Module");
+      case "modules.distance":
+        return LocalizedModule(
+            key: module.key,
+            icon: const AssetImage("resources/images/icon_module_generic.png"),
+            name: "Distance Module");
       default:
         Loggers.main.e("Unknown module key: ${module.key}");
         return LocalizedModule(
@@ -98,9 +107,11 @@ class LocalizedSensor {
         return LocalizedSensor(name: "ORP", uom: sensor.calibratedUom);
 
       case "modules.water.depth.temp":
-        return LocalizedSensor(name: "Water Temperature", uom: sensor.calibratedUom);
+        return LocalizedSensor(
+            name: "Water Temperature", uom: sensor.calibratedUom);
       case "modules.water.depth.depth":
-        return LocalizedSensor(name: "Water Depth (Pressure)", uom: sensor.calibratedUom);
+        return LocalizedSensor(
+            name: "Water Depth (Pressure)", uom: sensor.calibratedUom);
 
       case "modules.diagnostics.temperature":
         return LocalizedSensor(
@@ -189,6 +200,13 @@ class LocalizedSensor {
       case "modules.weather.wind_hr_max_dir":
         return LocalizedSensor(
             name: "Wind Max Speed (1 Hour)", uom: sensor.calibratedUom);
+
+      case "modules.distance.distance_0":
+        return LocalizedSensor(name: "Distance 0", uom: sensor.calibratedUom);
+      case "modules.distance.distance_1":
+        return LocalizedSensor(name: "Distance 1", uom: sensor.calibratedUom);
+      case "modules.distance.distance_2":
+        return LocalizedSensor(name: "Distance 2", uom: sensor.calibratedUom);
 
       case "modules.random.random_0":
         return LocalizedSensor(name: "Random 0", uom: sensor.calibratedUom);

@@ -65,13 +65,13 @@ dependencies:
   caldor:
     git:
       url: https://gitlab.com/fieldkit/libraries/caldor.git
-      ref: 'a8f146af3c84c9cd11cd90268e658f29db6849da'
+      ref: "a8f146af3c84c9cd11cd90268e658f29db6849da"
   flows:
     path: "./flows"
   fk_data_protocol:
     git:
       url: https://gitlab.com/fieldkit/libraries/data-protocol.git
-      ref: '13d5785bdcc53ea74a2215f5149d6d576c5ac1c4'
+      ref: "13d5785bdcc53ea74a2215f5149d6d576c5ac1c4"
       path: dart
   logger: ^1.4.0
   flutter_dotenv: ^5.1.0
@@ -82,6 +82,7 @@ dependencies:
   ansi_styles: ^0.3.2+1
   circular_countdown_timer: ^0.2.3
   convert: ^3.1.1
+  exponential_back_off: ^0.1.0+2
 
 dev_dependencies:
   flutter_test:
@@ -94,7 +95,7 @@ dev_dependencies:
   # rules and activating additional ones.
   build_runner: ^2.4.8
   flutter_lints: ^3.0.1
-  ffigen: ^8.0.0 
+  ffigen: ^8.0.0
   test: ^1.24.3
   mockito: ^5.4.2
 

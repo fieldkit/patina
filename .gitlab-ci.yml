@@ -53,6 +53,8 @@ build:android:
   script:
     - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
     - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
+    - echo "CI_COMMIT_SHA=${CI_COMMIT_SHA}" >> .env
+    - cat .env
     - flutter build apk && sccache --show-stats
   artifacts:
     name: "fk-patina-android-${CI_COMMIT_REF_NAME}"
@@ -91,6 +93,8 @@ build:ios:
     - security show-keychain-info login.keychain || true
     # END Signing
     - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
+    - echo "CI_COMMIT_SHA=${CI_COMMIT_SHA}" >> .env
+    - cat .env
     - export PATH=~/tools/flutter/bin:$PATH
     - flutter clean
     - flutter build ipa --export-method ad-hoc

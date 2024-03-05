@@ -53,27 +53,6 @@ class ListStationsPage extends StatelessWidget {
           ...cards,
           if (cards.isEmpty) ...[
             const NoStationsHelpWidget(showImage: false),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Make this functional later
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFCE596B),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 14.0),
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.dataSyncButton,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-              ),
-            ),
           ]
           // TODO: Add back in once we impliment scanning for stations
           // Padding(
@@ -127,8 +106,8 @@ class StationCard extends StatelessWidget {
         context.watch<StationOperations>().getBusy<Operation>(config.deviceId);
     final localizations = AppLocalizations.of(context)!;
     final icon = SizedBox(
-        width: 54.0, // Adjust the width as needed
-        height: 54.0, // Adjust the height as needed
+        width: 54.0,
+        height: 54.0,
         child: Image(
           image: AssetImage(station.connected
               ? "resources/images/Icon_Station_Connected.png"

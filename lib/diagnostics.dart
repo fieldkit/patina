@@ -10,6 +10,10 @@ String? getCommitRefName() {
   return dotenv.env['CI_COMMIT_REF_NAME'];
 }
 
+String? getCommitSha() {
+  return dotenv.env['CI_COMMIT_SHA'];
+}
+
 bool isAutomatedBuild() {
   return getCommitRefName() != null;
 }
@@ -54,7 +58,7 @@ class AddLoggerName extends LogPrinter {
 
 final devNull = Logger(filter: NoneFilter());
 
-Logger create(File file, String name, bool colors) {
+Logger create(FileOutput file, String name, bool colors) {
   final LogFilter filter =
       isAutomatedBuild() ? AutomatedBuildFilter() : StandardFilter();
   return Logger(
@@ -62,7 +66,7 @@ Logger create(File file, String name, bool colors) {
     printer: AddLoggerName(SimplePrinter(colors: colors), name, colors),
     output: MultiOutput([
       ConsoleOutput(),
-      FileOutput(file: file),
+      file,
     ]),
   );
 }
@@ -80,7 +84,7 @@ class Loggers {
   static void initialize(String logsPath) {
     final colors = !isAutomatedBuild();
     final path = "$logsPath/logs.txt";
-    final File file = File(path);
+    final FileOutput file = FileOutput(file: File(path));
     _main = create(file, "main", colors);
     _bridge = create(file, "bridge", colors);
     _state = create(file, "state", colors);
@@ -89,6 +93,8 @@ class Loggers {
     _portal = create(file, "portal", colors);
     _markDown = create(file, "mark-down", colors);
     _path = path;
+
+    _main.i("logging to $path");
   }
 
   static Logger get main => _main;
