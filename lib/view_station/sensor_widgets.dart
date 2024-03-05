@@ -100,19 +100,18 @@ class SensorInfo extends StatelessWidget {
             color: const Color.fromRGBO(232, 232, 232, 1),
             child: Container(
                 padding: const EdgeInsets.all(6),
-                child: Column(children: [
-                  Container(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: DisplaySensorValue(
-                          sensor: sensor,
-                          localized: localized,
-                          isConnected: isConnected,
-                          previousValue: sensor.previousValue?.value)),
-                  Text(
-                    localized.name,
-                    textAlign: TextAlign.left,
-                  )
-                ]))));
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: DisplaySensorValue(
+                              sensor: sensor,
+                              localized: localized,
+                              isConnected: isConnected,
+                              previousValue: sensor.previousValue?.value)),
+                      Text(localized.name)
+                    ]))));
   }
 }
 
