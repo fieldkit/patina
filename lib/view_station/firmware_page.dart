@@ -185,11 +185,9 @@ class StationFirmwarePage extends StatelessWidget {
       AppLocalizations localizations,
       AvailableFirmwareModel availableFirmware) {
     bool isFirmwareNewer = false;
-    LocalFirmware? newFirmware;
     for (var firmware in availableFirmware.firmware) {
       if (FirmwareComparison.compare(firmware, config.firmware).newer) {
         isFirmwareNewer = true;
-        newFirmware = firmware;
         break;
       }
     }
@@ -240,19 +238,6 @@ class StationFirmwarePage extends StatelessWidget {
         child: Text(localizations.firmwareUpdate,
             style: const TextStyle(color: Colors.white, fontSize: 16)),
       ),
-    );
-  }
-
-  Widget _buildQuickTipCard(
-      BuildContext context, AppLocalizations localizations) {
-    return Card(
-      color: const Color.fromARGB(255, 252, 252, 252),
-      child: Container(
-          padding: const EdgeInsets.all(8.0),
-          child: ListTile(
-              leading: const Icon(Icons.lightbulb),
-              title: Text(AppLocalizations.of(context)!.quickTip),
-              subtitle: Text(AppLocalizations.of(context)!.firmwareTip))),
     );
   }
 

@@ -93,7 +93,6 @@ class UpdatePortal {
           }
         }
       } else {
-        // TODO Warn user about lack of updates due to logged out.
         Loggers.main.w("$deviceId need-auth");
       }
     });
