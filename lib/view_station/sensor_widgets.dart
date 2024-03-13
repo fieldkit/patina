@@ -181,34 +181,4 @@ class ModuleInfo extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildCalibrationButton(
-      BuildContext context, LocalizedModule localized) {
-    if (!localized.canCalibrate) return const SizedBox.shrink();
-
-    return Container(
-      padding: const EdgeInsets.all(10),
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => _calibrationPage(context, localized)),
-          );
-        },
-        child: Text(AppLocalizations.of(context)!.calibrateButton),
-      ),
-    );
-  }
-
-  Widget _calibrationPage(BuildContext context, LocalizedModule localized) {
-    final moduleConfigurations = context.read<AppState>().moduleConfigurations;
-    final config = CalibrationPointConfig.fromTemplate(
-        module.identity, localized.calibrationTemplate!);
-
-    return moduleConfigurations.find(module.identity).isCalibrated
-        ? ClearCalibrationPage(config: config, module: module)
-        : CalibrationPage(config: config);
-  }
 }
