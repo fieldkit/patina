@@ -61,7 +61,7 @@ class CalibrationPage extends StatelessWidget {
           final NavigatorState navigator = Navigator.of(context);
           final bool? shouldPop = await _confirmBackDialog(context);
           if (shouldPop ?? false) {
-            navigator.pop();
+            navigator.popUntil((route) => route.isFirst);
           }
         },
         child: dismissKeyboardOnOutsideGap(Scaffold(
