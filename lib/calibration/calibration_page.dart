@@ -1,4 +1,5 @@
 import 'package:caldor/calibration.dart';
+import 'package:fk/calibration/calibration_review_page.dart';
 import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -100,6 +101,12 @@ class CalibrationPanel extends StatelessWidget {
         uncalibrated: sensor.value!.uncalibrated, value: sensor.value!.value);
     current.addPoint(CalibrationPoint(standard: standard, reading: reading));
 
+    // NOTE Seems silly that this isn't already available here.
+    final module = context
+        .read<KnownStationsModel>()
+        .findModule(config.moduleIdentity)!
+        .module;
+
     Loggers.cal.i("(calibrate) calibration: $current");
     Loggers.cal.i("(calibrate) active: $active");
 
@@ -116,7 +123,8 @@ class CalibrationPanel extends StatelessWidget {
         Loggers.cal.e("Exception calibration: $e");
       }
 
-      navigator.popUntil((route) => route.isFirst);
+      navigator.pushReplacement(MaterialPageRoute(
+          builder: (context) => CalibrationReviewPage(module: module)));
     } else {
       navigator.pushReplacement(
         MaterialPageRoute(
