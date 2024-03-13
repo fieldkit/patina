@@ -1,6 +1,7 @@
 import 'package:fk/gen/bridge_definitions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
@@ -100,6 +101,7 @@ class CalibrationReviewWidget extends StatelessWidget {
                               final localizations =
                                   AppLocalizations.of(context)!;
                               final navigator = Navigator.of(context);
+                              final overlay = context.loaderOverlay;
 
                               return AlertDialog(
                                 title: Text(
@@ -114,6 +116,7 @@ class CalibrationReviewWidget extends StatelessWidget {
                                   TextButton(
                                       onPressed: () async {
                                         navigator.pop();
+                                        overlay.show();
                                         try {
                                           Loggers.cal.i("clearing calibration");
                                           await moduleConfigurations
@@ -123,6 +126,8 @@ class CalibrationReviewWidget extends StatelessWidget {
                                         } catch (e) {
                                           Loggers.cal
                                               .e("Exception clearing: $e");
+                                        } finally {
+                                          overlay.hide();
                                         }
                                       },
                                       child: Text(AppLocalizations.of(context)!

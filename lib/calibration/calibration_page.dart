@@ -1,3 +1,4 @@
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:caldor/calibration.dart';
 import 'package:fk/calibration/calibration_review_page.dart';
 import 'package:fk/providers.dart';
@@ -112,15 +113,19 @@ class CalibrationPanel extends StatelessWidget {
 
     final nextConfig = config.popStandard();
     if (nextConfig.done) {
+      final overlay = context.loaderOverlay;
       final cal = current.toDataProtocol();
       final serialized = current.toBytes();
 
       Loggers.cal.i("(calibrate) $cal");
 
+      overlay.show();
       try {
         await moduleConfigurations.calibrate(config.moduleIdentity, serialized);
       } catch (e) {
         Loggers.cal.e("Exception calibration: $e");
+      } finally {
+        overlay.hide();
       }
 
       navigator.pushReplacement(MaterialPageRoute(
