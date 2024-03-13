@@ -1408,8 +1408,10 @@ class ModuleConfigurations extends ChangeNotifier {
   Future<void> clear(ModuleIdentity moduleIdentity) async {
     final mas = knownStations.findModule(moduleIdentity);
     if (mas != null) {
-      await api.clearCalibration(
-          deviceId: mas.station.deviceId, module: mas.module.position);
+      await retryOnFailure(() async {
+        await api.clearCalibration(
+            deviceId: mas.station.deviceId, module: mas.module.position);
+      });
     } else {
       Loggers.state.e("Unknown module identity $moduleIdentity");
     }
@@ -1418,12 +1420,25 @@ class ModuleConfigurations extends ChangeNotifier {
   Future<void> calibrate(ModuleIdentity moduleIdentity, Uint8List data) async {
     final mas = knownStations.findModule(moduleIdentity);
     if (mas != null) {
-      await api.calibrate(
-          deviceId: mas.station.deviceId,
-          module: mas.module.position,
-          data: data);
+      await retryOnFailure(() async {
+        await api.calibrate(
+            deviceId: mas.station.deviceId,
+            module: mas.module.position,
+            data: data);
+      });
     } else {
       Loggers.state.e("Unknown module identity $moduleIdentity");
+    }
+  }
+
+  Future<void> retryOnFailure(Future<void> Function() work) async {
+    for (var i = 0; i < 3; ++i) {
+      try {
+        return await work();
+      } catch (e) {
+        Loggers.state.e("$e");
+        Loggers.state.w("retrying");
+      }
     }
   }
 }
