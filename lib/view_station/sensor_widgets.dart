@@ -1,3 +1,4 @@
+import 'package:fk/common_widgets.dart';
 import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -136,7 +137,7 @@ class ModuleInfo extends StatelessWidget {
         ? Container(
             padding: const EdgeInsets.all(10),
             width: double.infinity,
-            child: ElevatedButton(
+            child: ElevatedTextButton(
               onPressed: () {
                 calibrationPage() {
                   final config = CalibrationPointConfig.fromTemplate(
@@ -157,8 +158,7 @@ class ModuleInfo extends StatelessWidget {
                   ),
                 );
               },
-              // style: ElevatedButton.styleFrom(),
-              child: Text(AppLocalizations.of(context)!.calibrateButton),
+              text: AppLocalizations.of(context)!.calibrateButton,
             ))
         : const SizedBox.shrink();
 

@@ -1,3 +1,4 @@
+import 'package:fk/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -16,7 +17,7 @@ void main() {
       // Verify AppBar title text
       expect(find.text('Unknown Station'), findsOneWidget);
 
-      // Verify ElevatedButton's text
+      // Verify Button's text
       expect(find.text('Back'), findsOneWidget);
     });
 
@@ -26,7 +27,7 @@ void main() {
         localizationsDelegates: const [AppLocalizations.delegate],
         home: Builder(
           builder: (context) => Scaffold(
-            body: ElevatedButton(
+            body: ElevatedTextButton(
               onPressed: () {
                 Navigator.push(
                   context,
@@ -34,7 +35,7 @@ void main() {
                       builder: (context) => const NoSuchStationPage()),
                 );
               },
-              child: const Text('Open NoSuchStationPage'),
+              text: 'Open NoSuchStationPage',
             ),
           ),
         ),

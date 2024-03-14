@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
-import 'package:fk/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -117,17 +116,8 @@ class DisplayLoraConfiguration extends StatelessWidget {
             label: localizations.loraSessionKey,
             bytes: loraConfig.appSessionKey),
       const Divider(),
-      ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(AppColors.primaryColor),
-          padding: MaterialStateProperty.all<EdgeInsets>(
-              const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
-        ),
-        child: Text(
-          localizations.settingsLoraEdit,
-          style: WH.buttonStyle(18),
-        ),
+      ElevatedTextButton(
+        text: localizations.settingsLoraEdit,
         onPressed: () async {
           final navigator = Navigator.of(context);
 
@@ -153,17 +143,8 @@ class DisplayLoraConfiguration extends StatelessWidget {
         },
       ),
       const Divider(),
-      ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(AppColors.primaryColor),
-          padding: MaterialStateProperty.all<EdgeInsets>(
-              const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
-        ),
-        child: Text(
-          localizations.settingsLoraVerify,
-          style: WH.buttonStyle(18),
-        ),
+      ElevatedTextButton(
+        text: localizations.settingsLoraVerify,
         onPressed: () async {
           final overlay = context.loaderOverlay;
           overlay.show();

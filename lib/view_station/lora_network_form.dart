@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 
 import 'package:fk/common_widgets.dart';
-import 'package:fk/constants.dart';
 import 'package:fk/diagnostics.dart';
 import 'package:fk/gen/ffi.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +67,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
               hexString(errorText: localizations.hexStringValidationFailed),
             ]),
           ),
-          ElevatedButton(
+          ElevatedTextButton(
             onPressed: () async {
               if (_formKey.currentState!.saveAndValidate()) {
                 final values = _formKey.currentState!.value;
@@ -83,16 +82,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
                 widget.onSave(config);
               }
             },
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(AppColors.primaryColor),
-              padding: MaterialStateProperty.all<EdgeInsets>(
-                  const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
-            ),
-            child: Text(
-              localizations.networkSaveButton,
-              style: WH.buttonStyle(18),
-            ),
+            text: localizations.networkSaveButton,
           ),
         ]
             .map((child) =>

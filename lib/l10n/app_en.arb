@@ -62,6 +62,7 @@
   "calibrateButton": "Calibrate",
   "calibrationDelete": "Delete",
   "calibrationBack": "Back",
+  "calibrationKeepButton": "Keep",
   "factory": "Factory",
   "uncalibrated": "Uncalibrated",
   "calibrated": "Calibrated",

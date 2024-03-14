@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../constants.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../gen/ffi.dart';
@@ -87,11 +86,11 @@ class FirmwareItem extends StatelessWidget {
         header: header(),
         expanded: comparison.newer || operations.isNotEmpty,
         children: [
-          ElevatedButton(
+          ElevatedTextButton(
             onPressed: canUpgrade ? onUpgrade : null,
-            child: Text(comparison.newer
+            text: comparison.newer
                 ? localizations.firmwareUpgrade
-                : localizations.firmwareSwitch),
+                : localizations.firmwareSwitch,
           ),
           ...operations
               .map((operation) => UpgradeProgressWidget(operation: operation))
@@ -224,19 +223,14 @@ class StationFirmwarePage extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
-      child: ElevatedButton(
+      child: ElevatedTextButton(
         onPressed: isFirmwareNewer
             ? () async {
                 await availableFirmware.upgrade(config.deviceId,
                     newFirmware ?? availableFirmware.firmware.last);
               }
             : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryColor,
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 18.0),
-        ),
-        child: Text(localizations.firmwareUpdate,
-            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        text: localizations.firmwareUpdate,
       ),
     );
   }

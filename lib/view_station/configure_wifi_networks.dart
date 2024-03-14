@@ -1,4 +1,3 @@
-import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -29,17 +28,8 @@ class ConfigureWiFiPage extends StatelessWidget {
   Widget addNetworkButton(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(AppColors.primaryColor),
-          padding: MaterialStateProperty.all<EdgeInsets>(
-              const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
-        ),
-        child: Text(
-          localizations.networkAddButton,
-          style: WH.buttonStyle(18),
-        ),
+    return ElevatedTextButton(
+        text: localizations.networkAddButton,
         onPressed: () async {
           await onAddNetwork(context);
         });
@@ -163,8 +153,8 @@ class WifiNetworkListItem extends StatelessWidget {
 
     return ListTile(
       title: Text(network.ssid),
-      trailing: ElevatedButton(
-          child: Text(localizations.networkRemoveButton),
+      trailing: ElevatedTextButton(
+          text: localizations.networkRemoveButton,
           onPressed: () async {
             onRemove();
           }),

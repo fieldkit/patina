@@ -1,9 +1,9 @@
+import 'package:fk/common_widgets.dart';
 import 'package:fk/settings/accounts_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
-import '../constants.dart';
 import '../app_state.dart';
 import '../splash_screen.dart';
 
@@ -43,7 +43,7 @@ class AccountsPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40.0), // Spacer
-                ElevatedButton(
+                ElevatedTextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -57,21 +57,7 @@ class AccountsPage extends StatelessWidget {
                       ),
                     );
                   },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        AppColors.primaryColor),
-                    padding: MaterialStateProperty.all<EdgeInsets>(
-                        const EdgeInsets.symmetric(
-                            vertical: 24.0, horizontal: 32.0)),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)!.accountsAddButton,
-                    style: const TextStyle(
-                      fontFamily: 'Avenir',
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  text: AppLocalizations.of(context)!.accountsAddButton,
                 ),
               ],
             )
@@ -153,7 +139,7 @@ class AccountsPage extends StatelessWidget {
           ),
           Container(
             padding: const EdgeInsets.all(24.0),
-            child: ElevatedButton(
+            child: ElevatedTextButton(
               onPressed: () {
                 Navigator.push(
                   context,
@@ -164,21 +150,7 @@ class AccountsPage extends StatelessWidget {
                   ),
                 );
               },
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(AppColors.primaryColor),
-                padding: MaterialStateProperty.all<EdgeInsets>(
-                    const EdgeInsets.symmetric(
-                        vertical: 24.0, horizontal: 32.0)),
-              ),
-              child: Text(
-                AppLocalizations.of(context)!.accountsAddButton,
-                style: const TextStyle(
-                  fontFamily: 'Avenir',
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              text: AppLocalizations.of(context)!.accountsAddButton,
             ),
           ),
         ],

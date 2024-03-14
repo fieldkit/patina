@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../constants.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
@@ -68,14 +67,9 @@ class MessageAndButton extends StatelessWidget {
       ),
       WH.align(
         WH.vertical(
-          ElevatedButton(
+          ElevatedTextButton(
             onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-            ),
-            child: Text(button),
+            text: button,
           ),
         ),
       ),
@@ -180,10 +174,9 @@ class SyncOptions extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
 
     return Column(children: [
-      pad(ElevatedButton(
-          onPressed: onDownload, child: Text(localizations.download))),
-      pad(ElevatedButton(
-          onPressed: onUpload, child: Text(localizations.upload))),
+      pad(ElevatedTextButton(
+          onPressed: onDownload, text: localizations.download)),
+      pad(ElevatedTextButton(onPressed: onUpload, text: localizations.upload)),
     ]);
   }
 }

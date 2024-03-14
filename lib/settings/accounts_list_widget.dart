@@ -95,13 +95,13 @@ class AccountItem extends StatelessWidget {
           WH.align(WH.padChildrenPage([
             Row(
               children: WH.padButtonsRow([
-                ElevatedButton(
+                ElevatedTextButton(
                     onPressed: onDelete,
-                    child: Text(localizations.accountDeleteButton)),
+                    text: localizations.accountDeleteButton),
                 if (account.validity != Validity.valid)
-                  ElevatedButton(
+                  ElevatedTextButton(
                       onPressed: onLogin,
-                      child: Text(localizations.accountRepairButton)),
+                      text: localizations.accountRepairButton),
               ]),
             )
           ]))

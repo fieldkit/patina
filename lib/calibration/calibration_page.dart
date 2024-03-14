@@ -211,38 +211,26 @@ class CalibrationWait extends StatelessWidget {
 
   Widget continueWidget(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final buttonStyle = ElevatedButton.styleFrom(
-        minimumSize: const Size(200, 50),
-        padding: const EdgeInsets.symmetric(vertical: 20));
 
     switch (canContinue) {
       case CanContinue.ready:
-        return ElevatedButton(
-            onPressed: onStartTimer,
-            style: buttonStyle,
-            child: Text(localizations.calibrationStartTimer));
+        return ElevatedTextButton(
+            onPressed: onStartTimer, text: localizations.calibrationStartTimer);
       case CanContinue.yes:
-        return ElevatedButton(
+        return ElevatedTextButton(
             onPressed: () => onCalibrateAndContinue(),
-            style: buttonStyle,
-            child: Text(localizations.calibrateButton));
+            text: localizations.calibrateButton);
       case CanContinue.form:
-        return ElevatedButton(
-            onPressed: null,
-            style: buttonStyle,
-            child: Text(localizations.waitingOnForm));
+        return ElevatedTextButton(
+            onPressed: null, text: localizations.waitingOnForm);
       case CanContinue.countdown:
         return GestureDetector(
             onLongPress: onSkipTimer,
-            child: ElevatedButton(
-                onPressed: null,
-                style: buttonStyle,
-                child: Text(localizations.waitingOnTimer)));
+            child: ElevatedTextButton(
+                onPressed: null, text: localizations.waitingOnTimer));
       case CanContinue.staleValue:
-        return ElevatedButton(
-            onPressed: null,
-            style: buttonStyle,
-            child: Text(localizations.waitingOnReading));
+        return ElevatedTextButton(
+            onPressed: null, text: localizations.waitingOnReading);
     }
   }
 

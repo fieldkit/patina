@@ -28,6 +28,7 @@ class CalibrationReviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final moduleConfigurations = context.watch<ModuleConfigurations>();
     final moduleConfiguration = moduleConfigurations.find(module.identity);
     final calibrations = moduleConfiguration.calibrations;
@@ -86,14 +87,13 @@ class CalibrationReviewWidget extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
               children: [
                 if (onBack != null)
-                  ElevatedButton(
+                  ElevatedTextButton(
                     onPressed: onBack,
-                    child: Text(AppLocalizations.of(context)!.calibrationBack),
+                    text: AppLocalizations.of(context)!.calibrationBack,
                   ),
                 if (afterClear != null)
-                  ElevatedButton(
-                      child:
-                          Text(AppLocalizations.of(context)!.calibrationDelete),
+                  ElevatedTextButton(
+                      text: AppLocalizations.of(context)!.calibrationDelete,
                       onPressed: () async {
                         showDialog(
                             context: context,
@@ -136,9 +136,9 @@ class CalibrationReviewWidget extends StatelessWidget {
                               );
                             });
                       }),
-                ElevatedButton(
+                ElevatedTextButton(
                   onPressed: onKeep,
-                  child: const Text("Keep"), // TODO l10n
+                  text: localizations.calibrationKeepButton,
                 ),
               ].map(WH.padPage).toList(),
             )

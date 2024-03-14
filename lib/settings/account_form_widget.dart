@@ -1,10 +1,10 @@
+import 'package:fk/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
-import '../constants.dart';
 
 import '../app_state.dart';
 import '../diagnostics.dart';
@@ -167,29 +167,15 @@ class _AccountState extends State<AccountForm> {
                 });
               },
             ),
-            ElevatedButton(
+            ElevatedTextButton(
               onPressed: () async {
                 if (_formKey.currentState!.saveAndValidate()) {
                   await _save(context, accounts, localizations);
                 }
               },
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(AppColors.primaryColor),
-                padding: MaterialStateProperty.all<EdgeInsets>(
-                    const EdgeInsets.symmetric(
-                        vertical: 24.0, horizontal: 32.0)),
-              ),
-              child: Text(
-                _registering
-                    ? localizations.accountRegisterButton
-                    : localizations.accountSaveButton,
-                style: const TextStyle(
-                  fontFamily: 'Avenir',
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              text: _registering
+                  ? localizations.accountRegisterButton
+                  : localizations.accountSaveButton,
             ),
           ]
               .map((child) =>

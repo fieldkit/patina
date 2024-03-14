@@ -1,3 +1,4 @@
+import 'package:fk/common_widgets.dart';
 import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -126,9 +127,9 @@ class HighLevelsDetails extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(10),
           width: double.infinity,
-          child: ElevatedButton(
+          child: ElevatedTextButton(
               onPressed: () {}, // TODO: Implement Deploy
-              child: Text(AppLocalizations.of(context)!.deployButton)),
+              text: AppLocalizations.of(context)!.deployButton),
         ),
         Column(children: modules)
       ],
