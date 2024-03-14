@@ -53,7 +53,8 @@ class CalibrationReviewWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: constraints.maxWidth - 70,
+                    width: constraints.maxWidth -
+                        80, // Adjusted due to horizontal overflow, possible to make this more flexible?
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Padding(

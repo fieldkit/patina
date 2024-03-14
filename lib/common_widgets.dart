@@ -96,7 +96,7 @@ class GenericListItemHeader extends StatelessWidget {
 }
 
 class WH {
-  static const pagePadding = EdgeInsets.symmetric(horizontal: 10, vertical: 6);
+  static const pagePadding = EdgeInsets.symmetric(horizontal: 14, vertical: 14);
 
   static List<Widget> divideWith(
       Widget Function() divider, List<Widget> widgets) {

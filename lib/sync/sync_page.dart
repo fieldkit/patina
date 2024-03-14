@@ -168,7 +168,7 @@ class SyncOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     pad(child) => Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(14),
         child: child);
 
     final localizations = AppLocalizations.of(context)!;
