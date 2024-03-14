@@ -62,11 +62,13 @@ class ConfigureStationPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(0),
         children: [
+          /*
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsGeneral),
             onTap: () {},
           ),
           const Divider(),
+          */
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsWifi),
             onTap: () {
@@ -113,6 +115,7 @@ class ConfigureStationPage extends StatelessWidget {
             },
           ),
           const Divider(),
+          /*
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsModules),
             onTap: () {},
@@ -128,6 +131,7 @@ class ConfigureStationPage extends StatelessWidget {
             onTap: () {},
           ),
           const Divider(),
+          */
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsEvents),
             onTap: () {
