@@ -227,6 +227,7 @@ impl Sdk {
         email: String,
         password: String,
     ) -> Result<Authenticated, PortalError> {
+        info!("authenticating");
         let client = query::portal::Client::new(&self.portal_base_url)?;
         let tokens = client
             .login(query::portal::LoginPayload {
@@ -235,7 +236,6 @@ impl Sdk {
             })
             .await?;
 
-        info!("authenticating");
         let authenticated = client.to_authenticated(tokens.clone())?;
         info!("authenticating:ourselves");
         let ourselves = authenticated.query_ourselves().await?;
@@ -248,6 +248,28 @@ impl Sdk {
             email,
             tokens: Tokens::from(tokens, transmission),
         })
+    }
+
+    async fn register_portal_account(
+        &self,
+        email: String,
+        password: String,
+        name: String,
+        tnc_accept: bool,
+    ) -> Result<Registered, PortalError> {
+        info!("registering");
+        let client = query::portal::Client::new(&self.portal_base_url)?;
+        client
+            .register(query::portal::RegisterPayload {
+                email: email.clone(),
+                name: name.clone(),
+                password,
+                tnc_accept: Some(tnc_accept),
+            })
+            .await?;
+
+        info!("registering:registered");
+        Ok(Registered { name, email })
     }
 
     async fn add_or_update_station_in_portal(
@@ -566,6 +588,17 @@ pub fn authenticate_portal(email: String, password: String) -> Result<Authentica
     })?)
 }
 
+pub fn register_portal_account(
+    email: String,
+    password: String,
+    name: String,
+    tnc_account: bool,
+) -> Result<Registered, PortalError> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.register_portal_account(email, password, name, tnc_account))
+    })?)
+}
+
 pub fn add_or_update_station_in_portal(
     tokens: Tokens,
     station: AddOrUpdatePortalStation,
@@ -849,6 +882,12 @@ impl Into<query::portal::AddStation> for AddOrUpdatePortalStation {
             status_pb: self.status_pb,
         }
     }
+}
+
+#[derive(Clone, Debug)]
+pub struct Registered {
+    pub email: String,
+    pub name: String,
 }
 
 #[derive(Clone, Debug)]

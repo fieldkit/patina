@@ -80,6 +80,33 @@ class NativeImpl implements Native {
         argNames: ["email", "password"],
       );
 
+  Future<Registered> registerPortalAccount(
+      {required String email,
+      required String password,
+      required String name,
+      required bool tncAccount,
+      dynamic hint}) {
+    var arg0 = _platform.api2wire_String(email);
+    var arg1 = _platform.api2wire_String(password);
+    var arg2 = _platform.api2wire_String(name);
+    var arg3 = tncAccount;
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner
+          .wire_register_portal_account(port_, arg0, arg1, arg2, arg3),
+      parseSuccessData: _wire2api_registered,
+      parseErrorData: _wire2api_portal_error,
+      constMeta: kRegisterPortalAccountConstMeta,
+      argValues: [email, password, name, tncAccount],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kRegisterPortalAccountConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "register_portal_account",
+        argNames: ["email", "password", "name", "tncAccount"],
+      );
+
   Future<int?> addOrUpdateStationInPortal(
       {required Tokens tokens,
       required AddOrUpdatePortalStation station,
@@ -729,6 +756,16 @@ class NativeImpl implements Native {
       path: _wire2api_String(arr[1]),
       head: _wire2api_i64(arr[2]),
       tail: _wire2api_i64(arr[3]),
+    );
+  }
+
+  Registered _wire2api_registered(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return Registered(
+      email: _wire2api_String(arr[0]),
+      name: _wire2api_String(arr[1]),
     );
   }
 

@@ -115,6 +115,12 @@ void wire_authenticate_portal(int64_t port_,
                               struct wire_uint_8_list *email,
                               struct wire_uint_8_list *password);
 
+void wire_register_portal_account(int64_t port_,
+                                  struct wire_uint_8_list *email,
+                                  struct wire_uint_8_list *password,
+                                  struct wire_uint_8_list *name,
+                                  bool tnc_account);
+
 void wire_add_or_update_station_in_portal(int64_t port_,
                                           struct wire_Tokens *tokens,
                                           struct wire_AddOrUpdatePortalStation *station);
@@ -193,6 +199,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_start_native);
     dummy_var ^= ((int64_t) (void*) wire_get_my_stations);
     dummy_var ^= ((int64_t) (void*) wire_authenticate_portal);
+    dummy_var ^= ((int64_t) (void*) wire_register_portal_account);
     dummy_var ^= ((int64_t) (void*) wire_add_or_update_station_in_portal);
     dummy_var ^= ((int64_t) (void*) wire_configure_wifi_networks);
     dummy_var ^= ((int64_t) (void*) wire_configure_wifi_transmission);

@@ -237,6 +237,9 @@ class NativeWasmModule implements WasmModule {
   external dynamic /* void */ wire_authenticate_portal(
       NativePortType port_, String email, String password);
 
+  external dynamic /* void */ wire_register_portal_account(NativePortType port_,
+      String email, String password, String name, bool tnc_account);
+
   external dynamic /* void */ wire_add_or_update_station_in_portal(
       NativePortType port_, List<dynamic> tokens, List<dynamic> station);
 
@@ -294,6 +297,11 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_authenticate_portal(
           NativePortType port_, String email, String password) =>
       wasmModule.wire_authenticate_portal(port_, email, password);
+
+  void wire_register_portal_account(NativePortType port_, String email,
+          String password, String name, bool tnc_account) =>
+      wasmModule.wire_register_portal_account(
+          port_, email, password, name, tnc_account);
 
   void wire_add_or_update_station_in_portal(
           NativePortType port_, List<dynamic> tokens, List<dynamic> station) =>

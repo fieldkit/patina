@@ -8,19 +8,19 @@ crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies.discovery]
 git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "af5dbd9c1df26d70cafb0e63d5274058eef2f937"
+rev = "fd46bc700d0900b568bcdad3a538c686d5f17082"
 
 [dependencies.query]
 git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "af5dbd9c1df26d70cafb0e63d5274058eef2f937"
+rev = "fd46bc700d0900b568bcdad3a538c686d5f17082"
 
 [dependencies.store]
 git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "af5dbd9c1df26d70cafb0e63d5274058eef2f937"
+rev = "fd46bc700d0900b568bcdad3a538c686d5f17082"
 
 [dependencies.sync]
 git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "af5dbd9c1df26d70cafb0e63d5274058eef2f937"
+rev = "fd46bc700d0900b568bcdad3a538c686d5f17082"
 
 [dependencies]
 anyhow = "1"

@@ -30,6 +30,15 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kAuthenticatePortalConstMeta;
 
+  Future<Registered> registerPortalAccount(
+      {required String email,
+      required String password,
+      required String name,
+      required bool tncAccount,
+      dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kRegisterPortalAccountConstMeta;
+
   Future<int?> addOrUpdateStationInPortal(
       {required Tokens tokens,
       required AddOrUpdatePortalStation station,
@@ -357,6 +366,16 @@ class RecordArchive {
     required this.path,
     required this.head,
     required this.tail,
+  });
+}
+
+class Registered {
+  final String email;
+  final String name;
+
+  const Registered({
+    required this.email,
+    required this.name,
   });
 }
 

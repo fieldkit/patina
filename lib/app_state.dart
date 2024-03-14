@@ -1271,14 +1271,24 @@ class PortalAccounts extends ChangeNotifier {
     }
   }
 
+  Future<void> registerAccount(
+      String email, String password, String name, bool tncAccept) async {
+    await api.registerPortalAccount(
+        email: email, password: password, name: name, tncAccount: tncAccept);
+  }
+
+  Future<PortalAccount> _add(PortalAccount account) async {
+    _removeByEmail(account.email);
+    _accounts.add(account);
+    await _save();
+    notifyListeners();
+    return account;
+  }
+
   Future<PortalAccount?> addOrUpdate(String email, String password) async {
     final account = await _authenticate(email, password);
     if (account != null) {
-      _removeByEmail(account.email);
-      _accounts.add(account);
-      await _save();
-      notifyListeners();
-      return account;
+      return await _add(account);
     } else {
       return null;
     }
