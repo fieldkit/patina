@@ -15,13 +15,54 @@ class AccountForm extends StatefulWidget {
   const AccountForm({super.key, required this.original});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _AccountState createState() => _AccountState();
+  State<AccountForm> createState() => _AccountState();
 }
 
 class _AccountState extends State<AccountForm> {
   final _formKey = GlobalKey<FormBuilderState>();
   bool _passwordVisible = false;
+  bool _registering = false;
+
+  Future<void> _save(BuildContext context, PortalAccounts accounts,
+      AppLocalizations localizations) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final overlay = context.loaderOverlay;
+    final email = _formKey.currentState!.value['email'];
+    final password = _formKey.currentState!.value['password'];
+    overlay.show();
+    try {
+      if (_registering) {
+        try {
+          final name = _formKey.currentState!.value['name'];
+          bool tncAccept = true;
+          await accounts.registerAccount(email, password, name, tncAccept);
+          navigator.pop();
+          messenger.showSnackBar(SnackBar(
+            content: Text(localizations.accountCreated),
+          ));
+        } catch (error) {
+          Loggers.portal.e("$error");
+          messenger.showSnackBar(SnackBar(
+            content: Text(localizations.accountRegistrationFailed),
+          ));
+        }
+      } else {
+        final saved = await accounts.addOrUpdate(email, password);
+        if (saved != null) {
+          navigator.pop();
+        } else {
+          messenger.showSnackBar(SnackBar(
+            content: Text(localizations.accountFormFail),
+          ));
+        }
+      }
+    } catch (error) {
+      Loggers.portal.e("$error");
+    } finally {
+      overlay.hide();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +78,17 @@ class _AccountState extends State<AccountForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Visibility(
+                visible: _registering,
+                child: FormBuilderTextField(
+                  name: 'name',
+                  keyboardType: TextInputType.name,
+                  decoration:
+                      InputDecoration(labelText: localizations.accountName),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                  ]),
+                )),
             FormBuilderTextField(
               name: 'email',
               initialValue: widget.original.email,
@@ -71,29 +123,54 @@ class _AccountState extends State<AccountForm> {
                 FormBuilderValidators.minLength(10),
               ]),
             ),
+            Visibility(
+                visible: _registering,
+                child: FormBuilderTextField(
+                  name: 'confirmPassword',
+                  keyboardType: TextInputType.visiblePassword,
+                  decoration: InputDecoration(
+                    labelText: localizations.accountConfirmPassword,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                  obscureText: !_passwordVisible,
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.minLength(10),
+                    (val) {
+                      if (_formKey.currentState?.fields["password"]?.value ==
+                          val) {
+                        return null;
+                      }
+                      return localizations.accountConfirmPasswordMatch;
+                    }
+                  ]),
+                )),
+            CheckboxListTile(
+              title: Text(localizations.accountRegisterLabel),
+              tristate: true,
+              value: _registering,
+              onChanged: (bool? value) {
+                setState(() {
+                  _registering = value ?? false;
+                });
+              },
+            ),
             ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.saveAndValidate()) {
-                  final overlay = context.loaderOverlay;
-                  final messenger = ScaffoldMessenger.of(context);
-                  final navigator = Navigator.of(context);
-                  final email = _formKey.currentState!.value['email'];
-                  final password = _formKey.currentState!.value['password'];
-                  overlay.show();
-                  try {
-                    final saved = await accounts.addOrUpdate(email, password);
-                    if (saved != null) {
-                      navigator.pop();
-                    } else {
-                      messenger.showSnackBar(SnackBar(
-                        content: Text(localizations.accountFormFail),
-                      ));
-                    }
-                  } catch (error) {
-                    Loggers.portal.e("$error");
-                  } finally {
-                    overlay.hide();
-                  }
+                  await _save(context, accounts, localizations);
                 }
               },
               style: ButtonStyle(
@@ -104,7 +181,9 @@ class _AccountState extends State<AccountForm> {
                         vertical: 24.0, horizontal: 32.0)),
               ),
               child: Text(
-                localizations.accountSaveButton,
+                _registering
+                    ? localizations.accountRegisterButton
+                    : localizations.accountSaveButton,
                 style: const TextStyle(
                   fontFamily: 'Avenir',
                   fontSize: 18.0,

@@ -1,12 +1,13 @@
-import 'package:fk/settings/account_form_widget.dart';
 import 'package:fk/settings/accounts_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import '../constants.dart';
 
+import '../constants.dart';
 import '../app_state.dart';
 import '../splash_screen.dart';
+
+import 'edit_account_page.dart';
 
 class AccountsPage extends StatelessWidget {
   const AccountsPage({super.key});
@@ -183,17 +184,6 @@ class AccountsPage extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class EditAccountPage extends StatelessWidget {
-  final PortalAccount original;
-
-  const EditAccountPage({super.key, required this.original});
-
-  @override
-  Widget build(BuildContext context) {
-    return AccountForm(original: original);
   }
 }
 

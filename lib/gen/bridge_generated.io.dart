@@ -435,6 +435,39 @@ class NativeWire implements FlutterRustBridgeWireBase {
           void Function(int, ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_register_portal_account(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> email,
+    ffi.Pointer<wire_uint_8_list> password,
+    ffi.Pointer<wire_uint_8_list> name,
+    bool tnc_account,
+  ) {
+    return _wire_register_portal_account(
+      port_,
+      email,
+      password,
+      name,
+      tnc_account,
+    );
+  }
+
+  late final _wire_register_portal_accountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Bool)>>('wire_register_portal_account');
+  late final _wire_register_portal_account =
+      _wire_register_portal_accountPtr.asFunction<
+          void Function(
+              int,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              bool)>();
+
   void wire_add_or_update_station_in_portal(
     int port_,
     ffi.Pointer<wire_Tokens> tokens,

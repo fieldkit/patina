@@ -17,6 +17,17 @@ pub fn wire_authenticate_portal(port_: MessagePort, email: String, password: Str
 }
 
 #[wasm_bindgen]
+pub fn wire_register_portal_account(
+    port_: MessagePort,
+    email: String,
+    password: String,
+    name: String,
+    tnc_account: bool,
+) {
+    wire_register_portal_account_impl(port_, email, password, name, tnc_account)
+}
+
+#[wasm_bindgen]
 pub fn wire_add_or_update_station_in_portal(port_: MessagePort, tokens: JsValue, station: JsValue) {
     wire_add_or_update_station_in_portal_impl(port_, tokens, station)
 }

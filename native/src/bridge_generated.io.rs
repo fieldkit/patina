@@ -25,6 +25,17 @@ pub extern "C" fn wire_authenticate_portal(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_register_portal_account(
+    port_: i64,
+    email: *mut wire_uint_8_list,
+    password: *mut wire_uint_8_list,
+    name: *mut wire_uint_8_list,
+    tnc_account: bool,
+) {
+    wire_register_portal_account_impl(port_, email, password, name, tnc_account)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_add_or_update_station_in_portal(
     port_: i64,
     tokens: *mut wire_Tokens,

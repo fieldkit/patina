@@ -74,6 +74,30 @@ fn wire_authenticate_portal_impl(
         },
     )
 }
+fn wire_register_portal_account_impl(
+    port_: MessagePort,
+    email: impl Wire2Api<String> + UnwindSafe,
+    password: impl Wire2Api<String> + UnwindSafe,
+    name: impl Wire2Api<String> + UnwindSafe,
+    tnc_account: impl Wire2Api<bool> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, Registered, _>(
+        WrapInfo {
+            debug_name: "register_portal_account",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_email = email.wire2api();
+            let api_password = password.wire2api();
+            let api_name = name.wire2api();
+            let api_tnc_account = tnc_account.wire2api();
+            move |task_callback| {
+                register_portal_account(api_email, api_password, api_name, api_tnc_account)
+            }
+        },
+    )
+}
 fn wire_add_or_update_station_in_portal_impl(
     port_: MessagePort,
     tokens: impl Wire2Api<Tokens> + UnwindSafe,
@@ -664,6 +688,22 @@ impl support::IntoDart for RecordArchive {
 }
 impl support::IntoDartExceptPrimitive for RecordArchive {}
 impl rust2dart::IntoIntoDart<RecordArchive> for RecordArchive {
+    fn into_into_dart(self) -> Self {
+        self
+    }
+}
+
+impl support::IntoDart for Registered {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.email.into_into_dart().into_dart(),
+            self.name.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Registered {}
+impl rust2dart::IntoIntoDart<Registered> for Registered {
     fn into_into_dart(self) -> Self {
         self
     }
