@@ -236,6 +236,7 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   void _api_fill_to_wire_record_archive(
       RecordArchive apiObj, wire_RecordArchive wireObj) {
     wireObj.device_id = api2wire_String(apiObj.deviceId);
+    wireObj.generation_id = api2wire_String(apiObj.generationId);
     wireObj.path = api2wire_String(apiObj.path);
     wireObj.head = api2wire_i64(apiObj.head);
     wireObj.tail = api2wire_i64(apiObj.tail);
@@ -1018,6 +1019,8 @@ final class wire_LoraTransmissionConfig extends ffi.Struct {
 
 final class wire_RecordArchive extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_id;
+
+  external ffi.Pointer<wire_uint_8_list> generation_id;
 
   external ffi.Pointer<wire_uint_8_list> path;
 

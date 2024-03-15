@@ -75,6 +75,7 @@ typedef struct wire_LoraTransmissionConfig {
 
 typedef struct wire_RecordArchive {
   struct wire_uint_8_list *device_id;
+  struct wire_uint_8_list *generation_id;
   struct wire_uint_8_list *path;
   int64_t head;
   int64_t tail;

@@ -751,12 +751,14 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
   List<NearbyStation> _nearby = List.empty();
   List<RecordArchive> _archives = List.empty();
   final Map<String, int> _records = {};
+  final Map<String, String> _generations = {};
 
   DownloadTaskFactory(
       {required KnownStationsModel knownStations,
       required AppEventDispatcher dispatcher}) {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) {
       _records[refreshed.field0.deviceId] = refreshed.field0.data.records;
+      _generations[refreshed.field0.deviceId] = refreshed.field0.generationId;
       _tasks.clear();
       _tasks.addAll(create());
       notifyListeners();
@@ -781,13 +783,28 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
     final List<DownloadTask> tasks = List.empty(growable: true);
     final archivesById = _archives.groupListsBy((a) => a.deviceId);
     for (final nearby in _nearby) {
-      final int? first = archivesById[nearby.deviceId]
-          ?.map((archive) => archive.tail)
-          .reduce(max);
       final int? total = _records[nearby.deviceId];
       if (total != null) {
-        tasks.add(DownloadTask(
-            deviceId: nearby.deviceId, total: total, first: first));
+        if (_generations.containsKey(nearby.deviceId)) {
+          final String generationId = _generations[nearby.deviceId]!;
+          final Iterable<RecordArchive>? archives =
+              archivesById[nearby.deviceId]
+                  ?.where((archive) => archive.generationId == generationId);
+          if (archives != null && archives.isNotEmpty) {
+            final int first =
+                archives.map((archive) => archive.tail).reduce(max);
+            tasks.add(DownloadTask(
+                deviceId: nearby.deviceId, total: total, first: first));
+          } else {
+            Loggers.state.w("${nearby.deviceId} no archives");
+            tasks.add(DownloadTask(
+                deviceId: nearby.deviceId, total: total, first: 0));
+          }
+        } else {
+          Loggers.state.w("${nearby.deviceId} no generation");
+        }
+      } else {
+        Loggers.state.w("${nearby.deviceId} no total records");
       }
     }
     return tasks;

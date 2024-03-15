@@ -378,6 +378,7 @@ impl NearbyDevices {
                     .iter()
                     .map(|f| RecordArchive {
                         device_id: f.device_id.clone(),
+                        generation_id: f.generation_id.clone(),
                         path: f.path.clone(),
                         head: f.meta.head,
                         tail: f.meta.tail,

@@ -205,15 +205,16 @@ impl Wire2Api<RecordArchive> for JsValue {
         let self_ = self.dyn_into::<JsArray>().unwrap();
         assert_eq!(
             self_.length(),
-            4,
-            "Expected 4 elements, got {}",
+            5,
+            "Expected 5 elements, got {}",
             self_.length()
         );
         RecordArchive {
             device_id: self_.get(0).wire2api(),
-            path: self_.get(1).wire2api(),
-            head: self_.get(2).wire2api(),
-            tail: self_.get(3).wire2api(),
+            generation_id: self_.get(1).wire2api(),
+            path: self_.get(2).wire2api(),
+            head: self_.get(3).wire2api(),
+            tail: self_.get(4).wire2api(),
         }
     }
 }

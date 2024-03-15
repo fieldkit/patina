@@ -996,6 +996,7 @@ pub struct TransferProgress {
 #[derive(Debug)]
 pub struct RecordArchive {
     pub device_id: String,
+    pub generation_id: String,
     pub path: String,
     pub head: i64,
     pub tail: i64,
@@ -1043,6 +1044,7 @@ pub struct SolarInfo {
 #[derive(Clone, Debug)]
 pub struct StationConfig {
     pub device_id: String,
+    pub generation_id: String,
     pub name: String,
     pub firmware: FirmwareInfo,
     pub last_seen: DateTime<Utc>,
@@ -1211,6 +1213,7 @@ impl TryInto<StationConfig> for StationAndConnection {
 
         Ok(StationConfig {
             device_id: station.device_id.0.to_owned(),
+            generation_id: station.generation_id.to_owned(),
             name: station.name,
             last_seen: station.last_seen,
             firmware: FirmwareInfo {
