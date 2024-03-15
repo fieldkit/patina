@@ -679,6 +679,7 @@ impl support::IntoDart for RecordArchive {
     fn into_dart(self) -> support::DartAbi {
         vec![
             self.device_id.into_into_dart().into_dart(),
+            self.generation_id.into_into_dart().into_dart(),
             self.path.into_into_dart().into_dart(),
             self.head.into_into_dart().into_dart(),
             self.tail.into_into_dart().into_dart(),
@@ -762,6 +763,7 @@ impl support::IntoDart for StationConfig {
     fn into_dart(self) -> support::DartAbi {
         vec![
             self.device_id.into_into_dart().into_dart(),
+            self.generation_id.into_into_dart().into_dart(),
             self.name.into_into_dart().into_dart(),
             self.firmware.into_into_dart().into_dart(),
             self.last_seen.into_into_dart().into_dart(),

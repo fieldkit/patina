@@ -337,6 +337,7 @@ impl Wire2Api<RecordArchive> for wire_RecordArchive {
     fn wire2api(self) -> RecordArchive {
         RecordArchive {
             device_id: self.device_id.wire2api(),
+            generation_id: self.generation_id.wire2api(),
             path: self.path.wire2api(),
             head: self.head.wire2api(),
             tail: self.tail.wire2api(),
@@ -455,6 +456,7 @@ pub struct wire_LoraTransmissionConfig {
 #[derive(Clone)]
 pub struct wire_RecordArchive {
     device_id: *mut wire_uint_8_list,
+    generation_id: *mut wire_uint_8_list,
     path: *mut wire_uint_8_list,
     head: i64,
     tail: i64,
@@ -590,6 +592,7 @@ impl NewWithNullPtr for wire_RecordArchive {
     fn new_with_null_ptr() -> Self {
         Self {
             device_id: core::ptr::null_mut(),
+            generation_id: core::ptr::null_mut(),
             path: core::ptr::null_mut(),
             head: Default::default(),
             tail: Default::default(),

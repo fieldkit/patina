@@ -357,12 +357,14 @@ sealed class PortalError with _$PortalError implements FrbException {
 
 class RecordArchive {
   final String deviceId;
+  final String generationId;
   final String path;
   final int head;
   final int tail;
 
   const RecordArchive({
     required this.deviceId,
+    required this.generationId,
     required this.path,
     required this.head,
     required this.tail,
@@ -426,6 +428,7 @@ class SolarInfo {
 
 class StationConfig {
   final String deviceId;
+  final String generationId;
   final String name;
   final FirmwareInfo firmware;
   final DateTime lastSeen;
@@ -437,6 +440,7 @@ class StationConfig {
 
   const StationConfig({
     required this.deviceId,
+    required this.generationId,
     required this.name,
     required this.firmware,
     required this.lastSeen,

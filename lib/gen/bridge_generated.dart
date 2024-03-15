@@ -749,13 +749,14 @@ class NativeImpl implements Native {
 
   RecordArchive _wire2api_record_archive(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return RecordArchive(
       deviceId: _wire2api_String(arr[0]),
-      path: _wire2api_String(arr[1]),
-      head: _wire2api_i64(arr[2]),
-      tail: _wire2api_i64(arr[3]),
+      generationId: _wire2api_String(arr[1]),
+      path: _wire2api_String(arr[2]),
+      head: _wire2api_i64(arr[3]),
+      tail: _wire2api_i64(arr[4]),
     );
   }
 
@@ -805,18 +806,19 @@ class NativeImpl implements Native {
 
   StationConfig _wire2api_station_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 9)
-      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
+    if (arr.length != 10)
+      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
     return StationConfig(
       deviceId: _wire2api_String(arr[0]),
-      name: _wire2api_String(arr[1]),
-      firmware: _wire2api_firmware_info(arr[2]),
-      lastSeen: _wire2api_Chrono_Utc(arr[3]),
-      meta: _wire2api_stream_info(arr[4]),
-      data: _wire2api_stream_info(arr[5]),
-      battery: _wire2api_battery_info(arr[6]),
-      solar: _wire2api_solar_info(arr[7]),
-      modules: _wire2api_list_module_config(arr[8]),
+      generationId: _wire2api_String(arr[1]),
+      name: _wire2api_String(arr[2]),
+      firmware: _wire2api_firmware_info(arr[3]),
+      lastSeen: _wire2api_Chrono_Utc(arr[4]),
+      meta: _wire2api_stream_info(arr[5]),
+      data: _wire2api_stream_info(arr[6]),
+      battery: _wire2api_battery_info(arr[7]),
+      solar: _wire2api_solar_info(arr[8]),
+      modules: _wire2api_list_module_config(arr[9]),
     );
   }
 
