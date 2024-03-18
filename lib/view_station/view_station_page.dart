@@ -1,4 +1,5 @@
 import 'package:fk/common_widgets.dart';
+import 'package:fk/deploy/deploy_page.dart';
 import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -90,7 +91,7 @@ class HighLevelsDetails extends StatelessWidget {
       return ModuleInfo(module: module);
     }).toList();
 
-    var circle = Container(
+    final circle = Container(
         decoration:
             const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
         alignment: Alignment.center,
@@ -128,7 +129,15 @@ class HighLevelsDetails extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           width: double.infinity,
           child: ElevatedTextButton(
-              onPressed: () {}, // TODO: Implement Deploy
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        DeployStationRoute(deviceId: station.deviceId),
+                  ),
+                );
+              },
               text: AppLocalizations.of(context)!.deployButton),
         ),
         Column(children: modules)
