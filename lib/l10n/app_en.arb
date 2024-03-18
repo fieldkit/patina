@@ -47,6 +47,7 @@
   "quickTip": "Quick Tip",
 
   "deployTitle": "Deploy Station",
+  "deployLocation": "Name your location",
 
   "myStationsTitle": "My Stations",
   "readyToDeploy": "Ready to deploy",
