@@ -1,5 +1,6 @@
 import 'package:fk/app_state.dart';
 import 'package:fk/gen/bridge_definitions.dart';
+import 'package:fk/map_widget.dart';
 import 'package:fk/providers.dart';
 import 'package:fk/unknown_station_page.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class DeployStationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Widget map = const SizedBox(height: 200, child: MapWidget());
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.deployTitle),
@@ -31,7 +33,9 @@ class DeployStationPage extends StatelessWidget {
             ),
           ),
         ),
-        body: ListView());
+        body: ListView(
+          children: [map],
+        ));
   }
 }
 

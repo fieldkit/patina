@@ -14,14 +14,14 @@ double conservifyLong = -118.269107;
 double accuracyDefault =
     20.0; // If the accuracy is null, we'll default to 20.0 meters.
 
-class Map extends StatefulWidget {
-  const Map({super.key});
+class MapWidget extends StatefulWidget {
+  const MapWidget({super.key});
 
   @override
-  State<Map> createState() => _MapState();
+  State<MapWidget> createState() => _MapState();
 }
 
-class _MapState extends State<Map> {
+class _MapState extends State<MapWidget> {
   LatLng? _userLocation;
   double? _userLocationAccuracy;
   MapController mapController = MapController();
