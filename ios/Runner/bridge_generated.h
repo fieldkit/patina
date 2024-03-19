@@ -31,6 +31,25 @@ typedef struct wire_AddOrUpdatePortalStation {
   struct wire_uint_8_list *status_pb;
 } wire_AddOrUpdatePortalStation;
 
+typedef struct wire_Schedule_Every {
+  uint32_t field0;
+} wire_Schedule_Every;
+
+typedef union ScheduleKind {
+  struct wire_Schedule_Every *Every;
+} ScheduleKind;
+
+typedef struct wire_Schedule {
+  int32_t tag;
+  union ScheduleKind *kind;
+} wire_Schedule;
+
+typedef struct wire_DeployConfig {
+  struct wire_uint_8_list *location;
+  uint64_t deployed;
+  struct wire_Schedule schedule;
+} wire_DeployConfig;
+
 typedef struct wire_WifiNetworkConfig {
   uintptr_t index;
   struct wire_uint_8_list *ssid;
@@ -47,19 +66,6 @@ typedef struct wire_list_wifi_network_config {
 typedef struct wire_WifiNetworksConfig {
   struct wire_list_wifi_network_config *networks;
 } wire_WifiNetworksConfig;
-
-typedef struct wire_Schedule_Every {
-  uint32_t field0;
-} wire_Schedule_Every;
-
-typedef union ScheduleKind {
-  struct wire_Schedule_Every *Every;
-} ScheduleKind;
-
-typedef struct wire_Schedule {
-  int32_t tag;
-  union ScheduleKind *kind;
-} wire_Schedule;
 
 typedef struct wire_WifiTransmissionConfig {
   struct wire_Tokens *tokens;
@@ -126,6 +132,10 @@ void wire_add_or_update_station_in_portal(int64_t port_,
                                           struct wire_Tokens *tokens,
                                           struct wire_AddOrUpdatePortalStation *station);
 
+void wire_configure_deploy(int64_t port_,
+                           struct wire_uint_8_list *device_id,
+                           struct wire_DeployConfig *config);
+
 void wire_configure_wifi_networks(int64_t port_,
                                   struct wire_uint_8_list *device_id,
                                   struct wire_WifiNetworksConfig *config);
@@ -169,6 +179,8 @@ void wire_create_log_sink(int64_t port_);
 
 struct wire_AddOrUpdatePortalStation *new_box_autoadd_add_or_update_portal_station_0(void);
 
+struct wire_DeployConfig *new_box_autoadd_deploy_config_0(void);
+
 struct wire_LocalFirmware *new_box_autoadd_local_firmware_0(void);
 
 struct wire_LoraTransmissionConfig *new_box_autoadd_lora_transmission_config_0(void);
@@ -202,6 +214,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_authenticate_portal);
     dummy_var ^= ((int64_t) (void*) wire_register_portal_account);
     dummy_var ^= ((int64_t) (void*) wire_add_or_update_station_in_portal);
+    dummy_var ^= ((int64_t) (void*) wire_configure_deploy);
     dummy_var ^= ((int64_t) (void*) wire_configure_wifi_networks);
     dummy_var ^= ((int64_t) (void*) wire_configure_wifi_transmission);
     dummy_var ^= ((int64_t) (void*) wire_configure_lora_transmission);
@@ -216,6 +229,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_rust_release_mode);
     dummy_var ^= ((int64_t) (void*) wire_create_log_sink);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_add_or_update_portal_station_0);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_deploy_config_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_local_firmware_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_lora_transmission_config_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_schedule_0);

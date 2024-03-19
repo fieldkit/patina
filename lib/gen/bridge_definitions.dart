@@ -46,6 +46,11 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kAddOrUpdateStationInPortalConstMeta;
 
+  Future<void> configureDeploy(
+      {required String deviceId, required DeployConfig config, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kConfigureDeployConstMeta;
+
   Future<void> configureWifiNetworks(
       {required String deviceId,
       required WifiNetworksConfig config,
@@ -155,6 +160,18 @@ class BatteryInfo {
   const BatteryInfo({
     required this.percentage,
     required this.voltage,
+  });
+}
+
+class DeployConfig {
+  final String location;
+  final int deployed;
+  final Schedule schedule;
+
+  const DeployConfig({
+    required this.location,
+    required this.deployed,
+    required this.schedule,
   });
 }
 

@@ -16,7 +16,9 @@ use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
 use query::{
-    device::{self, ConfigureLoraTransmission, HttpReply},
+    device::{
+        self, ConfigureLoraTransmission, HttpQuery, HttpReply, Location, QueryType, Recording,
+    },
     portal::{DecodedToken, StatusCode},
 };
 use store::Db;
@@ -428,6 +430,18 @@ impl Sdk {
         }))
     }
 
+    async fn configure_deploy(&self, device_id: DeviceId, config: DeployConfig) -> Result<()> {
+        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
+            let client = query::device::Client::new()?;
+            let status = client.configure(&addr, config).await?;
+            self.nearby
+                .mark_finished_and_publish_reply(&device_id, status)
+                .await?;
+        }
+
+        Ok(())
+    }
+
     async fn configure_wifi_networks(
         &self,
         device_id: DeviceId,
@@ -608,6 +622,12 @@ pub fn add_or_update_station_in_portal(
     })?)
 }
 
+pub fn configure_deploy(device_id: String, config: DeployConfig) -> Result<()> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.configure_deploy(DeviceId(device_id.clone()), config))
+    })?)
+}
+
 pub fn configure_wifi_networks(device_id: String, config: WifiNetworksConfig) -> Result<()> {
     Ok(with_runtime(|rt, sdk| {
         rt.block_on(sdk.configure_wifi_networks(DeviceId(device_id.clone()), config))
@@ -777,6 +797,28 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
     }
 
     Ok(())
+}
+
+#[derive(Clone, Debug)]
+pub struct DeployConfig {
+    pub location: String,
+    pub deployed: u64,
+    pub schedule: Schedule,
+}
+
+impl Into<HttpQuery> for DeployConfig {
+    fn into(self) -> HttpQuery {
+        let mut query = HttpQuery::default();
+        query.r#type = QueryType::QueryConfigure as i32;
+        query.recording = Some(Recording {
+            modifying: true,
+            enabled: true,
+            started_time: self.deployed,
+            location: None,
+        });
+
+        query
+    }
 }
 
 #[derive(Clone, Debug)]

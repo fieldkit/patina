@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 class DeployStationPage extends StatelessWidget {
@@ -58,6 +59,9 @@ class _DeployFormState extends State<DeployFormWidget> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final StationConfiguration configuration =
+        context.read<StationConfiguration>();
+    final navigator = Navigator.of(context);
 
     return FormBuilder(
         key: _formKey,
@@ -82,6 +86,20 @@ class _DeployFormState extends State<DeployFormWidget> {
                   final int scheduleEvery = int.parse(values["scheduleEvery"]);
                   final UnitOfTime scheduleUnit = values["scheduleUnit"];
                   Loggers.ui.i("$location $scheduleEvery $scheduleUnit");
+                  final overlay = context.loaderOverlay;
+                  overlay.show();
+                  final deployed =
+                      DateTime.now().millisecondsSinceEpoch ~/ 1000;
+                  try {
+                    await configuration.configureDeploy(DeployConfig(
+                        location: location,
+                        deployed: deployed,
+                        schedule: ScheduleHelpers.fromForm(
+                            scheduleEvery, scheduleUnit)));
+                  } finally {
+                    navigator.pop();
+                    overlay.hide();
+                  }
                 }
               },
               text: localizations.deployButton,
@@ -91,6 +109,17 @@ class _DeployFormState extends State<DeployFormWidget> {
                   Padding(padding: const EdgeInsets.all(8), child: child))
               .toList(),
         ));
+  }
+}
+
+extension ScheduleHelpers on Schedule_Every {
+  static Schedule_Every fromForm(int every, UnitOfTime unit) {
+    switch (unit) {
+      case UnitOfTime.minutes:
+        return Schedule_Every(every * 60);
+      case UnitOfTime.hours:
+        return Schedule_Every(every * 60 * 60);
+    }
   }
 }
 

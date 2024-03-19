@@ -116,6 +116,24 @@ fn wire_add_or_update_station_in_portal_impl(
         },
     )
 }
+fn wire_configure_deploy_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+    config: impl Wire2Api<DeployConfig> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, (), _>(
+        WrapInfo {
+            debug_name: "configure_deploy",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            let api_config = config.wire2api();
+            move |task_callback| configure_deploy(api_device_id, api_config)
+        },
+    )
+}
 fn wire_configure_wifi_networks_impl(
     port_: MessagePort,
     device_id: impl Wire2Api<String> + UnwindSafe,

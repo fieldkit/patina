@@ -45,6 +45,15 @@ pub extern "C" fn wire_add_or_update_station_in_portal(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_configure_deploy(
+    port_: i64,
+    device_id: *mut wire_uint_8_list,
+    config: *mut wire_DeployConfig,
+) {
+    wire_configure_deploy_impl(port_, device_id, config)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_configure_wifi_networks(
     port_: i64,
     device_id: *mut wire_uint_8_list,
@@ -153,6 +162,11 @@ pub extern "C" fn new_box_autoadd_add_or_update_portal_station_0(
 }
 
 #[no_mangle]
+pub extern "C" fn new_box_autoadd_deploy_config_0() -> *mut wire_DeployConfig {
+    support::new_leak_box_ptr(wire_DeployConfig::new_with_null_ptr())
+}
+
+#[no_mangle]
 pub extern "C" fn new_box_autoadd_local_firmware_0() -> *mut wire_LocalFirmware {
     support::new_leak_box_ptr(wire_LocalFirmware::new_with_null_ptr())
 }
@@ -246,6 +260,12 @@ impl Wire2Api<AddOrUpdatePortalStation> for *mut wire_AddOrUpdatePortalStation {
         Wire2Api::<AddOrUpdatePortalStation>::wire2api(*wrap).into()
     }
 }
+impl Wire2Api<DeployConfig> for *mut wire_DeployConfig {
+    fn wire2api(self) -> DeployConfig {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<DeployConfig>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<LocalFirmware> for *mut wire_LocalFirmware {
     fn wire2api(self) -> LocalFirmware {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
@@ -290,6 +310,15 @@ impl Wire2Api<WifiTransmissionConfig> for *mut wire_WifiTransmissionConfig {
     fn wire2api(self) -> WifiTransmissionConfig {
         let wrap = unsafe { support::box_from_leak_ptr(self) };
         Wire2Api::<WifiTransmissionConfig>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<DeployConfig> for wire_DeployConfig {
+    fn wire2api(self) -> DeployConfig {
+        DeployConfig {
+            location: self.location.wire2api(),
+            deployed: self.deployed.wire2api(),
+            schedule: self.schedule.wire2api(),
+        }
     }
 }
 
@@ -421,6 +450,14 @@ pub struct wire_AddOrUpdatePortalStation {
 
 #[repr(C)]
 #[derive(Clone)]
+pub struct wire_DeployConfig {
+    location: *mut wire_uint_8_list,
+    deployed: u64,
+    schedule: wire_Schedule,
+}
+
+#[repr(C)]
+#[derive(Clone)]
 pub struct wire_list_record_archive {
     ptr: *mut wire_RecordArchive,
     len: i32,
@@ -548,6 +585,22 @@ impl NewWithNullPtr for wire_AddOrUpdatePortalStation {
 }
 
 impl Default for wire_AddOrUpdatePortalStation {
+    fn default() -> Self {
+        Self::new_with_null_ptr()
+    }
+}
+
+impl NewWithNullPtr for wire_DeployConfig {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            location: core::ptr::null_mut(),
+            deployed: Default::default(),
+            schedule: Default::default(),
+        }
+    }
+}
+
+impl Default for wire_DeployConfig {
     fn default() -> Self {
         Self::new_with_null_ptr()
     }

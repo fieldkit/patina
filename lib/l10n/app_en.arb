@@ -46,6 +46,7 @@
   "syncManageFirmware": "Manage Firmware",
   "quickTip": "Quick Tip",
 
+  "deployButton": "Deploy",
   "deployTitle": "Deploy Station",
   "deployLocation": "Name your location",
 
@@ -187,7 +188,6 @@
   "configureButton": "Configure",
   "batteryLife": "Battery Life",
   "memoryUsage": "Memory",
-  "deployButton": "Deploy",
 
   "confirmClearCalibrationTitle": "Clear Calibration",
   "confirmDeleteAccountTitle": "Delete Account",

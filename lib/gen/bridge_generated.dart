@@ -131,6 +131,27 @@ class NativeImpl implements Native {
         argNames: ["tokens", "station"],
       );
 
+  Future<void> configureDeploy(
+      {required String deviceId, required DeployConfig config, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(deviceId);
+    var arg1 = _platform.api2wire_box_autoadd_deploy_config(config);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_configure_deploy(port_, arg0, arg1),
+      parseSuccessData: _wire2api_unit,
+      parseErrorData: _wire2api_FrbAnyhowException,
+      constMeta: kConfigureDeployConstMeta,
+      argValues: [deviceId, config],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kConfigureDeployConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "configure_deploy",
+        argNames: ["deviceId", "config"],
+      );
+
   Future<void> configureWifiNetworks(
       {required String deviceId,
       required WifiNetworksConfig config,

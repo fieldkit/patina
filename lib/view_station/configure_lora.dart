@@ -134,7 +134,6 @@ class DisplayLoraConfiguration extends StatelessWidget {
                           .configureLora(config); // TODO Schedule
                     } finally {
                       navigator.pop();
-
                       overlay.hide();
                     }
                   },
