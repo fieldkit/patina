@@ -441,6 +441,18 @@ impl rust2dart::IntoIntoDart<BatteryInfo> for BatteryInfo {
     }
 }
 
+impl support::IntoDart for DeploymentConfig {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.start_time.into_into_dart().into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for DeploymentConfig {}
+impl rust2dart::IntoIntoDart<DeploymentConfig> for DeploymentConfig {
+    fn into_into_dart(self) -> Self {
+        self
+    }
+}
+
 impl support::IntoDart for DeviceCapabilities {
     fn into_dart(self) -> support::DartAbi {
         vec![self.udp.into_into_dart().into_dart()].into_dart()
@@ -516,6 +528,7 @@ impl rust2dart::IntoIntoDart<DownloadProgress> for DownloadProgress {
 impl support::IntoDart for EphemeralConfig {
     fn into_dart(self) -> support::DartAbi {
         vec![
+            self.deployment.into_dart(),
             self.transmission.into_dart(),
             self.networks.into_into_dart().into_dart(),
             self.lora.into_dart(),

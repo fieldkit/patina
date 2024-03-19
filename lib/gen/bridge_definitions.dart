@@ -175,6 +175,14 @@ class DeployConfig {
   });
 }
 
+class DeploymentConfig {
+  final int startTime;
+
+  const DeploymentConfig({
+    required this.startTime,
+  });
+}
+
 class DeviceCapabilities {
   final bool udp;
 
@@ -229,6 +237,7 @@ class DownloadProgress {
 }
 
 class EphemeralConfig {
+  final DeploymentConfig? deployment;
   final TransmissionConfig? transmission;
   final List<NetworkConfig> networks;
   final LoraConfig? lora;
@@ -236,6 +245,7 @@ class EphemeralConfig {
   final Uint8List events;
 
   const EphemeralConfig({
+    this.deployment,
     this.transmission,
     required this.networks,
     this.lora,

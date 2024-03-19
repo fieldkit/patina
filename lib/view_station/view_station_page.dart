@@ -84,6 +84,10 @@ class HighLevelsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TasksModel tasks = context.watch<TasksModel>();
+    final DeployTask? deployTask =
+        tasks.getMaybeOne<DeployTask>(station.deviceId);
+
     final battery = config.battery.percentage;
     final bytesUsed = config.meta.size + config.data.size;
 
@@ -125,21 +129,22 @@ class HighLevelsDetails extends StatelessWidget {
                 ],
               ))
             ])),
-        Container(
-          padding: const EdgeInsets.all(10),
-          width: double.infinity,
-          child: ElevatedTextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        DeployStationRoute(deviceId: station.deviceId),
-                  ),
-                );
-              },
-              text: AppLocalizations.of(context)!.deployButton),
-        ),
+        if (deployTask != null)
+          Container(
+            padding: const EdgeInsets.all(10),
+            width: double.infinity,
+            child: ElevatedTextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DeployStationRoute(deviceId: station.deviceId),
+                    ),
+                  );
+                },
+                text: AppLocalizations.of(context)!.deployButton),
+          ),
         Column(children: modules)
       ],
     );

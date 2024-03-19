@@ -16,9 +16,7 @@ use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
 use query::{
-    device::{
-        self, ConfigureLoraTransmission, HttpQuery, HttpReply, Location, QueryType, Recording,
-    },
+    device::{self, ConfigureLoraTransmission, HttpQuery, HttpReply, QueryType, Recording},
     portal::{DecodedToken, StatusCode},
 };
 use store::Db;
@@ -1159,7 +1157,13 @@ pub struct LoraConfig {
 }
 
 #[derive(Clone, Debug)]
+pub struct DeploymentConfig {
+    pub start_time: u64,
+}
+
+#[derive(Clone, Debug)]
 pub struct EphemeralConfig {
+    pub deployment: Option<DeploymentConfig>,
     pub transmission: Option<TransmissionConfig>,
     pub networks: Vec<NetworkConfig>,
     pub lora: Option<LoraConfig>,
@@ -1175,7 +1179,15 @@ pub struct DeviceCapabilities {
 impl TryInto<EphemeralConfig> for HttpReply {
     type Error = SdkMappingError;
 
-    fn try_into(self) -> std::result::Result<EphemeralConfig, Self::Error> {
+    fn try_into(self) -> Result<EphemeralConfig, Self::Error> {
+        let deployment = self
+            .status
+            .map(|s| s.recording)
+            .flatten()
+            .map(|s| DeploymentConfig {
+                start_time: s.started_time,
+            });
+
         let transmission = self
             .transmission
             .map(|t| t.wifi)
@@ -1220,6 +1232,7 @@ impl TryInto<EphemeralConfig> for HttpReply {
         });
 
         Ok(EphemeralConfig {
+            deployment,
             transmission,
             networks,
             lora,

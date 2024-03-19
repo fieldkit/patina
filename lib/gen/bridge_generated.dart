@@ -470,6 +470,10 @@ class NativeImpl implements Native {
     return raw as bool;
   }
 
+  DeploymentConfig _wire2api_box_autoadd_deployment_config(dynamic raw) {
+    return _wire2api_deployment_config(raw);
+  }
+
   DownloadProgress _wire2api_box_autoadd_download_progress(dynamic raw) {
     return _wire2api_download_progress(raw);
   }
@@ -513,6 +517,15 @@ class NativeImpl implements Native {
 
   UploadProgress _wire2api_box_autoadd_upload_progress(dynamic raw) {
     return _wire2api_upload_progress(raw);
+  }
+
+  DeploymentConfig _wire2api_deployment_config(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return DeploymentConfig(
+      startTime: _wire2api_u64(arr[0]),
+    );
   }
 
   DeviceCapabilities _wire2api_device_capabilities(dynamic raw) {
@@ -581,14 +594,15 @@ class NativeImpl implements Native {
 
   EphemeralConfig _wire2api_ephemeral_config(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return EphemeralConfig(
-      transmission: _wire2api_opt_box_autoadd_transmission_config(arr[0]),
-      networks: _wire2api_list_network_config(arr[1]),
-      lora: _wire2api_opt_box_autoadd_lora_config(arr[2]),
-      capabilities: _wire2api_device_capabilities(arr[3]),
-      events: _wire2api_uint_8_list(arr[4]),
+      deployment: _wire2api_opt_box_autoadd_deployment_config(arr[0]),
+      transmission: _wire2api_opt_box_autoadd_transmission_config(arr[1]),
+      networks: _wire2api_list_network_config(arr[2]),
+      lora: _wire2api_opt_box_autoadd_lora_config(arr[3]),
+      capabilities: _wire2api_device_capabilities(arr[4]),
+      events: _wire2api_uint_8_list(arr[5]),
     );
   }
 
@@ -726,6 +740,10 @@ class NativeImpl implements Native {
       ssid: _wire2api_String(arr[1]),
       preferred: _wire2api_bool(arr[2]),
     );
+  }
+
+  DeploymentConfig? _wire2api_opt_box_autoadd_deployment_config(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_deployment_config(raw);
   }
 
   EphemeralConfig? _wire2api_opt_box_autoadd_ephemeral_config(dynamic raw) {
