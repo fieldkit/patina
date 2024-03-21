@@ -33,6 +33,11 @@ pub fn wire_add_or_update_station_in_portal(port_: MessagePort, tokens: JsValue,
 }
 
 #[wasm_bindgen]
+pub fn wire_configure_deploy(port_: MessagePort, device_id: String, config: JsValue) {
+    wire_configure_deploy_impl(port_, device_id, config)
+}
+
+#[wasm_bindgen]
 pub fn wire_configure_wifi_networks(port_: MessagePort, device_id: String, config: JsValue) {
     wire_configure_wifi_networks_impl(port_, device_id, config)
 }
@@ -122,6 +127,23 @@ impl Wire2Api<AddOrUpdatePortalStation> for JsValue {
             device_id: self_.get(1).wire2api(),
             location_name: self_.get(2).wire2api(),
             status_pb: self_.get(3).wire2api(),
+        }
+    }
+}
+
+impl Wire2Api<DeployConfig> for JsValue {
+    fn wire2api(self) -> DeployConfig {
+        let self_ = self.dyn_into::<JsArray>().unwrap();
+        assert_eq!(
+            self_.length(),
+            3,
+            "Expected 3 elements, got {}",
+            self_.length()
+        );
+        DeployConfig {
+            location: self_.get(0).wire2api(),
+            deployed: self_.get(1).wire2api(),
+            schedule: self_.get(2).wire2api(),
         }
     }
 }

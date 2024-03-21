@@ -116,6 +116,24 @@ fn wire_add_or_update_station_in_portal_impl(
         },
     )
 }
+fn wire_configure_deploy_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+    config: impl Wire2Api<DeployConfig> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, (), _>(
+        WrapInfo {
+            debug_name: "configure_deploy",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            let api_config = config.wire2api();
+            move |task_callback| configure_deploy(api_device_id, api_config)
+        },
+    )
+}
 fn wire_configure_wifi_networks_impl(
     port_: MessagePort,
     device_id: impl Wire2Api<String> + UnwindSafe,
@@ -423,6 +441,18 @@ impl rust2dart::IntoIntoDart<BatteryInfo> for BatteryInfo {
     }
 }
 
+impl support::IntoDart for DeploymentConfig {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.start_time.into_into_dart().into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for DeploymentConfig {}
+impl rust2dart::IntoIntoDart<DeploymentConfig> for DeploymentConfig {
+    fn into_into_dart(self) -> Self {
+        self
+    }
+}
+
 impl support::IntoDart for DeviceCapabilities {
     fn into_dart(self) -> support::DartAbi {
         vec![self.udp.into_into_dart().into_dart()].into_dart()
@@ -498,6 +528,7 @@ impl rust2dart::IntoIntoDart<DownloadProgress> for DownloadProgress {
 impl support::IntoDart for EphemeralConfig {
     fn into_dart(self) -> support::DartAbi {
         vec![
+            self.deployment.into_dart(),
             self.transmission.into_dart(),
             self.networks.into_into_dart().into_dart(),
             self.lora.into_dart(),

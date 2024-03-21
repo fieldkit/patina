@@ -1,4 +1,5 @@
 import 'package:fk/common_widgets.dart';
+import 'package:fk/deploy/deploy_page.dart';
 import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -83,6 +84,10 @@ class HighLevelsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TasksModel tasks = context.watch<TasksModel>();
+    final DeployTask? deployTask =
+        tasks.getMaybeOne<DeployTask>(station.deviceId);
+
     final battery = config.battery.percentage;
     final bytesUsed = config.meta.size + config.data.size;
 
@@ -90,7 +95,7 @@ class HighLevelsDetails extends StatelessWidget {
       return ModuleInfo(module: module);
     }).toList();
 
-    var circle = Container(
+    final circle = Container(
         decoration:
             const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
         alignment: Alignment.center,
@@ -124,13 +129,22 @@ class HighLevelsDetails extends StatelessWidget {
                 ],
               ))
             ])),
-        Container(
-          padding: const EdgeInsets.all(10),
-          width: double.infinity,
-          child: ElevatedTextButton(
-              onPressed: () {}, // TODO: Implement Deploy
-              text: AppLocalizations.of(context)!.deployButton),
-        ),
+        if (deployTask != null)
+          Container(
+            padding: const EdgeInsets.all(10),
+            width: double.infinity,
+            child: ElevatedTextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DeployStationRoute(deviceId: station.deviceId),
+                    ),
+                  );
+                },
+                text: AppLocalizations.of(context)!.deployButton),
+          ),
         Column(children: modules)
       ],
     );

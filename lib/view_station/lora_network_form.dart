@@ -47,7 +47,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
             name: 'appKey',
             initialValue: hex.encode(widget.config.appKey ?? List.empty()),
             style: WH.monoStyle(16),
-            decoration: const InputDecoration(labelText: "App Key"),
+            decoration: InputDecoration(labelText: localizations.loraAppKey),
             validator: FormBuilderValidators.compose([
               FormBuilderValidators.required(),
               FormBuilderValidators.equalLength(32),
@@ -58,8 +58,8 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
             name: 'joinEui',
             initialValue: hex.encode(widget.config.joinEui ?? List.empty()),
             style: WH.monoStyle(16),
-            decoration: const InputDecoration(
-              labelText: "Join EUI",
+            decoration: InputDecoration(
+              labelText: localizations.loraJoinEui,
             ),
             validator: FormBuilderValidators.compose([
               FormBuilderValidators.required(),

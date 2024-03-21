@@ -31,7 +31,7 @@ class ListStationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> map = [const SizedBox(height: 200, child: Map())];
+    final List<Widget> map = [const SizedBox(height: 200, child: MapWidget())];
 
     final cards = known.stations.map((station) {
       if (station.config == null) {

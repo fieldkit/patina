@@ -43,6 +43,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   }
 
   @protected
+  List<dynamic> api2wire_box_autoadd_deploy_config(DeployConfig raw) {
+    return api2wire_deploy_config(raw);
+  }
+
+  @protected
   List<dynamic> api2wire_box_autoadd_local_firmware(LocalFirmware raw) {
     return api2wire_local_firmware(raw);
   }
@@ -83,6 +88,15 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire>
   List<dynamic> api2wire_box_autoadd_wifi_transmission_config(
       WifiTransmissionConfig raw) {
     return api2wire_wifi_transmission_config(raw);
+  }
+
+  @protected
+  List<dynamic> api2wire_deploy_config(DeployConfig raw) {
+    return [
+      api2wire_String(raw.location),
+      api2wire_u64(raw.deployed),
+      api2wire_schedule(raw.schedule)
+    ];
   }
 
   @protected
@@ -244,6 +258,9 @@ class NativeWasmModule implements WasmModule {
   external dynamic /* void */ wire_add_or_update_station_in_portal(
       NativePortType port_, List<dynamic> tokens, List<dynamic> station);
 
+  external dynamic /* void */ wire_configure_deploy(
+      NativePortType port_, String device_id, List<dynamic> config);
+
   external dynamic /* void */ wire_configure_wifi_networks(
       NativePortType port_, String device_id, List<dynamic> config);
 
@@ -307,6 +324,10 @@ class NativeWire extends FlutterRustBridgeWasmWireBase<NativeWasmModule> {
   void wire_add_or_update_station_in_portal(
           NativePortType port_, List<dynamic> tokens, List<dynamic> station) =>
       wasmModule.wire_add_or_update_station_in_portal(port_, tokens, station);
+
+  void wire_configure_deploy(
+          NativePortType port_, String device_id, List<dynamic> config) =>
+      wasmModule.wire_configure_deploy(port_, device_id, config);
 
   void wire_configure_wifi_networks(
           NativePortType port_, String device_id, List<dynamic> config) =>

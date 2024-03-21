@@ -40,13 +40,15 @@ class ConfigureWiFiPage extends StatelessWidget {
     final StationConfiguration configuration =
         context.watch<StationConfiguration>();
 
-    final List<WifiNetworkListItem> networks = configuration.networks
+    final List<Widget> networks = configuration.networks
         .where((network) => network.ssid.isNotEmpty)
-        .map((network) => WifiNetworkListItem(
-            network: network,
-            onRemove: () async {
-              await onRemoveNetwork(context, network);
-            }))
+        .map((network) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: WifiNetworkListItem(
+                network: network,
+                onRemove: () async {
+                  await onRemoveNetwork(context, network);
+                })))
         .toList();
 
     return Scaffold(
@@ -56,12 +58,14 @@ class ConfigureWiFiPage extends StatelessWidget {
       body: ListView(
           children: WH.divideWith(() => const Divider(), [
         ...networks,
-        Container(
-            padding: const EdgeInsets.all(24.0),
+        Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 22),
             child: bothSlotsFilled
                 ? tooManyNetworks(context)
                 : addNetworkButton(context)),
-        const ConfigureAutomaticUploadListItem(),
+        const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10.0),
+            child: ConfigureAutomaticUploadListItem()),
       ])),
     );
   }

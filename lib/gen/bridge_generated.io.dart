@@ -32,6 +32,14 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_DeployConfig> api2wire_box_autoadd_deploy_config(
+      DeployConfig raw) {
+    final ptr = inner.new_box_autoadd_deploy_config_0();
+    _api_fill_to_wire_deploy_config(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_LocalFirmware> api2wire_box_autoadd_local_firmware(
       LocalFirmware raw) {
     final ptr = inner.new_box_autoadd_local_firmware_0();
@@ -174,6 +182,11 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     _api_fill_to_wire_add_or_update_portal_station(apiObj, wireObj.ref);
   }
 
+  void _api_fill_to_wire_box_autoadd_deploy_config(
+      DeployConfig apiObj, ffi.Pointer<wire_DeployConfig> wireObj) {
+    _api_fill_to_wire_deploy_config(apiObj, wireObj.ref);
+  }
+
   void _api_fill_to_wire_box_autoadd_local_firmware(
       LocalFirmware apiObj, ffi.Pointer<wire_LocalFirmware> wireObj) {
     _api_fill_to_wire_local_firmware(apiObj, wireObj.ref);
@@ -204,6 +217,13 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
       WifiTransmissionConfig apiObj,
       ffi.Pointer<wire_WifiTransmissionConfig> wireObj) {
     _api_fill_to_wire_wifi_transmission_config(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_deploy_config(
+      DeployConfig apiObj, wire_DeployConfig wireObj) {
+    wireObj.location = api2wire_String(apiObj.location);
+    wireObj.deployed = api2wire_u64(apiObj.deployed);
+    _api_fill_to_wire_schedule(apiObj.schedule, wireObj.schedule);
   }
 
   void _api_fill_to_wire_local_firmware(
@@ -491,6 +511,26 @@ class NativeWire implements FlutterRustBridgeWireBase {
           void Function(int, ffi.Pointer<wire_Tokens>,
               ffi.Pointer<wire_AddOrUpdatePortalStation>)>();
 
+  void wire_configure_deploy(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> device_id,
+    ffi.Pointer<wire_DeployConfig> config,
+  ) {
+    return _wire_configure_deploy(
+      port_,
+      device_id,
+      config,
+    );
+  }
+
+  late final _wire_configure_deployPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_DeployConfig>)>>('wire_configure_deploy');
+  late final _wire_configure_deploy = _wire_configure_deployPtr.asFunction<
+      void Function(int, ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_DeployConfig>)>();
+
   void wire_configure_wifi_networks(
     int port_,
     ffi.Pointer<wire_uint_8_list> device_id,
@@ -760,6 +800,17 @@ class NativeWire implements FlutterRustBridgeWireBase {
       _new_box_autoadd_add_or_update_portal_station_0Ptr
           .asFunction<ffi.Pointer<wire_AddOrUpdatePortalStation> Function()>();
 
+  ffi.Pointer<wire_DeployConfig> new_box_autoadd_deploy_config_0() {
+    return _new_box_autoadd_deploy_config_0();
+  }
+
+  late final _new_box_autoadd_deploy_config_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_DeployConfig> Function()>>(
+          'new_box_autoadd_deploy_config_0');
+  late final _new_box_autoadd_deploy_config_0 =
+      _new_box_autoadd_deploy_config_0Ptr
+          .asFunction<ffi.Pointer<wire_DeployConfig> Function()>();
+
   ffi.Pointer<wire_LocalFirmware> new_box_autoadd_local_firmware_0() {
     return _new_box_autoadd_local_firmware_0();
   }
@@ -959,6 +1010,31 @@ final class wire_AddOrUpdatePortalStation extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> status_pb;
 }
 
+final class wire_Schedule_Every extends ffi.Struct {
+  @ffi.Uint32()
+  external int field0;
+}
+
+final class ScheduleKind extends ffi.Union {
+  external ffi.Pointer<wire_Schedule_Every> Every;
+}
+
+final class wire_Schedule extends ffi.Struct {
+  @ffi.Int32()
+  external int tag;
+
+  external ffi.Pointer<ScheduleKind> kind;
+}
+
+final class wire_DeployConfig extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> location;
+
+  @ffi.Uint64()
+  external int deployed;
+
+  external wire_Schedule schedule;
+}
+
 final class wire_WifiNetworkConfig extends ffi.Struct {
   @ffi.UintPtr()
   external int index;
@@ -983,22 +1059,6 @@ final class wire_list_wifi_network_config extends ffi.Struct {
 
 final class wire_WifiNetworksConfig extends ffi.Struct {
   external ffi.Pointer<wire_list_wifi_network_config> networks;
-}
-
-final class wire_Schedule_Every extends ffi.Struct {
-  @ffi.Uint32()
-  external int field0;
-}
-
-final class ScheduleKind extends ffi.Union {
-  external ffi.Pointer<wire_Schedule_Every> Every;
-}
-
-final class wire_Schedule extends ffi.Struct {
-  @ffi.Int32()
-  external int tag;
-
-  external ffi.Pointer<ScheduleKind> kind;
 }
 
 final class wire_WifiTransmissionConfig extends ffi.Struct {

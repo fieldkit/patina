@@ -649,6 +649,10 @@ class StationConfiguration extends ChangeNotifier {
   Future<void> verifyLora() async {
     await api.verifyLoraTransmission(deviceId: deviceId);
   }
+
+  Future<void> configureDeploy(DeployConfig config) async {
+    await api.configureDeploy(deviceId: deviceId, config: config);
+  }
 }
 
 abstract class Task {
@@ -684,6 +688,11 @@ class DeployTaskFactory extends TaskFactory<DeployTask> {
 
   List<DeployTask> create() {
     final List<DeployTask> tasks = List.empty(growable: true);
+    for (final station in knownStations.stations) {
+      if (station.ephemeral?.deployment == null) {
+        tasks.add(DeployTask(station: station));
+      }
+    }
     return tasks;
   }
 }
