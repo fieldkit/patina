@@ -53,11 +53,13 @@ build:android:
   script:
     - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
     - ln -sf .secure-files/fk-release-key.keystore android/app/fk-release-key.keystore
+    - ls -alh android/app
     - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
     - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
     - echo "CI_COMMIT_SHA=${CI_COMMIT_SHA}" >> .env
     - cat .env
     - flutter build apk && sccache --show-stats
+    - flutter build appbundle --release && sccache --show-stats
   artifacts:
     name: "fk-patina-android-${CI_COMMIT_REF_NAME}"
     paths:
