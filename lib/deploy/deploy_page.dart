@@ -41,7 +41,7 @@ class DeployStationPage extends StatelessWidget {
           ),
         ),
         body: ListView(
-          children: [map, DeployFormWidget()],
+          children: const [map, DeployFormWidget()],
         ));
   }
 }

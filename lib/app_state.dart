@@ -1032,6 +1032,20 @@ class AppState {
     );
   }
 
+  AppState start() {
+    _everyFiveMinutes();
+
+    return this;
+  }
+
+  Future<void> _everyFiveMinutes() async {
+    while (true) {
+      await Future.delayed(const Duration(minutes: 5));
+
+      portalAccounts.refreshFirmware();
+    }
+  }
+
   StationConfiguration configurationFor(deviceId) {
     return StationConfiguration(
         api: api,
@@ -1051,7 +1065,7 @@ class AppEnv {
   AppEnv.appState(AppEventDispatcher dispatcher)
       : this._(
           dispatcher,
-          appState: AppState.build(api, dispatcher),
+          appState: AppState.build(api, dispatcher).start(),
         );
 
   ValueListenable<AppState?> get appState => _appState;
@@ -1262,12 +1276,12 @@ class PortalAccounts extends ChangeNotifier {
       }
     }
 
-    await _refreshFirmware();
+    await refreshFirmware();
 
     return this;
   }
 
-  Future<void> _refreshFirmware() async {
+  Future<void> refreshFirmware() async {
     try {
       if (_accounts.isEmpty) {
         Loggers.state.w("Checking firmware (unauthenticated)");
@@ -1294,7 +1308,7 @@ class PortalAccounts extends ChangeNotifier {
     try {
       final authenticated =
           await api.authenticatePortal(email: email, password: password);
-      _refreshFirmware(); // In background
+      refreshFirmware(); // In background
       return PortalAccount.fromAuthenticated(authenticated);
     } catch (e) {
       Loggers.state.e("Exception authenticating: $e");
