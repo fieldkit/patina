@@ -53,6 +53,7 @@ build:android:
   script:
     - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
     - ln -sf $PWD/.secure-files/fk-release-key.keystore $PWD/android/app/fk-release-key.keystore
+    - ln -sf $PWD/.secure-files/key.properties $PWD/android/key.properties
     - ls -alh android/app
     - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
     - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
