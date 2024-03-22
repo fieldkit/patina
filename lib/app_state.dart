@@ -1262,6 +1262,12 @@ class PortalAccounts extends ChangeNotifier {
       }
     }
 
+    await _refreshFirmware();
+
+    return this;
+  }
+
+  Future<void> _refreshFirmware() async {
     try {
       if (_accounts.isEmpty) {
         Loggers.state.w("Checking firmware (unauthenticated)");
@@ -1275,8 +1281,6 @@ class PortalAccounts extends ChangeNotifier {
     } catch (e) {
       Loggers.main.i("Firmware update error: $e");
     }
-
-    return this;
   }
 
   Future<PortalAccounts> _save() async {
@@ -1290,6 +1294,7 @@ class PortalAccounts extends ChangeNotifier {
     try {
       final authenticated =
           await api.authenticatePortal(email: email, password: password);
+      _refreshFirmware(); // In background
       return PortalAccount.fromAuthenticated(authenticated);
     } catch (e) {
       Loggers.state.e("Exception authenticating: $e");
