@@ -1,4 +1,5 @@
 import 'package:fk/providers.dart';
+import 'package:fk/view_station/station_modules_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -115,12 +116,23 @@ class ConfigureStationPage extends StatelessWidget {
             },
           ),
           const Divider(),
-          /*
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsModules),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StationProviders(
+                      deviceId: station.deviceId,
+                      child: StationModulesPage(
+                        station: station,
+                      )),
+                ),
+              );
+            },
           ),
           const Divider(),
+          /*
           ListTile(
             title: Text(AppLocalizations.of(context)!.endDeployment),
             onTap: () {},
