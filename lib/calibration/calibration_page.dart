@@ -53,6 +53,12 @@ class CalibrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final module = context
+        .read<KnownStationsModel>()
+        .findModule(config.moduleIdentity)!
+        .module;
+    final bay = AppLocalizations.of(context)!.bayNumber(module.position);
+
     return PopScope(
         canPop: false,
         onPopInvoked: (bool didPop) async {
@@ -67,8 +73,15 @@ class CalibrationPage extends StatelessWidget {
         },
         child: dismissKeyboardOnOutsideGap(Scaffold(
             appBar: AppBar(
-              title: Text(AppLocalizations.of(context)!.calibrationTitle),
-            ),
+                centerTitle: true,
+                title: Column(children: [
+                  Text(AppLocalizations.of(context)!.calibrationTitle),
+                  Text(
+                    bay,
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.normal),
+                  ),
+                ])),
             body: ChangeNotifierProvider(
                 create: (context) => active,
                 child: ProvideCountdown(
