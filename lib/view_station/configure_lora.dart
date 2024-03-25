@@ -23,7 +23,17 @@ class ConfigureLoraPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(configuration.name),
+          centerTitle: true,
+          title: Column(
+            children: [
+              Text(AppLocalizations.of(context)!.loraConfigurationTitle),
+              Text(
+                configuration.name,
+                style: const TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.normal),
+              ),
+            ],
+          ),
         ),
         body: ListView(children: [
           if (loraConfig != null && !loraConfig.available)

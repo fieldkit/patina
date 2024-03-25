@@ -117,6 +117,7 @@
   "eventCode": "Code",
   "eventReason": "Reason",
 
+  "networksTitle": "WiFi Networks",
   "networkAddButton": "Add Network",
   "networkEditTitle": "WiFi Network",
   "networkSaveButton": "Save",
