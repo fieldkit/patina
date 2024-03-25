@@ -21,18 +21,16 @@ class StationModulesPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.modulesTitle),
           centerTitle: true,
-          bottom: PreferredSize(
-            preferredSize: Size.zero,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 0),
-                Text(config.name),
-                const SizedBox(height: 8),
-              ],
-            ),
+          title: Column(
+            children: [
+              Text(AppLocalizations.of(context)!.modulesTitle),
+              Text(
+                config.name,
+                style: const TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.normal),
+              ),
+            ],
           ),
         ),
         body: ListView(

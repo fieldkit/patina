@@ -1,7 +1,5 @@
-import 'package:fk/diagnostics.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'package:flutter/material.dart';
 import 'package:fk/constants.dart';
 
 import '../gen/ffi.dart';

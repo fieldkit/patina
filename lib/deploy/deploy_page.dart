@@ -26,18 +26,16 @@ class DeployStationPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.deployTitle),
           centerTitle: true,
-          bottom: PreferredSize(
-            preferredSize: Size.zero,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 0),
-                Text(config.name),
-                const SizedBox(height: 8),
-              ],
-            ),
+          title: Column(
+            children: [
+              Text(AppLocalizations.of(context)!.deployTitle),
+              Text(
+                config.name,
+                style: const TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.normal),
+              ),
+            ],
           ),
         ),
         body: ListView(
