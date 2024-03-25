@@ -1,3 +1,4 @@
+import 'package:fk/diagnostics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -88,20 +89,25 @@ class SensorsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double boxSize = screenWidth < 240 ? screenWidth : (screenWidth / 2.3);
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      double width = constraints.maxWidth;
+      double boxSize = width < 240 ? width : (width / 2.0);
 
-    return Wrap(
-      alignment: WrapAlignment.start,
-      children: children.map((child) {
-        return Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: SizedBox(
-            width: boxSize,
-            child: child,
-          ),
-        );
-      }).toList(),
-    );
+      return Align(
+          alignment: Alignment.topLeft,
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            children: children.map((child) {
+              return SizedBox(
+                width: boxSize,
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: child,
+                ),
+              );
+            }).toList(),
+          ));
+    });
   }
 }
