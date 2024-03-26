@@ -69,7 +69,7 @@ build:android:
       - build/app/outputs/flutter-apk/*.apk
 
 .setup: &common
-  image: "ghcr.io/cirruslabs/flutter:3.16.0"
+  image: "ghcr.io/cirruslabs/flutter:3.19.4"
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
