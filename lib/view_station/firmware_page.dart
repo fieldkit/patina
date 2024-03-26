@@ -130,13 +130,13 @@ class StationFirmwarePage extends StatelessWidget {
 
   AppBar _buildAppBar(BuildContext context, AppLocalizations localizations) {
     return AppBar(
+      centerTitle: true,
       title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(localizations.firmwareTitle),
           Text(
             station.config!.name,
-            style: const TextStyle(fontSize: 14, color: Colors.grey),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
           ),
         ],
       ),

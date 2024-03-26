@@ -438,7 +438,6 @@ class AvailableFirmwareModel extends ChangeNotifier {
       {required this.api, required AppEventDispatcher dispatcher}) {
     dispatcher
         .addListener<DomainMessage_AvailableFirmware>((availableFirmware) {
-      Loggers.state.i("DomainMessage_AvailableFirmware: $availableFirmware");
       _firmware.clear();
       _firmware.addAll(availableFirmware.field0);
       notifyListeners();

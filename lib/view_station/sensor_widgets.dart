@@ -1,16 +1,7 @@
-import 'package:fk/common_widgets.dart';
-import 'package:fk/providers.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
-import 'package:fk/app_state.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter/material.dart';
 import 'package:fk/constants.dart';
 
-import '../calibration/calibration_model.dart';
-import '../calibration/calibration_page.dart';
-import '../calibration/clear_calibration_page.dart';
 import '../gen/ffi.dart';
 import '../meta.dart';
 
@@ -31,21 +22,21 @@ class DisplaySensorValue extends StatelessWidget {
     double valueSize = screenWidth < 360 ? 18 : 24;
     double unitsSize = screenWidth < 360 ? 10 : 12;
 
-    var valueFormatter = NumberFormat("0.##");
-    var valueStyle = TextStyle(
+    final valueFormatter = NumberFormat("0.##");
+    final valueStyle = TextStyle(
       fontSize: valueSize,
       color: AppColors.primaryColor,
       fontWeight: FontWeight.bold,
     );
-    var unitsStyle = TextStyle(
+    final unitsStyle = TextStyle(
       fontSize: unitsSize,
       color: const Color.fromRGBO(64, 64, 64, 1),
       fontWeight: FontWeight.normal,
     );
-    var value = sensor.value?.value;
-    var uom = localized.uom;
+    final value = sensor.value?.value;
+    final uom = localized.uom;
 
-    var suffix = Container(
+    final suffix = Container(
         padding: const EdgeInsets.only(left: 4),
         child: Text(uom, style: unitsStyle));
 
@@ -96,89 +87,25 @@ class SensorsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double boxSize = screenWidth < 240 ? screenWidth : (screenWidth / 2.3);
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      double width = constraints.maxWidth;
+      double boxSize = width < 240 ? width : (width / 2.0);
 
-    return Wrap(
-      alignment: WrapAlignment.start,
-      children: children.map((child) {
-        return Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: SizedBox(
-            width: boxSize,
-            child: child,
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-int defaultSensorSorter(SensorConfig a, SensorConfig b) =>
-    a.number.compareTo(b.number);
-
-class ModuleInfo extends StatelessWidget {
-  final ModuleConfig module;
-
-  const ModuleInfo({super.key, required this.module});
-
-  @override
-  Widget build(BuildContext context) {
-    final moduleConfigurations = context.watch<ModuleConfigurations>();
-    final localized = LocalizedModule.get(module);
-    final bay = AppLocalizations.of(context)!.bayNumber(module.position);
-
-    final List<Widget> sensors =
-        module.sensors.sorted(defaultSensorSorter).map((sensor) {
-      return SensorInfo(sensor: sensor);
-    }).toList();
-
-    final Widget maybeCalibration = localized.canCalibrate
-        ? Container(
-            padding: const EdgeInsets.all(10),
-            width: double.infinity,
-            child: ElevatedTextButton(
-              onPressed: () {
-                calibrationPage() {
-                  final config = CalibrationPointConfig.fromTemplate(
-                      module.identity, localized.calibrationTemplate!);
-                  if (moduleConfigurations.find(module.identity).isCalibrated) {
-                    return ClearCalibrationPage(config: config, module: module);
-                  } else {
-                    return CalibrationPage(config: config);
-                  }
-                }
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ModuleProviders(
-                        moduleIdentity: module.identity,
-                        child: calibrationPage()),
-                  ),
-                );
-              },
-              text: AppLocalizations.of(context)!.calibrateButton,
-            ))
-        : const SizedBox.shrink();
-
-    return Container(
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          border: Border.all(
-            color: const Color.fromRGBO(212, 212, 212, 1),
-          ),
-          borderRadius: const BorderRadius.all(Radius.circular(5))),
-      child: Column(
-        children: [
-          ListTile(
-              leading: Image(image: localized.icon),
-              title: Text(localized.name),
-              subtitle: Text(bay)),
-          maybeCalibration,
-          SensorsGrid(children: sensors),
-        ],
-      ),
-    );
+      return Align(
+          alignment: Alignment.topLeft,
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            children: children.map((child) {
+              return SizedBox(
+                width: boxSize,
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: child,
+                ),
+              );
+            }).toList(),
+          ));
+    });
   }
 }

@@ -1,6 +1,7 @@
 import 'package:fk/common_widgets.dart';
 import 'package:fk/deploy/deploy_page.dart';
 import 'package:fk/providers.dart';
+import 'package:fk/view_station/module_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,6 @@ import '../app_state.dart';
 import '../meta.dart';
 import '../unknown_station_page.dart';
 import 'configure_station.dart';
-import 'sensor_widgets.dart';
 
 class ViewStationRoute extends StatelessWidget {
   final String deviceId;
@@ -68,13 +68,6 @@ class ViewStationPage extends StatelessWidget {
   }
 }
 
-int defaultModuleSorter(ModuleConfig a, ModuleConfig b) {
-  if (a.position == b.position) {
-    return a.key.compareTo(b.key);
-  }
-  return a.position.compareTo(b.position);
-}
-
 class HighLevelsDetails extends StatelessWidget {
   final StationModel station;
 
@@ -92,7 +85,11 @@ class HighLevelsDetails extends StatelessWidget {
     final bytesUsed = config.meta.size + config.data.size;
 
     final modules = config.modules.sorted(defaultModuleSorter).map((module) {
-      return ModuleInfo(module: module);
+      return ModuleInfo(
+        module: module,
+        showSensors: true,
+        alwaysShowCalibrate: false,
+      );
     }).toList();
 
     final circle = Container(

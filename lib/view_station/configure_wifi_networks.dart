@@ -53,7 +53,17 @@ class ConfigureWiFiPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(config.name),
+        centerTitle: true,
+        title: Column(
+          children: [
+            Text(AppLocalizations.of(context)!.networksTitle),
+            Text(
+              config.name,
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+            ),
+          ],
+        ),
       ),
       body: ListView(
           children: WH.divideWith(() => const Divider(), [

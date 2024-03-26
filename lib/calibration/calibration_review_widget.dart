@@ -41,9 +41,15 @@ class CalibrationReviewWidget extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-              "${AppLocalizations.of(context)!.calibrationTitle} - ${localized.name}"),
-        ),
+            centerTitle: true,
+            title: Column(children: [
+              Text(localizations.calibrationTitle),
+              Text(
+                localized.name,
+                style: const TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.normal),
+              ),
+            ])),
         body: LayoutBuilder(builder: (context, constraints) {
           return ListView(
               children: <Widget>[
