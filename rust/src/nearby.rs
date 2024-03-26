@@ -219,7 +219,11 @@ impl NearbyDevices {
         let querying = devices.get_mut(device_id).expect("Whoa, no querying yet?");
         querying.failures += 1;
         if !querying.is_disconnected() {
-            querying.retry = Some(Utc::now() + Duration::seconds(1));
+            querying.retry = Some(
+                Utc::now()
+                    + Duration::try_seconds(1)
+                        .ok_or_else(|| anyhow::anyhow!("Retry delay try_seconds"))?,
+            );
         }
 
         Ok((&*querying).into())
@@ -419,7 +423,7 @@ impl Querying {
         let now = Utc::now();
         match self.attempted {
             Some(attempted) => {
-                if now - attempted > Duration::seconds(10) {
+                if now - attempted > Duration::try_seconds(10).expect("Requery try_seconds") {
                     true
                 } else {
                     match self.retry {

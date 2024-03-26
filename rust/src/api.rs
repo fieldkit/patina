@@ -148,7 +148,8 @@ pub fn start_native(
     let sdk = rt.block_on(create_sdk(storage_path, portal_base_url, publish_tx))?;
 
     // Consider moving this to using the above channel?
-    sink.add(DomainMessage::PreAccount);
+    sink.add(DomainMessage::PreAccount)
+        .expect("Send PreAccount");
 
     let handle = rt.handle().clone();
 
@@ -168,7 +169,7 @@ pub fn start_native(
     tokio::spawn(async move {
         while let Some(e) = publish_rx.recv().await {
             trace!("sdk:publish");
-            sink.add(e.into());
+            sink.add(e.into()).expect("Sending DomainMessage");
         }
         let _ = tx.send(());
     });
@@ -761,7 +762,7 @@ struct LogSink {
 impl<'a> Write for &'a LogSink {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let line = String::from_utf8_lossy(buf).to_string();
-        self.sink.add(line);
+        self.sink.add(line).expect("Sending log message");
         Ok(buf.len())
     }
 
