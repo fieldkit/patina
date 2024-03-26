@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:fk/constants.dart';
 
-import '../gen/ffi.dart';
+import '../gen/api.dart';
 import '../meta.dart';
 
 class DisplaySensorValue extends StatelessWidget {

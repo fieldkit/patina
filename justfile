@@ -5,25 +5,22 @@ setup:
     cd flows && flutter pub get
 
 gen: setup
-    cargo install flutter_rust_bridge_codegen@1.82.1
-    flutter_rust_bridge_codegen \
-        -r native/src/api.rs \
-        -d lib/gen/bridge_generated.dart \
-        --dart-decl-output lib/gen/bridge_definitions.dart \
-        -c macos/Runner/bridge_generated.h \
-        -e ios/Runner \
-        --wasm --verbose
+    cargo install flutter_rust_bridge_codegen@2.0.0-dev.28
+    flutter_rust_bridge_codegen generate \
+        --rust-input rust/src/api.rs \
+        --dart-output lib/gen \
+        --c-output macos/Runner/bridge_generated.h
 
 l10n:
     flutter gen-l10n
 
 lint:
-    cd native && cargo fmt
+    cd rust && cargo fmt
     dart format .
 
 clean:
     flutter clean
-    cd native && cargo clean
+    cd rust && cargo clean
 
 test:
     cd flows && dart run --enable-asserts example/sync.dart --test

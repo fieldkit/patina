@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fk/gen/api.dart';
 
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
-import '../gen/ffi.dart';
 import '../no_stations_widget.dart';
 import '../settings/accounts_page.dart';
 import '../view_station/firmware_page.dart';
@@ -26,11 +26,11 @@ class DataSyncTab extends StatelessWidget {
       stationOperations: stationOperations,
       tasks: tasks,
       onDownload: (task) async {
-        await knownStations.startDownload(
+        await knownStations.startDownloading(
             deviceId: task.deviceId, first: task.first);
       },
       onUpload: (task) async {
-        await knownStations.startUpload(
+        await knownStations.startUploading(
             deviceId: task.deviceId, tokens: task.tokens!, files: task.files);
       },
     );

@@ -1,3 +1,4 @@
+import 'package:fk/gen/api.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:caldor/calibration.dart';
 import 'package:fk/calibration/calibration_review_page.dart';
@@ -5,7 +6,6 @@ import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:fk/gen/ffi.dart';
 import 'package:fk/meta.dart';
 import 'package:fk/view_station/sensor_widgets.dart';
 
@@ -133,7 +133,8 @@ class CalibrationPanel extends StatelessWidget {
 
       overlay.show();
       try {
-        await moduleConfigurations.calibrate(config.moduleIdentity, serialized);
+        await moduleConfigurations.calibrateModule(
+            config.moduleIdentity, serialized);
       } catch (e) {
         Loggers.cal.e("Exception calibration: $e");
       } finally {
@@ -171,7 +172,8 @@ class CalibrationPanel extends StatelessWidget {
       if (time == null) {
         return CanContinue.staleValue;
       } else {
-        if (countdown.finishedBefore(time)) {
+        if (countdown
+            .finishedBefore(DateTime.fromMillisecondsSinceEpoch(time.field0))) {
           return CanContinue.yes;
         }
         return CanContinue.staleValue;

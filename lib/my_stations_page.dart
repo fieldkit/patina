@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'common_widgets.dart';
-import 'gen/ffi.dart';
+import 'gen/api.dart';
 
 import 'app_state.dart';
 import 'location_widgets.dart';

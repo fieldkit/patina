@@ -6,7 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
-import '../gen/ffi.dart';
+import '../gen/api.dart';
 import 'configure_wifi_upload.dart';
 import 'wifi_network_form.dart';
 

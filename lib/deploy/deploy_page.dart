@@ -2,7 +2,7 @@ import 'package:fk/app_state.dart';
 import 'package:fk/common_widgets.dart';
 import 'package:fk/deploy/configure_schedule_page.dart';
 import 'package:fk/diagnostics.dart';
-import 'package:fk/gen/bridge_definitions.dart';
+import 'package:fk/gen/api.dart';
 import 'package:fk/map_widget.dart';
 import 'package:fk/providers.dart';
 import 'package:fk/unknown_station_page.dart';
@@ -89,7 +89,7 @@ class _DeployFormState extends State<DeployFormWidget> {
                   final deployed =
                       DateTime.now().millisecondsSinceEpoch ~/ 1000;
                   try {
-                    await configuration.configureDeploy(DeployConfig(
+                    await configuration.deploy(DeployConfig(
                         location: location,
                         deployed: deployed,
                         schedule: ScheduleHelpers.fromForm(

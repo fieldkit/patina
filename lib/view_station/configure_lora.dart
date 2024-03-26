@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
 import 'package:fk/common_widgets.dart';
-import 'package:fk/gen/ffi.dart';
+import 'package:fk/gen/api.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';

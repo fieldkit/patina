@@ -56,7 +56,7 @@ cargo install just
    First, ensure the codegen tool's version matches `flutter_rust_bridge` in `pubspec.yaml` and `flutter_rust_bridge` & `flutter_rust_bridge_macros` inside `native/Cargo.toml`.
 
 ```bash
-cargo install -f --version 1.82.1 flutter_rust_bridge_codegen
+cargo install -f --version 2.0.0-dev.28 flutter_rust_bridge_codegen
 ```
 
 4. **Run gen**

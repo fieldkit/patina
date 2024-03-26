@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import '../calibration/calibration_model.dart';
 import '../calibration/calibration_page.dart';
 import '../calibration/clear_calibration_page.dart';
-import '../gen/ffi.dart';
+import '../gen/api.dart';
 import '../meta.dart';
 
 class ModuleInfo extends StatelessWidget {
