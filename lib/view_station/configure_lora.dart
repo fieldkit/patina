@@ -102,7 +102,6 @@ class DisplayLoraConfiguration extends StatelessWidget {
   Widget build(BuildContext context) {
     final StationConfiguration configuration =
         context.read<StationConfiguration>();
-
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return WH.padColumn(Column(children: [
@@ -126,44 +125,49 @@ class DisplayLoraConfiguration extends StatelessWidget {
             label: localizations.loraSessionKey,
             bytes: loraConfig.appSessionKey),
       const Divider(),
-      ElevatedTextButton(
-        text: localizations.settingsLoraEdit,
-        onPressed: () async {
-          final navigator = Navigator.of(context);
+      ButtonBar(
+          alignment: MainAxisAlignment.spaceAround,
+          buttonMinWidth: 100,
+          buttonPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+          children: [
+            ElevatedTextButton(
+              text: localizations.settingsLoraEdit,
+              onPressed: () async {
+                final navigator = Navigator.of(context);
 
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LoraConfigurationFormPage(
-                  loraConfig: loraConfig,
-                  onSave: (LoraTransmissionConfig config) async {
-                    final overlay = context.loaderOverlay;
-                    overlay.show();
-                    try {
-                      await configuration
-                          .configureLora(config); // TODO Schedule
-                    } finally {
-                      navigator.pop();
-                      overlay.hide();
-                    }
-                  },
-                ),
-              ));
-        },
-      ),
-      const Divider(),
-      ElevatedTextButton(
-        text: localizations.settingsLoraVerify,
-        onPressed: () async {
-          final overlay = context.loaderOverlay;
-          overlay.show();
-          try {
-            await configuration.verifyLora();
-          } finally {
-            overlay.hide();
-          }
-        },
-      )
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoraConfigurationFormPage(
+                        loraConfig: loraConfig,
+                        onSave: (LoraTransmissionConfig config) async {
+                          final overlay = context.loaderOverlay;
+                          overlay.show();
+                          try {
+                            await configuration
+                                .configureLora(config); // TODO Schedule
+                          } finally {
+                            navigator.pop();
+                            overlay.hide();
+                          }
+                        },
+                      ),
+                    ));
+              },
+            ),
+            ElevatedTextButton(
+              text: localizations.settingsLoraVerify,
+              onPressed: () async {
+                final overlay = context.loaderOverlay;
+                overlay.show();
+                try {
+                  await configuration.verifyLora();
+                } finally {
+                  overlay.hide();
+                }
+              },
+            ),
+          ])
     ]));
   }
 }
