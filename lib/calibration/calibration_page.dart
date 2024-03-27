@@ -108,8 +108,7 @@ class CalibrationPanel extends StatelessWidget {
     final moduleConfigurations = context.read<ModuleConfigurations>();
     final navigator = Navigator.of(context);
 
-    final configured = config.standard;
-    final standard = configured.acceptable ? configured : active.userStandard();
+    final standard = active.userStandard();
 
     final reading = SensorReading(
         uncalibrated: sensor.value!.uncalibrated, value: sensor.value!.value);
