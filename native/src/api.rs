@@ -117,11 +117,21 @@ async fn background_task(
     let discovery = Discovery::default();
 
     tokio::select! {
-        _ = discovery.run(discovery_tx) => {},
-        _ = nearby.run(discovery_rx, transfer_events) => {},
-        _ = server.run(transfer_publish) => {},
-        _ = merge.run(bg_rx) => {},
+        d = discovery.run(discovery_tx) => {
+            warn!("discovery: {:?}", d);
+        },
+        n = nearby.run(discovery_rx, transfer_events) => {
+            warn!("nearby: {:?}", n);
+        },
+        s = server.run(transfer_publish) => {
+            warn!("server: {:?}", s);
+        },
+        m = merge.run(bg_rx) => {
+            warn!("merge: {:?}", m);
+        },
     };
+
+    info!("bg:dropped");
 }
 
 pub fn start_native(
