@@ -48,7 +48,6 @@ native/target
 target
 jniLibs
 
-Cargo.lock
 pubspec.lock
 
 rustfk

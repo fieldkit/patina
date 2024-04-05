@@ -4,26 +4,30 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-crate-type = ["lib", "cdylib", "staticlib"]
+crate-type = ["cdylib", "staticlib"]
 
 [dependencies.discovery]
 git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "60b45a62393d1b8bfdce37e82365bc952cd14e1a"
+rev = "b4553ba325f7a748579d81a8fc9a1c9d973b7b38"
 
 [dependencies.query]
 git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "60b45a62393d1b8bfdce37e82365bc952cd14e1a"
-
-[dependencies.store]
-git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "60b45a62393d1b8bfdce37e82365bc952cd14e1a"
+rev = "b4553ba325f7a748579d81a8fc9a1c9d973b7b38"
 
 [dependencies.sync]
 git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
-rev = "60b45a62393d1b8bfdce37e82365bc952cd14e1a"
+rev = "b4553ba325f7a748579d81a8fc9a1c9d973b7b38"
+
+[target.'cfg(not(any(target_os = "android")))'.dependencies]
+store = { git = "https://gitlab.com/fieldkit/libraries/rustfk.git", rev = "b4553ba325f7a748579d81a8fc9a1c9d973b7b38" }
+
+[target.'cfg(any(target_os = "android"))'.dependencies]
+store = { git = "https://gitlab.com/fieldkit/libraries/rustfk.git", rev = "b4553ba325f7a748579d81a8fc9a1c9d973b7b38", features = [
+    "bundled-sqlite",
+] }
 
 [dependencies]
-anyhow = "1"
+anyhow = "1.0.81"
 async-stream = "0.3.5"
 base64 = "0.21.2"
 chrono = "0.4.24"
