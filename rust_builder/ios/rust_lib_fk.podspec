@@ -26,6 +26,9 @@ A new Flutter FFI plugin project.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 
+  s.frameworks = 'SystemConfiguration'
+  s.libraries = 'sqlite3'
+
   s.script_phase = {
     :name => 'Build Rust library',
     # First argument is relative path to the `rust` folder, second is name of rust library
