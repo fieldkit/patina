@@ -99,10 +99,15 @@ build:ios:
     - security unlock-keychain -p ${KEYCHAIN_PASSWORD} login.keychain
     - security show-keychain-info login.keychain || true
     # END Signing
+    # BEGIN flutter
+    - curl --silent -O https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.4-stable.zip
+    - unzip flutter_macos_arm64_3.19.4-stable.zip
+    - ls -alh
+    # END flutter
     - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
     - echo "CI_COMMIT_SHA=${CI_COMMIT_SHA}" >> .env
     - cat .env
-    - export PATH=~/tools/flutter/bin:$PATH
+    - export PATH=$PWD/flutter/bin:$PATH
     - flutter clean
     - flutter build ipa --export-method ad-hoc
   artifacts:
