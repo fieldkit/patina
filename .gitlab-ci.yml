@@ -69,7 +69,7 @@ build:android:
       - build/app/outputs/flutter-apk/*.apk
 
 .setup: &common
-  image: "ghcr.io/cirruslabs/flutter:3.16.0"
+  image: "ghcr.io/cirruslabs/flutter:3.19.5"
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
@@ -99,10 +99,15 @@ build:ios:
     - security unlock-keychain -p ${KEYCHAIN_PASSWORD} login.keychain
     - security show-keychain-info login.keychain || true
     # END Signing
+    # BEGIN flutter
+    - curl --silent -O https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.5-stable.zip
+    - unzip flutter_macos_arm64_3.19.5-stable.zip
+    - ls -alh
+    # END flutter
     - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
     - echo "CI_COMMIT_SHA=${CI_COMMIT_SHA}" >> .env
     - cat .env
-    - export PATH=~/tools/flutter/bin:$PATH
+    - export PATH=$PWD/flutter/bin:$PATH
     - flutter clean
     - flutter build ipa --export-method ad-hoc
   artifacts:

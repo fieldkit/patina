@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
-import '../gen/ffi.dart';
+import '../gen/api.dart';
 import '../unknown_station_page.dart';
 
 import 'configure_lora.dart';

@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
 import '../common_widgets.dart';
-import '../gen/ffi.dart';
+import '../gen/api.dart';
 
 class UpgradeProgressWidget extends StatelessWidget {
   final UpgradeOperation operation;

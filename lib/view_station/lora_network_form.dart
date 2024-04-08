@@ -3,7 +3,7 @@ import 'package:convert/convert.dart';
 
 import 'package:fk/common_widgets.dart';
 import 'package:fk/diagnostics.dart';
-import 'package:fk/gen/ffi.dart';
+import 'package:fk/gen/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -35,7 +35,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
           FormBuilderDropdown<LoraBand>(
             name: 'band',
             initialValue: FormHelpers.fromFrequencyInteger(widget.config.band),
-            items: [LoraBand.F915Mhz, LoraBand.F868Mhz]
+            items: [LoraBand.f915Mhz, LoraBand.f868Mhz]
                 .map<DropdownMenuItem<LoraBand>>((LoraBand value) {
               return DropdownMenuItem<LoraBand>(
                 value: value,
@@ -95,14 +95,14 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
 
 extension FormHelpers on LoraBand {
   String toLabel() {
-    if (this == LoraBand.F868Mhz) {
+    if (this == LoraBand.f868Mhz) {
       return "868Mhz";
     }
     return "915Mhz";
   }
 
   int toFrequencyInteger() {
-    if (this == LoraBand.F868Mhz) {
+    if (this == LoraBand.f868Mhz) {
       return 868;
     }
     return 915;
@@ -110,9 +110,9 @@ extension FormHelpers on LoraBand {
 
   static LoraBand fromFrequencyInteger(int? freq) {
     if (freq != null && freq == 868) {
-      return LoraBand.F868Mhz;
+      return LoraBand.f868Mhz;
     }
-    return LoraBand.F915Mhz;
+    return LoraBand.f915Mhz;
   }
 }
 

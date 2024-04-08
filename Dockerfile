@@ -1,4 +1,4 @@
-FROM ghcr.io/cirruslabs/flutter:3.16.0 AS base
+FROM ghcr.io/cirruslabs/flutter:3.19.5 AS base
 
 RUN apt-get update && apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev && rm -rf /var/lib/apt/lists/*
 
@@ -37,6 +37,6 @@ WORKDIR "/temporary-build"
 RUN git clone https://gitlab.com/fieldkit/libraries/rustfk.git
 COPY . .
 # Always remember Android is a different architecture, easy to skim over.
-RUN cd native && cargo ndk -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 -o ../android/app/src/main/jniLibs build --release && sccache --show-stats
+RUN cd rust && cargo ndk -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 -o ../android/app/src/main/jniLibs build --release && sccache --show-stats
 WORKDIR /
 RUN rm -rf /temporary-build

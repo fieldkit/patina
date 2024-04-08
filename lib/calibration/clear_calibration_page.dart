@@ -1,5 +1,5 @@
 import 'package:fk/calibration/calibration_review_widget.dart';
-import 'package:fk/gen/bridge_definitions.dart';
+import 'package:fk/gen/api.dart';
 import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 
