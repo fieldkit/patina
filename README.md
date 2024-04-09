@@ -30,6 +30,11 @@ echo "ANDROID_NDK=path/to/ndk" >> ~/.gradle/gradle.properties
 
 ## 📦 Setup and Dependencies
 
+
+### .env
+
+You will likely need to copy `env.template` to `.env`
+
 ### RustFK
 
 By default, `rustfk` will be downloaded from git when building the native rust

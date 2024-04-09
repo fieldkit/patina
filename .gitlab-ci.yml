@@ -40,6 +40,7 @@ test:
   image: $IMAGE_TAG
   script:
     - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
+    - cp -f env.template .env
     - flutter test
 
 build:android:

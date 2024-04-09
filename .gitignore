@@ -53,5 +53,6 @@ pubspec.lock
 rustfk
 /fk-data
 
-/resources/.env
+/.env
+
 /lib/l10n/untranslated.txt
