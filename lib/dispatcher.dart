@@ -1,5 +1,5 @@
 import 'diagnostics.dart';
-import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
+import 'gen/api.dart';
 
 /// Global event dispatcher. All components are supposed to dispatch their events via this class.
 class AppEventDispatcher {

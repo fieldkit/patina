@@ -40,6 +40,7 @@ test:
   image: $IMAGE_TAG
   script:
     - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
+    - cp -f env.template .env
     - flutter test
 
 build:android:
@@ -51,18 +52,25 @@ build:android:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   image: $IMAGE_TAG
   script:
+    - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
+    - ln -sf $PWD/.secure_files/fk-release-key.keystore $PWD/android/app/fk-release-key.keystore
+    - ln -sf $PWD/.secure_files/key.properties $PWD/android/key.properties
+    - stat $PWD/android/key.properties
+    - stat $PWD/android/app/fk-release-key.keystore
+    - ls -alh android/app
     - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
     - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
     - echo "CI_COMMIT_SHA=${CI_COMMIT_SHA}" >> .env
     - cat .env
     - flutter build apk && sccache --show-stats
+    - flutter build appbundle --release && sccache --show-stats
   artifacts:
     name: "fk-patina-android-${CI_COMMIT_REF_NAME}"
     paths:
       - build/app/outputs/flutter-apk/*.apk
 
 .setup: &common
-  image: "ghcr.io/cirruslabs/flutter:3.16.0"
+  image: "ghcr.io/cirruslabs/flutter:3.19.5"
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_TAG
@@ -92,10 +100,15 @@ build:ios:
     - security unlock-keychain -p ${KEYCHAIN_PASSWORD} login.keychain
     - security show-keychain-info login.keychain || true
     # END Signing
+    # BEGIN flutter
+    - curl --silent -O https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.5-stable.zip
+    - unzip flutter_macos_arm64_3.19.5-stable.zip
+    - ls -alh
+    # END flutter
     - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
     - echo "CI_COMMIT_SHA=${CI_COMMIT_SHA}" >> .env
     - cat .env
-    - export PATH=~/tools/flutter/bin:$PATH
+    - export PATH=$PWD/flutter/bin:$PATH
     - flutter clean
     - flutter build ipa --export-method ad-hoc
   artifacts:

@@ -1,8 +1,8 @@
+import 'package:fk/common_widgets.dart';
 import 'package:fk/reader/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'constants.dart';
 
 class WelcomeScreen extends StatelessWidget {
   final VoidCallback onDone;
@@ -45,7 +45,7 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-                    child: ElevatedButton(
+                    child: ElevatedTextButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -57,19 +57,7 @@ class WelcomeScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 80.0, vertical: 14.0),
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context)!.welcomeButton,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.normal,
-                          fontSize: 20.0,
-                        ),
-                      ),
+                      text: AppLocalizations.of(context)!.welcomeButton,
                     ),
                   ),
                   TextButton(

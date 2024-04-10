@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'common_widgets.dart';
-import 'gen/ffi.dart';
+import 'gen/api.dart';
 
 import 'app_state.dart';
 import 'location_widgets.dart';
@@ -31,7 +31,7 @@ class ListStationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> map = [const SizedBox(height: 200, child: Map())];
+    final List<Widget> map = [const SizedBox(height: 200, child: MapWidget())];
 
     final cards = known.stations.map((station) {
       if (station.config == null) {
@@ -54,7 +54,7 @@ class ListStationsPage extends StatelessWidget {
           if (cards.isEmpty) ...[
             const NoStationsHelpWidget(showImage: false),
           ]
-          // TODO: Add back in once we impliment scanning for stations
+          // TODO: Add back in once we implement scanning for stations
           // Padding(
           //   padding: const EdgeInsets.symmetric(vertical: 10.0),
           //   child: Text(

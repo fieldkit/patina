@@ -9,9 +9,11 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:fk/settings/accounts_page.dart';
-import 'constants.dart';
 
-import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
+import 'gen/api.dart';
+import 'gen/frb_generated.dart';
+
+import 'constants.dart';
 import 'app_state.dart';
 import 'dispatcher.dart';
 import 'home_page.dart';
@@ -30,7 +32,7 @@ Future<String> _getStoragePath() async {
 
 Future<void> _startNative(
     Configuration config, AppEventDispatcher dispatcher) async {
-  api.createLogSink().listen((logRow) {
+  createLogSink().listen((logRow) {
     var display = logRow.trim();
     Loggers.bridge.i(display);
   });
@@ -39,7 +41,7 @@ Future<void> _startNative(
   // idea why and yes this is a hack.
   await Future.delayed(const Duration(milliseconds: 100));
 
-  await for (final e in api.startNative(
+  await for (final e in startNative(
     storagePath: config.storagePath,
     portalBaseUrl: config.portalBaseUrl,
   )) {
@@ -74,7 +76,7 @@ final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
   backgroundColor: AppColors.primaryColor,
   foregroundColor: Colors.white,
   minimumSize: const Size(88, 36),
-  padding: const EdgeInsets.symmetric(horizontal: 16),
+  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
   shape: const RoundedRectangleBorder(
     borderRadius: BorderRadius.all(Radius.circular(2)),
   ),
@@ -203,6 +205,8 @@ class _OurAppState extends State<OurApp> {
 }
 
 void main() async {
+  await RustLib.init();
+
   // Necessary so we can call path_provider from startup, otherwise this is done
   // inside runApp. 'The "instance" getter on the ServicesBinding binding mixin
   // is only available once that binding has been initialized.'

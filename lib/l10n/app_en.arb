@@ -15,6 +15,8 @@
   "login": "Login",
   "dataLoginMessage": "To upload data you need to login:",
 
+  "modulesTitle": "Modules",
+
   "dataSyncTitle": "Data",
   "connectStation": "Connect a Station",
   "noStationsDescription": "You have no stations. Add a station to start collection data.",
@@ -46,6 +48,9 @@
   "syncManageFirmware": "Manage Firmware",
   "quickTip": "Quick Tip",
 
+  "deployButton": "Deploy",
+  "deployTitle": "Deploy Station",
+  "deployLocation": "Name your location",
 
   "myStationsTitle": "My Stations",
   "readyToDeploy": "Ready to deploy",
@@ -62,6 +67,7 @@
   "calibrateButton": "Calibrate",
   "calibrationDelete": "Delete",
   "calibrationBack": "Back",
+  "calibrationKeepButton": "Keep",
   "factory": "Factory",
   "uncalibrated": "Uncalibrated",
   "calibrated": "Calibrated",
@@ -114,6 +120,7 @@
   "eventCode": "Code",
   "eventReason": "Reason",
 
+  "networksTitle": "WiFi Networks",
   "networkAddButton": "Add Network",
   "networkEditTitle": "WiFi Network",
   "networkSaveButton": "Save",
@@ -157,10 +164,6 @@
   "quickTip": "Quick Tip",
   "firmwareTip": "Make sure you are connected to the internet before checking for new firmware.",
 
-
-
-
-
   "settingsAccounts": "Accounts",
   "accountsTitle": "Accounts",
   "accountsAddButton": "Add an Account",
@@ -169,22 +172,28 @@
 
   "accountAddTitle": "Add Account",
   "accountEditTitle": "Edit Account",
+  "accountName": "Name",
   "accountEmail": "Email",
   "accountPassword": "Password",
+  "accountConfirmPassword": "Confirm Password",
+  "accountConfirmPasswordMatch": "Passwords must match.",
+  "accountRegistrationFailed": "An error occured registering your account. Please double check your email and password.",
   "accountFormFail": "Invalid email or password.",
-  "accountSaveButton": "Register",
+  "accountSaveButton": "Save",
+  "accountRegisterButton": "Register",
   "accountDeleteButton": "Delete",
   "accountRepairButton": "Login",
+  "accountRegisterLabel": "Create an account",
   "accountDefault": "This is your default account.",
   "accountInvalid": "Something is wrong with this account.",
   "accountUnknown": "Odd, not sure about this account. Bug?",
   "accountConnectivity": "There was an issue connecting with this account. If the issue was network related this will correct itself.",
+  "accountCreated": "Registration successful! Please check your email for verification instructions prior to logging in.",
 
   "bayNumber": "Bay #{bay}",
   "configureButton": "Configure",
   "batteryLife": "Battery Life",
   "memoryUsage": "Memory",
-  "deployButton": "Deploy",
 
   "confirmClearCalibrationTitle": "Clear Calibration",
   "confirmDeleteAccountTitle": "Delete Account",

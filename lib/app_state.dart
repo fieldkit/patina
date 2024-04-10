@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:fk/gen/api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:exponential_back_off/exponential_back_off.dart';
@@ -10,7 +11,6 @@ import 'package:uuid/uuid.dart';
 import 'package:fk_data_protocol/fk-data.pb.dart' as proto;
 
 import 'diagnostics.dart';
-import 'gen/ffi.dart' if (dart.library.html) 'ffi_web.dart';
 import 'dispatcher.dart';
 
 const uuid = Uuid();
@@ -34,8 +34,7 @@ class UpdatePortal {
   final Map<String, ExponentialBackOff> _active = {};
   final Map<String, AddOrUpdatePortalStation> _updates = {};
 
-  UpdatePortal(Native api, PortalAccounts portalAccounts,
-      AppEventDispatcher dispatcher) {
+  UpdatePortal(PortalAccounts portalAccounts, AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) async {
       final deviceId = refreshed.field0.deviceId;
 
@@ -67,7 +66,7 @@ class UpdatePortal {
 
         final update = await backOff.start(
             () async {
-              final idIfOk = await api.addOrUpdateStationInPortal(
+              final idIfOk = await addOrUpdateStationInPortal(
                   tokens: tokens, station: _updates[deviceId]!);
               portalAccounts.markValid(account);
               if (idIfOk == null) {
@@ -93,7 +92,6 @@ class UpdatePortal {
           }
         }
       } else {
-        // TODO Warn user about lack of updates due to logged out.
         Loggers.main.w("$deviceId need-auth");
       }
     });
@@ -106,7 +104,7 @@ class KnownStationsModel extends ChangeNotifier {
   UnmodifiableListView<StationModel> get stations =>
       UnmodifiableListView(_stations.values);
 
-  KnownStationsModel(Native api, AppEventDispatcher dispatcher) {
+  KnownStationsModel(AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
       final byDeviceId = {};
       for (var station in nearby.field0) {
@@ -170,7 +168,7 @@ class KnownStationsModel extends ChangeNotifier {
   }
 
   void _load() async {
-    var stations = await api.getMyStations();
+    var stations = await getMyStations();
     Loggers.state.i("(load) my-stations: $stations");
     for (var station in stations) {
       findOrCreate(station.deviceId).config = station;
@@ -187,7 +185,7 @@ class KnownStationsModel extends ChangeNotifier {
     return _stations[deviceId]!;
   }
 
-  Future<void> startDownload({required String deviceId, int? first}) async {
+  Future<void> startDownloading({required String deviceId, int? first}) async {
     final station = find(deviceId);
     if (station == null) {
       Loggers.state.w("$deviceId station missing");
@@ -199,11 +197,11 @@ class KnownStationsModel extends ChangeNotifier {
       return;
     }
 
-    final progress = await api.startDownload(deviceId: deviceId, first: first);
+    final progress = await startDownload(deviceId: deviceId, first: first);
     applyTransferProgress(progress);
   }
 
-  Future<void> startUpload(
+  Future<void> startUploading(
       {required String deviceId,
       required Tokens tokens,
       required List<RecordArchive> files}) async {
@@ -219,7 +217,7 @@ class KnownStationsModel extends ChangeNotifier {
     }
 
     final progress =
-        await api.startUpload(deviceId: deviceId, tokens: tokens, files: files);
+        await startUpload(deviceId: deviceId, tokens: tokens, files: files);
     applyTransferProgress(progress);
   }
 
@@ -429,17 +427,14 @@ class FirmwareDownloadOperation extends Operation {
 }
 
 class AvailableFirmwareModel extends ChangeNotifier {
-  final Native api;
   final List<LocalFirmware> _firmware = [];
 
   UnmodifiableListView<LocalFirmware> get firmware =>
       UnmodifiableListView(_firmware);
 
-  AvailableFirmwareModel(
-      {required this.api, required AppEventDispatcher dispatcher}) {
+  AvailableFirmwareModel({required AppEventDispatcher dispatcher}) {
     dispatcher
         .addListener<DomainMessage_AvailableFirmware>((availableFirmware) {
-      Loggers.state.i("DomainMessage_AvailableFirmware: $availableFirmware");
       _firmware.clear();
       _firmware.addAll(availableFirmware.field0);
       notifyListeners();
@@ -447,8 +442,7 @@ class AvailableFirmwareModel extends ChangeNotifier {
   }
 
   Future<void> upgrade(String deviceId, LocalFirmware firmware) async {
-    await api.upgradeStation(
-        deviceId: deviceId, firmware: firmware, swap: true);
+    await upgradeStation(deviceId: deviceId, firmware: firmware, swap: true);
   }
 }
 
@@ -531,7 +525,6 @@ class LoraEvent extends Event {
 }
 
 class StationConfiguration extends ChangeNotifier {
-  final Native api;
   final KnownStationsModel knownStations;
   final PortalAccounts portalAccounts;
   final String deviceId;
@@ -549,8 +542,7 @@ class StationConfiguration extends ChangeNotifier {
   LoraConfig? get loraConfig => config.ephemeral?.lora;
 
   StationConfiguration(
-      {required this.api,
-      required this.knownStations,
+      {required this.knownStations,
       required this.portalAccounts,
       required this.deviceId}) {
     knownStations.addListener(() {
@@ -600,7 +592,7 @@ class StationConfiguration extends ChangeNotifier {
       }
     }).toList();
 
-    await api.configureWifiNetworks(
+    await configureWifiNetworks(
         deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
   }
 
@@ -619,7 +611,7 @@ class StationConfiguration extends ChangeNotifier {
       }
     }).toList();
 
-    await api.configureWifiNetworks(
+    await configureWifiNetworks(
         deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
   }
 
@@ -631,24 +623,28 @@ class StationConfiguration extends ChangeNotifier {
       return;
     }
 
-    await api.configureWifiTransmission(
+    await configureWifiTransmission(
         deviceId: deviceId,
         config: WifiTransmissionConfig(
             tokens: account.tokens, schedule: const Schedule_Every(10 * 60)));
   }
 
   Future<void> disableWifiUploading() async {
-    await api.configureWifiTransmission(
+    await configureWifiTransmission(
         deviceId: deviceId,
         config: const WifiTransmissionConfig(tokens: null, schedule: null));
   }
 
   Future<void> configureLora(LoraTransmissionConfig config) async {
-    await api.configureLoraTransmission(deviceId: deviceId, config: config);
+    await configureLoraTransmission(deviceId: deviceId, config: config);
   }
 
   Future<void> verifyLora() async {
-    await api.verifyLoraTransmission(deviceId: deviceId);
+    await verifyLoraTransmission(deviceId: deviceId);
+  }
+
+  Future<void> deploy(DeployConfig config) async {
+    await configureDeploy(deviceId: deviceId, config: config);
   }
 }
 
@@ -685,6 +681,11 @@ class DeployTaskFactory extends TaskFactory<DeployTask> {
 
   List<DeployTask> create() {
     final List<DeployTask> tasks = List.empty(growable: true);
+    for (final station in knownStations.stations) {
+      if (station.ephemeral?.deployment == null) {
+        tasks.add(DeployTask(station: station));
+      }
+    }
     return tasks;
   }
 }
@@ -752,12 +753,14 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
   List<NearbyStation> _nearby = List.empty();
   List<RecordArchive> _archives = List.empty();
   final Map<String, int> _records = {};
+  final Map<String, String> _generations = {};
 
   DownloadTaskFactory(
       {required KnownStationsModel knownStations,
       required AppEventDispatcher dispatcher}) {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) {
       _records[refreshed.field0.deviceId] = refreshed.field0.data.records;
+      _generations[refreshed.field0.deviceId] = refreshed.field0.generationId;
       _tasks.clear();
       _tasks.addAll(create());
       notifyListeners();
@@ -782,13 +785,28 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
     final List<DownloadTask> tasks = List.empty(growable: true);
     final archivesById = _archives.groupListsBy((a) => a.deviceId);
     for (final nearby in _nearby) {
-      final int? first = archivesById[nearby.deviceId]
-          ?.map((archive) => archive.tail)
-          .reduce(max);
       final int? total = _records[nearby.deviceId];
       if (total != null) {
-        tasks.add(DownloadTask(
-            deviceId: nearby.deviceId, total: total, first: first));
+        if (_generations.containsKey(nearby.deviceId)) {
+          final String generationId = _generations[nearby.deviceId]!;
+          final Iterable<RecordArchive>? archives =
+              archivesById[nearby.deviceId]
+                  ?.where((archive) => archive.generationId == generationId);
+          if (archives != null && archives.isNotEmpty) {
+            final int first =
+                archives.map((archive) => archive.tail).reduce(max);
+            tasks.add(DownloadTask(
+                deviceId: nearby.deviceId, total: total, first: first));
+          } else {
+            Loggers.state.w("${nearby.deviceId} no archives");
+            tasks.add(DownloadTask(
+                deviceId: nearby.deviceId, total: total, first: 0));
+          }
+        } else {
+          Loggers.state.w("${nearby.deviceId} no generation");
+        }
+      } else {
+        Loggers.state.w("${nearby.deviceId} no total records");
       }
     }
     return tasks;
@@ -959,7 +977,6 @@ class TasksModel extends ChangeNotifier {
 }
 
 class AppState {
-  final Native api;
   final AppEventDispatcher dispatcher;
   final AvailableFirmwareModel firmware;
   final KnownStationsModel knownStations;
@@ -970,7 +987,6 @@ class AppState {
   final UpdatePortal updatePortal;
 
   AppState._(
-      this.api,
       this.dispatcher,
       this.knownStations,
       this.moduleConfigurations,
@@ -980,22 +996,21 @@ class AppState {
       this.tasks,
       this.updatePortal);
 
-  static AppState build(Native api, AppEventDispatcher dispatcher) {
+  static AppState build(AppEventDispatcher dispatcher) {
     final stationOperations = StationOperations(dispatcher: dispatcher);
-    final firmware = AvailableFirmwareModel(api: api, dispatcher: dispatcher);
-    final knownStations = KnownStationsModel(api, dispatcher);
+    final firmware = AvailableFirmwareModel(dispatcher: dispatcher);
+    final knownStations = KnownStationsModel(dispatcher);
     final moduleConfigurations =
-        ModuleConfigurations(api: api, knownStations: knownStations);
-    final portalAccounts = PortalAccounts(api: api, accounts: List.empty());
+        ModuleConfigurations(knownStations: knownStations);
+    final portalAccounts = PortalAccounts(accounts: List.empty());
     final tasks = TasksModel(
       availableFirmware: firmware,
       knownStations: knownStations,
       portalAccounts: portalAccounts,
       dispatcher: dispatcher,
     );
-    final updatePortal = UpdatePortal(api, portalAccounts, dispatcher);
+    final updatePortal = UpdatePortal(portalAccounts, dispatcher);
     return AppState._(
-      api,
       dispatcher,
       knownStations,
       moduleConfigurations,
@@ -1007,9 +1022,22 @@ class AppState {
     );
   }
 
+  AppState start() {
+    _everyFiveMinutes();
+
+    return this;
+  }
+
+  Future<void> _everyFiveMinutes() async {
+    while (true) {
+      await Future.delayed(const Duration(minutes: 5));
+
+      portalAccounts.refreshFirmware();
+    }
+  }
+
   StationConfiguration configurationFor(deviceId) {
     return StationConfiguration(
-        api: api,
         knownStations: knownStations,
         portalAccounts: portalAccounts,
         deviceId: deviceId);
@@ -1026,7 +1054,7 @@ class AppEnv {
   AppEnv.appState(AppEventDispatcher dispatcher)
       : this._(
           dispatcher,
-          appState: AppState.build(api, dispatcher),
+          appState: AppState.build(dispatcher).start(),
         );
 
   ValueListenable<AppState?> get appState => _appState;
@@ -1194,7 +1222,6 @@ class PortalAccount extends ChangeNotifier {
 class PortalAccounts extends ChangeNotifier {
   static const secureStorageKey = "fk.accounts";
 
-  final Native api;
   final List<PortalAccount> _accounts = List.empty(growable: true);
 
   UnmodifiableListView<PortalAccount> get accounts =>
@@ -1202,16 +1229,16 @@ class PortalAccounts extends ChangeNotifier {
 
   PortalAccount? get active => _accounts.where((a) => a.active).first;
 
-  PortalAccounts({required this.api, required List<PortalAccount> accounts}) {
+  PortalAccounts({required List<PortalAccount> accounts}) {
     _accounts.addAll(accounts);
   }
 
-  factory PortalAccounts.fromJson(Native api, Map<String, dynamic> data) {
+  factory PortalAccounts.fromJson(Map<String, dynamic> data) {
     final accountsData = data['accounts'] as List<dynamic>;
     final accounts = accountsData
         .map((accountData) => PortalAccount.fromJson(accountData))
         .toList();
-    return PortalAccounts(api: api, accounts: accounts);
+    return PortalAccounts(accounts: accounts);
   }
 
   Map<String, dynamic> toJson() => {
@@ -1224,7 +1251,7 @@ class PortalAccounts extends ChangeNotifier {
     if (value != null) {
       try {
         // A little messy, I know.
-        final loaded = PortalAccounts.fromJson(api, jsonDecode(value));
+        final loaded = PortalAccounts.fromJson(jsonDecode(value));
         for (final account in loaded.accounts) {
           Loggers.state.v(
               "Account email=${account.email} url=${account.tokens?.transmission.url} #devonly");
@@ -1237,21 +1264,25 @@ class PortalAccounts extends ChangeNotifier {
       }
     }
 
+    await refreshFirmware();
+
+    return this;
+  }
+
+  Future<void> refreshFirmware() async {
     try {
       if (_accounts.isEmpty) {
         Loggers.state.w("Checking firmware (unauthenticated)");
-        await api.cacheFirmware(tokens: null);
+        await cacheFirmware(tokens: null);
       } else {
         for (PortalAccount account in _accounts) {
           Loggers.state.i("Checking firmware (${account.email})");
-          await api.cacheFirmware(tokens: account.tokens);
+          await cacheFirmware(tokens: account.tokens);
         }
       }
     } catch (e) {
       Loggers.main.i("Firmware update error: $e");
     }
-
-    return this;
   }
 
   Future<PortalAccounts> _save() async {
@@ -1264,7 +1295,8 @@ class PortalAccounts extends ChangeNotifier {
   Future<PortalAccount?> _authenticate(String email, String password) async {
     try {
       final authenticated =
-          await api.authenticatePortal(email: email, password: password);
+          await authenticatePortal(email: email, password: password);
+      refreshFirmware(); // In background
       return PortalAccount.fromAuthenticated(authenticated);
     } catch (e) {
       Loggers.state.e("Exception authenticating: $e");
@@ -1272,14 +1304,24 @@ class PortalAccounts extends ChangeNotifier {
     }
   }
 
+  Future<void> registerAccount(
+      String email, String password, String name, bool tncAccept) async {
+    await registerPortalAccount(
+        email: email, password: password, name: name, tncAccount: tncAccept);
+  }
+
+  Future<PortalAccount> _add(PortalAccount account) async {
+    _removeByEmail(account.email);
+    _accounts.add(account);
+    await _save();
+    notifyListeners();
+    return account;
+  }
+
   Future<PortalAccount?> addOrUpdate(String email, String password) async {
     final account = await _authenticate(email, password);
     if (account != null) {
-      _removeByEmail(account.email);
-      _accounts.add(account);
-      await _save();
-      notifyListeners();
-      return account;
+      return await _add(account);
     } else {
       return null;
     }
@@ -1316,7 +1358,7 @@ class PortalAccounts extends ChangeNotifier {
       _accounts.remove(account);
       try {
         _accounts.add(PortalAccount.fromAuthenticated(
-            await api.validateTokens(tokens: tokens)));
+            await validateTokens(tokens: tokens)));
       } on PortalError_Authentication catch (e) {
         Loggers.state.e("Exception validating: $e");
         _accounts.add(account.invalid());
@@ -1383,10 +1425,9 @@ class ModuleConfiguration {
 }
 
 class ModuleConfigurations extends ChangeNotifier {
-  final Native api;
   final KnownStationsModel knownStations;
 
-  ModuleConfigurations({required this.api, required this.knownStations}) {
+  ModuleConfigurations({required this.knownStations}) {
     knownStations.addListener(() {
       notifyListeners();
     });
@@ -1408,22 +1449,38 @@ class ModuleConfigurations extends ChangeNotifier {
   Future<void> clear(ModuleIdentity moduleIdentity) async {
     final mas = knownStations.findModule(moduleIdentity);
     if (mas != null) {
-      await api.clearCalibration(
-          deviceId: mas.station.deviceId, module: mas.module.position);
+      await retryOnFailure(() async {
+        await clearCalibration(
+            deviceId: mas.station.deviceId, module: mas.module.position);
+      });
     } else {
       Loggers.state.e("Unknown module identity $moduleIdentity");
     }
   }
 
-  Future<void> calibrate(ModuleIdentity moduleIdentity, Uint8List data) async {
+  Future<void> calibrateModule(
+      ModuleIdentity moduleIdentity, Uint8List data) async {
     final mas = knownStations.findModule(moduleIdentity);
     if (mas != null) {
-      await api.calibrate(
-          deviceId: mas.station.deviceId,
-          module: mas.module.position,
-          data: data);
+      await retryOnFailure(() async {
+        await calibrate(
+            deviceId: mas.station.deviceId,
+            module: mas.module.position,
+            data: data);
+      });
     } else {
       Loggers.state.e("Unknown module identity $moduleIdentity");
+    }
+  }
+
+  Future<void> retryOnFailure(Future<void> Function() work) async {
+    for (var i = 0; i < 3; ++i) {
+      try {
+        return await work();
+      } catch (e) {
+        Loggers.state.e("$e");
+        Loggers.state.w("retrying");
+      }
     }
   }
 }

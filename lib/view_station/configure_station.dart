@@ -1,10 +1,11 @@
 import 'package:fk/providers.dart';
+import 'package:fk/view_station/station_modules_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
-import '../gen/ffi.dart';
+import '../gen/api.dart';
 import '../unknown_station_page.dart';
 
 import 'configure_lora.dart';
@@ -45,28 +46,28 @@ class ConfigureStationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.settingsTitle),
-        centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: Size.zero,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 0),
-              Text(config.name),
-              const SizedBox(height: 8),
-            ],
-          ),
+        title: Column(
+          children: [
+            Text(AppLocalizations.of(context)!.settingsTitle),
+            Text(
+              config.name,
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+            ),
+          ],
         ),
+        centerTitle: true,
       ),
       body: ListView(
         padding: const EdgeInsets.all(0),
         children: [
+          /*
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsGeneral),
             onTap: () {},
           ),
           const Divider(),
+          */
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsWifi),
             onTap: () {
@@ -115,9 +116,21 @@ class ConfigureStationPage extends StatelessWidget {
           const Divider(),
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsModules),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StationProviders(
+                      deviceId: station.deviceId,
+                      child: StationModulesPage(
+                        station: station,
+                      )),
+                ),
+              );
+            },
           ),
           const Divider(),
+          /*
           ListTile(
             title: Text(AppLocalizations.of(context)!.endDeployment),
             onTap: () {},
@@ -128,6 +141,7 @@ class ConfigureStationPage extends StatelessWidget {
             onTap: () {},
           ),
           const Divider(),
+          */
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsEvents),
             onTap: () {

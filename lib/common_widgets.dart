@@ -96,7 +96,7 @@ class GenericListItemHeader extends StatelessWidget {
 }
 
 class WH {
-  static const pagePadding = EdgeInsets.symmetric(horizontal: 10, vertical: 6);
+  static const pagePadding = EdgeInsets.symmetric(horizontal: 14, vertical: 14);
 
   static List<Widget> divideWith(
       Widget Function() divider, List<Widget> widgets) {
@@ -152,5 +152,26 @@ class OopsBug extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(AppLocalizations.of(context)!.oopsBugTitle);
+  }
+}
+
+class ElevatedTextButton extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+
+  const ElevatedTextButton(
+      {super.key, required this.text, required, this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+        onPressed: onPressed,
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontFamily: 'Avenir',
+            fontSize: 16.0,
+          ),
+        ));
   }
 }

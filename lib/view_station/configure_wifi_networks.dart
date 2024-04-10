@@ -1,4 +1,3 @@
-import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
-import '../gen/ffi.dart';
+import '../gen/api.dart';
 import 'configure_wifi_upload.dart';
 import 'wifi_network_form.dart';
 
@@ -29,17 +28,8 @@ class ConfigureWiFiPage extends StatelessWidget {
   Widget addNetworkButton(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(AppColors.primaryColor),
-          padding: MaterialStateProperty.all<EdgeInsets>(
-              const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
-        ),
-        child: Text(
-          localizations.networkAddButton,
-          style: WH.buttonStyle(18),
-        ),
+    return ElevatedTextButton(
+        text: localizations.networkAddButton,
         onPressed: () async {
           await onAddNetwork(context);
         });
@@ -50,28 +40,42 @@ class ConfigureWiFiPage extends StatelessWidget {
     final StationConfiguration configuration =
         context.watch<StationConfiguration>();
 
-    final List<WifiNetworkListItem> networks = configuration.networks
+    final List<Widget> networks = configuration.networks
         .where((network) => network.ssid.isNotEmpty)
-        .map((network) => WifiNetworkListItem(
-            network: network,
-            onRemove: () async {
-              await onRemoveNetwork(context, network);
-            }))
+        .map((network) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: WifiNetworkListItem(
+                network: network,
+                onRemove: () async {
+                  await onRemoveNetwork(context, network);
+                })))
         .toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(config.name),
+        centerTitle: true,
+        title: Column(
+          children: [
+            Text(AppLocalizations.of(context)!.networksTitle),
+            Text(
+              config.name,
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+            ),
+          ],
+        ),
       ),
       body: ListView(
           children: WH.divideWith(() => const Divider(), [
         ...networks,
-        Container(
-            padding: const EdgeInsets.all(24.0),
+        Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 22),
             child: bothSlotsFilled
                 ? tooManyNetworks(context)
                 : addNetworkButton(context)),
-        const ConfigureAutomaticUploadListItem(),
+        const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10.0),
+            child: ConfigureAutomaticUploadListItem()),
       ])),
     );
   }
@@ -163,8 +167,8 @@ class WifiNetworkListItem extends StatelessWidget {
 
     return ListTile(
       title: Text(network.ssid),
-      trailing: ElevatedButton(
-          child: Text(localizations.networkRemoveButton),
+      trailing: ElevatedTextButton(
+          text: localizations.networkRemoveButton,
           onPressed: () async {
             onRemove();
           }),

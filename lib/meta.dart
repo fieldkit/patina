@@ -2,7 +2,7 @@ import 'package:caldor/calibration.dart';
 import 'package:flutter/material.dart';
 
 import 'diagnostics.dart';
-import 'gen/ffi.dart';
+import 'gen/api.dart';
 
 class LocalizedModule {
   String key;

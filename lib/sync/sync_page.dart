@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fk/gen/api.dart';
 
-import '../constants.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
-import '../gen/ffi.dart';
 import '../no_stations_widget.dart';
 import '../settings/accounts_page.dart';
 import '../view_station/firmware_page.dart';
@@ -27,11 +26,11 @@ class DataSyncTab extends StatelessWidget {
       stationOperations: stationOperations,
       tasks: tasks,
       onDownload: (task) async {
-        await knownStations.startDownload(
+        await knownStations.startDownloading(
             deviceId: task.deviceId, first: task.first);
       },
       onUpload: (task) async {
-        await knownStations.startUpload(
+        await knownStations.startUploading(
             deviceId: task.deviceId, tokens: task.tokens!, files: task.files);
       },
     );
@@ -68,14 +67,9 @@ class MessageAndButton extends StatelessWidget {
       ),
       WH.align(
         WH.vertical(
-          ElevatedButton(
+          ElevatedTextButton(
             onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-            ),
-            child: Text(button),
+            text: button,
           ),
         ),
       ),
@@ -174,16 +168,15 @@ class SyncOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     pad(child) => Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(14),
         child: child);
 
     final localizations = AppLocalizations.of(context)!;
 
     return Column(children: [
-      pad(ElevatedButton(
-          onPressed: onDownload, child: Text(localizations.download))),
-      pad(ElevatedButton(
-          onPressed: onUpload, child: Text(localizations.upload))),
+      pad(ElevatedTextButton(
+          onPressed: onDownload, text: localizations.download)),
+      pad(ElevatedTextButton(onPressed: onUpload, text: localizations.upload)),
     ]);
   }
 }

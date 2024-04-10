@@ -1,5 +1,4 @@
 import 'package:fk/app_state.dart';
-import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -65,7 +64,7 @@ class _WifiNetworkFormState extends State<WifiNetworkForm> {
                 FormBuilderValidators.required(),
               ]),
             ),
-            ElevatedButton(
+            ElevatedTextButton(
               onPressed: () async {
                 if (_formKey.currentState!.saveAndValidate()) {
                   final ssid = _formKey.currentState!.value['ssid'];
@@ -74,17 +73,7 @@ class _WifiNetworkFormState extends State<WifiNetworkForm> {
                       ssid: ssid, password: password, preferred: false));
                 }
               },
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(AppColors.primaryColor),
-                padding: MaterialStateProperty.all<EdgeInsets>(
-                    const EdgeInsets.symmetric(
-                        vertical: 24.0, horizontal: 32.0)),
-              ),
-              child: Text(
-                localizations.networkSaveButton,
-                style: WH.buttonStyle(18),
-              ),
+              text: localizations.networkSaveButton,
             ),
           ]
               .map((child) =>

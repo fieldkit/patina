@@ -1,0 +1,46 @@
+[package]
+name = "rust_lib_fk"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies.discovery]
+git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
+rev = "b4553ba325f7a748579d81a8fc9a1c9d973b7b38"
+
+[dependencies.query]
+git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
+rev = "b4553ba325f7a748579d81a8fc9a1c9d973b7b38"
+
+[dependencies.sync]
+git = "https://gitlab.com/fieldkit/libraries/rustfk.git"
+rev = "b4553ba325f7a748579d81a8fc9a1c9d973b7b38"
+
+[target.'cfg(not(any(target_os = "android")))'.dependencies]
+store = { git = "https://gitlab.com/fieldkit/libraries/rustfk.git", rev = "b4553ba325f7a748579d81a8fc9a1c9d973b7b38" }
+
+[target.'cfg(any(target_os = "android"))'.dependencies]
+store = { git = "https://gitlab.com/fieldkit/libraries/rustfk.git", rev = "b4553ba325f7a748579d81a8fc9a1c9d973b7b38", features = [
+    "bundled-sqlite",
+] }
+
+[dependencies]
+anyhow = "1.0.81"
+async-stream = "0.3.5"
+base64 = "0.21.2"
+chrono = "0.4.24"
+flutter_rust_bridge = "=2.0.0-dev.28"
+glob = "0.3.1"
+hex = "0.4.3"
+itertools = "0.11.0"
+serde_json = "1.0.97"
+thiserror = "1.0.40"
+tokio = { version = "1.28.0", features = ["full"] }
+tokio-stream = { version = "0.1.14", features = ["full"] }
+tracing = "0.1.37"
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+
+[dev-dependencies]
+flutter_rust_bridge_macros = "=2.0.0-dev.28"

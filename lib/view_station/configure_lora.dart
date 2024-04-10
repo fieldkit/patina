@@ -1,12 +1,11 @@
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
-import 'package:fk/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
 import 'package:fk/common_widgets.dart';
-import 'package:fk/gen/ffi.dart';
+import 'package:fk/gen/api.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../app_state.dart';
@@ -24,7 +23,17 @@ class ConfigureLoraPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(configuration.name),
+          centerTitle: true,
+          title: Column(
+            children: [
+              Text(AppLocalizations.of(context)!.loraConfigurationTitle),
+              Text(
+                configuration.name,
+                style: const TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.normal),
+              ),
+            ],
+          ),
         ),
         body: ListView(children: [
           if (loraConfig != null && !loraConfig.available)
@@ -93,7 +102,6 @@ class DisplayLoraConfiguration extends StatelessWidget {
   Widget build(BuildContext context) {
     final StationConfiguration configuration =
         context.read<StationConfiguration>();
-
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return WH.padColumn(Column(children: [
@@ -117,63 +125,49 @@ class DisplayLoraConfiguration extends StatelessWidget {
             label: localizations.loraSessionKey,
             bytes: loraConfig.appSessionKey),
       const Divider(),
-      ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(AppColors.primaryColor),
-          padding: MaterialStateProperty.all<EdgeInsets>(
-              const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
-        ),
-        child: Text(
-          localizations.settingsLoraEdit,
-          style: WH.buttonStyle(18),
-        ),
-        onPressed: () async {
-          final navigator = Navigator.of(context);
+      ButtonBar(
+          alignment: MainAxisAlignment.spaceAround,
+          buttonMinWidth: 100,
+          buttonPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+          children: [
+            ElevatedTextButton(
+              text: localizations.settingsLoraEdit,
+              onPressed: () async {
+                final navigator = Navigator.of(context);
 
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LoraConfigurationFormPage(
-                  loraConfig: loraConfig,
-                  onSave: (LoraTransmissionConfig config) async {
-                    final overlay = context.loaderOverlay;
-                    overlay.show();
-                    try {
-                      await configuration
-                          .configureLora(config); // TODO Schedule
-                    } finally {
-                      navigator.pop();
-
-                      overlay.hide();
-                    }
-                  },
-                ),
-              ));
-        },
-      ),
-      const Divider(),
-      ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(AppColors.primaryColor),
-          padding: MaterialStateProperty.all<EdgeInsets>(
-              const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
-        ),
-        child: Text(
-          localizations.settingsLoraVerify,
-          style: WH.buttonStyle(18),
-        ),
-        onPressed: () async {
-          final overlay = context.loaderOverlay;
-          overlay.show();
-          try {
-            await configuration.verifyLora();
-          } finally {
-            overlay.hide();
-          }
-        },
-      )
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoraConfigurationFormPage(
+                        loraConfig: loraConfig,
+                        onSave: (LoraTransmissionConfig config) async {
+                          final overlay = context.loaderOverlay;
+                          overlay.show();
+                          try {
+                            await configuration
+                                .configureLora(config); // TODO Schedule
+                          } finally {
+                            navigator.pop();
+                            overlay.hide();
+                          }
+                        },
+                      ),
+                    ));
+              },
+            ),
+            ElevatedTextButton(
+              text: localizations.settingsLoraVerify,
+              onPressed: () async {
+                final overlay = context.loaderOverlay;
+                overlay.show();
+                try {
+                  await configuration.verifyLora();
+                } finally {
+                  overlay.hide();
+                }
+              },
+            ),
+          ])
     ]));
   }
 }

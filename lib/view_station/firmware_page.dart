@@ -3,10 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../constants.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
-import '../gen/ffi.dart';
+import '../gen/api.dart';
 
 class UpgradeProgressWidget extends StatelessWidget {
   final UpgradeOperation operation;
@@ -87,11 +86,11 @@ class FirmwareItem extends StatelessWidget {
         header: header(),
         expanded: comparison.newer || operations.isNotEmpty,
         children: [
-          ElevatedButton(
+          ElevatedTextButton(
             onPressed: canUpgrade ? onUpgrade : null,
-            child: Text(comparison.newer
+            text: comparison.newer
                 ? localizations.firmwareUpgrade
-                : localizations.firmwareSwitch),
+                : localizations.firmwareSwitch,
           ),
           ...operations
               .map((operation) => UpgradeProgressWidget(operation: operation))
@@ -131,13 +130,13 @@ class StationFirmwarePage extends StatelessWidget {
 
   AppBar _buildAppBar(BuildContext context, AppLocalizations localizations) {
     return AppBar(
+      centerTitle: true,
       title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(localizations.firmwareTitle),
           Text(
             station.config!.name,
-            style: const TextStyle(fontSize: 14, color: Colors.grey),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
           ),
         ],
       ),
@@ -185,11 +184,9 @@ class StationFirmwarePage extends StatelessWidget {
       AppLocalizations localizations,
       AvailableFirmwareModel availableFirmware) {
     bool isFirmwareNewer = false;
-    LocalFirmware? newFirmware;
     for (var firmware in availableFirmware.firmware) {
       if (FirmwareComparison.compare(firmware, config.firmware).newer) {
         isFirmwareNewer = true;
-        newFirmware = firmware;
         break;
       }
     }
@@ -226,33 +223,15 @@ class StationFirmwarePage extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
-      child: ElevatedButton(
+      child: ElevatedTextButton(
         onPressed: isFirmwareNewer
             ? () async {
                 await availableFirmware.upgrade(config.deviceId,
                     newFirmware ?? availableFirmware.firmware.last);
               }
             : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryColor,
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 18.0),
-        ),
-        child: Text(localizations.firmwareUpdate,
-            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        text: localizations.firmwareUpdate,
       ),
-    );
-  }
-
-  Widget _buildQuickTipCard(
-      BuildContext context, AppLocalizations localizations) {
-    return Card(
-      color: const Color.fromARGB(255, 252, 252, 252),
-      child: Container(
-          padding: const EdgeInsets.all(8.0),
-          child: ListTile(
-              leading: const Icon(Icons.lightbulb),
-              title: Text(AppLocalizations.of(context)!.quickTip),
-              subtitle: Text(AppLocalizations.of(context)!.firmwareTip))),
     );
   }
 

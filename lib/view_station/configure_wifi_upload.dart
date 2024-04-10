@@ -16,7 +16,7 @@ class EnableButton extends StatelessWidget {
     final StationConfiguration configuration =
         context.read<StationConfiguration>();
 
-    return ElevatedButton(
+    return ElevatedTextButton(
         onPressed: () async {
           Loggers.ui.i("wifi-upload:disable");
           final overlay = context.loaderOverlay;
@@ -29,7 +29,7 @@ class EnableButton extends StatelessWidget {
             overlay.hide();
           }
         },
-        child: Text(localizations.networkAutomaticUploadEnable));
+        text: localizations.networkAutomaticUploadEnable);
   }
 }
 
@@ -42,7 +42,7 @@ class DisableButton extends StatelessWidget {
     final StationConfiguration configuration =
         context.read<StationConfiguration>();
 
-    return ElevatedButton(
+    return ElevatedTextButton(
         onPressed: () async {
           Loggers.ui.i("wifi-upload:disable");
           final overlay = context.loaderOverlay;
@@ -55,7 +55,7 @@ class DisableButton extends StatelessWidget {
             overlay.hide();
           }
         },
-        child: Text(localizations.networkAutomaticUploadDisable));
+        text: localizations.networkAutomaticUploadDisable);
   }
 }
 

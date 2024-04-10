@@ -1,9 +1,11 @@
+import 'package:fk/gen/api.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:caldor/calibration.dart';
+import 'package:fk/calibration/calibration_review_page.dart';
 import 'package:fk/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:fk/gen/ffi.dart';
 import 'package:fk/meta.dart';
 import 'package:fk/view_station/sensor_widgets.dart';
 
@@ -51,6 +53,12 @@ class CalibrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final module = context
+        .read<KnownStationsModel>()
+        .findModule(config.moduleIdentity)!
+        .module;
+    final bay = AppLocalizations.of(context)!.bayNumber(module.position);
+
     return PopScope(
         canPop: false,
         onPopInvoked: (bool didPop) async {
@@ -60,13 +68,20 @@ class CalibrationPage extends StatelessWidget {
           final NavigatorState navigator = Navigator.of(context);
           final bool? shouldPop = await _confirmBackDialog(context);
           if (shouldPop ?? false) {
-            navigator.pop();
+            navigator.popUntil((route) => route.isFirst);
           }
         },
         child: dismissKeyboardOnOutsideGap(Scaffold(
             appBar: AppBar(
-              title: Text(AppLocalizations.of(context)!.calibrationTitle),
-            ),
+                centerTitle: true,
+                title: Column(children: [
+                  Text(AppLocalizations.of(context)!.calibrationTitle),
+                  Text(
+                    bay,
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.normal),
+                  ),
+                ])),
             body: ChangeNotifierProvider(
                 create: (context) => active,
                 child: ProvideCountdown(
@@ -93,30 +108,41 @@ class CalibrationPanel extends StatelessWidget {
     final moduleConfigurations = context.read<ModuleConfigurations>();
     final navigator = Navigator.of(context);
 
-    final configured = config.standard;
-    final standard = configured.acceptable ? configured : active.userStandard();
+    final standard = active.userStandard();
 
     final reading = SensorReading(
         uncalibrated: sensor.value!.uncalibrated, value: sensor.value!.value);
     current.addPoint(CalibrationPoint(standard: standard, reading: reading));
+
+    // NOTE Seems silly that this isn't already available here.
+    final module = context
+        .read<KnownStationsModel>()
+        .findModule(config.moduleIdentity)!
+        .module;
 
     Loggers.cal.i("(calibrate) calibration: $current");
     Loggers.cal.i("(calibrate) active: $active");
 
     final nextConfig = config.popStandard();
     if (nextConfig.done) {
+      final overlay = context.loaderOverlay;
       final cal = current.toDataProtocol();
       final serialized = current.toBytes();
 
       Loggers.cal.i("(calibrate) $cal");
 
+      overlay.show();
       try {
-        await moduleConfigurations.calibrate(config.moduleIdentity, serialized);
+        await moduleConfigurations.calibrateModule(
+            config.moduleIdentity, serialized);
       } catch (e) {
         Loggers.cal.e("Exception calibration: $e");
+      } finally {
+        overlay.hide();
       }
 
-      navigator.popUntil((route) => route.isFirst);
+      navigator.pushReplacement(MaterialPageRoute(
+          builder: (context) => CalibrationReviewPage(module: module)));
     } else {
       navigator.pushReplacement(
         MaterialPageRoute(
@@ -146,7 +172,8 @@ class CalibrationPanel extends StatelessWidget {
       if (time == null) {
         return CanContinue.staleValue;
       } else {
-        if (countdown.finishedBefore(time)) {
+        if (countdown
+            .finishedBefore(DateTime.fromMillisecondsSinceEpoch(time.field0))) {
           return CanContinue.yes;
         }
         return CanContinue.staleValue;
@@ -198,38 +225,26 @@ class CalibrationWait extends StatelessWidget {
 
   Widget continueWidget(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final buttonStyle = ElevatedButton.styleFrom(
-        minimumSize: const Size(200, 50),
-        padding: const EdgeInsets.symmetric(vertical: 20));
 
     switch (canContinue) {
       case CanContinue.ready:
-        return ElevatedButton(
-            onPressed: onStartTimer,
-            style: buttonStyle,
-            child: Text(localizations.calibrationStartTimer));
+        return ElevatedTextButton(
+            onPressed: onStartTimer, text: localizations.calibrationStartTimer);
       case CanContinue.yes:
-        return ElevatedButton(
+        return ElevatedTextButton(
             onPressed: () => onCalibrateAndContinue(),
-            style: buttonStyle,
-            child: Text(localizations.calibrateButton));
+            text: localizations.calibrateButton);
       case CanContinue.form:
-        return ElevatedButton(
-            onPressed: null,
-            style: buttonStyle,
-            child: Text(localizations.waitingOnForm));
+        return ElevatedTextButton(
+            onPressed: null, text: localizations.waitingOnForm);
       case CanContinue.countdown:
         return GestureDetector(
             onLongPress: onSkipTimer,
-            child: ElevatedButton(
-                onPressed: null,
-                style: buttonStyle,
-                child: Text(localizations.waitingOnTimer)));
+            child: ElevatedTextButton(
+                onPressed: null, text: localizations.waitingOnTimer));
       case CanContinue.staleValue:
-        return ElevatedButton(
-            onPressed: null,
-            style: buttonStyle,
-            child: Text(localizations.waitingOnReading));
+        return ElevatedTextButton(
+            onPressed: null, text: localizations.waitingOnReading);
     }
   }
 

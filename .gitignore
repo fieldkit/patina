@@ -48,11 +48,11 @@ native/target
 target
 jniLibs
 
-Cargo.lock
 pubspec.lock
 
 rustfk
 /fk-data
 
-/resources/.env
+/.env
+
 /lib/l10n/untranslated.txt

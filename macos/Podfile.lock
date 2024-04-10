@@ -11,6 +11,8 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - rust_lib_fk (0.0.1):
+    - FlutterMacOS
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -24,6 +26,7 @@ DEPENDENCIES:
   - location (from `Flutter/ephemeral/.symlinks/plugins/location/macos`)
   - package_info_plus (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos`)
   - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
+  - rust_lib_fk (from `Flutter/ephemeral/.symlinks/plugins/rust_lib_fk/macos`)
   - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
 
@@ -40,6 +43,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos
   path_provider_foundation:
     :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
+  rust_lib_fk:
+    :path: Flutter/ephemeral/.symlinks/plugins/rust_lib_fk/macos
   shared_preferences_foundation:
     :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin
   url_launcher_macos:
@@ -52,9 +57,10 @@ SPEC CHECKSUMS:
   location: 7cdb0665bd6577d382b0a343acdadbcb7f964775
   package_info_plus: 02d7a575e80f194102bef286361c6c326e4c29ce
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
+  rust_lib_fk: 21b6acfd7ac76018307717469788345cfb75f28d
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   url_launcher_macos: d2691c7dd33ed713bf3544850a623080ec693d95
 
-PODFILE CHECKSUM: 0d4acf093f6a158a7550f61dc28bdebfdfce0572
+PODFILE CHECKSUM: 236401fc2c932af29a9fcf0e97baeeb2d750d367
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.15.2

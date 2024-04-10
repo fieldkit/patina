@@ -2,9 +2,8 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 
 import 'package:fk/common_widgets.dart';
-import 'package:fk/constants.dart';
 import 'package:fk/diagnostics.dart';
-import 'package:fk/gen/ffi.dart';
+import 'package:fk/gen/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -36,7 +35,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
           FormBuilderDropdown<LoraBand>(
             name: 'band',
             initialValue: FormHelpers.fromFrequencyInteger(widget.config.band),
-            items: [LoraBand.F915Mhz, LoraBand.F868Mhz]
+            items: [LoraBand.f915Mhz, LoraBand.f868Mhz]
                 .map<DropdownMenuItem<LoraBand>>((LoraBand value) {
               return DropdownMenuItem<LoraBand>(
                 value: value,
@@ -48,7 +47,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
             name: 'appKey',
             initialValue: hex.encode(widget.config.appKey ?? List.empty()),
             style: WH.monoStyle(16),
-            decoration: const InputDecoration(labelText: "App Key"),
+            decoration: InputDecoration(labelText: localizations.loraAppKey),
             validator: FormBuilderValidators.compose([
               FormBuilderValidators.required(),
               FormBuilderValidators.equalLength(32),
@@ -59,8 +58,8 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
             name: 'joinEui',
             initialValue: hex.encode(widget.config.joinEui ?? List.empty()),
             style: WH.monoStyle(16),
-            decoration: const InputDecoration(
-              labelText: "Join EUI",
+            decoration: InputDecoration(
+              labelText: localizations.loraJoinEui,
             ),
             validator: FormBuilderValidators.compose([
               FormBuilderValidators.required(),
@@ -68,7 +67,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
               hexString(errorText: localizations.hexStringValidationFailed),
             ]),
           ),
-          ElevatedButton(
+          ElevatedTextButton(
             onPressed: () async {
               if (_formKey.currentState!.saveAndValidate()) {
                 final values = _formKey.currentState!.value;
@@ -83,16 +82,7 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
                 widget.onSave(config);
               }
             },
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(AppColors.primaryColor),
-              padding: MaterialStateProperty.all<EdgeInsets>(
-                  const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0)),
-            ),
-            child: Text(
-              localizations.networkSaveButton,
-              style: WH.buttonStyle(18),
-            ),
+            text: localizations.networkSaveButton,
           ),
         ]
             .map((child) =>
@@ -105,14 +95,14 @@ class _LoraNetworkFormState extends State<LoraNetworkForm> {
 
 extension FormHelpers on LoraBand {
   String toLabel() {
-    if (this == LoraBand.F868Mhz) {
+    if (this == LoraBand.f868Mhz) {
       return "868Mhz";
     }
     return "915Mhz";
   }
 
   int toFrequencyInteger() {
-    if (this == LoraBand.F868Mhz) {
+    if (this == LoraBand.f868Mhz) {
       return 868;
     }
     return 915;
@@ -120,9 +110,9 @@ extension FormHelpers on LoraBand {
 
   static LoraBand fromFrequencyInteger(int? freq) {
     if (freq != null && freq == 868) {
-      return LoraBand.F868Mhz;
+      return LoraBand.f868Mhz;
     }
-    return LoraBand.F915Mhz;
+    return LoraBand.f915Mhz;
   }
 }
 
