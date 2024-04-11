@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'language_page.dart';
 import 'accounts_page.dart';
 import 'help_page.dart';
 import 'legal_page.dart';
@@ -35,6 +36,17 @@ class SettingsTab extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const HelpPage()),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.shield_sharp), // Icon for Help
+            title: Text(AppLocalizations.of(context)!.settingsLanguage),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LanguagePage()),
               );
             },
           ),
