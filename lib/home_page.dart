@@ -1,8 +1,8 @@
 import 'package:fk/diagnostics.dart';
+import 'package:fk/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state.dart';
@@ -10,23 +10,6 @@ import 'my_stations_page.dart';
 import 'settings/settings_page.dart';
 import 'sync/sync_page.dart';
 import 'welcome.dart';
-
-class PrefsHelper {
-  static const String _lastOpenedKey = 'lastOpened';
-
-  final SharedPreferences _prefs;
-
-  PrefsHelper(this._prefs);
-
-  Future<void> setLastOpened(DateTime date) async {
-    await _prefs.setString(_lastOpenedKey, date.toIso8601String());
-  }
-
-  DateTime? getLastOpened() {
-    final storedDate = _prefs.getString(_lastOpenedKey);
-    return storedDate == null ? null : DateTime.parse(storedDate);
-  }
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -51,31 +34,25 @@ class _HomePageState extends State<HomePage> {
   }
 
   _checkIfFirstTimeToday() async {
+    final appPrefs = AppPreferences();
     bool showWelcomeScreen = dotenv.env['SHOW_WELCOME_SCREEN'] == 'true';
     if (showWelcomeScreen) {
       Loggers.ui.i("Forced welcome screen");
-      // For testing welcome screen
-      final prefs = await SharedPreferences.getInstance();
-      final prefsHelper = PrefsHelper(prefs);
-
       DateTime today = DateTime.now();
-      prefsHelper.setLastOpened(today);
+      await appPrefs.setLastOpened(today);
 
       setState(() {
         _showWelcome = true; // Always show welcome page when the app opens
       });
     } else {
-      final prefs = await SharedPreferences.getInstance();
-      final prefsHelper = PrefsHelper(prefs);
-
-      DateTime? lastOpened = prefsHelper.getLastOpened();
+      DateTime? lastOpened = await appPrefs.getLastOpened();
       DateTime today = DateTime.now();
 
       if (lastOpened == null ||
           lastOpened.day != today.day ||
           lastOpened.month != today.month ||
           lastOpened.year != today.year) {
-        prefsHelper.setLastOpened(today);
+        await appPrefs.setLastOpened(today);
         setState(() {
           _showWelcome = true;
         });
