@@ -1,4 +1,3 @@
-import 'package:fk/providers.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import '../gen/api.dart';
@@ -9,15 +8,14 @@ class DisplaySensorValue extends StatelessWidget {
   final LocalizedSensor localized;
   final MainAxisSize mainAxisSize;
   final bool isConnected;
-  final double? previousValue;
 
-  const DisplaySensorValue(
-      {super.key,
-      required this.sensor,
-      required this.localized,
-      this.mainAxisSize = MainAxisSize.max,
-      this.isConnected = true,
-      this.previousValue});
+  const DisplaySensorValue({
+    super.key,
+    required this.sensor,
+    required this.localized,
+    this.mainAxisSize = MainAxisSize.max,
+    this.isConnected = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +38,13 @@ class DisplaySensorValue extends StatelessWidget {
     final uom = localized.uom;
 
     // Determine the direction of the value change
+    final previousValue = sensor.previousValue?.value;
     Widget changeIcon = const SizedBox.shrink();
     if (previousValue != null && value != null) {
-      if (value > previousValue!) {
+      if (value > previousValue) {
         // Value is rising
         changeIcon = const Icon(Icons.arrow_upward, color: Colors.blue);
-      } else if (value < previousValue!) {
+      } else if (value < previousValue) {
         // Value is falling
         changeIcon = const Icon(Icons.arrow_downward, color: Colors.red);
       } else {
@@ -100,10 +99,10 @@ class SensorInfo extends StatelessWidget {
                       Container(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: DisplaySensorValue(
-                              sensor: sensor,
-                              localized: localized,
-                              isConnected: isConnected,
-                              previousValue: sensor.previousValue?.value)),
+                            sensor: sensor,
+                            localized: localized,
+                            isConnected: isConnected,
+                          )),
                       Text(localized.name)
                     ]))));
   }
