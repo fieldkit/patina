@@ -110,25 +110,59 @@ class Screen {
         header: header,
         simple: simple);
   }
+
+  @override
+  String toString() {
+    return "Screen<$id, $name>";
+  }
 }
 
 class ContentFlows {
-  final List<Flow> flows;
-  final List<Screen> screens;
+  final Map<String, Flow> allFlows;
+  final Map<String, Screen> allScreens;
 
-  const ContentFlows({required this.flows, required this.screens});
+  const ContentFlows({required this.allFlows, required this.allScreens});
 
   static ContentFlows get(String text) {
     final parsed = jsonDecode(text);
     final flowsData = parsed["data"]["flows"] as List<dynamic>;
     final screensData = parsed["data"]["screens"] as List<dynamic>;
 
-    final flows = flowsData.map((flowData) => Flow.fromJson(flowData)).toList();
-    final screens =
-        screensData.map((screenData) => Screen.fromJson(screenData)).toList();
+    final Map<String, Flow> flows = Map.fromIterable(
+        flowsData.map((flowData) => Flow.fromJson(flowData)),
+        key: (v) => v.name);
 
-    return ContentFlows(flows: flows, screens: screens);
+    final Map<String, Screen> screens = Map.fromIterable(
+        screensData.map((screenData) => Screen.fromJson(screenData)),
+        key: (v) => v.name);
+
+    return ContentFlows(allFlows: flows, allScreens: screens);
   }
+
+  List<Screen> getScreens(StartFlow start) {
+    if (start.prefix != null) {
+      return allScreens.values
+          .where((screen) => screen.name.startsWith(start.prefix!))
+          .toList()
+          .sorted((a, b) => a.name.compareTo(b.name));
+    }
+
+    if (start.names != null) {
+      return start.names!
+          .map((name) => allScreens[name])
+          .whereType<Screen>()
+          .toList();
+    }
+
+    return List.empty();
+  }
+}
+
+class StartFlow {
+  final String? prefix;
+  final List<String>? names;
+
+  const StartFlow({this.prefix, this.names});
 }
 
 String? coerceEmptyStringsToNull(String? source) {
@@ -136,4 +170,8 @@ String? coerceEmptyStringsToNull(String? source) {
     return null;
   }
   return source;
+}
+
+extension ListSorted<T> on List<T> {
+  List<T> sorted(int Function(T a, T b) compare) => [...this]..sort(compare);
 }

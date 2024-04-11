@@ -1,7 +1,9 @@
 import 'package:fk/diagnostics.dart';
+import 'package:flows/flows.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
 import '../reader/screens.dart';
 
 class HelpPage extends StatefulWidget {
@@ -52,7 +54,7 @@ class _HelpPageState extends State<HelpPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const ProvideContentFlowsWidget(
-                      child: QuickFlow(start: StartFlow(name: "onboarding"))),
+                      child: QuickFlow(start: StartFlow(prefix: "onboarding"))),
                 ),
               );
             },

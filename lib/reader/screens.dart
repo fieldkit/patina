@@ -1,27 +1,22 @@
 import 'dart:async';
-import '../constants.dart';
 
+import 'package:fk/common_widgets.dart';
 import 'package:fk/reader/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as p;
 import 'package:flows/flows.dart' as flows;
 
 import '../diagnostics.dart';
 
-class StartFlow {
-  final String name;
-
-  const StartFlow({required this.name});
-}
-
 class QuickFlow extends StatefulWidget {
-  final StartFlow start;
+  final flows.StartFlow start;
 
   const QuickFlow({super.key, required this.start});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _QuickFlowState createState() => _QuickFlowState();
+  State<QuickFlow> createState() => _QuickFlowState();
 }
 
 class _QuickFlowState extends State<QuickFlow> {
@@ -41,8 +36,9 @@ class _QuickFlowState extends State<QuickFlow> {
 
   @override
   Widget build(BuildContext context) {
-    final flows1 = context.read<flows.ContentFlows>();
-    final screen = flows1.screens[index];
+    final flowsContent = context.read<flows.ContentFlows>();
+    final screens = flowsContent.getScreens(widget.start);
+    final screen = screens[index];
     return FlowScreenWidget(
       screen: screen,
       onForward: () {
@@ -74,10 +70,10 @@ class ProvideContentFlowsWidget extends StatelessWidget {
             .loadString("resources/flows/flows.json"),
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
-            final flows1 = flows.ContentFlows.get(snapshot.data!);
-            Loggers.ui.i("flows:ready $flows1");
+            final flowsContent = flows.ContentFlows.get(snapshot.data!);
+            Loggers.ui.i("flows:ready $flowsContent");
             return Provider<flows.ContentFlows>(
-              create: (context) => flows1,
+              create: (context) => flowsContent,
               dispose: (context, value) => {},
               lazy: false,
               child: child,

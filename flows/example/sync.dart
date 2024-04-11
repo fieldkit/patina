@@ -34,12 +34,13 @@ Future<void> download(Logger logger, String resources) async {
 
   logger.i("downloading json");
 
-  final response = await http.post(Uri.parse("$baseUrl/graphql"), body: json.encode(query), headers: {"Content-Type": "application/json"});
+  final response = await http.post(Uri.parse("$baseUrl/graphql"),
+      body: json.encode(query), headers: {"Content-Type": "application/json"});
   await file.writeAsBytes(response.bodyBytes);
   final data = await file.readAsString();
   final flows = ContentFlows.get(data);
 
-  for (final screen in flows.screens) {
+  for (final screen in flows.allScreens.values) {
     for (final simple in screen.simple) {
       for (final image in simple.images) {
         logger.i("downloading ${image.url}");
@@ -56,9 +57,9 @@ Future<void> test(Logger logger, String resources) async {
   final file = File("$resources/flows.json");
   final data = await file.readAsString();
   final flows = ContentFlows.get(data);
-  for (final screen in flows.screens) {
+  for (final screen in flows.allScreens.values) {
     for (final simple in screen.simple) {
-      final parser = MarkdownVerifyParser(logger: logger);
+      final parser = MarkdownVerifyParser(logger: logger, images: List.empty());
       parser.parse(simple.body);
     }
   }
