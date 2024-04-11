@@ -1330,7 +1330,7 @@ impl TryInto<StationConfig> for StationAndConnection {
                             key: sensor.key,
                             calibrated_uom: sensor.calibrated_uom,
                             uncalibrated_uom: sensor.uncalibrated_uom,
-                            previous_value: sensor.value.clone().map(|v| SensorValue {
+                            previous_value: sensor.previous_value.clone().map(|v| SensorValue {
                                 time: v.time.into(),
                                 value: v.value,
                                 uncalibrated: v.uncalibrated,
