@@ -98,22 +98,24 @@
   "backWarning": "Navigating away will require you start this calibration over.",
   "countdownInstructions": "Tap the Calibrate button to record the sensor value and the standard value.",
   "calibrationMessage": "Recording these values together allows us to later calibrate the sensor.",
-  "settingsTitle": "Settings",
-  
 
+  "settingsTitle": "Settings",
   "settingsGeneral": "General",
   "settingsFirmware": "Firmware",
   "settingsModules": "Modules",
   "settingsWifi": "WiFi",
   "settingsLora": "LoRa",
   "settingsAutomaticUpload": "Automatic Upload",
-  "endDeployment": "End Deployment",
   "forgetStation": "Forget Station",
   "settingsAutomaticUpload": "Automatic Upload Settings",
   "settingsEvents": "Events",
-
   "settingsLoraEdit": "Edit",
   "settingsLoraVerify": "Verify",
+  "settingsLanguage": "Language",
+  "endDeployment": "End Deployment",
+
+  "languageEnglish": "English",
+  "languageSpanish": "Spanish",
 
   "eventUnknown": "Unknown Event",
   "eventRestart": "Restart Event",

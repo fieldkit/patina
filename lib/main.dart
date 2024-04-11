@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fk/diagnostics.dart';
+import 'package:fk/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -125,82 +126,103 @@ Future<AppEnv> initializeCurrentEnv(
 
 class OurApp extends StatefulWidget {
   final AppEnv env;
+
   const OurApp({super.key, required this.env});
 
   @override
-  State<StatefulWidget> createState() {
-    return _OurAppState();
+  State<OurApp> createState() => _OurAppState();
+
+  static setLocale(BuildContext context, Locale value) {
+    final state = context.findAncestorStateOfType<_OurAppState>()!;
+    state.setLocale(value);
+
+    final prefs = AppPreferences();
+    prefs.setLocale(value.languageCode);
   }
+
+  static State<OurApp> of(BuildContext context) =>
+      context.findAncestorStateOfType<State<OurApp>>()!;
 }
 
 class _OurAppState extends State<OurApp> {
-  @override
-  void initState() {
-    super.initState();
+  Locale _locale = const Locale("en");
+
+  void setLocale(Locale value) {
+    setState(() {
+      _locale = value;
+    });
+  }
+
+  void loadLocale() async {
+    final prefs = AppPreferences();
+    final locale = Locale(await prefs.getLocale());
+    setLocale(locale);
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  void initState() {
+    super.initState();
+    loadLocale();
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ValueListenableProvider.value(value: widget.env.appState),
-      ],
-      child: ProvideAccountsWidget(
-        child: MaterialApp(
-          onGenerateTitle: (BuildContext context) =>
-              AppLocalizations.of(context)!.fieldKit,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('es'),
-          ],
-          title: 'FieldKit',
-          theme: ThemeData(
-            textButtonTheme: TextButtonThemeData(style: flatButtonStyle),
-            elevatedButtonTheme:
-                ElevatedButtonThemeData(style: raisedButtonStyle),
-            primaryColor: Colors.white, // changes the default AppBar color
-            hintColor: Colors.grey, // changes the default color of many widgets
-            brightness:
-                Brightness.light, // changes the AppBar content color to dark
-            primaryTextTheme: const TextTheme(
-              titleLarge: TextStyle(
-                color: Color.fromARGB(255, 48, 44, 44),
+        providers: [
+          ValueListenableProvider.value(value: widget.env.appState),
+        ],
+        child: ProvideAccountsWidget(
+          child: MaterialApp(
+            onGenerateTitle: (BuildContext context) =>
+                AppLocalizations.of(context)!.fieldKit,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('es'),
+            ],
+            locale: _locale,
+            title: 'FieldKit',
+            theme: ThemeData(
+              textButtonTheme: TextButtonThemeData(style: flatButtonStyle),
+              elevatedButtonTheme:
+                  ElevatedButtonThemeData(style: raisedButtonStyle),
+              primaryColor: Colors.white, // changes the default AppBar color
+              hintColor:
+                  Colors.grey, // changes the default color of many widgets
+              brightness:
+                  Brightness.light, // changes the AppBar content color to dark
+              primaryTextTheme: const TextTheme(
+                titleLarge: TextStyle(
+                  color: Color.fromARGB(255, 48, 44, 44),
+                ),
               ),
+              appBarTheme: const AppBarTheme(
+                centerTitle: true,
+                iconTheme: IconThemeData(
+                  color: Color.fromARGB(255, 44, 37, 37),
+                ),
+                titleTextStyle: TextStyle(
+                  color: Color.fromARGB(255, 48, 44, 44),
+                  fontWeight: FontWeight.w500,
+                  fontSize: 17,
+                ),
+                shape: Border(
+                    bottom: BorderSide(
+                        color: Color.fromARGB(255, 221, 221, 221), width: 2)),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+              ),
+              scaffoldBackgroundColor:
+                  Colors.white, // changes the default Scaffold background color
             ),
-            appBarTheme: const AppBarTheme(
-              centerTitle: true,
-              iconTheme: IconThemeData(
-                color: Color.fromARGB(255, 44, 37, 37),
-              ),
-              titleTextStyle: TextStyle(
-                color: Color.fromARGB(255, 48, 44, 44),
-                fontWeight: FontWeight.w500,
-                fontSize: 17,
-              ),
-              shape: Border(
-                  bottom: BorderSide(
-                      color: Color.fromARGB(255, 221, 221, 221), width: 2)),
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-            ),
-            scaffoldBackgroundColor:
-                Colors.white, // changes the default Scaffold background color
+            home: const LoaderOverlay(child: HomePage()),
           ),
-          home: const LoaderOverlay(child: HomePage()),
-        ),
-      ),
-    );
+        ));
   }
 }
 
