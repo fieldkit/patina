@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import '../gen/api.dart';
 import '../meta.dart';
 
@@ -57,11 +59,12 @@ class DisplaySensorValue extends StatelessWidget {
         child: Text(uom, style: unitsStyle));
 
     if (value == null || !isConnected) {
+      final localizations = AppLocalizations.of(context)!;
       return Row(mainAxisSize: mainAxisSize, children: [
         Text("--", style: valueStyle),
         suffix,
         if (!isConnected)
-          Text(" (Last reading)",
+          Text(localizations.lastReadingLabel,
               style: TextStyle(fontSize: unitsSize, color: Colors.grey)),
       ]);
     }

@@ -25,6 +25,8 @@
   "locationDenied": "Location permission denied!",
   "mapFullScreen": "Full Screen Map",
 
+  "lastReadingLabel": " (Last Reading)",
+
   "download": "Download",
   "upload": "Upload",
   "readingsAvailable": "{readings} readings can be downloaded.",
