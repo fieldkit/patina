@@ -1303,8 +1303,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   SensorConfig dco_decode_sensor_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 6)
-      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
     return SensorConfig(
       number: dco_decode_u_32(arr[0]),
       key: dco_decode_String(arr[1]),
@@ -1312,6 +1312,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       calibratedUom: dco_decode_String(arr[3]),
       uncalibratedUom: dco_decode_String(arr[4]),
       value: dco_decode_opt_box_autoadd_sensor_value(arr[5]),
+      previousValue: dco_decode_opt_box_autoadd_sensor_value(arr[6]),
     );
   }
 
@@ -2315,13 +2316,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_calibratedUom = sse_decode_String(deserializer);
     var var_uncalibratedUom = sse_decode_String(deserializer);
     var var_value = sse_decode_opt_box_autoadd_sensor_value(deserializer);
+    var var_previousValue =
+        sse_decode_opt_box_autoadd_sensor_value(deserializer);
     return SensorConfig(
         number: var_number,
         key: var_key,
         fullKey: var_fullKey,
         calibratedUom: var_calibratedUom,
         uncalibratedUom: var_uncalibratedUom,
-        value: var_value);
+        value: var_value,
+        previousValue: var_previousValue);
   }
 
   @protected
@@ -3189,6 +3193,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.calibratedUom, serializer);
     sse_encode_String(self.uncalibratedUom, serializer);
     sse_encode_opt_box_autoadd_sensor_value(self.value, serializer);
+    sse_encode_opt_box_autoadd_sensor_value(self.previousValue, serializer);
   }
 
   @protected

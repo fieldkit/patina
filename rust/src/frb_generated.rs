@@ -1333,6 +1333,7 @@ impl SseDecode for crate::api::SensorConfig {
         let mut var_calibratedUom = <String>::sse_decode(deserializer);
         let mut var_uncalibratedUom = <String>::sse_decode(deserializer);
         let mut var_value = <Option<crate::api::SensorValue>>::sse_decode(deserializer);
+        let mut var_previousValue = <Option<crate::api::SensorValue>>::sse_decode(deserializer);
         return crate::api::SensorConfig {
             number: var_number,
             key: var_key,
@@ -1340,6 +1341,7 @@ impl SseDecode for crate::api::SensorConfig {
             calibrated_uom: var_calibratedUom,
             uncalibrated_uom: var_uncalibratedUom,
             value: var_value,
+            previous_value: var_previousValue,
         };
     }
 }
@@ -2106,6 +2108,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::SensorConfig {
             self.calibrated_uom.into_into_dart().into_dart(),
             self.uncalibrated_uom.into_into_dart().into_dart(),
             self.value.into_into_dart().into_dart(),
+            self.previous_value.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -2932,6 +2935,7 @@ impl SseEncode for crate::api::SensorConfig {
         <String>::sse_encode(self.calibrated_uom, serializer);
         <String>::sse_encode(self.uncalibrated_uom, serializer);
         <Option<crate::api::SensorValue>>::sse_encode(self.value, serializer);
+        <Option<crate::api::SensorValue>>::sse_encode(self.previous_value, serializer);
     }
 }
 

@@ -673,6 +673,7 @@ class SensorConfig {
   final String calibratedUom;
   final String uncalibratedUom;
   final SensorValue? value;
+  final SensorValue? previousValue;
 
   const SensorConfig({
     required this.number,
@@ -681,6 +682,7 @@ class SensorConfig {
     required this.calibratedUom,
     required this.uncalibratedUom,
     this.value,
+    this.previousValue,
   });
 
   @override
@@ -690,7 +692,8 @@ class SensorConfig {
       fullKey.hashCode ^
       calibratedUom.hashCode ^
       uncalibratedUom.hashCode ^
-      value.hashCode;
+      value.hashCode ^
+      previousValue.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -702,7 +705,8 @@ class SensorConfig {
           fullKey == other.fullKey &&
           calibratedUom == other.calibratedUom &&
           uncalibratedUom == other.uncalibratedUom &&
-          value == other.value;
+          value == other.value &&
+          previousValue == other.previousValue;
 }
 
 class SensorValue {

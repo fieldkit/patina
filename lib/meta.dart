@@ -180,17 +180,16 @@ class LocalizedSensor {
             name: "Wind Max Direction (1 hour)", uom: sensor.calibratedUom);
       case "modules.weather.wind_10m_max_speed":
         return LocalizedSensor(
-            name: "Wind Max Speed (10 minutes)", uom: sensor.calibratedUom);
+            name: "Wind Max Speed (10 min)", uom: sensor.calibratedUom);
       case "modules.weather.wind_10m_max_dir":
         return LocalizedSensor(
-            name: "Wind Max Direction (10 minutes)", uom: sensor.calibratedUom);
+            name: "Wind Max Direction (10 min)", uom: sensor.calibratedUom);
       case "modules.weather.wind_2m_avg_speed":
         return LocalizedSensor(
-            name: "Wind Average Speed (2 minutes)", uom: sensor.calibratedUom);
+            name: "Wind Average Speed (2 min)", uom: sensor.calibratedUom);
       case "modules.weather.wind_2m_avg_dir":
         return LocalizedSensor(
-            name: "Wind Average Direction (2 minutes)",
-            uom: sensor.calibratedUom);
+            name: "Wind Average Direction (2 min)", uom: sensor.calibratedUom);
       case "modules.weather.rain_this_hour":
         return LocalizedSensor(
             name: "Rain This Hour", uom: sensor.calibratedUom);
@@ -199,7 +198,7 @@ class LocalizedSensor {
             name: "Rain Previous Hour", uom: sensor.calibratedUom);
       case "modules.weather.wind_hr_max_dir":
         return LocalizedSensor(
-            name: "Wind Max Speed (1 Hour)", uom: sensor.calibratedUom);
+            name: "Wind Max Direction (1 hour)", uom: sensor.calibratedUom);
 
       case "modules.distance.distance_0":
         return LocalizedSensor(name: "Distance 0", uom: sensor.calibratedUom);

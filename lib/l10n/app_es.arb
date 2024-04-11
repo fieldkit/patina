@@ -61,6 +61,9 @@
   "standardValue2": " Standard Value ({uom})",
   "sensorValue": "Sensor Value:",
   "oopsBugTitle": "Oops, bug?",
+  "factory": "Factory",
+  "standard": "Standard",
+  "uncalibrated": "Uncalibrated",
   "minSec": "min sec",
   "standardFieldLabel": "Standard",
   "backAreYouSure": "Are you sure?",
@@ -71,6 +74,7 @@
   "uncalibrated": "Uncalibrated",
   "countdownInstructions": "Tap the Calibrate button to record the sensor value and the standard value.",
   "calibrationMessage": "Recording these values together allows us to later calibrate the sensor.",
+
   "settingsTitle": "Settings",
 
   "settingsGeneral": "General",

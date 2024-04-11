@@ -25,6 +25,8 @@
   "locationDenied": "Location permission denied!",
   "mapFullScreen": "Full Screen Map",
 
+  "lastReadingLabel": " (Last Reading)",
+
   "download": "Download",
   "upload": "Upload",
   "readingsAvailable": "{readings} readings can be downloaded.",
@@ -80,6 +82,9 @@
   "standardValue2": " Standard Value ({uom})",
   "sensorValue": "Sensor Value:",
   "oopsBugTitle": "Oops, bug?",
+  "factory": "Factory",
+  "uncalibrated": "Uncalibrated",
+  "standard": "Standard",
   "minSec": "min sec",
   "calibrationDelete": "Delete",
   "calibrationBack": "Back",
