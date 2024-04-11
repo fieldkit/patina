@@ -147,27 +147,9 @@ class FlowScreenWidget extends StatelessWidget {
                       Container(
                         margin: const EdgeInsets.all(10.0),
                         child: Column(children: [
-                          // TODO Migrate to ElevatedTextButton.
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.fromLTRB(
-                                  80.0, 18.0, 80.0, 18.0),
-                              backgroundColor: AppColors.primaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(2.0),
-                              ),
-                            ),
+                          ElevatedTextButton(
                             onPressed: onForward,
-                            child: Text(
-                              screen.forward,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontFamily: 'Avenir',
-                                fontSize: 18.0,
-                                color: Colors.white,
-                                letterSpacing: 0.1,
-                              ),
-                            ),
+                            text: screen.forward,
                           ),
                         ]),
                       ),
@@ -190,9 +172,8 @@ class FlowScreenWidget extends StatelessWidget {
                           ),
                         ),
                       if (screen.guideTitle != null)
-                        ElevatedButton(
-                            onPressed: onGuide,
-                            child: Text(screen.guideTitle!)),
+                        ElevatedTextButton(
+                            onPressed: onGuide, text: screen.guideTitle!),
                     ])))));
   }
 }
