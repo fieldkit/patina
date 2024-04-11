@@ -7,11 +7,15 @@ import 'package:flutter/material.dart'
     show
         BoxFit,
         BuildContext,
-        Image,
         Column,
         CrossAxisAlignment,
         EdgeInsets,
+        Expanded,
+        FlexFit,
+        Flexible,
+        Image,
         InkWell,
+        MainAxisSize,
         Padding,
         Row,
         SizedBox,
@@ -32,6 +36,7 @@ class MarkdownWidgetParser extends MarkdownParser<Widget> {
     // If the markdown content didn't have any images but the screen does, we
     // fabricate one that will cycle through all referenced images.
     if (!hasImages && images.isNotEmpty) {
+      logger?.i("created (inferred) MarkdownImageWidget");
       children.add(MarkdownImageWidget(
           images: images, indices: List.empty(), alt: "Images"));
     }
@@ -103,6 +108,21 @@ class MarkdownWidgetParser extends MarkdownParser<Widget> {
   }
 }
 
+class MarkdownChildren extends StatelessWidget {
+  final List<Widget> children;
+
+  const MarkdownChildren({super.key, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    if (children.length == 1) {
+      return children[0];
+    } else {
+      return Expanded(child: Column(children: children));
+    }
+  }
+}
+
 class MarkdownRootWidget extends StatelessWidget {
   final List<Widget> children;
 
@@ -110,7 +130,7 @@ class MarkdownRootWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: children);
+    return MarkdownChildren(children: children);
   }
 }
 
@@ -144,17 +164,23 @@ class MarkdownParagraphWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(text, style: const TextStyle(fontFamily: 'Avenir')),
-        const SizedBox(height: 8),
-        ...children.map((child) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: child,
-            )),
-      ],
-    );
+    if (text.isEmpty && children.isEmpty) Loggers.ui.w("empty paragraph");
+
+    if (text.isEmpty) {
+      return MarkdownChildren(children: children);
+    } else {
+      if (children.isEmpty) {
+        return Text(text, style: const TextStyle(fontFamily: 'Avenir'));
+      } else {
+        return Expanded(
+            child: Column(
+          children: [
+            Text(text, style: const TextStyle(fontFamily: 'Avenir')),
+            ...children,
+          ],
+        ));
+      }
+    }
   }
 }
 
@@ -179,6 +205,15 @@ class MarkdownImageWidget extends StatefulWidget {
 class _ImageWidgetState extends State<MarkdownImageWidget> {
   int _currentIndex = 0;
   Timer? _timer;
+
+  @override
+  void didUpdateWidget(MarkdownImageWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    Loggers.ui.i("MarkdownImageWidget: resetting index");
+    setState(() {
+      _currentIndex = 0;
+    });
+  }
 
   @override
   void initState() {
@@ -231,11 +266,20 @@ class _ImageWidgetState extends State<MarkdownImageWidget> {
   @override
   Widget build(BuildContext context) {
     final String path = visiblePath;
-    Loggers.ui.i("image[$_currentIndex]: $path");
+    Loggers.ui.v("MarkdownImageWidget[$_currentIndex]: $path");
+
+    final int flex = widget.sizing != null ? 0 : 1;
+
     if (p.extension(path) == ".svg") {
-      return SvgPicture.asset(path, fit: BoxFit.contain);
+      return Flexible(
+          fit: FlexFit.tight,
+          flex: flex,
+          child: SvgPicture.asset(path, fit: BoxFit.scaleDown));
     } else {
-      return Image.asset(path, fit: BoxFit.contain);
+      return Flexible(
+          fit: FlexFit.tight,
+          flex: flex,
+          child: Image.asset(path, fit: BoxFit.scaleDown));
     }
   }
 }
@@ -260,7 +304,7 @@ class MarkdownUnorderedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: children);
+    return MarkdownChildren(children: children);
   }
 }
 
@@ -282,7 +326,7 @@ class MarkdownTableWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: children);
+    return MarkdownChildren(children: children);
   }
 }
 
@@ -293,7 +337,7 @@ class MarkdownTableHeadWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: children);
+    return MarkdownChildren(children: children);
   }
 }
 
@@ -304,7 +348,7 @@ class MarkdownTableBodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: children);
+    return MarkdownChildren(children: children);
   }
 }
 
@@ -341,22 +385,40 @@ class MarkdownTableCellWidget extends StatelessWidget {
   }
 }
 
-class _HeaderBuilder extends Builder<MarkdownHeaderWidget, Widget> {
+class _HeaderBuilder extends Builder<Widget, Widget> {
   final int depth;
 
   _HeaderBuilder({required this.depth});
 
   @override
-  MarkdownHeaderWidget build() {
-    return MarkdownHeaderWidget(
-        text: text ?? "", depth: depth, children: children());
+  Widget build() {
+    final children = this.children();
+    if (text == null) {
+      if (children.length == 1) {
+        return children[0];
+      } else {
+        return MarkdownChildren(children: children);
+      }
+    } else {
+      return MarkdownHeaderWidget(
+          text: text ?? "", depth: depth, children: children);
+    }
   }
 }
 
-class _ParagraphBuilder extends Builder<MarkdownParagraphWidget, Widget> {
+class _ParagraphBuilder extends Builder<Widget, Widget> {
   @override
-  MarkdownParagraphWidget build() {
-    return MarkdownParagraphWidget(text: text ?? "", children: children());
+  Widget build() {
+    final children = this.children();
+    if (text == null) {
+      if (children.length == 1) {
+        return children[0];
+      } else {
+        return MarkdownChildren(children: children);
+      }
+    } else {
+      return MarkdownParagraphWidget(text: text ?? "", children: children);
+    }
   }
 }
 

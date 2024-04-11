@@ -96,6 +96,52 @@ class FlowScreenWidget extends StatelessWidget {
       this.onGuide,
       this.onBack});
 
+  List<Widget> buttons() {
+    return [
+      Container(
+        margin: const EdgeInsets.all(10.0),
+        child: Column(children: [
+          ElevatedTextButton(
+            onPressed: onForward,
+            text: screen.forward,
+          ),
+        ]),
+      ),
+      if (screen.skip != null)
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
+          ),
+          onPressed: onSkip,
+          child: Text(
+            screen.skip!,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Avenir',
+              fontSize: 15.0,
+              color: Colors.grey[850],
+              letterSpacing: 0.1,
+            ),
+          ),
+        ),
+      if (screen.guideTitle != null)
+        ElevatedTextButton(onPressed: onGuide, text: screen.guideTitle!),
+    ];
+  }
+
+  Widget body() {
+    assert(screen.simple.length == 1);
+    return Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(children: [
+          Expanded(
+              child: Column(children: [
+            FlowSimpleScreenWidget(screen: screen.simple[0]),
+            ...buttons(),
+          ]))
+        ]));
+  }
+
   @override
   Widget build(context) {
     Loggers.ui.i("screen: $screen");
@@ -111,56 +157,16 @@ class FlowScreenWidget extends StatelessWidget {
           }
         },
         child: Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed:
-                    onBack, // If onBack is not provided, the IconButton will be disabled.
-              ),
-              title: Text(screen.header?.title ?? ""),
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed:
+                  onBack, // If onBack is not provided, the IconButton will be disabled.
             ),
-            body: SingleChildScrollView(
-                child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(children: [
-                      ...screen.simple.expand((simple) {
-                        List<Widget> widgets = [];
-                        if ((simple.body).isNotEmpty) {
-                          widgets.add(FlowSimpleScreenWidget(screen: simple));
-                        }
-                        return widgets;
-                      }),
-                      Container(
-                        margin: const EdgeInsets.all(10.0),
-                        child: Column(children: [
-                          ElevatedTextButton(
-                            onPressed: onForward,
-                            text: screen.forward,
-                          ),
-                        ]),
-                      ),
-                      if (screen.skip != null)
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.fromLTRB(
-                                80.0, 18.0, 80.0, 18.0),
-                          ),
-                          onPressed: onSkip,
-                          child: Text(
-                            screen.skip!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'Avenir',
-                              fontSize: 15.0,
-                              color: Colors.grey[850],
-                              letterSpacing: 0.1,
-                            ),
-                          ),
-                        ),
-                      if (screen.guideTitle != null)
-                        ElevatedTextButton(
-                            onPressed: onGuide, text: screen.guideTitle!),
-                    ])))));
+            title: Text(screen.header?.title ?? ""),
+          ),
+          body: body(),
+        ));
   }
 }
 
