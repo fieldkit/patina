@@ -220,12 +220,9 @@ class _FlowImagesWidgetState extends State<FlowImagesWidget> {
       (timer) {
         setState(() {
           if (widget.screen.images.isEmpty) {
-            // Check if the images list is empty
-            _currentIndex = 0; // Reset the index if there are no images
+            _currentIndex = 0;
           } else {
-            _currentIndex = (_currentIndex + 1) %
-                widget.screen.images
-                    .length; // Rotate within the range of the list
+            _currentIndex = (_currentIndex + 1) % widget.screen.images.length;
           }
         });
       },
@@ -238,11 +235,26 @@ class _FlowImagesWidgetState extends State<FlowImagesWidget> {
     super.dispose();
   }
 
+  String imageResourcePath() {
+    final String image = widget.screen.images[_currentIndex].url;
+    if (p.isAbsolute(image)) {
+      return p.join("resources/flows", image.substring(1));
+    } else {
+      return p.join("resources/flows", image);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      'resources/flows/${widget.screen.images[_currentIndex].url}',
-      fit: BoxFit.cover,
-    );
+    final String path = imageResourcePath();
+    Loggers.ui.i("image[$_currentIndex]: $path");
+    if (p.extension(path) == ".svg") {
+      return SvgPicture.asset(path);
+    } else {
+      return Image.asset(
+        path,
+        fit: BoxFit.cover,
+      );
+    }
   }
 }
