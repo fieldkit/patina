@@ -33,30 +33,24 @@ class CalibrationPointConfig {
 
   bool get done => standardsRemaining.isEmpty;
 
-  CalibrationPointConfig({required this.moduleIdentity, required this.curveType, required this.standardsRemaining, this.offline = false});
+  CalibrationPointConfig(
+      {required this.moduleIdentity,
+      required this.curveType,
+      required this.standardsRemaining,
+      this.offline = false});
 
-  static CalibrationPointConfig fromTemplate(ModuleIdentity moduleIdentity, CalibrationTemplate template) {
+  static CalibrationPointConfig fromTemplate(
+      ModuleIdentity moduleIdentity, CalibrationTemplate template) {
     return CalibrationPointConfig(
-        moduleIdentity: moduleIdentity, curveType: template.curveType, standardsRemaining: List.from(template.standards));
+        moduleIdentity: moduleIdentity,
+        curveType: template.curveType,
+        standardsRemaining: List.from(template.standards));
   }
 
   CalibrationPointConfig popStandard() {
     return CalibrationPointConfig(
-        moduleIdentity: moduleIdentity, curveType: curveType, standardsRemaining: standardsRemaining.skip(1).toList());
+        moduleIdentity: moduleIdentity,
+        curveType: curveType,
+        standardsRemaining: standardsRemaining.skip(1).toList());
   }
-
-  static CalibrationPointConfig waterPh(ModuleIdentity moduleIdentity) =>
-      CalibrationPointConfig.fromTemplate(moduleIdentity, CalibrationTemplate.waterPh());
-
-  static CalibrationPointConfig waterDissolvedOxygen(ModuleIdentity moduleIdentity) =>
-      CalibrationPointConfig.fromTemplate(moduleIdentity, CalibrationTemplate.waterDissolvedOxygen());
-
-  static CalibrationPointConfig waterEc(ModuleIdentity moduleIdentity) =>
-      CalibrationPointConfig.fromTemplate(moduleIdentity, CalibrationTemplate.waterEc());
-
-  static CalibrationPointConfig waterTemp(ModuleIdentity moduleIdentity) =>
-      CalibrationPointConfig.fromTemplate(moduleIdentity, CalibrationTemplate.waterTemp());
-
-  static CalibrationPointConfig showCase(ModuleIdentity moduleIdentity) =>
-      CalibrationPointConfig.fromTemplate(moduleIdentity, CalibrationTemplate.showCase());
 }
