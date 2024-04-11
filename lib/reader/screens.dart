@@ -1,11 +1,7 @@
-import 'dart:async';
-
 import 'package:fk/common_widgets.dart';
 import 'package:fk/reader/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:flows/flows.dart' as flows;
 
 import '../diagnostics.dart';
@@ -129,14 +125,8 @@ class FlowScreenWidget extends StatelessWidget {
                     child: Column(children: [
                       ...screen.simple.expand((simple) {
                         List<Widget> widgets = [];
-                        // Add markdown content widget if the body is not null or empty
                         if ((simple.body).isNotEmpty) {
                           widgets.add(FlowSimpleScreenWidget(screen: simple));
-                        }
-
-                        // Add carousel widget if there are any images
-                        if (simple.images.isNotEmpty) {
-                          widgets.add(FlowImagesWidget(screen: simple));
                         }
                         return widgets;
                       }),
@@ -181,80 +171,7 @@ class FlowSimpleScreenWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MarkdownWidgetParser(logger: Loggers.markDown).parse(screen.body);
-  }
-}
-
-class FlowImagesWidget extends StatefulWidget {
-  final flows.Simple screen;
-
-  const FlowImagesWidget({super.key, required this.screen});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _FlowImagesWidgetState createState() => _FlowImagesWidgetState();
-}
-
-class _FlowImagesWidgetState extends State<FlowImagesWidget> {
-  int _currentIndex = 0;
-  Timer? _timer;
-
-  @override
-  void didUpdateWidget(FlowImagesWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Check if the 'screen' property has been updated
-    if (oldWidget.screen != widget.screen) {
-      // If it has, reset _currentIndex to 0
-      setState(() {
-        _currentIndex = 0;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _timer = Timer.periodic(
-      const Duration(seconds: 3),
-      (timer) {
-        setState(() {
-          if (widget.screen.images.isEmpty) {
-            _currentIndex = 0;
-          } else {
-            _currentIndex = (_currentIndex + 1) % widget.screen.images.length;
-          }
-        });
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  String imageResourcePath() {
-    final String image = widget.screen.images[_currentIndex].url;
-    if (p.isAbsolute(image)) {
-      return p.join("resources/flows", image.substring(1));
-    } else {
-      return p.join("resources/flows", image);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final String path = imageResourcePath();
-    Loggers.ui.i("image[$_currentIndex]: $path");
-    if (p.extension(path) == ".svg") {
-      return SvgPicture.asset(path);
-    } else {
-      return Image.asset(
-        path,
-        fit: BoxFit.cover,
-      );
-    }
+    return MarkdownWidgetParser(logger: Loggers.markDown, images: screen.images)
+        .parse(screen.body);
   }
 }

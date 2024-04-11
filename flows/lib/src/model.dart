@@ -16,33 +16,33 @@ class Flow {
   }
 }
 
-class Image {
+class ImageRef {
   final String url;
 
-  Image({required this.url});
+  ImageRef({required this.url});
 
-  factory Image.fromJson(Map<String, dynamic> data) {
+  factory ImageRef.fromJson(Map<String, dynamic> data) {
     final url = data['url'] as String;
 
-    return Image(url: url);
+    return ImageRef(url: url);
   }
 }
 
 class Simple {
   final String body;
-  final List<Image> images;
-  final Image? logo;
+  final List<ImageRef> images;
+  final ImageRef? logo;
 
   Simple({required this.body, required this.images, required this.logo});
 
   factory Simple.fromJson(Map<String, dynamic> data) {
     final body = data['body'] as String;
     final logoData = data['logo'] as Map<String, dynamic>?;
-    final logo = logoData != null ? Image.fromJson(logoData) : null;
+    final logo = logoData != null ? ImageRef.fromJson(logoData) : null;
     final imagesData = data['images'] as List<dynamic>?;
     final images = imagesData != null
-        ? imagesData.map((imageData) => Image.fromJson(imageData)).toList()
-        : <Image>[];
+        ? imagesData.map((imageData) => ImageRef.fromJson(imageData)).toList()
+        : <ImageRef>[];
 
     return Simple(body: body, images: images, logo: logo);
   }
