@@ -377,7 +377,6 @@ impl NearbyDevices {
                 Ok(())
             }
             ServerEvent::Available(files) => {
-                info!("{:?}", files);
                 let files = files
                     .iter()
                     .map(|f| RecordArchive {
