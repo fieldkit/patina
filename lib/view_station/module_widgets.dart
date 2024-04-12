@@ -70,7 +70,6 @@ class StartCalibrationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localized = LocalizedModule.get(module);
     final moduleConfigurations = context.watch<ModuleConfigurations>();
     final isCalibrated =
         moduleConfigurations.find(module.identity).isCalibrated;
@@ -81,8 +80,7 @@ class StartCalibrationButton extends StatelessWidget {
         child: ElevatedTextButton(
           onPressed: () {
             calibrationPage() {
-              final config = CalibrationPointConfig.fromTemplate(
-                  module.identity, localized.calibrationTemplate!);
+              final config = CalibrationConfig.fromModule(module);
               if (isCalibrated) {
                 return ClearCalibrationPage(config: config, module: module);
               } else {

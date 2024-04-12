@@ -8,7 +8,7 @@ import 'calibration_model.dart';
 import 'calibration_page.dart';
 
 class ClearCalibrationPage extends StatelessWidget {
-  final CalibrationPointConfig config;
+  final CalibrationConfig config;
   final ModuleConfig module;
 
   const ClearCalibrationPage(

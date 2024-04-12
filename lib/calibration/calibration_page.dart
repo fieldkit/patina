@@ -21,7 +21,7 @@ enum CanContinue { ready, form, countdown, staleValue, yes }
 class CalibrationPage extends StatelessWidget {
   final ActiveCalibration active = ActiveCalibration();
   final CurrentCalibration? current;
-  final CalibrationPointConfig config;
+  final CalibrationConfig config;
 
   CalibrationPage({super.key, this.current, required this.config});
 
@@ -98,7 +98,7 @@ class CalibrationPage extends StatelessWidget {
 
 class CalibrationPanel extends StatelessWidget {
   final CurrentCalibration current;
-  final CalibrationPointConfig config;
+  final CalibrationConfig config;
 
   const CalibrationPanel(
       {super.key, required this.current, required this.config});
@@ -207,7 +207,7 @@ class CalibrationPanel extends StatelessWidget {
 }
 
 class CalibrationWait extends StatelessWidget {
-  final CalibrationPointConfig config;
+  final CalibrationConfig config;
   final SensorConfig sensor;
   final VoidCallback onStartTimer;
   final VoidCallback onCalibrateAndContinue;
