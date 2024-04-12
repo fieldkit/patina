@@ -25,7 +25,7 @@
     "screens": [
       {
         "id": "1",
-        "name": "OLD.onboarding.01",
+        "name": "z.onboarding.01",
         "locale": "en_US",
         "forward": "Next",
         "skip": "Skip this step",
@@ -754,7 +754,7 @@
         },
         "simple": [
           {
-            "body": "# Do you have everything?\n\nCollect the Weather Pack:\n\n| LEFT           | RIGHT      |\n|----------------|------------|\n| 1. Stevenson Screen + Arm       | 5. Anemometer and Wind Vane + Arm      |\n| 2. Weather Sensor Board          | 6. Mounting Pole (a) + (b)       |\n| 3. CAT5 Cable                            | 7. Hose Clamps    |\n| 4. Rain Gauge + Arm                  | 8. Screws    |\n\n## The Weather Module Board should already be attached to your station.",
+            "body": "# Do you have everything?\n\nCollect the Weather Pack:\n\n A) Stevenson Screen + Arm       E) Anemometer and Wind Vane + Arm\n B) Weather Sensor Board          F) Mounting Pole (a) + (b)\n C) CAT5 Cable                            G) Hose Clamps\n D) Rain Gauge + Arm                 H) Screws\n\n## The Weather Module Board should already be attached to your station.",
             "images": [
               {
                 "url": "/uploads/TI_26_2e8af5beca.png"
@@ -1098,7 +1098,7 @@
       },
       {
         "id": "51",
-        "name": "calibraiton.water.ph.01",
+        "name": "calibration.water.ph.01",
         "locale": "en_US",
         "forward": "Start Timer",
         "skip": null,
@@ -1125,7 +1125,7 @@
       },
       {
         "id": "52",
-        "name": "calibraiton.water.ph.02",
+        "name": "calibration.water.ph.02",
         "locale": "en_US",
         "forward": "Next",
         "skip": null,
@@ -1152,7 +1152,7 @@
       },
       {
         "id": "53",
-        "name": "calibraiton.water.ph.03",
+        "name": "calibration.water.ph.03",
         "locale": "en_US",
         "forward": "Start Timer",
         "skip": null,
@@ -1179,7 +1179,7 @@
       },
       {
         "id": "54",
-        "name": "calibraiton.water.ph.04",
+        "name": "calibration.water.ph.04",
         "locale": "en_US",
         "forward": "Start Timer",
         "skip": null,
@@ -1548,7 +1548,7 @@
       },
       {
         "id": "68",
-        "name": "wifi.01",
+        "name": "wifi.02",
         "locale": "en_US",
         "forward": "Continue",
         "skip": "Skip this step",
