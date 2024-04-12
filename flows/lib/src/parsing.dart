@@ -1,6 +1,8 @@
 import 'package:markdown/markdown.dart' as md;
 import 'package:logger/logger.dart';
 
+import 'model.dart';
+
 abstract class Builder<T, C> {
   final List<C> _children = List.empty(growable: true);
   String? text;
@@ -25,9 +27,12 @@ abstract class Builder<T, C> {
 abstract class MarkdownParser<T> implements md.NodeVisitor {
   final Logger? logger;
   final List<T> parsed = List.empty(growable: true);
-  List<Builder<T, T>> builders = List.empty(growable: true);
+  final List<ImageRef> images;
 
-  MarkdownParser({this.logger});
+  List<Builder<T, T>> builders = List.empty(growable: true);
+  bool hasImages = false;
+
+  MarkdownParser({this.logger, required this.images});
 
   Builder<T, T> paragraph();
   Builder<T, T> header({required int depth});
@@ -84,6 +89,7 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
         final String? sizing = parts.length == 2 ? parts[1] : null;
         final String alt = element.attributes["alt"]!;
         builders.add(image(indices: indices, sizing: sizing, alt: alt));
+        hasImages = true;
         break;
       case "a":
         final String href = element.attributes["href"]!;
@@ -163,7 +169,7 @@ class OkBuilder extends Builder<String, String> {
 }
 
 class MarkdownVerifyParser extends MarkdownParser {
-  MarkdownVerifyParser({super.logger});
+  MarkdownVerifyParser({super.logger, required super.images});
 
   void parse(String markdownContent) {
     parseString(markdownContent);

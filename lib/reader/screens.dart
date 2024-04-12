@@ -1,6 +1,4 @@
-import 'dart:async';
-import '../constants.dart';
-
+import 'package:fk/common_widgets.dart';
 import 'package:fk/reader/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,20 +6,13 @@ import 'package:flows/flows.dart' as flows;
 
 import '../diagnostics.dart';
 
-class StartFlow {
-  final String name;
-
-  const StartFlow({required this.name});
-}
-
 class QuickFlow extends StatefulWidget {
-  final StartFlow start;
+  final flows.StartFlow start;
 
   const QuickFlow({super.key, required this.start});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _QuickFlowState createState() => _QuickFlowState();
+  State<QuickFlow> createState() => _QuickFlowState();
 }
 
 class _QuickFlowState extends State<QuickFlow> {
@@ -41,8 +32,9 @@ class _QuickFlowState extends State<QuickFlow> {
 
   @override
   Widget build(BuildContext context) {
-    final flows1 = context.read<flows.ContentFlows>();
-    final screen = flows1.screens[index];
+    final flowsContent = context.read<flows.ContentFlows>();
+    final screens = flowsContent.getScreens(widget.start);
+    final screen = screens[index];
     return FlowScreenWidget(
       screen: screen,
       onForward: () {
@@ -74,10 +66,10 @@ class ProvideContentFlowsWidget extends StatelessWidget {
             .loadString("resources/flows/flows.json"),
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
-            final flows1 = flows.ContentFlows.get(snapshot.data!);
-            Loggers.ui.i("flows:ready $flows1");
+            final flowsContent = flows.ContentFlows.get(snapshot.data!);
+            Loggers.ui.i("flows:ready $flowsContent");
             return Provider<flows.ContentFlows>(
-              create: (context) => flows1,
+              create: (context) => flowsContent,
               dispose: (context, value) => {},
               lazy: false,
               child: child,
@@ -104,6 +96,52 @@ class FlowScreenWidget extends StatelessWidget {
       this.onGuide,
       this.onBack});
 
+  List<Widget> buttons() {
+    return [
+      Container(
+        margin: const EdgeInsets.all(10.0),
+        child: Column(children: [
+          ElevatedTextButton(
+            onPressed: onForward,
+            text: screen.forward,
+          ),
+        ]),
+      ),
+      if (screen.skip != null)
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.fromLTRB(80.0, 18.0, 80.0, 18.0),
+          ),
+          onPressed: onSkip,
+          child: Text(
+            screen.skip!,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Avenir',
+              fontSize: 15.0,
+              color: Colors.grey[850],
+              letterSpacing: 0.1,
+            ),
+          ),
+        ),
+      if (screen.guideTitle != null)
+        ElevatedTextButton(onPressed: onGuide, text: screen.guideTitle!),
+    ];
+  }
+
+  Widget body() {
+    assert(screen.simple.length == 1);
+    return Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(children: [
+          Expanded(
+              child: Column(children: [
+            FlowSimpleScreenWidget(screen: screen.simple[0]),
+            ...buttons(),
+          ]))
+        ]));
+  }
+
   @override
   Widget build(context) {
     Loggers.ui.i("screen: $screen");
@@ -119,81 +157,16 @@ class FlowScreenWidget extends StatelessWidget {
           }
         },
         child: Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed:
-                    onBack, // If onBack is not provided, the IconButton will be disabled.
-              ),
-              title: Text(screen.header?.title ?? ""),
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed:
+                  onBack, // If onBack is not provided, the IconButton will be disabled.
             ),
-            body: SingleChildScrollView(
-                child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(children: [
-                      ...screen.simple.expand((simple) {
-                        List<Widget> widgets = [];
-                        // Add markdown content widget if the body is not null or empty
-                        if ((simple.body).isNotEmpty) {
-                          widgets.add(FlowSimpleScreenWidget(screen: simple));
-                        }
-
-                        // Add carousel widget if there are any images
-                        if (simple.images.isNotEmpty) {
-                          widgets.add(FlowImagesWidget(screen: simple));
-                        }
-                        return widgets;
-                      }),
-                      Container(
-                        margin: const EdgeInsets.all(10.0),
-                        child: Column(children: [
-                          // TODO Migrate to ElevatedTextButton.
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.fromLTRB(
-                                  80.0, 18.0, 80.0, 18.0),
-                              backgroundColor: AppColors.primaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(2.0),
-                              ),
-                            ),
-                            onPressed: onForward,
-                            child: Text(
-                              screen.forward,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontFamily: 'Avenir',
-                                fontSize: 18.0,
-                                color: Colors.white,
-                                letterSpacing: 0.1,
-                              ),
-                            ),
-                          ),
-                        ]),
-                      ),
-                      if (screen.skip != null)
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.fromLTRB(
-                                80.0, 18.0, 80.0, 18.0),
-                          ),
-                          onPressed: onSkip,
-                          child: Text(
-                            screen.skip!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'Avenir',
-                              fontSize: 15.0,
-                              color: Colors.grey[850],
-                              letterSpacing: 0.1,
-                            ),
-                          ),
-                        ),
-                      if (screen.guideTitle != null)
-                        ElevatedButton(
-                            onPressed: onGuide,
-                            child: Text(screen.guideTitle!)),
-                    ])))));
+            title: Text(screen.header?.title ?? ""),
+          ),
+          body: body(),
+        ));
   }
 }
 
@@ -204,68 +177,7 @@ class FlowSimpleScreenWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MarkdownWidgetParser(logger: Loggers.markDown).parse(screen.body);
-  }
-}
-
-class FlowImagesWidget extends StatefulWidget {
-  final flows.Simple screen;
-
-  const FlowImagesWidget({super.key, required this.screen});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _FlowImagesWidgetState createState() => _FlowImagesWidgetState();
-}
-
-class _FlowImagesWidgetState extends State<FlowImagesWidget> {
-  int _currentIndex = 0;
-  Timer? _timer;
-
-  @override
-  void didUpdateWidget(FlowImagesWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Check if the 'screen' property has been updated
-    if (oldWidget.screen != widget.screen) {
-      // If it has, reset _currentIndex to 0
-      setState(() {
-        _currentIndex = 0;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _timer = Timer.periodic(
-      const Duration(seconds: 3),
-      (timer) {
-        setState(() {
-          if (widget.screen.images.isEmpty) {
-            // Check if the images list is empty
-            _currentIndex = 0; // Reset the index if there are no images
-          } else {
-            _currentIndex = (_currentIndex + 1) %
-                widget.screen.images
-                    .length; // Rotate within the range of the list
-          }
-        });
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      'resources/flows/${widget.screen.images[_currentIndex].url}',
-      fit: BoxFit.cover,
-    );
+    return MarkdownWidgetParser(logger: Loggers.markDown, images: screen.images)
+        .parse(screen.body);
   }
 }

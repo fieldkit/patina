@@ -83,6 +83,8 @@ dependencies:
   exponential_back_off: ^0.1.0+2
   rust_lib_fk:
     path: rust_builder
+  flutter_svg: ^2.0.9
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:

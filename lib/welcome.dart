@@ -1,5 +1,6 @@
 import 'package:fk/common_widgets.dart';
 import 'package:fk/reader/screens.dart';
+import 'package:flows/flows.dart' as flows;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -53,7 +54,8 @@ class WelcomeScreen extends StatelessWidget {
                             builder: (context) =>
                                 const ProvideContentFlowsWidget(
                                     child: QuickFlow(
-                                        start: StartFlow(name: "onboarding"))),
+                                        start: flows.StartFlow(
+                                            prefix: "onboarding"))),
                           ),
                         );
                       },
