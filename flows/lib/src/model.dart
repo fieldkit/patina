@@ -156,6 +156,10 @@ class ContentFlows {
 
     return List.empty();
   }
+
+  Screen getScreen(String name) {
+    return allScreens[name]!;
+  }
 }
 
 class StartFlow {

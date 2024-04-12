@@ -35,7 +35,8 @@ class _QuickFlowState extends State<QuickFlow> {
     final flowsContent = context.read<flows.ContentFlows>();
     final screens = flowsContent.getScreens(widget.start);
     final screen = screens[index];
-    return FlowScreenWidget(
+
+    final body = FlowScreenWidget(
       screen: screen,
       onForward: () {
         Loggers.ui.i("forward");
@@ -51,6 +52,23 @@ class _QuickFlowState extends State<QuickFlow> {
         Loggers.ui.i("guide");
       },
     );
+
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) async {
+          onBack();
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed:
+                  onBack, // If onBack is not provided, the IconButton will be disabled.
+            ),
+            title: Text(screen.header?.title ?? ""),
+          ),
+          body: body,
+        ));
   }
 }
 
@@ -129,7 +147,10 @@ class FlowScreenWidget extends StatelessWidget {
     ];
   }
 
-  Widget body() {
+  @override
+  Widget build(context) {
+    Loggers.ui.i("screen: $screen");
+
     assert(screen.simple.length == 1);
     return Padding(
         padding: const EdgeInsets.all(20.0),
@@ -140,33 +161,6 @@ class FlowScreenWidget extends StatelessWidget {
             ...buttons(),
           ]))
         ]));
-  }
-
-  @override
-  Widget build(context) {
-    Loggers.ui.i("screen: $screen");
-
-    return PopScope(
-        canPop: false,
-        onPopInvoked: (bool didPop) async {
-          final onBack = this.onBack;
-          if (onBack != null) {
-            onBack();
-          } else {
-            Navigator.of(context).pop();
-          }
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed:
-                  onBack, // If onBack is not provided, the IconButton will be disabled.
-            ),
-            title: Text(screen.header?.title ?? ""),
-          ),
-          body: body(),
-        ));
   }
 }
 
@@ -179,5 +173,35 @@ class FlowSimpleScreenWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return MarkdownWidgetParser(logger: Loggers.markDown, images: screen.images)
         .parse(screen.body);
+  }
+}
+
+class FlowNamedScreenWidget extends StatelessWidget {
+  final String name;
+  final VoidCallback? onForward;
+  final VoidCallback? onSkip;
+  final VoidCallback? onGuide;
+  final VoidCallback? onBack;
+
+  const FlowNamedScreenWidget(
+      {super.key,
+      required this.name,
+      this.onForward,
+      this.onSkip,
+      this.onGuide,
+      this.onBack});
+
+  @override
+  Widget build(BuildContext context) {
+    final flowsContent = context.read<flows.ContentFlows>();
+    final screen = flowsContent.getScreen(name);
+
+    return FlowScreenWidget(
+      screen: screen,
+      onForward: onForward,
+      onSkip: onSkip,
+      onGuide: onGuide,
+      onBack: onBack,
+    );
   }
 }
