@@ -20,7 +20,13 @@ class NumberForm extends StatefulWidget {
 }
 
 class _NumberFormState extends State<NumberForm> {
-  final _formKey = GlobalKey<FormBuilderState>();
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _formKey.currentState?.reset();
+  }
 
   @override
   Widget build(BuildContext context) {

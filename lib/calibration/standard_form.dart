@@ -21,6 +21,7 @@ class CurrentReadingAndStandard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final localized = LocalizedSensor.get(sensor);
     final sensorValue = DisplaySensorValue(
         sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
@@ -29,7 +30,7 @@ class CurrentReadingAndStandard extends StatelessWidget {
       Padding(
         padding: const EdgeInsets.fromLTRB(20, 30, 20, 40),
         child: Text(
-          AppLocalizations.of(context)!.countdownInstructions,
+          localizations.countdownInstructions,
           textAlign: TextAlign.center,
         ),
       ),
@@ -42,7 +43,7 @@ class CurrentReadingAndStandard extends StatelessWidget {
               alignment: Alignment.center,
               child: Column(
                 children: [
-                  Text(AppLocalizations.of(context)!.sensorValue,
+                  Text(localizations.sensorValue,
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.black54,
@@ -71,32 +72,38 @@ class StandardWidget extends StatelessWidget {
           standard: standard as FixedStandard, sensor: sensor);
     }
     if (standard is DefaultStandard) {
-      return CustomStandardWidget(sensor: sensor, initial: standard.value);
+      return CustomStandardWidget(
+          sensor: sensor, standard: standard, initial: standard.value);
     }
-    return CustomStandardWidget(sensor: sensor, initial: null);
+    return CustomStandardWidget(
+        sensor: sensor, standard: standard, initial: null);
   }
 }
 
 class CustomStandardWidget extends StatelessWidget {
   final SensorConfig sensor;
+  final Standard standard;
   final double? initial;
 
   const CustomStandardWidget({
     super.key,
     required this.sensor,
     required this.initial,
+    required this.standard,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ActiveCalibrationStandardForm(initial: initial);
+    return ActiveCalibrationStandardForm(standard: standard, initial: initial);
   }
 }
 
 class ActiveCalibrationStandardForm extends StatelessWidget {
+  final Standard standard;
   final double? initial;
 
-  const ActiveCalibrationStandardForm({super.key, required this.initial});
+  const ActiveCalibrationStandardForm(
+      {super.key, required this.standard, required this.initial});
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +112,10 @@ class ActiveCalibrationStandardForm extends StatelessWidget {
 
     Loggers.cal.v("active=$activeCalibration initial=$initial");
 
+    final key = ObjectKey(standard);
+
     final form = NumberForm(
+      key: key,
       original: activeCalibration.standard ?? initial,
       label: localizations.standardFieldLabel,
       onValid: (value) => activeCalibration.haveStandard(value),

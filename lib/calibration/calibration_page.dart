@@ -1,3 +1,4 @@
+import 'package:fk/reader/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -52,17 +53,12 @@ class CalibrationPage extends StatelessWidget {
   }
 
   Widget body() {
+    final current =
+        this.current ?? CurrentCalibration(curveType: config.curveType);
     return ChangeNotifierProvider(
         create: (context) => active,
-        child: ProvideCountdown(
-            duration: const Duration(seconds: 120),
-            child:
-                Consumer<CountdownTimer>(builder: (context, countdown, child) {
-              return CalibrationPanel(
-                  config: config,
-                  current: current ??
-                      CurrentCalibration(curveType: config.curveType));
-            })));
+        child: ProvideContentFlowsWidget(
+            child: StepsWidget(config: config, current: current)));
   }
 
   @override
@@ -101,29 +97,100 @@ class CalibrationPage extends StatelessWidget {
   }
 }
 
+class StepsWidget extends StatefulWidget {
+  final CalibrationConfig config;
+  final CurrentCalibration current;
+
+  const StepsWidget({super.key, required this.config, required this.current});
+
+  @override
+  State<StatefulWidget> createState() => _StepsState();
+}
+
+class _StepsState extends State<StepsWidget> {
+  int index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    if (index >= 0 && index < widget.config.steps.length) {
+      final navigator = Navigator.of(context);
+
+      final step = widget.config.steps[index];
+
+      final key = UniqueKey();
+
+      Loggers.ui.i("Calibration[$index] $key");
+
+      if (step is HelpStep) {
+        return FlowNamedScreenWidget(
+          name: step.screen,
+          onForward: () {
+            setState(() {
+              index += 1;
+            });
+          },
+        );
+      }
+
+      if (step is StandardStep) {
+        return ProvideCountdown(
+            duration: const Duration(seconds: 120),
+            child:
+                Consumer<CountdownTimer>(builder: (context, countdown, child) {
+              if (widget.config.done) {
+                return Container();
+              }
+
+              return CalibrationPanel(
+                  key: key,
+                  config: widget.config,
+                  current: widget.current,
+                  onDone: () {
+                    setState(() {
+                      if (widget.config.done) {
+                        final module = context
+                            .read<KnownStationsModel>()
+                            .findModule(widget.config.moduleIdentity)!
+                            .module;
+
+                        navigator.pushReplacement(MaterialPageRoute(
+                            builder: (context) =>
+                                CalibrationReviewPage(module: module)));
+                        Loggers.ui.i("done!");
+                      } else {
+                        index += 1;
+                      }
+                    });
+                  });
+            }));
+      }
+    }
+
+    return const OopsBug();
+  }
+}
+
 class CalibrationPanel extends StatelessWidget {
   final CurrentCalibration current;
   final CalibrationConfig config;
+  final VoidCallback onDone;
 
   const CalibrationPanel(
-      {super.key, required this.current, required this.config});
+      {super.key,
+      required this.current,
+      required this.config,
+      required this.onDone});
 
   Future<void> calibrateAndContinue(BuildContext context, SensorConfig sensor,
       CurrentCalibration current, ActiveCalibration active) async {
     final moduleConfigurations = context.read<ModuleConfigurations>();
-    final navigator = Navigator.of(context);
-
     final standard = active.userStandard();
-
     final reading = SensorReading(
-        uncalibrated: sensor.value!.uncalibrated, value: sensor.value!.value);
+      uncalibrated: sensor.value!.uncalibrated,
+      value: sensor.value!.value,
+    );
     current.addPoint(CalibrationPoint(standard: standard, reading: reading));
-
-    // NOTE Seems silly that this isn't already available here.
-    final module = context
-        .read<KnownStationsModel>()
-        .findModule(config.moduleIdentity)!
-        .module;
+    active.haveStandard(null);
 
     Loggers.cal.i("(calibrate) calibration: $current");
     Loggers.cal.i("(calibrate) active: $active");
@@ -145,21 +212,8 @@ class CalibrationPanel extends StatelessWidget {
       } finally {
         overlay.hide();
       }
-
-      navigator.pushReplacement(MaterialPageRoute(
-          builder: (context) => CalibrationReviewPage(module: module)));
-    } else {
-      navigator.pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => ModuleProviders(
-              moduleIdentity: config.moduleIdentity,
-              child: CalibrationPage(
-                config: nextConfig,
-                current: current,
-              )),
-        ),
-      );
     }
+    onDone();
   }
 
   CanContinue canContinue(SensorConfig sensor, Standard standard,
@@ -256,11 +310,11 @@ class CalibrationWait extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = [
-      CurrentReadingAndStandard(
+      Expanded(
+          child: CurrentReadingAndStandard(
         sensor: sensor,
         standard: config.standard,
-      ),
-      continueWidget(context),
+      )),
       Padding(
         padding: const EdgeInsets.all(20),
         child: Container(
@@ -276,18 +330,14 @@ class CalibrationWait extends StatelessWidget {
           ),
         ),
       ),
+      Container(
+          margin: const EdgeInsets.all(30.0), child: continueWidget(context)),
     ];
 
-    return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: children
-                .map((e) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: e,
-                    ))
-                .toList()));
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: children);
   }
 }
 
