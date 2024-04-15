@@ -6,7 +6,7 @@ import 'package:logger/logger.dart';
 
 Future<void> download(Logger logger, String resources) async {
   final baseUrl = "https://strapi.conservify.org";
-  final file = File("$resources/flows.json");
+  final file = File("$resources/flows_en.json");
   final query = {
     "query": '''{
           flows {
@@ -54,7 +54,7 @@ Future<void> download(Logger logger, String resources) async {
 }
 
 Future<void> test(Logger logger, String resources) async {
-  final file = File("$resources/flows.json");
+  final file = File("$resources/flows_en.json");
   final data = await file.readAsString();
   final flows = ContentFlows.get(data);
   for (final screen in flows.allScreens.values) {

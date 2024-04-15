@@ -81,7 +81,7 @@ class ProvideContentFlowsWidget extends StatelessWidget {
   Widget build(context) {
     return FutureBuilder<String>(
         future: DefaultAssetBundle.of(context)
-            .loadString("resources/flows/flows.json"),
+            .loadString("resources/flows/flows_en.json"),
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             final flowsContent = flows.ContentFlows.get(snapshot.data!);
