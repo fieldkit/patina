@@ -3,6 +3,7 @@ default: setup
 setup:
     flutter pub get
     cd flows && flutter pub get
+    cd rust_builder && flutter pub get
 
 gen: setup
     cargo install flutter_rust_bridge_codegen@2.0.0-dev.28

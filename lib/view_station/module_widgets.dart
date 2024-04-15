@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:flows/flows.dart';
 import 'package:fk/common_widgets.dart';
 import 'package:fk/providers.dart';
 import 'package:fk/view_station/sensor_widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fk/app_state.dart';
-import 'package:provider/provider.dart';
 
 import '../calibration/calibration_model.dart';
 import '../calibration/calibration_page.dart';
@@ -70,7 +71,7 @@ class StartCalibrationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localized = LocalizedModule.get(module);
+    final content = context.read<ContentFlows>();
     final moduleConfigurations = context.watch<ModuleConfigurations>();
     final isCalibrated =
         moduleConfigurations.find(module.identity).isCalibrated;
@@ -81,8 +82,7 @@ class StartCalibrationButton extends StatelessWidget {
         child: ElevatedTextButton(
           onPressed: () {
             calibrationPage() {
-              final config = CalibrationPointConfig.fromTemplate(
-                  module.identity, localized.calibrationTemplate!);
+              final config = CalibrationConfig.fromModule(module, content);
               if (isCalibrated) {
                 return ClearCalibrationPage(config: config, module: module);
               } else {

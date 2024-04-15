@@ -1,27 +1,27 @@
-import 'package:fk/gen/api.dart';
-import 'package:loader_overlay/loader_overlay.dart';
-import 'package:caldor/calibration.dart';
-import 'package:fk/calibration/calibration_review_page.dart';
-import 'package:fk/providers.dart';
+import 'package:fk/reader/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:fk/meta.dart';
-import 'package:fk/view_station/sensor_widgets.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:caldor/calibration.dart';
 
-import '../app_state.dart';
-import '../common_widgets.dart';
-import '../diagnostics.dart';
+import 'package:fk/gen/api.dart';
+import 'package:fk/meta.dart';
+import 'package:fk/app_state.dart';
+import 'package:fk/diagnostics.dart';
+import 'package:fk/common_widgets.dart';
+
+import 'calibration_review_page.dart';
 import 'calibration_model.dart';
 import 'countdown.dart';
-import 'number_form.dart';
+import 'standard_form.dart';
 
 enum CanContinue { ready, form, countdown, staleValue, yes }
 
 class CalibrationPage extends StatelessWidget {
   final ActiveCalibration active = ActiveCalibration();
   final CurrentCalibration? current;
-  final CalibrationPointConfig config;
+  final CalibrationConfig config;
 
   CalibrationPage({super.key, this.current, required this.config});
 
@@ -51,13 +51,22 @@ class CalibrationPage extends StatelessWidget {
         });
   }
 
+  Widget body() {
+    final current =
+        this.current ?? CurrentCalibration(curveType: config.curveType);
+    return ChangeNotifierProvider(
+        create: (context) => active,
+        child: StepsWidget(config: config, current: current));
+  }
+
   @override
   Widget build(BuildContext context) {
     final module = context
         .read<KnownStationsModel>()
         .findModule(config.moduleIdentity)!
         .module;
-    final bay = AppLocalizations.of(context)!.bayNumber(module.position);
+    final localizations = AppLocalizations.of(context)!;
+    final bay = localizations.bayNumber(module.position);
 
     return PopScope(
         canPop: false,
@@ -75,50 +84,111 @@ class CalibrationPage extends StatelessWidget {
             appBar: AppBar(
                 centerTitle: true,
                 title: Column(children: [
-                  Text(AppLocalizations.of(context)!.calibrationTitle),
+                  Text(localizations.calibrationTitle),
                   Text(
                     bay,
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.normal),
                   ),
                 ])),
-            body: ChangeNotifierProvider(
-                create: (context) => active,
-                child: ProvideCountdown(
-                    duration: const Duration(seconds: 120),
-                    child: Consumer<CountdownTimer>(
-                        builder: (context, countdown, child) {
-                      return CalibrationPanel(
-                          config: config,
-                          current: current ??
-                              CurrentCalibration(curveType: config.curveType));
-                    }))))));
+            body: body())));
+  }
+}
+
+class StepsWidget extends StatefulWidget {
+  final CalibrationConfig config;
+  final CurrentCalibration current;
+
+  const StepsWidget({super.key, required this.config, required this.current});
+
+  @override
+  State<StatefulWidget> createState() => _StepsState();
+}
+
+class _StepsState extends State<StepsWidget> {
+  int index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    if (index >= 0 && index < widget.config.steps.length) {
+      final navigator = Navigator.of(context);
+
+      final step = widget.config.steps[index];
+
+      final key = UniqueKey();
+
+      Loggers.ui.i("Calibration[$index] $key");
+
+      if (step is HelpStep) {
+        return FlowNamedScreenWidget(
+          name: step.screen,
+          onForward: () {
+            setState(() {
+              index += 1;
+            });
+          },
+        );
+      }
+
+      if (step is StandardStep) {
+        return ProvideCountdown(
+            duration: const Duration(seconds: 120),
+            child:
+                Consumer<CountdownTimer>(builder: (context, countdown, child) {
+              if (widget.config.done) {
+                return Container();
+              }
+
+              return CalibrationPanel(
+                  key: key,
+                  config: widget.config,
+                  current: widget.current,
+                  onDone: () {
+                    setState(() {
+                      if (widget.config.done) {
+                        final module = context
+                            .read<KnownStationsModel>()
+                            .findModule(widget.config.moduleIdentity)!
+                            .module;
+
+                        navigator.pushReplacement(MaterialPageRoute(
+                            builder: (context) =>
+                                CalibrationReviewPage(module: module)));
+                        Loggers.ui.i("done!");
+                      } else {
+                        index += 1;
+                      }
+                    });
+                  });
+            }));
+      }
+    }
+
+    return const OopsBug();
   }
 }
 
 class CalibrationPanel extends StatelessWidget {
   final CurrentCalibration current;
-  final CalibrationPointConfig config;
+  final CalibrationConfig config;
+  final VoidCallback onDone;
 
   const CalibrationPanel(
-      {super.key, required this.current, required this.config});
+      {super.key,
+      required this.current,
+      required this.config,
+      required this.onDone});
 
   Future<void> calibrateAndContinue(BuildContext context, SensorConfig sensor,
       CurrentCalibration current, ActiveCalibration active) async {
     final moduleConfigurations = context.read<ModuleConfigurations>();
-    final navigator = Navigator.of(context);
-
     final standard = active.userStandard();
-
     final reading = SensorReading(
-        uncalibrated: sensor.value!.uncalibrated, value: sensor.value!.value);
+      uncalibrated: sensor.value!.uncalibrated,
+      value: sensor.value!.value,
+    );
     current.addPoint(CalibrationPoint(standard: standard, reading: reading));
-
-    // NOTE Seems silly that this isn't already available here.
-    final module = context
-        .read<KnownStationsModel>()
-        .findModule(config.moduleIdentity)!
-        .module;
+    active.haveStandard(null);
 
     Loggers.cal.i("(calibrate) calibration: $current");
     Loggers.cal.i("(calibrate) active: $active");
@@ -140,21 +210,8 @@ class CalibrationPanel extends StatelessWidget {
       } finally {
         overlay.hide();
       }
-
-      navigator.pushReplacement(MaterialPageRoute(
-          builder: (context) => CalibrationReviewPage(module: module)));
-    } else {
-      navigator.pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => ModuleProviders(
-              moduleIdentity: config.moduleIdentity,
-              child: CalibrationPage(
-                config: nextConfig,
-                current: current,
-              )),
-        ),
-      );
     }
+    onDone();
   }
 
   CanContinue canContinue(SensorConfig sensor, Standard standard,
@@ -207,7 +264,7 @@ class CalibrationPanel extends StatelessWidget {
 }
 
 class CalibrationWait extends StatelessWidget {
-  final CalibrationPointConfig config;
+  final CalibrationConfig config;
   final SensorConfig sensor;
   final VoidCallback onStartTimer;
   final VoidCallback onCalibrateAndContinue;
@@ -251,11 +308,11 @@ class CalibrationWait extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = [
-      CurrentReadingAndStandard(
+      Expanded(
+          child: CurrentReadingAndStandard(
         sensor: sensor,
         standard: config.standard,
-      ),
-      continueWidget(context),
+      )),
       Padding(
         padding: const EdgeInsets.all(20),
         child: Container(
@@ -271,166 +328,14 @@ class CalibrationWait extends StatelessWidget {
           ),
         ),
       ),
+      Container(
+          margin: const EdgeInsets.all(30.0), child: continueWidget(context)),
     ];
 
-    return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: children
-                .map((e) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: e,
-                    ))
-                .toList()));
-  }
-}
-
-class FixedStandardWidget extends StatelessWidget {
-  final SensorConfig sensor;
-  final FixedStandard standard;
-
-  const FixedStandardWidget(
-      {super.key, required this.standard, required this.sensor});
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 30),
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(
-              color: const Color.fromRGBO(212, 212, 212, 1),
-            ),
-            borderRadius: const BorderRadius.all(Radius.circular(25))),
-        padding: const EdgeInsetsDirectional.fromSTEB(60, 6, 60, 6),
-        child: RichText(
-          text: TextSpan(
-            style: DefaultTextStyle.of(context).style,
-            children: <TextSpan>[
-              TextSpan(
-                text: standard.value.toString(),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black45,
-                ),
-              ),
-              TextSpan(
-                text: localizations.standardValue2(sensor.calibratedUom),
-                style: const TextStyle(
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class StandardWidget extends StatelessWidget {
-  final SensorConfig sensor;
-  final Standard standard;
-
-  const StandardWidget(
-      {super.key, required this.standard, required this.sensor});
-
-  @override
-  Widget build(BuildContext context) {
-    if (standard is FixedStandard) {
-      return FixedStandardWidget(
-          standard: standard as FixedStandard, sensor: sensor);
-    }
-    if (standard is DefaultStandard) {
-      return CustomStandardWidget(sensor: sensor, initial: standard.value);
-    }
-    return CustomStandardWidget(sensor: sensor, initial: null);
-  }
-}
-
-class CurrentReadingAndStandard extends StatelessWidget {
-  final SensorConfig sensor;
-  final Standard standard;
-
-  const CurrentReadingAndStandard(
-      {super.key, required this.sensor, required this.standard});
-
-  @override
-  Widget build(BuildContext context) {
-    final localized = LocalizedSensor.get(sensor);
-    final sensorValue = DisplaySensorValue(
-        sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
-
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(20, 30, 20, 40),
-        child: Text(
-          AppLocalizations.of(context)!.countdownInstructions,
-          textAlign: TextAlign.center,
-        ),
-      ),
-      const DisplayCountdown(),
-      Padding(
-          padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Align(
-              alignment: Alignment.center,
-              child: Column(
-                children: [
-                  Text(AppLocalizations.of(context)!.sensorValue,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black54,
-                      )),
-                  sensorValue,
-                ],
-              ),
-            ),
-          )),
-      StandardWidget(standard: standard, sensor: sensor),
-    ]);
-  }
-}
-
-class CustomStandardWidget extends StatelessWidget {
-  final SensorConfig sensor;
-  final double? initial;
-
-  const CustomStandardWidget({
-    super.key,
-    required this.sensor,
-    required this.initial,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ActiveCalibrationStandardForm(initial: initial);
-  }
-}
-
-class ActiveCalibrationStandardForm extends StatelessWidget {
-  final double? initial;
-
-  const ActiveCalibrationStandardForm({super.key, required this.initial});
-
-  @override
-  Widget build(BuildContext context) {
-    final activeCalibration = context.watch<ActiveCalibration>();
-    final localizations = AppLocalizations.of(context)!;
-
-    Loggers.cal.v("active=$activeCalibration initial=$initial");
-
-    final form = NumberForm(
-      original: activeCalibration.standard ?? initial,
-      label: localizations.standardFieldLabel,
-      onValid: (value) => activeCalibration.haveStandard(value),
-      onInvalid: () => activeCalibration.haveStandard(null),
-    );
-    return FractionallySizedBox(widthFactor: 0.5, child: form);
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: children);
   }
 }
 

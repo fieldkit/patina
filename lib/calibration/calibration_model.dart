@@ -1,4 +1,9 @@
 import 'package:caldor/calibration.dart';
+import 'package:collection/collection.dart';
+import 'package:fk/diagnostics.dart';
+import 'package:fk/gen/api.dart';
+import 'package:fk/meta.dart';
+import 'package:flows/flows.dart';
 import 'package:flutter/foundation.dart';
 
 import '../app_state.dart';
@@ -23,34 +28,109 @@ class ActiveCalibration extends ChangeNotifier {
   }
 }
 
-class CalibrationPointConfig {
+class CalibrationConfig {
   final ModuleIdentity moduleIdentity;
   final CurveType curveType;
-  final List<Standard> standardsRemaining;
-  final bool offline;
+  final List<Standard> standards;
+  final List<Step> steps;
 
-  Standard get standard => standardsRemaining.first;
+  Standard get standard => standards.first;
 
-  bool get done => standardsRemaining.isEmpty;
+  bool get done => standards.isEmpty;
 
-  CalibrationPointConfig(
-      {required this.moduleIdentity,
-      required this.curveType,
-      required this.standardsRemaining,
-      this.offline = false});
+  Step? get step => steps.firstOrNull;
 
-  static CalibrationPointConfig fromTemplate(
-      ModuleIdentity moduleIdentity, CalibrationTemplate template) {
-    return CalibrationPointConfig(
-        moduleIdentity: moduleIdentity,
+  CalibrationConfig._internal({
+    required this.moduleIdentity,
+    required this.curveType,
+    required this.standards,
+    required this.steps,
+  });
+
+  static List<Step> getSteps(ModuleConfig module, ContentFlows content) {
+    final localized = LocalizedModule.get(module);
+    final template = localized.calibrationTemplate!;
+    final help = CalibrationHelp.fromModule(module, content);
+    final standardSteps =
+        template.standards.map((e) => StandardStep(standard: e));
+
+    if (help.standards.length != template.standards.length) {
+      Loggers.cal.i("mismatched standard steps, no help");
+      return standardSteps.toList();
+    }
+
+    // Tried to use IterableZip here and it was messy.
+    final List<Step> steps = List.empty(growable: true);
+    for (var i = 0; i < template.standards.length; ++i) {
+      for (final screen in help.standards[i]) {
+        steps.add(HelpStep(screen: screen));
+      }
+      steps.add(StandardStep(standard: template.standards[i]));
+    }
+
+    return steps;
+  }
+
+  static CalibrationConfig fromModule(
+      ModuleConfig module, ContentFlows content) {
+    final localized = LocalizedModule.get(module);
+    final template = localized.calibrationTemplate!;
+    final steps = getSteps(module, content);
+    return CalibrationConfig._internal(
+        moduleIdentity: module.identity,
         curveType: template.curveType,
-        standardsRemaining: List.from(template.standards));
+        steps: steps,
+        standards: List.from(template.standards));
   }
 
-  CalibrationPointConfig popStandard() {
-    return CalibrationPointConfig(
-        moduleIdentity: moduleIdentity,
-        curveType: curveType,
-        standardsRemaining: standardsRemaining.skip(1).toList());
+  CalibrationConfig popStandard() {
+    standards.removeAt(0);
+    return this;
   }
+}
+
+class CalibrationHelp {
+  final List<List<String>> standards;
+
+  CalibrationHelp({required this.standards});
+
+  static CalibrationHelp fromModule(ModuleConfig module, ContentFlows content) {
+    switch (module.key) {
+      case "modules.water.temp":
+        final List<String> standard =
+            content.getScreenNamesWithPrefix("calibration.water.temp.");
+        return CalibrationHelp(standards: [standard, standard, standard]);
+      case "modules.water.ph":
+        final List<String> standard =
+            content.getScreenNamesWithPrefix("calibration.water.ph.");
+        return CalibrationHelp(standards: [standard, standard, standard]);
+      case "modules.water.orp":
+        final List<String> standard =
+            content.getScreenNamesWithPrefix("calibration.water.orp.");
+        return CalibrationHelp(standards: [standard, standard, standard]);
+      case "modules.water.do":
+        final List<String> standard =
+            content.getScreenNamesWithPrefix("calibration.water.dox.");
+        return CalibrationHelp(standards: [standard, standard, standard]);
+      case "modules.water.ec":
+        final List<String> standard =
+            content.getScreenNamesWithPrefix("calibration.water.ec.");
+        return CalibrationHelp(standards: [standard, standard, standard]);
+    }
+    return CalibrationHelp(standards: List.empty());
+  }
+}
+
+class Step {}
+
+class HelpStep extends Step {
+  final String screen;
+
+  HelpStep({required this.screen});
+}
+
+class StandardStep extends Step {
+  final Standard standard;
+
+  StandardStep({required this.standard});
 }
