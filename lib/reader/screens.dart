@@ -79,9 +79,13 @@ class ProvideContentFlowsWidget extends StatelessWidget {
 
   @override
   Widget build(context) {
+    final Locale active = Localizations.localeOf(context);
+    final String path = "resources/flows/flows_${active.languageCode}.json";
+
+    Loggers.ui.i("loading $path");
+
     return FutureBuilder<String>(
-        future: DefaultAssetBundle.of(context)
-            .loadString("resources/flows/flows_en.json"),
+        future: DefaultAssetBundle.of(context).loadString(path),
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             final flowsContent = flows.ContentFlows.get(snapshot.data!);

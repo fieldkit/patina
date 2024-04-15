@@ -173,7 +173,6 @@ class _OurAppState extends State<OurApp> {
           ValueListenableProvider.value(value: widget.env.appState),
         ],
         child: ProvideAccountsWidget(
-            child: ProvideContentFlowsWidget(
           child: MaterialApp(
             onGenerateTitle: (BuildContext context) =>
                 AppLocalizations.of(context)!.fieldKit,
@@ -222,9 +221,10 @@ class _OurAppState extends State<OurApp> {
               scaffoldBackgroundColor:
                   Colors.white, // changes the default Scaffold background color
             ),
-            home: const LoaderOverlay(child: HomePage()),
+            home: const LoaderOverlay(
+                child: ProvideContentFlowsWidget(child: HomePage())),
           ),
-        )));
+        ));
   }
 }
 
