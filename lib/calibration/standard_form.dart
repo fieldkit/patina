@@ -72,47 +72,25 @@ class StandardWidget extends StatelessWidget {
           standard: standard as FixedStandard, sensor: sensor);
     }
     if (standard is DefaultStandard) {
-      return CustomStandardWidget(
-          sensor: sensor, standard: standard, initial: standard.value);
+      return ActiveCalibrationStandardForm(standard: standard);
     }
-    return CustomStandardWidget(
-        sensor: sensor, standard: standard, initial: null);
-  }
-}
-
-class CustomStandardWidget extends StatelessWidget {
-  final SensorConfig sensor;
-  final Standard standard;
-  final double? initial;
-
-  const CustomStandardWidget({
-    super.key,
-    required this.sensor,
-    required this.initial,
-    required this.standard,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ActiveCalibrationStandardForm(standard: standard, initial: initial);
+    return ActiveCalibrationStandardForm(standard: standard);
   }
 }
 
 class ActiveCalibrationStandardForm extends StatelessWidget {
   final Standard standard;
-  final double? initial;
 
-  const ActiveCalibrationStandardForm(
-      {super.key, required this.standard, required this.initial});
+  const ActiveCalibrationStandardForm({super.key, required this.standard});
 
   @override
   Widget build(BuildContext context) {
     final activeCalibration = context.watch<ActiveCalibration>();
     final localizations = AppLocalizations.of(context)!;
+    final initial = standard.value;
+    final key = ObjectKey(standard);
 
     Loggers.cal.v("active=$activeCalibration initial=$initial");
-
-    final key = ObjectKey(standard);
 
     final form = NumberForm(
       key: key,
