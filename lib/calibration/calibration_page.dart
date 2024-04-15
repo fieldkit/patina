@@ -220,7 +220,7 @@ class CalibrationPanel extends StatelessWidget {
       return CanContinue.ready;
     }
 
-    if (!standard.acceptable && active.invalid) {
+    if (active.invalid) {
       return CanContinue.form;
     }
 
