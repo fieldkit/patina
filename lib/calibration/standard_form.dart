@@ -22,7 +22,7 @@ class CurrentReadingAndStandard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final localized = LocalizedSensor.get(sensor);
+    final localized = LocalizedSensor.get(sensor, localizations);
     final sensorValue = DisplaySensorValue(
         sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
 

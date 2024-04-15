@@ -88,7 +88,8 @@ class SensorInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localized = LocalizedSensor.get(sensor);
+    final localizations = AppLocalizations.of(context)!;
+    final localized = LocalizedSensor.get(sensor, localizations);
 
     return Container(
         padding: const EdgeInsets.all(10),

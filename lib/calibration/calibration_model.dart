@@ -1,5 +1,6 @@
 import 'package:caldor/calibration.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fk/diagnostics.dart';
 import 'package:fk/gen/api.dart';
 import 'package:fk/meta.dart';
@@ -47,8 +48,9 @@ class CalibrationConfig {
     required this.steps,
   });
 
-  static List<Step> getSteps(ModuleConfig module, ContentFlows content) {
-    final localized = LocalizedModule.get(module);
+  static List<Step> getSteps(ModuleConfig module,
+      AppLocalizations localizations, ContentFlows content) {
+    final localized = LocalizedModule.get(module, localizations);
     final template = localized.calibrationTemplate!;
     final help = CalibrationHelp.fromModule(module, content);
     final standardSteps =
@@ -71,11 +73,11 @@ class CalibrationConfig {
     return steps;
   }
 
-  static CalibrationConfig fromModule(
-      ModuleConfig module, ContentFlows content) {
-    final localized = LocalizedModule.get(module);
+  static CalibrationConfig fromModule(ModuleConfig module,
+      AppLocalizations localizations, ContentFlows content) {
+    final localized = LocalizedModule.get(module, localizations);
     final template = localized.calibrationTemplate!;
-    final steps = getSteps(module, content);
+    final steps = getSteps(module, localizations, content);
     return CalibrationConfig._internal(
         moduleIdentity: module.identity,
         curveType: template.curveType,

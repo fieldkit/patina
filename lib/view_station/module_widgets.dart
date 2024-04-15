@@ -26,8 +26,9 @@ class ModuleInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localized = LocalizedModule.get(module);
-    final bay = AppLocalizations.of(context)!.bayNumber(module.position);
+    final localizations = AppLocalizations.of(context)!;
+    final localized = LocalizedModule.get(module, localizations);
+    final bay = localizations.bayNumber(module.position);
     final moduleConfigurations = context.watch<ModuleConfigurations>();
     final isCalibrated =
         moduleConfigurations.find(module.identity).isCalibrated;
@@ -71,6 +72,7 @@ class StartCalibrationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final content = context.read<ContentFlows>();
     final moduleConfigurations = context.watch<ModuleConfigurations>();
     final isCalibrated =
@@ -82,7 +84,8 @@ class StartCalibrationButton extends StatelessWidget {
         child: ElevatedTextButton(
           onPressed: () {
             calibrationPage() {
-              final config = CalibrationConfig.fromModule(module, content);
+              final config =
+                  CalibrationConfig.fromModule(module, localizations, content);
               if (isCalibrated) {
                 return ClearCalibrationPage(config: config, module: module);
               } else {

@@ -32,9 +32,9 @@ class CalibrationReviewWidget extends StatelessWidget {
     final moduleConfigurations = context.watch<ModuleConfigurations>();
     final moduleConfiguration = moduleConfigurations.find(module.identity);
     final calibrations = moduleConfiguration.calibrations;
-    final localized = LocalizedModule.get(module);
+    final localized = LocalizedModule.get(module, localizations);
     final uom = module.calibrationSensor?.calibratedUom;
-    final bay = AppLocalizations.of(context)!.bayNumber(module.position);
+    final bay = localizations.bayNumber(module.position);
     final afterClear = onAfterClear;
 
     Loggers.ui.i("$calibrations");
