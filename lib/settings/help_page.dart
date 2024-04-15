@@ -53,9 +53,8 @@ class _HelpPageState extends State<HelpPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ProvideContentFlowsWidget(
-                      child: QuickFlow(start: StartFlow(prefix: "onboarding"))),
-                ),
+                    builder: (context) => const QuickFlow(
+                        start: StartFlow(prefix: "onboarding"))),
               );
             },
           ),

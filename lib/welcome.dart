@@ -51,12 +51,9 @@ class WelcomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                const ProvideContentFlowsWidget(
-                                    child: QuickFlow(
-                                        start: flows.StartFlow(
-                                            prefix: "onboarding"))),
-                          ),
+                              builder: (context) => const QuickFlow(
+                                  start:
+                                      flows.StartFlow(prefix: "onboarding"))),
                         );
                       },
                       text: AppLocalizations.of(context)!.welcomeButton,

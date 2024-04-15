@@ -139,12 +139,20 @@ class ContentFlows {
     return ContentFlows(allFlows: flows, allScreens: screens);
   }
 
+  List<Screen> getScreensWithPrefix(String prefix) {
+    return allScreens.values
+        .where((screen) => screen.name.startsWith(prefix))
+        .toList()
+        .sortedWith((a, b) => a.name.compareTo(b.name));
+  }
+
+  List<String> getScreenNamesWithPrefix(String prefix) {
+    return getScreensWithPrefix(prefix).map((s) => s.name).toList();
+  }
+
   List<Screen> getScreens(StartFlow start) {
     if (start.prefix != null) {
-      return allScreens.values
-          .where((screen) => screen.name.startsWith(start.prefix!))
-          .toList()
-          .sorted((a, b) => a.name.compareTo(b.name));
+      return getScreensWithPrefix(start.prefix!);
     }
 
     if (start.names != null) {
@@ -177,5 +185,6 @@ String? coerceEmptyStringsToNull(String? source) {
 }
 
 extension ListSorted<T> on List<T> {
-  List<T> sorted(int Function(T a, T b) compare) => [...this]..sort(compare);
+  List<T> sortedWith(int Function(T a, T b) compare) =>
+      [...this]..sort(compare);
 }

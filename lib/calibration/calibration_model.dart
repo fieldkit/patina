@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:fk/diagnostics.dart';
 import 'package:fk/gen/api.dart';
 import 'package:fk/meta.dart';
+import 'package:flows/flows.dart';
 import 'package:flutter/foundation.dart';
 
 import '../app_state.dart';
@@ -46,10 +47,10 @@ class CalibrationConfig {
     required this.steps,
   });
 
-  static List<Step> getSteps(ModuleConfig module) {
+  static List<Step> getSteps(ModuleConfig module, ContentFlows content) {
     final localized = LocalizedModule.get(module);
     final template = localized.calibrationTemplate!;
-    final help = CalibrationHelp.fromModule(module);
+    final help = CalibrationHelp.fromModule(module, content);
     final standardSteps =
         template.standards.map((e) => StandardStep(standard: e));
 
@@ -70,10 +71,11 @@ class CalibrationConfig {
     return steps;
   }
 
-  static CalibrationConfig fromModule(ModuleConfig module) {
+  static CalibrationConfig fromModule(
+      ModuleConfig module, ContentFlows content) {
     final localized = LocalizedModule.get(module);
     final template = localized.calibrationTemplate!;
-    final steps = getSteps(module);
+    final steps = getSteps(module, content);
     return CalibrationConfig._internal(
         moduleIdentity: module.identity,
         curveType: template.curveType,
@@ -92,40 +94,27 @@ class CalibrationHelp {
 
   CalibrationHelp({required this.standards});
 
-  static CalibrationHelp fromModule(ModuleConfig module) {
+  static CalibrationHelp fromModule(ModuleConfig module, ContentFlows content) {
     switch (module.key) {
       case "modules.water.temp":
-        final List<String> standard = [
-          "calibration.water.temp.01",
-          "calibration.water.temp.02",
-          "calibration.water.temp.03"
-        ];
+        final List<String> standard =
+            content.getScreenNamesWithPrefix("calibration.water.temp.");
         return CalibrationHelp(standards: [standard, standard, standard]);
       case "modules.water.ph":
-        final List<String> standard = [
-          "calibration.water.ph.01",
-          "calibration.water.ph.02",
-          "calibration.water.ph.03",
-          "calibration.water.ph.04",
-        ];
+        final List<String> standard =
+            content.getScreenNamesWithPrefix("calibration.water.ph.");
         return CalibrationHelp(standards: [standard, standard, standard]);
       case "modules.water.orp":
-        final List<String> standard = List.empty();
+        final List<String> standard =
+            content.getScreenNamesWithPrefix("calibration.water.orp.");
         return CalibrationHelp(standards: [standard, standard, standard]);
       case "modules.water.do":
-        final List<String> standard = [
-          "calibration.water.dox.01",
-          "calibration.water.dox.02",
-          "calibration.water.dox.03",
-        ];
+        final List<String> standard =
+            content.getScreenNamesWithPrefix("calibration.water.dox.");
         return CalibrationHelp(standards: [standard, standard, standard]);
       case "modules.water.ec":
-        final List<String> standard = [
-          "calibration.water.ec.01",
-          "calibration.water.ec.02",
-          "calibration.water.ec.03",
-          "calibration.water.ec.04",
-        ];
+        final List<String> standard =
+            content.getScreenNamesWithPrefix("calibration.water.ec.");
         return CalibrationHelp(standards: [standard, standard, standard]);
     }
     return CalibrationHelp(standards: List.empty());

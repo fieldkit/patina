@@ -56,8 +56,7 @@ class CalibrationPage extends StatelessWidget {
         this.current ?? CurrentCalibration(curveType: config.curveType);
     return ChangeNotifierProvider(
         create: (context) => active,
-        child: ProvideContentFlowsWidget(
-            child: StepsWidget(config: config, current: current)));
+        child: StepsWidget(config: config, current: current));
   }
 
   @override

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fk/diagnostics.dart';
 import 'package:fk/preferences.dart';
+import 'package:fk/reader/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -172,6 +173,7 @@ class _OurAppState extends State<OurApp> {
           ValueListenableProvider.value(value: widget.env.appState),
         ],
         child: ProvideAccountsWidget(
+            child: ProvideContentFlowsWidget(
           child: MaterialApp(
             onGenerateTitle: (BuildContext context) =>
                 AppLocalizations.of(context)!.fieldKit,
@@ -222,7 +224,7 @@ class _OurAppState extends State<OurApp> {
             ),
             home: const LoaderOverlay(child: HomePage()),
           ),
-        ));
+        )));
   }
 }
 
