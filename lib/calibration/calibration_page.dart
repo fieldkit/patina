@@ -6,7 +6,6 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:caldor/calibration.dart';
 
 import 'package:fk/gen/api.dart';
-import 'package:fk/providers.dart';
 import 'package:fk/meta.dart';
 import 'package:fk/app_state.dart';
 import 'package:fk/diagnostics.dart';

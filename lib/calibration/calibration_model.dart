@@ -1,4 +1,6 @@
 import 'package:caldor/calibration.dart';
+import 'package:collection/collection.dart';
+import 'package:fk/diagnostics.dart';
 import 'package:fk/gen/api.dart';
 import 'package:fk/meta.dart';
 import 'package:flutter/foundation.dart';
@@ -44,24 +46,34 @@ class CalibrationConfig {
     required this.steps,
   });
 
+  static List<Step> getSteps(ModuleConfig module) {
+    final localized = LocalizedModule.get(module);
+    final template = localized.calibrationTemplate!;
+    final help = CalibrationHelp.fromModule(module);
+    final standardSteps =
+        template.standards.map((e) => StandardStep(standard: e));
+
+    if (help.standards.length != template.standards.length) {
+      Loggers.cal.i("mismatched standard steps, no help");
+      return standardSteps.toList();
+    }
+
+    // Tried to use IterableZip here and it was messy.
+    final List<Step> steps = List.empty(growable: true);
+    for (var i = 0; i < template.standards.length; ++i) {
+      for (final screen in help.standards[i]) {
+        steps.add(HelpStep(screen: screen));
+      }
+      steps.add(StandardStep(standard: template.standards[i]));
+    }
+
+    return steps;
+  }
+
   static CalibrationConfig fromModule(ModuleConfig module) {
     final localized = LocalizedModule.get(module);
     final template = localized.calibrationTemplate!;
-    // final help = CalibrationHelp.fromModule(module);
-    final List<Step> steps = [
-      // HelpStep(screen: "calibration.water.temp.01"),
-      // HelpStep(screen: "calibration.water.temp.02"),
-      // HelpStep(screen: "calibration.water.temp.03"),
-      StandardStep(standard: template.standards[0]),
-      // HelpStep(screen: "calibration.water.temp.01"),
-      // HelpStep(screen: "calibration.water.temp.02"),
-      // HelpStep(screen: "calibration.water.temp.03"),
-      StandardStep(standard: template.standards[1]),
-      // HelpStep(screen: "calibration.water.temp.01"),
-      // HelpStep(screen: "calibration.water.temp.02"),
-      // HelpStep(screen: "calibration.water.temp.03"),
-      StandardStep(standard: template.standards[2])
-    ];
+    final steps = getSteps(module);
     return CalibrationConfig._internal(
         moduleIdentity: module.identity,
         curveType: template.curveType,
@@ -83,19 +95,38 @@ class CalibrationHelp {
   static CalibrationHelp fromModule(ModuleConfig module) {
     switch (module.key) {
       case "modules.water.temp":
-        return CalibrationHelp(standards: [
-          ["calibration.water.temp.01", "calibration.water.temp.02"],
-          ["calibration.water.temp.01", "calibration.water.temp.02"],
-          ["calibration.water.temp.01", "calibration.water.temp.02"]
-        ]);
+        final List<String> standard = [
+          "calibration.water.temp.01",
+          "calibration.water.temp.02",
+          "calibration.water.temp.03"
+        ];
+        return CalibrationHelp(standards: [standard, standard, standard]);
       case "modules.water.ph":
-        return CalibrationHelp(standards: List.empty());
+        final List<String> standard = [
+          "calibration.water.ph.01",
+          "calibration.water.ph.02",
+          "calibration.water.ph.03",
+          "calibration.water.ph.04",
+        ];
+        return CalibrationHelp(standards: [standard, standard, standard]);
       case "modules.water.orp":
-        return CalibrationHelp(standards: List.empty());
+        final List<String> standard = List.empty();
+        return CalibrationHelp(standards: [standard, standard, standard]);
       case "modules.water.do":
-        return CalibrationHelp(standards: List.empty());
+        final List<String> standard = [
+          "calibration.water.dox.01",
+          "calibration.water.dox.02",
+          "calibration.water.dox.03",
+        ];
+        return CalibrationHelp(standards: [standard, standard, standard]);
       case "modules.water.ec":
-        return CalibrationHelp(standards: List.empty());
+        final List<String> standard = [
+          "calibration.water.ec.01",
+          "calibration.water.ec.02",
+          "calibration.water.ec.03",
+          "calibration.water.ec.04",
+        ];
+        return CalibrationHelp(standards: [standard, standard, standard]);
     }
     return CalibrationHelp(standards: List.empty());
   }
