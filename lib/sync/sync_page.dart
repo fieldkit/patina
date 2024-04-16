@@ -82,15 +82,16 @@ class LoginRequiredWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Center(
       child: Card(
         margin: const EdgeInsets.all(16.0),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: MessageAndButton(
-              title: AppLocalizations.of(context)!.alertTitle,
-              button: AppLocalizations.of(context)!.login,
-              message: AppLocalizations.of(context)!.dataLoginMessage,
+              title: localizations.alertTitle,
+              button: localizations.login,
+              message: localizations.dataLoginMessage,
               onPressed: () {
                 Navigator.push(
                   context,
