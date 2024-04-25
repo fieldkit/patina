@@ -326,6 +326,7 @@ class DownloadProgress {
 }
 
 class EphemeralConfig {
+  final UtcDateTime queried;
   final DeploymentConfig? deployment;
   final TransmissionConfig? transmission;
   final List<NetworkConfig> networks;
@@ -334,6 +335,7 @@ class EphemeralConfig {
   final Uint8List events;
 
   const EphemeralConfig({
+    required this.queried,
     this.deployment,
     this.transmission,
     required this.networks,
@@ -344,6 +346,7 @@ class EphemeralConfig {
 
   @override
   int get hashCode =>
+      queried.hashCode ^
       deployment.hashCode ^
       transmission.hashCode ^
       networks.hashCode ^
@@ -356,6 +359,7 @@ class EphemeralConfig {
       identical(this, other) ||
       other is EphemeralConfig &&
           runtimeType == other.runtimeType &&
+          queried == other.queried &&
           deployment == other.deployment &&
           transmission == other.transmission &&
           networks == other.networks &&

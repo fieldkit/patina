@@ -959,15 +959,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   EphemeralConfig dco_decode_ephemeral_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 6)
-      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
     return EphemeralConfig(
-      deployment: dco_decode_opt_box_autoadd_deployment_config(arr[0]),
-      transmission: dco_decode_opt_box_autoadd_transmission_config(arr[1]),
-      networks: dco_decode_list_network_config(arr[2]),
-      lora: dco_decode_opt_box_autoadd_lora_config(arr[3]),
-      capabilities: dco_decode_device_capabilities(arr[4]),
-      events: dco_decode_list_prim_u_8_strict(arr[5]),
+      queried: dco_decode_utc_date_time(arr[0]),
+      deployment: dco_decode_opt_box_autoadd_deployment_config(arr[1]),
+      transmission: dco_decode_opt_box_autoadd_transmission_config(arr[2]),
+      networks: dco_decode_list_network_config(arr[3]),
+      lora: dco_decode_opt_box_autoadd_lora_config(arr[4]),
+      capabilities: dco_decode_device_capabilities(arr[5]),
+      events: dco_decode_list_prim_u_8_strict(arr[6]),
     );
   }
 
@@ -1847,6 +1848,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   EphemeralConfig sse_decode_ephemeral_config(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_queried = sse_decode_utc_date_time(deserializer);
     var var_deployment =
         sse_decode_opt_box_autoadd_deployment_config(deserializer);
     var var_transmission =
@@ -1856,6 +1858,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_capabilities = sse_decode_device_capabilities(deserializer);
     var var_events = sse_decode_list_prim_u_8_strict(deserializer);
     return EphemeralConfig(
+        queried: var_queried,
         deployment: var_deployment,
         transmission: var_transmission,
         networks: var_networks,
@@ -2811,6 +2814,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_ephemeral_config(
       EphemeralConfig self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_utc_date_time(self.queried, serializer);
     sse_encode_opt_box_autoadd_deployment_config(self.deployment, serializer);
     sse_encode_opt_box_autoadd_transmission_config(
         self.transmission, serializer);

@@ -834,6 +834,7 @@ impl SseDecode for crate::api::DownloadProgress {
 impl SseDecode for crate::api::EphemeralConfig {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_queried = <crate::api::UtcDateTime>::sse_decode(deserializer);
         let mut var_deployment = <Option<crate::api::DeploymentConfig>>::sse_decode(deserializer);
         let mut var_transmission =
             <Option<crate::api::TransmissionConfig>>::sse_decode(deserializer);
@@ -842,6 +843,7 @@ impl SseDecode for crate::api::EphemeralConfig {
         let mut var_capabilities = <crate::api::DeviceCapabilities>::sse_decode(deserializer);
         let mut var_events = <Vec<u8>>::sse_decode(deserializer);
         return crate::api::EphemeralConfig {
+            queried: var_queried,
             deployment: var_deployment,
             transmission: var_transmission,
             networks: var_networks,
@@ -1839,6 +1841,7 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::DownloadProgress>
 impl flutter_rust_bridge::IntoDart for crate::api::EphemeralConfig {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
+            self.queried.into_into_dart().into_dart(),
             self.deployment.into_into_dart().into_dart(),
             self.transmission.into_into_dart().into_dart(),
             self.networks.into_into_dart().into_dart(),
@@ -2536,6 +2539,7 @@ impl SseEncode for crate::api::DownloadProgress {
 impl SseEncode for crate::api::EphemeralConfig {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <crate::api::UtcDateTime>::sse_encode(self.queried, serializer);
         <Option<crate::api::DeploymentConfig>>::sse_encode(self.deployment, serializer);
         <Option<crate::api::TransmissionConfig>>::sse_encode(self.transmission, serializer);
         <Vec<crate::api::NetworkConfig>>::sse_encode(self.networks, serializer);

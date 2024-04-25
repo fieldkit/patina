@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
+import 'package:fk/diagnostics.dart';
 import 'package:fk/common_widgets.dart';
 import 'package:fk/gen/api.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -20,6 +21,9 @@ class ConfigureLoraPage extends StatelessWidget {
         context.watch<StationConfiguration>();
 
     final LoraConfig? loraConfig = configuration.loraConfig;
+
+    Loggers.ui.i(
+        "lora-config queried=${configuration.config.ephemeral?.queried.field0} $loraConfig available=${loraConfig?.available}");
 
     return Scaffold(
         appBar: AppBar(

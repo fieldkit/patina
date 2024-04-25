@@ -1186,6 +1186,7 @@ pub struct DeploymentConfig {
 
 #[derive(Clone, Debug)]
 pub struct EphemeralConfig {
+    pub queried: UtcDateTime,
     pub deployment: Option<DeploymentConfig>,
     pub transmission: Option<TransmissionConfig>,
     pub networks: Vec<NetworkConfig>,
@@ -1255,6 +1256,7 @@ impl TryInto<EphemeralConfig> for HttpReply {
         });
 
         Ok(EphemeralConfig {
+            queried: Utc::now().into(),
             deployment,
             transmission,
             networks,
