@@ -96,28 +96,33 @@ class CalibrationHelp {
 
   CalibrationHelp({required this.standards});
 
-  static CalibrationHelp fromModule(ModuleConfig module, ContentFlows content) {
+  static CalibrationHelp fromModule(ModuleConfig module, ContentFlows cf) {
     switch (module.key) {
       case "modules.water.temp":
-        final List<String> standard =
-            content.getScreenNamesWithPrefix("calibration.water.temp.");
-        return CalibrationHelp(standards: [standard, standard, standard]);
+        final p1 = cf.getScreenNamesWithPrefix("calibration.water.temp.p1");
+        final p2 = cf.getScreenNamesWithPrefix("calibration.water.temp.p2");
+        final p3 = cf.getScreenNamesWithPrefix("calibration.water.temp.p3");
+        return CalibrationHelp(standards: [p1, p2, p3]);
       case "modules.water.ph":
-        final List<String> standard =
-            content.getScreenNamesWithPrefix("calibration.water.ph.");
-        return CalibrationHelp(standards: [standard, standard, standard]);
+        final p1 = cf.getScreenNamesWithPrefix("calibration.water.ph.p1");
+        final p2 = cf.getScreenNamesWithPrefix("calibration.water.ph.p2");
+        final p3 = cf.getScreenNamesWithPrefix("calibration.water.ph.p3");
+        return CalibrationHelp(standards: [p1, p2, p3]);
       case "modules.water.orp":
-        final List<String> standard =
-            content.getScreenNamesWithPrefix("calibration.water.orp.");
-        return CalibrationHelp(standards: [standard, standard, standard]);
+        final p1 = cf.getScreenNamesWithPrefix("calibration.water.orp.p1");
+        final p2 = cf.getScreenNamesWithPrefix("calibration.water.orp.p2");
+        final p3 = cf.getScreenNamesWithPrefix("calibration.water.orp.p3");
+        return CalibrationHelp(standards: [p1, p2, p3]);
       case "modules.water.do":
-        final List<String> standard =
-            content.getScreenNamesWithPrefix("calibration.water.dox.");
-        return CalibrationHelp(standards: [standard, standard, standard]);
+        final p1 = cf.getScreenNamesWithPrefix("calibration.water.dox.p1");
+        final p2 = cf.getScreenNamesWithPrefix("calibration.water.dox.p2");
+        final p3 = cf.getScreenNamesWithPrefix("calibration.water.dox.p3");
+        return CalibrationHelp(standards: [p1, p2, p3]);
       case "modules.water.ec":
-        final List<String> standard =
-            content.getScreenNamesWithPrefix("calibration.water.ec.");
-        return CalibrationHelp(standards: [standard, standard, standard]);
+        final p1 = cf.getScreenNamesWithPrefix("calibration.water.ec.p1");
+        final p2 = cf.getScreenNamesWithPrefix("calibration.water.ec.p2");
+        final p3 = cf.getScreenNamesWithPrefix("calibration.water.ec.p3");
+        return CalibrationHelp(standards: [p1, p2, p3]);
     }
     return CalibrationHelp(standards: List.empty());
   }
