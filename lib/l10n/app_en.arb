@@ -19,7 +19,7 @@
 
   "dataSyncTitle": "Data",
   "connectStation": "Connect a Station",
-  "noStationsDescription": "You have no stations. Add a station to start collection data.",
+  "noStationsDescription": "You have no stations. Add a station to start collecting data.",
   "stationScan": "Double tap to scan for stations.",
 
   "locationDenied": "Location permission denied!",
