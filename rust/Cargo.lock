@@ -352,11 +352,12 @@ dependencies = [
 [[package]]
 name = "discovery"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=cad43571c351ec4668b69cb3316eb858aebdada2#cad43571c351ec4668b69cb3316eb858aebdada2"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=cb37ec79af5a70f1e372c5b82847e07b8efc6c77#cb37ec79af5a70f1e372c5b82847e07b8efc6c77"
 dependencies = [
  "anyhow",
  "hex",
  "miette",
+ "query",
  "quick-protobuf",
  "socket2",
  "thiserror",
@@ -1111,7 +1112,7 @@ dependencies = [
 [[package]]
 name = "protos"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=cad43571c351ec4668b69cb3316eb858aebdada2#cad43571c351ec4668b69cb3316eb858aebdada2"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=cb37ec79af5a70f1e372c5b82847e07b8efc6c77#cb37ec79af5a70f1e372c5b82847e07b8efc6c77"
 dependencies = [
  "anyhow",
  "prost",
@@ -1139,7 +1140,7 @@ dependencies = [
 [[package]]
 name = "query"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=cad43571c351ec4668b69cb3316eb858aebdada2#cad43571c351ec4668b69cb3316eb858aebdada2"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=cb37ec79af5a70f1e372c5b82847e07b8efc6c77#cb37ec79af5a70f1e372c5b82847e07b8efc6c77"
 dependencies = [
  "anyhow",
  "async-stream",
@@ -1555,7 +1556,7 @@ dependencies = [
 [[package]]
 name = "store"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=cad43571c351ec4668b69cb3316eb858aebdada2#cad43571c351ec4668b69cb3316eb858aebdada2"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=cb37ec79af5a70f1e372c5b82847e07b8efc6c77#cb37ec79af5a70f1e372c5b82847e07b8efc6c77"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1593,7 +1594,7 @@ dependencies = [
 [[package]]
 name = "sync"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=cad43571c351ec4668b69cb3316eb858aebdada2#cad43571c351ec4668b69cb3316eb858aebdada2"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=cb37ec79af5a70f1e372c5b82847e07b8efc6c77#cb37ec79af5a70f1e372c5b82847e07b8efc6c77"
 dependencies = [
  "anyhow",
  "async-trait",
