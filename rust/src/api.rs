@@ -148,8 +148,10 @@ pub fn start_native(
     let sdk = rt.block_on(create_sdk(storage_path, portal_base_url, publish_tx))?;
 
     // Consider moving this to using the above channel?
-    sink.add(DomainMessage::PreAccount)
-        .expect("Send PreAccount");
+    match sink.add(DomainMessage::PreAccount) {
+        Ok(_) => {}
+        Err(e) => error!("PreAccount failed"),
+    }
 
     let handle = rt.handle().clone();
 
@@ -175,7 +177,10 @@ pub fn start_native(
     tokio::spawn(async move {
         while let Some(e) = publish_rx.recv().await {
             trace!("sdk:publish");
-            sink.add(e.into()).expect("Sending DomainMessage");
+            match sink.add(e.into()) {
+                Ok(_) => {}
+                Err(e) => error!("DomainMessage failed"),
+            };
         }
         let _ = tx.send(());
     });
@@ -440,11 +445,7 @@ impl Sdk {
 
     async fn get_nearby_addr(&self, device_id: &DeviceId) -> Result<Option<String>> {
         let discovered = self.nearby.get_discovered(&device_id).await;
-        Ok(discovered.map(|d| {
-            d.http_addr
-                .map(|o| format!("{}", o))
-                .expect("Expected HTTP url")
-        }))
+        Ok(discovered.and_then(|d| d.http_addr.map(|o| format!("{}", o))))
     }
 
     async fn configure_deploy(&self, device_id: DeviceId, config: DeployConfig) -> Result<()> {
@@ -759,13 +760,27 @@ fn with_runtime<R, E>(
         Ok(mut sdk_guard) => {
             match RUNTIME.lock() {
                 Ok(mut rt_guard) => {
-                    let sdk = sdk_guard.as_mut().expect("Sdk present");
-                    let rt = rt_guard.as_mut().expect("Runtime present");
-                    // We are calling async sdk methods from a thread that is not managed by
-                    // Tokio runtime. For this to work we need to enter the handle.
-                    // Ref: https://docs.rs/tokio/latest/tokio/runtime/struct.Handle.html#method.current
-                    let _guard = rt.enter();
-                    cb(rt, sdk).map_err(|e| RuntimeError::Error(e))
+                    match sdk_guard.as_mut() {
+                        Some(sdk) => {
+                            match rt_guard.as_mut() {
+                                Some(rt) => {
+                                    // We are calling async sdk methods from a thread that is not managed by
+                                    // Tokio runtime. For this to work we need to enter the handle.
+                                    // Ref: https://docs.rs/tokio/latest/tokio/runtime/struct.Handle.html#method.current
+                                    let _guard = rt.enter();
+                                    cb(rt, sdk).map_err(|e| RuntimeError::Error(e))
+                                }
+                                None => {
+                                    error!("sdk: no runtime");
+                                    Err(RuntimeError::Lock)
+                                }
+                            }
+                        }
+                        None => {
+                            error!("sdk: no sdk");
+                            Err(RuntimeError::Lock)
+                        }
+                    }
                 }
                 Err(e) => {
                     error!("{:?}", e);
@@ -795,7 +810,10 @@ struct LogSink {
 impl<'a> Write for &'a LogSink {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let line = String::from_utf8_lossy(buf).to_string();
-        self.sink.add(line).expect("Sending log message");
+        match self.sink.add(line) {
+            Ok(_) => {}
+            Err(_) => error!("Log message failed"),
+        };
         Ok(buf.len())
     }
 
