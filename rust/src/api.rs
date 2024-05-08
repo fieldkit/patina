@@ -150,7 +150,7 @@ pub fn start_native(
     // Consider moving this to using the above channel?
     match sink.add(DomainMessage::PreAccount) {
         Ok(_) => {}
-        Err(e) => error!("PreAccount failed"),
+        Err(_) => error!("PreAccount failed"),
     }
 
     let handle = rt.handle().clone();
@@ -179,7 +179,7 @@ pub fn start_native(
             trace!("sdk:publish");
             match sink.add(e.into()) {
                 Ok(_) => {}
-                Err(e) => error!("DomainMessage failed"),
+                Err(_) => error!("DomainMessage failed"),
             };
         }
         let _ = tx.send(());
