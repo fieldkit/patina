@@ -1273,6 +1273,9 @@ impl SseDecode for crate::api::PortalError {
                 let mut var_field0 = <String>::sse_decode(deserializer);
                 return crate::api::PortalError::Other(var_field0);
             }
+            3 => {
+                return crate::api::PortalError::Sdk;
+            }
             _ => {
                 unimplemented!("");
             }
@@ -2041,6 +2044,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::PortalError {
             crate::api::PortalError::Other(field0) => {
                 [2.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
+            crate::api::PortalError::Sdk => [3.into_dart()].into_dart(),
         }
     }
 }
@@ -2894,6 +2898,9 @@ impl SseEncode for crate::api::PortalError {
             crate::api::PortalError::Other(field0) => {
                 <i32>::sse_encode(2, serializer);
                 <String>::sse_encode(field0, serializer);
+            }
+            crate::api::PortalError::Sdk => {
+                <i32>::sse_encode(3, serializer);
             }
         }
     }

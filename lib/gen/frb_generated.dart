@@ -1255,6 +1255,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         return PortalError_Other(
           dco_decode_String(raw[1]),
         );
+      case 3:
+        return PortalError_Sdk();
       default:
         throw Exception("unreachable");
     }
@@ -2267,6 +2269,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 2:
         var var_field0 = sse_decode_String(deserializer);
         return PortalError_Other(var_field0);
+      case 3:
+        return PortalError_Sdk();
       default:
         throw UnimplementedError('');
     }
@@ -3158,6 +3162,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case PortalError_Other(field0: final field0):
         sse_encode_i_32(2, serializer);
         sse_encode_String(field0, serializer);
+      case PortalError_Sdk():
+        sse_encode_i_32(3, serializer);
     }
   }
 

@@ -156,8 +156,14 @@ pub fn start_native(
     // I really wish there was a better way. There are _other_ ways, though I
     // dunno if they're better.
     {
-        *SDK.lock().expect("Set sdk") = Some(sdk);
-        *RUNTIME.lock().expect("Set runtime") = Some(rt);
+        match SDK.lock() {
+            Ok(mut setting) => *setting = Some(sdk),
+            Err(e) => error!("Set sdk: {:?}", e),
+        }
+        match RUNTIME.lock() {
+            Ok(mut setting) => *setting = Some(rt),
+            Err(e) => error!("Set runtime: {:?}", e),
+        }
     }
 
     info!("startup:pump");
@@ -729,22 +735,49 @@ fn start_runtime() -> Result<Runtime> {
     Ok(rt)
 }
 
-fn with_runtime<R, E>(cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R, E>) -> Result<R, E> {
-    let mut sdk_guard = SDK.lock().expect("Get sdk");
-    let sdk = sdk_guard.as_mut().expect("Sdk present");
-
-    // We are calling async sdk methods from a thread that is not managed by
-    // Tokio runtime. For this to work we need to enter the handle.
-    // Ref: https://docs.rs/tokio/latest/tokio/runtime/struct.Handle.html#method.current
-    let mut rt_guard = RUNTIME.lock().expect("Get runtime");
-    let rt = rt_guard.as_mut().expect("Runtime present");
-    let _guard = rt.enter();
-    cb(rt, sdk)
+#[derive(Debug, Error)]
+enum RuntimeError<E> {
+    #[error("Lock error")]
+    Lock,
+    #[error("Error")]
+    Error(E),
 }
 
-#[allow(dead_code)]
-fn with_sdk<R>(cb: impl FnOnce(&mut Sdk) -> Result<R>) -> Result<R> {
-    with_runtime(|_rt, sdk| cb(sdk))
+impl From<RuntimeError<PortalError>> for PortalError {
+    fn from(value: RuntimeError<PortalError>) -> Self {
+        match value {
+            RuntimeError::Lock => PortalError::Sdk,
+            RuntimeError::Error(e) => e,
+        }
+    }
+}
+
+fn with_runtime<R, E>(
+    cb: impl FnOnce(&Runtime, &mut Sdk) -> Result<R, E>,
+) -> Result<R, RuntimeError<E>> {
+    match SDK.lock() {
+        Ok(mut sdk_guard) => {
+            match RUNTIME.lock() {
+                Ok(mut rt_guard) => {
+                    let sdk = sdk_guard.as_mut().expect("Sdk present");
+                    let rt = rt_guard.as_mut().expect("Runtime present");
+                    // We are calling async sdk methods from a thread that is not managed by
+                    // Tokio runtime. For this to work we need to enter the handle.
+                    // Ref: https://docs.rs/tokio/latest/tokio/runtime/struct.Handle.html#method.current
+                    let _guard = rt.enter();
+                    cb(rt, sdk).map_err(|e| RuntimeError::Error(e))
+                }
+                Err(e) => {
+                    error!("{:?}", e);
+                    Err(RuntimeError::Lock)
+                }
+            }
+        }
+        Err(e) => {
+            error!("{:?}", e);
+            Err(RuntimeError::Lock)
+        }
+    }
 }
 
 // The convention for Rust identifiers is the snake_case,
@@ -1361,6 +1394,8 @@ pub enum PortalError {
     Connecting,
     #[error("Other")]
     Other(String),
+    #[error("Sdk")]
+    Sdk,
 }
 
 impl From<query::portal::PortalError> for PortalError {

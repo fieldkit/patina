@@ -11,6 +11,7 @@ part 'api.freezed.dart';
 // The type `CapabilitiesInfo` is not used by any `pub` functions, thus it is ignored.
 // The type `LogSink` is not used by any `pub` functions, thus it is ignored.
 // The type `MergeAndPublishReplies` is not used by any `pub` functions, thus it is ignored.
+// The type `RuntimeError` is not used by any `pub` functions, thus it is ignored.
 // The type `Sdk` is not used by any `pub` functions, thus it is ignored.
 // The type `SdkMappingError` is not used by any `pub` functions, thus it is ignored.
 // The type `StationAndConnection` is not used by any `pub` functions, thus it is ignored.
@@ -605,6 +606,7 @@ sealed class PortalError with _$PortalError implements FrbException {
   const factory PortalError.other(
     String field0,
   ) = PortalError_Other;
+  const factory PortalError.sdk() = PortalError_Sdk;
 }
 
 class RecordArchive {
