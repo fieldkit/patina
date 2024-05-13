@@ -146,7 +146,7 @@ class OurApp extends StatefulWidget {
 }
 
 class _OurAppState extends State<OurApp> {
-  Locale _locale = const Locale("en");
+  Locale? _locale;
 
   void setLocale(Locale value) {
     setState(() {
@@ -168,6 +168,9 @@ class _OurAppState extends State<OurApp> {
 
   @override
   Widget build(BuildContext context) {
+    if (_locale == null) {
+      return Container();
+    }
     return MultiProvider(
         providers: [
           ValueListenableProvider.value(value: widget.env.appState),
