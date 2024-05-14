@@ -76,15 +76,16 @@ class NoStationsHelpWidget extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
-          child: ElevatedTextButton(
-            onPressed: () {
-              // TODO: Make this functional later
-            },
-            text: AppLocalizations.of(context)!.connectStation,
+        if (false)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
+            child: ElevatedTextButton(
+              onPressed: () {
+                // TODO: Make this functional later
+              },
+              text: AppLocalizations.of(context)!.connectStation,
+            ),
           ),
-        ),
       ]),
     );
   }
