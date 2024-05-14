@@ -1248,6 +1248,8 @@ class PortalAccounts extends ChangeNotifier {
       };
 
   Future<PortalAccounts> load() async {
+    Loggers.state.i("accounts:loading");
+
     const storage = FlutterSecureStorage();
     String? value = await storage.read(key: secureStorageKey);
     if (value != null) {
@@ -1266,7 +1268,11 @@ class PortalAccounts extends ChangeNotifier {
       }
     }
 
-    await refreshFirmware();
+    validate(); // In background
+
+    refreshFirmware(); // In background
+
+    Loggers.state.i("accounts:load exiting");
 
     return this;
   }

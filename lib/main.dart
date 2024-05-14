@@ -169,8 +169,13 @@ class _OurAppState extends State<OurApp> {
   @override
   Widget build(BuildContext context) {
     if (_locale == null) {
+      Loggers.ui.i("waiting on locale");
+
       return Container();
     }
+
+    Loggers.ui.i("have locale");
+
     return MultiProvider(
         providers: [
           ValueListenableProvider.value(value: widget.env.appState),
