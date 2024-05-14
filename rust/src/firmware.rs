@@ -240,6 +240,8 @@ async fn check_cached_firmware(storage_path: &str) -> Result<Vec<Firmware>> {
         found.push(serde_json::from_str(&buffer)?);
     }
 
+    info!("check_cached_firmware: {}", found.len());
+
     Ok(found)
 }
 
@@ -301,6 +303,9 @@ async fn cache_firmware_and_json_if_newer(
     tokens: Option<Tokens>,
     cached: Vec<Firmware>,
 ) -> Result<()> {
+    // Publish available before querying, since we may fail below if offline.
+    publish_available_firmware(storage_path, publish_tx.clone()).await?;
+
     let client = query::portal::Client::new(portal_base_url)?;
     let firmwares = query_available_firmware(&client, tokens).await?;
 
@@ -346,8 +351,6 @@ async fn cache_firmware_and_json_if_newer(
 
         publish_available_firmware(storage_path, publish_tx.clone()).await?;
     }
-
-    publish_available_firmware(storage_path, publish_tx.clone()).await?;
 
     Ok(())
 }

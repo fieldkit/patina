@@ -1296,11 +1296,12 @@ class PortalAccounts extends ChangeNotifier {
     try {
       final authenticated =
           await authenticatePortal(email: email, password: password);
-      refreshFirmware(); // In background
       return PortalAccount.fromAuthenticated(authenticated);
     } catch (e) {
       Loggers.state.e("Exception authenticating: $e");
       return null;
+    } finally {
+      refreshFirmware(); // In background
     }
   }
 
