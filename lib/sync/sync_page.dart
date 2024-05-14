@@ -219,6 +219,7 @@ class StationSyncStatus extends StatelessWidget {
   StationConfig get config => station.config!;
 
   bool get isSyncing => station.syncing != null;
+  bool get isFailed => station.syncing?.failed == true;
   bool get isDownloading => station.syncing?.download != null;
   bool get isUploading => station.syncing?.upload != null;
 
@@ -237,7 +238,7 @@ class StationSyncStatus extends StatelessWidget {
     if (isUploading) {
       return UploadProgressPanel(progress: station.syncing!.upload!);
     }
-    if (isSyncing) {
+    if (isSyncing && !isFailed) {
       final localizations = AppLocalizations.of(context)!;
       return WH.padColumn(Column(children: [
         WH.progressBar(0.0),

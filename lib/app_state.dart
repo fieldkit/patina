@@ -145,21 +145,27 @@ class KnownStationsModel extends ChangeNotifier {
     final status = transferProgress.status;
 
     if (status is TransferStatus_Starting) {
-      station.syncing = SyncingProgress(download: null, upload: null);
+      station.syncing =
+          SyncingProgress(download: null, upload: null, failed: false);
     }
     if (status is TransferStatus_Downloading) {
       station.syncing = SyncingProgress(
-          download: DownloadOperation(status: status), upload: null);
+          download: DownloadOperation(status: status),
+          upload: null,
+          failed: false);
     }
     if (status is TransferStatus_Uploading) {
       station.syncing = SyncingProgress(
-          download: null, upload: UploadOperation(status: status));
+          download: null,
+          upload: UploadOperation(status: status),
+          failed: false);
     }
     if (status is TransferStatus_Completed) {
       station.syncing = null;
     }
     if (status is TransferStatus_Failed) {
-      station.syncing = SyncingProgress(download: null, upload: null);
+      station.syncing =
+          SyncingProgress(download: null, upload: null, failed: true);
     }
 
     station.connected = true;
@@ -1065,6 +1071,7 @@ class AppEnv {
 class SyncingProgress extends ChangeNotifier {
   final DownloadOperation? download;
   final UploadOperation? upload;
+  final bool failed;
 
   double? get completed {
     if (download != null) {
@@ -1076,7 +1083,7 @@ class SyncingProgress extends ChangeNotifier {
     return null;
   }
 
-  SyncingProgress({this.download, this.upload});
+  SyncingProgress({this.download, this.upload, required this.failed});
 }
 
 extension CompletedProperty on UploadProgress {
