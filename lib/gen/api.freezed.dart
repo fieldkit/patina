@@ -4402,6 +4402,7 @@ mixin _$UpgradeStatus {
     required TResult Function() starting,
     required TResult Function(UploadProgress field0) uploading,
     required TResult Function() restarting,
+    required TResult Function() reconnectTimeout,
     required TResult Function() completed,
     required TResult Function() failed,
   }) =>
@@ -4411,6 +4412,7 @@ mixin _$UpgradeStatus {
     TResult? Function()? starting,
     TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? restarting,
+    TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
     TResult? Function()? failed,
   }) =>
@@ -4420,6 +4422,7 @@ mixin _$UpgradeStatus {
     TResult Function()? starting,
     TResult Function(UploadProgress field0)? uploading,
     TResult Function()? restarting,
+    TResult Function()? reconnectTimeout,
     TResult Function()? completed,
     TResult Function()? failed,
     required TResult orElse(),
@@ -4430,6 +4433,8 @@ mixin _$UpgradeStatus {
     required TResult Function(UpgradeStatus_Starting value) starting,
     required TResult Function(UpgradeStatus_Uploading value) uploading,
     required TResult Function(UpgradeStatus_Restarting value) restarting,
+    required TResult Function(UpgradeStatus_ReconnectTimeout value)
+        reconnectTimeout,
     required TResult Function(UpgradeStatus_Completed value) completed,
     required TResult Function(UpgradeStatus_Failed value) failed,
   }) =>
@@ -4439,6 +4444,7 @@ mixin _$UpgradeStatus {
     TResult? Function(UpgradeStatus_Starting value)? starting,
     TResult? Function(UpgradeStatus_Uploading value)? uploading,
     TResult? Function(UpgradeStatus_Restarting value)? restarting,
+    TResult? Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult? Function(UpgradeStatus_Completed value)? completed,
     TResult? Function(UpgradeStatus_Failed value)? failed,
   }) =>
@@ -4448,6 +4454,7 @@ mixin _$UpgradeStatus {
     TResult Function(UpgradeStatus_Starting value)? starting,
     TResult Function(UpgradeStatus_Uploading value)? uploading,
     TResult Function(UpgradeStatus_Restarting value)? restarting,
+    TResult Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult Function(UpgradeStatus_Completed value)? completed,
     TResult Function(UpgradeStatus_Failed value)? failed,
     required TResult orElse(),
@@ -4517,6 +4524,7 @@ class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
     required TResult Function() starting,
     required TResult Function(UploadProgress field0) uploading,
     required TResult Function() restarting,
+    required TResult Function() reconnectTimeout,
     required TResult Function() completed,
     required TResult Function() failed,
   }) {
@@ -4529,6 +4537,7 @@ class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
     TResult? Function()? starting,
     TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? restarting,
+    TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
     TResult? Function()? failed,
   }) {
@@ -4541,6 +4550,7 @@ class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
     TResult Function()? starting,
     TResult Function(UploadProgress field0)? uploading,
     TResult Function()? restarting,
+    TResult Function()? reconnectTimeout,
     TResult Function()? completed,
     TResult Function()? failed,
     required TResult orElse(),
@@ -4557,6 +4567,8 @@ class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
     required TResult Function(UpgradeStatus_Starting value) starting,
     required TResult Function(UpgradeStatus_Uploading value) uploading,
     required TResult Function(UpgradeStatus_Restarting value) restarting,
+    required TResult Function(UpgradeStatus_ReconnectTimeout value)
+        reconnectTimeout,
     required TResult Function(UpgradeStatus_Completed value) completed,
     required TResult Function(UpgradeStatus_Failed value) failed,
   }) {
@@ -4569,6 +4581,7 @@ class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
     TResult? Function(UpgradeStatus_Starting value)? starting,
     TResult? Function(UpgradeStatus_Uploading value)? uploading,
     TResult? Function(UpgradeStatus_Restarting value)? restarting,
+    TResult? Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult? Function(UpgradeStatus_Completed value)? completed,
     TResult? Function(UpgradeStatus_Failed value)? failed,
   }) {
@@ -4581,6 +4594,7 @@ class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
     TResult Function(UpgradeStatus_Starting value)? starting,
     TResult Function(UpgradeStatus_Uploading value)? uploading,
     TResult Function(UpgradeStatus_Restarting value)? restarting,
+    TResult Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult Function(UpgradeStatus_Completed value)? completed,
     TResult Function(UpgradeStatus_Failed value)? failed,
     required TResult orElse(),
@@ -4666,6 +4680,7 @@ class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
     required TResult Function() starting,
     required TResult Function(UploadProgress field0) uploading,
     required TResult Function() restarting,
+    required TResult Function() reconnectTimeout,
     required TResult Function() completed,
     required TResult Function() failed,
   }) {
@@ -4678,6 +4693,7 @@ class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
     TResult? Function()? starting,
     TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? restarting,
+    TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
     TResult? Function()? failed,
   }) {
@@ -4690,6 +4706,7 @@ class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
     TResult Function()? starting,
     TResult Function(UploadProgress field0)? uploading,
     TResult Function()? restarting,
+    TResult Function()? reconnectTimeout,
     TResult Function()? completed,
     TResult Function()? failed,
     required TResult orElse(),
@@ -4706,6 +4723,8 @@ class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
     required TResult Function(UpgradeStatus_Starting value) starting,
     required TResult Function(UpgradeStatus_Uploading value) uploading,
     required TResult Function(UpgradeStatus_Restarting value) restarting,
+    required TResult Function(UpgradeStatus_ReconnectTimeout value)
+        reconnectTimeout,
     required TResult Function(UpgradeStatus_Completed value) completed,
     required TResult Function(UpgradeStatus_Failed value) failed,
   }) {
@@ -4718,6 +4737,7 @@ class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
     TResult? Function(UpgradeStatus_Starting value)? starting,
     TResult? Function(UpgradeStatus_Uploading value)? uploading,
     TResult? Function(UpgradeStatus_Restarting value)? restarting,
+    TResult? Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult? Function(UpgradeStatus_Completed value)? completed,
     TResult? Function(UpgradeStatus_Failed value)? failed,
   }) {
@@ -4730,6 +4750,7 @@ class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
     TResult Function(UpgradeStatus_Starting value)? starting,
     TResult Function(UpgradeStatus_Uploading value)? uploading,
     TResult Function(UpgradeStatus_Restarting value)? restarting,
+    TResult Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult Function(UpgradeStatus_Completed value)? completed,
     TResult Function(UpgradeStatus_Failed value)? failed,
     required TResult orElse(),
@@ -4795,6 +4816,7 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
     required TResult Function() starting,
     required TResult Function(UploadProgress field0) uploading,
     required TResult Function() restarting,
+    required TResult Function() reconnectTimeout,
     required TResult Function() completed,
     required TResult Function() failed,
   }) {
@@ -4807,6 +4829,7 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
     TResult? Function()? starting,
     TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? restarting,
+    TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
     TResult? Function()? failed,
   }) {
@@ -4819,6 +4842,7 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
     TResult Function()? starting,
     TResult Function(UploadProgress field0)? uploading,
     TResult Function()? restarting,
+    TResult Function()? reconnectTimeout,
     TResult Function()? completed,
     TResult Function()? failed,
     required TResult orElse(),
@@ -4835,6 +4859,8 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
     required TResult Function(UpgradeStatus_Starting value) starting,
     required TResult Function(UpgradeStatus_Uploading value) uploading,
     required TResult Function(UpgradeStatus_Restarting value) restarting,
+    required TResult Function(UpgradeStatus_ReconnectTimeout value)
+        reconnectTimeout,
     required TResult Function(UpgradeStatus_Completed value) completed,
     required TResult Function(UpgradeStatus_Failed value) failed,
   }) {
@@ -4847,6 +4873,7 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
     TResult? Function(UpgradeStatus_Starting value)? starting,
     TResult? Function(UpgradeStatus_Uploading value)? uploading,
     TResult? Function(UpgradeStatus_Restarting value)? restarting,
+    TResult? Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult? Function(UpgradeStatus_Completed value)? completed,
     TResult? Function(UpgradeStatus_Failed value)? failed,
   }) {
@@ -4859,6 +4886,7 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
     TResult Function(UpgradeStatus_Starting value)? starting,
     TResult Function(UpgradeStatus_Uploading value)? uploading,
     TResult Function(UpgradeStatus_Restarting value)? restarting,
+    TResult Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult Function(UpgradeStatus_Completed value)? completed,
     TResult Function(UpgradeStatus_Failed value)? failed,
     required TResult orElse(),
@@ -4872,6 +4900,139 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
 
 abstract class UpgradeStatus_Restarting implements UpgradeStatus {
   const factory UpgradeStatus_Restarting() = _$UpgradeStatus_RestartingImpl;
+}
+
+/// @nodoc
+abstract class _$$UpgradeStatus_ReconnectTimeoutImplCopyWith<$Res> {
+  factory _$$UpgradeStatus_ReconnectTimeoutImplCopyWith(
+          _$UpgradeStatus_ReconnectTimeoutImpl value,
+          $Res Function(_$UpgradeStatus_ReconnectTimeoutImpl) then) =
+      __$$UpgradeStatus_ReconnectTimeoutImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$UpgradeStatus_ReconnectTimeoutImplCopyWithImpl<$Res>
+    extends _$UpgradeStatusCopyWithImpl<$Res,
+        _$UpgradeStatus_ReconnectTimeoutImpl>
+    implements _$$UpgradeStatus_ReconnectTimeoutImplCopyWith<$Res> {
+  __$$UpgradeStatus_ReconnectTimeoutImplCopyWithImpl(
+      _$UpgradeStatus_ReconnectTimeoutImpl _value,
+      $Res Function(_$UpgradeStatus_ReconnectTimeoutImpl) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$UpgradeStatus_ReconnectTimeoutImpl
+    implements UpgradeStatus_ReconnectTimeout {
+  const _$UpgradeStatus_ReconnectTimeoutImpl();
+
+  @override
+  String toString() {
+    return 'UpgradeStatus.reconnectTimeout()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UpgradeStatus_ReconnectTimeoutImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() starting,
+    required TResult Function(UploadProgress field0) uploading,
+    required TResult Function() restarting,
+    required TResult Function() reconnectTimeout,
+    required TResult Function() completed,
+    required TResult Function() failed,
+  }) {
+    return reconnectTimeout();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? starting,
+    TResult? Function(UploadProgress field0)? uploading,
+    TResult? Function()? restarting,
+    TResult? Function()? reconnectTimeout,
+    TResult? Function()? completed,
+    TResult? Function()? failed,
+  }) {
+    return reconnectTimeout?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? starting,
+    TResult Function(UploadProgress field0)? uploading,
+    TResult Function()? restarting,
+    TResult Function()? reconnectTimeout,
+    TResult Function()? completed,
+    TResult Function()? failed,
+    required TResult orElse(),
+  }) {
+    if (reconnectTimeout != null) {
+      return reconnectTimeout();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(UpgradeStatus_Starting value) starting,
+    required TResult Function(UpgradeStatus_Uploading value) uploading,
+    required TResult Function(UpgradeStatus_Restarting value) restarting,
+    required TResult Function(UpgradeStatus_ReconnectTimeout value)
+        reconnectTimeout,
+    required TResult Function(UpgradeStatus_Completed value) completed,
+    required TResult Function(UpgradeStatus_Failed value) failed,
+  }) {
+    return reconnectTimeout(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(UpgradeStatus_Starting value)? starting,
+    TResult? Function(UpgradeStatus_Uploading value)? uploading,
+    TResult? Function(UpgradeStatus_Restarting value)? restarting,
+    TResult? Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
+    TResult? Function(UpgradeStatus_Completed value)? completed,
+    TResult? Function(UpgradeStatus_Failed value)? failed,
+  }) {
+    return reconnectTimeout?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(UpgradeStatus_Starting value)? starting,
+    TResult Function(UpgradeStatus_Uploading value)? uploading,
+    TResult Function(UpgradeStatus_Restarting value)? restarting,
+    TResult Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
+    TResult Function(UpgradeStatus_Completed value)? completed,
+    TResult Function(UpgradeStatus_Failed value)? failed,
+    required TResult orElse(),
+  }) {
+    if (reconnectTimeout != null) {
+      return reconnectTimeout(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class UpgradeStatus_ReconnectTimeout implements UpgradeStatus {
+  const factory UpgradeStatus_ReconnectTimeout() =
+      _$UpgradeStatus_ReconnectTimeoutImpl;
 }
 
 /// @nodoc
@@ -4918,6 +5079,7 @@ class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
     required TResult Function() starting,
     required TResult Function(UploadProgress field0) uploading,
     required TResult Function() restarting,
+    required TResult Function() reconnectTimeout,
     required TResult Function() completed,
     required TResult Function() failed,
   }) {
@@ -4930,6 +5092,7 @@ class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
     TResult? Function()? starting,
     TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? restarting,
+    TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
     TResult? Function()? failed,
   }) {
@@ -4942,6 +5105,7 @@ class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
     TResult Function()? starting,
     TResult Function(UploadProgress field0)? uploading,
     TResult Function()? restarting,
+    TResult Function()? reconnectTimeout,
     TResult Function()? completed,
     TResult Function()? failed,
     required TResult orElse(),
@@ -4958,6 +5122,8 @@ class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
     required TResult Function(UpgradeStatus_Starting value) starting,
     required TResult Function(UpgradeStatus_Uploading value) uploading,
     required TResult Function(UpgradeStatus_Restarting value) restarting,
+    required TResult Function(UpgradeStatus_ReconnectTimeout value)
+        reconnectTimeout,
     required TResult Function(UpgradeStatus_Completed value) completed,
     required TResult Function(UpgradeStatus_Failed value) failed,
   }) {
@@ -4970,6 +5136,7 @@ class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
     TResult? Function(UpgradeStatus_Starting value)? starting,
     TResult? Function(UpgradeStatus_Uploading value)? uploading,
     TResult? Function(UpgradeStatus_Restarting value)? restarting,
+    TResult? Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult? Function(UpgradeStatus_Completed value)? completed,
     TResult? Function(UpgradeStatus_Failed value)? failed,
   }) {
@@ -4982,6 +5149,7 @@ class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
     TResult Function(UpgradeStatus_Starting value)? starting,
     TResult Function(UpgradeStatus_Uploading value)? uploading,
     TResult Function(UpgradeStatus_Restarting value)? restarting,
+    TResult Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult Function(UpgradeStatus_Completed value)? completed,
     TResult Function(UpgradeStatus_Failed value)? failed,
     required TResult orElse(),
@@ -5039,6 +5207,7 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
     required TResult Function() starting,
     required TResult Function(UploadProgress field0) uploading,
     required TResult Function() restarting,
+    required TResult Function() reconnectTimeout,
     required TResult Function() completed,
     required TResult Function() failed,
   }) {
@@ -5051,6 +5220,7 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
     TResult? Function()? starting,
     TResult? Function(UploadProgress field0)? uploading,
     TResult? Function()? restarting,
+    TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
     TResult? Function()? failed,
   }) {
@@ -5063,6 +5233,7 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
     TResult Function()? starting,
     TResult Function(UploadProgress field0)? uploading,
     TResult Function()? restarting,
+    TResult Function()? reconnectTimeout,
     TResult Function()? completed,
     TResult Function()? failed,
     required TResult orElse(),
@@ -5079,6 +5250,8 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
     required TResult Function(UpgradeStatus_Starting value) starting,
     required TResult Function(UpgradeStatus_Uploading value) uploading,
     required TResult Function(UpgradeStatus_Restarting value) restarting,
+    required TResult Function(UpgradeStatus_ReconnectTimeout value)
+        reconnectTimeout,
     required TResult Function(UpgradeStatus_Completed value) completed,
     required TResult Function(UpgradeStatus_Failed value) failed,
   }) {
@@ -5091,6 +5264,7 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
     TResult? Function(UpgradeStatus_Starting value)? starting,
     TResult? Function(UpgradeStatus_Uploading value)? uploading,
     TResult? Function(UpgradeStatus_Restarting value)? restarting,
+    TResult? Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult? Function(UpgradeStatus_Completed value)? completed,
     TResult? Function(UpgradeStatus_Failed value)? failed,
   }) {
@@ -5103,6 +5277,7 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
     TResult Function(UpgradeStatus_Starting value)? starting,
     TResult Function(UpgradeStatus_Uploading value)? uploading,
     TResult Function(UpgradeStatus_Restarting value)? restarting,
+    TResult Function(UpgradeStatus_ReconnectTimeout value)? reconnectTimeout,
     TResult Function(UpgradeStatus_Completed value)? completed,
     TResult Function(UpgradeStatus_Failed value)? failed,
     required TResult orElse(),

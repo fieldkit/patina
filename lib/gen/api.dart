@@ -959,6 +959,8 @@ sealed class UpgradeStatus with _$UpgradeStatus {
     UploadProgress field0,
   ) = UpgradeStatus_Uploading;
   const factory UpgradeStatus.restarting() = UpgradeStatus_Restarting;
+  const factory UpgradeStatus.reconnectTimeout() =
+      UpgradeStatus_ReconnectTimeout;
   const factory UpgradeStatus.completed() = UpgradeStatus_Completed;
   const factory UpgradeStatus.failed() = UpgradeStatus_Failed;
 }

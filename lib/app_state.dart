@@ -406,7 +406,9 @@ class UpgradeOperation extends Operation {
 
   @override
   bool get done =>
-      status is UpgradeStatus_Completed || status is UpgradeStatus_Failed;
+      status is UpgradeStatus_Completed ||
+      status is UpgradeStatus_Failed ||
+      status is UpgradeStatus_ReconnectTimeout;
 }
 
 class FirmwareDownloadOperation extends Operation {

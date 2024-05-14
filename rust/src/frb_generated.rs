@@ -1549,9 +1549,12 @@ impl SseDecode for crate::api::UpgradeStatus {
                 return crate::api::UpgradeStatus::Restarting;
             }
             3 => {
-                return crate::api::UpgradeStatus::Completed;
+                return crate::api::UpgradeStatus::ReconnectTimeout;
             }
             4 => {
+                return crate::api::UpgradeStatus::Completed;
+            }
+            5 => {
                 return crate::api::UpgradeStatus::Failed;
             }
             _ => {
@@ -2315,8 +2318,9 @@ impl flutter_rust_bridge::IntoDart for crate::api::UpgradeStatus {
                 [1.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
             crate::api::UpgradeStatus::Restarting => [2.into_dart()].into_dart(),
-            crate::api::UpgradeStatus::Completed => [3.into_dart()].into_dart(),
-            crate::api::UpgradeStatus::Failed => [4.into_dart()].into_dart(),
+            crate::api::UpgradeStatus::ReconnectTimeout => [3.into_dart()].into_dart(),
+            crate::api::UpgradeStatus::Completed => [4.into_dart()].into_dart(),
+            crate::api::UpgradeStatus::Failed => [5.into_dart()].into_dart(),
         }
     }
 }
@@ -3098,11 +3102,14 @@ impl SseEncode for crate::api::UpgradeStatus {
             crate::api::UpgradeStatus::Restarting => {
                 <i32>::sse_encode(2, serializer);
             }
-            crate::api::UpgradeStatus::Completed => {
+            crate::api::UpgradeStatus::ReconnectTimeout => {
                 <i32>::sse_encode(3, serializer);
             }
-            crate::api::UpgradeStatus::Failed => {
+            crate::api::UpgradeStatus::Completed => {
                 <i32>::sse_encode(4, serializer);
+            }
+            crate::api::UpgradeStatus::Failed => {
+                <i32>::sse_encode(5, serializer);
             }
         }
     }

@@ -1497,8 +1497,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 2:
         return UpgradeStatus_Restarting();
       case 3:
-        return UpgradeStatus_Completed();
+        return UpgradeStatus_ReconnectTimeout();
       case 4:
+        return UpgradeStatus_Completed();
+      case 5:
         return UpgradeStatus_Failed();
       default:
         throw Exception("unreachable");
@@ -2491,8 +2493,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 2:
         return UpgradeStatus_Restarting();
       case 3:
-        return UpgradeStatus_Completed();
+        return UpgradeStatus_ReconnectTimeout();
       case 4:
+        return UpgradeStatus_Completed();
+      case 5:
         return UpgradeStatus_Failed();
       default:
         throw UnimplementedError('');
@@ -3337,10 +3341,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_box_autoadd_upload_progress(field0, serializer);
       case UpgradeStatus_Restarting():
         sse_encode_i_32(2, serializer);
-      case UpgradeStatus_Completed():
+      case UpgradeStatus_ReconnectTimeout():
         sse_encode_i_32(3, serializer);
-      case UpgradeStatus_Failed():
+      case UpgradeStatus_Completed():
         sse_encode_i_32(4, serializer);
+      case UpgradeStatus_Failed():
+        sse_encode_i_32(5, serializer);
     }
   }
 

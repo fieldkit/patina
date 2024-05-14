@@ -1075,11 +1075,11 @@ pub enum FirmwareDownloadStatus {
 }
 
 #[derive(Debug)]
-#[allow(dead_code)]
 pub enum UpgradeStatus {
     Starting,
     Uploading(UploadProgress),
     Restarting,
+    ReconnectTimeout,
     Completed,
     Failed,
 }
@@ -1126,6 +1126,12 @@ pub struct LocalFirmware {
     pub time: i64,
     pub module: String,
     pub profile: String,
+}
+
+impl LocalFirmware {
+    pub fn file_name(&self) -> String {
+        format!("firmware-{}.bin", self.id)
+    }
 }
 
 #[derive(Clone, Debug)]

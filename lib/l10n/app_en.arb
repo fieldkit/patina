@@ -154,6 +154,7 @@
   "firmwareStarting": "Starting...",
   "firmwareUploading": "Uploading...",
   "firmwareRestarting": "Restarting...",
+  "firmwareReconnectTimeout": "Unable to reconnect to station.",
   "firmwareCompleted": "Completed",
   "firmwareFailed": "Failed!",
   "firmwareConnected": "Connected",
