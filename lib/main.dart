@@ -127,8 +127,9 @@ Future<AppEnv> initializeCurrentEnv(
 
 class OurApp extends StatefulWidget {
   final AppEnv env;
+  final Locale locale;
 
-  const OurApp({super.key, required this.env});
+  const OurApp({super.key, required this.env, required this.locale});
 
   @override
   State<OurApp> createState() => _OurAppState();
@@ -154,28 +155,8 @@ class _OurAppState extends State<OurApp> {
     });
   }
 
-  void loadLocale() async {
-    final prefs = AppPreferences();
-    final locale = Locale(await prefs.getLocale());
-    setLocale(locale);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loadLocale();
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_locale == null) {
-      Loggers.ui.i("waiting on locale");
-
-      return Container();
-    }
-
-    Loggers.ui.i("have locale");
-
     return MultiProvider(
         providers: [
           ValueListenableProvider.value(value: widget.env.appState),
@@ -194,7 +175,7 @@ class _OurAppState extends State<OurApp> {
               Locale('en'),
               Locale('es'),
             ],
-            locale: _locale,
+            locale: _locale ?? widget.locale,
             title: 'FieldKit',
             theme: ThemeData(
               textButtonTheme: TextButtonThemeData(style: flatButtonStyle),
@@ -250,7 +231,11 @@ void main() async {
 
   final refName = getCommitRefName();
   final sha = getCommitSha();
-  logger.i("Initialized: ref=$refName sha=$sha");
 
-  runApp(OurApp(env: env));
+  final prefs = AppPreferences();
+  final locale = Locale(await prefs.getLocale());
+
+  logger.i("Initialized: ref=$refName sha=$sha locale=$locale");
+
+  runApp(OurApp(env: env, locale: locale));
 }
