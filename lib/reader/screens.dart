@@ -81,9 +81,7 @@ class ProvideContentFlowsWidget extends StatelessWidget {
   Widget build(context) {
     final Locale active = Localizations.localeOf(context);
     final String path = "resources/flows/flows_${active.languageCode}.json";
-
-    Loggers.ui.i("loading $path");
-
+    Loggers.ui.i("flows:loading $path");
     return FutureBuilder<String>(
         future: DefaultAssetBundle.of(context).loadString(path),
         builder: (context, AsyncSnapshot<String> snapshot) {
@@ -97,7 +95,7 @@ class ProvideContentFlowsWidget extends StatelessWidget {
               child: child,
             );
           } else {
-            return const CircularProgressIndicator();
+            return child;
           }
         });
   }
