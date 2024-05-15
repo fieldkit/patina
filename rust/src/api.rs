@@ -222,7 +222,9 @@ impl Sdk {
 
     async fn open(&self) -> Result<Arc<Mutex<Db>>> {
         let mut db = self.db.lock().await;
-        db.open()?;
+        let path = PathBuf::from(self.storage_path.clone()).join("db.sqlite3");
+
+        db.open(path)?;
 
         Ok(self.db.clone())
     }
