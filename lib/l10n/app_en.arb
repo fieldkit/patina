@@ -31,10 +31,14 @@
   "upload": "Upload",
   "readingsAvailable": "{readings} readings can be downloaded.",
   "readingsAvailableAndAlreadyHave": "Already have {alreadyHave} readings and {readings} more can be downloaded.",
+  "readingsPendingUpload": "{readings} readings can be uploaded.",
   "syncProgressReadings": "Received {received} of {readings} readings.",
   "syncWorking": "Working...",
-  "syncDisconnected": "Disconnected",
+  "syncDisconnected": "Station disconnected.",
   "syncElapsed": "{elapsed} elapsed.",
+  "syncNoInternet": "No internet connection.",
+  "syncNoUpload": "No data to upload.",
+  "syncNoDownload": "No data to download.",
   "syncPercentageComplete": "{complete} complete.",
   "@syncPercentageComplete" :{
     "placeholders": {

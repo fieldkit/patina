@@ -910,6 +910,8 @@ class UploadTask extends Task {
 
   bool get allowed => problem == UploadProblem.none;
 
+  int get total => files.map((e) => e.tail - e.head).sum;
+
   @override
   String toString() {
     return "UploadTask($deviceId, ${files.length} files, $problem)";
