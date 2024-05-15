@@ -77,6 +77,7 @@ class NoStationsHelpWidget extends StatelessWidget {
           ),
         ),
         if (false)
+          // ignore: dead_code
           Padding(
             padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
             child: ElevatedTextButton(
