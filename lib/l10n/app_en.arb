@@ -33,6 +33,7 @@
   "readingsAvailableAndAlreadyHave": "Already have {alreadyHave} readings and {readings} more can be downloaded.",
   "syncProgressReadings": "Received {received} of {readings} readings.",
   "syncWorking": "Working...",
+  "syncDisconnected": "Disconnected",
   "syncElapsed": "{elapsed} elapsed.",
   "syncPercentageComplete": "{complete} complete.",
   "@syncPercentageComplete" :{
