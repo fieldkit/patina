@@ -1131,7 +1131,7 @@ pub struct LocalFirmware {
 }
 
 impl LocalFirmware {
-    pub fn file_name(&self) -> String {
+    pub(crate) fn file_name(&self) -> String {
         format!("firmware-{}.bin", self.id)
     }
 }
