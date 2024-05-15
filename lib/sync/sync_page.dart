@@ -218,6 +218,7 @@ class StationSyncStatus extends StatelessWidget {
 
   StationConfig get config => station.config!;
 
+  bool get isConnected => station.connected;
   bool get isSyncing => station.syncing != null;
   bool get isFailed => station.syncing?.failed == true;
   bool get isDownloading => station.syncing?.download != null;
@@ -252,11 +253,14 @@ class StationSyncStatus extends StatelessWidget {
     return UpgradeRequiredWidget(station: station);
   }
 
-  String downloadSubtitle(BuildContext context) {
+  String syncingSubtitle(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final DownloadTask? task = downloadTask;
     if (task == null) {
-      return localizations.syncWorking;
+      if (isConnected) {
+        return localizations.syncWorking;
+      }
+      return localizations.syncDisconnected;
     } else {
       final int? first = task.first;
       if (first != null) {
@@ -275,7 +279,7 @@ class StationSyncStatus extends StatelessWidget {
     final title = config.name;
     final subtitle = isSyncing
         ? localizations.syncPercentageComplete(station.syncing?.completed ?? 0)
-        : downloadSubtitle(context);
+        : syncingSubtitle(context);
 
     return BorderedListItem(
         header: GenericListItemHeader(title: title, subtitle: subtitle),
