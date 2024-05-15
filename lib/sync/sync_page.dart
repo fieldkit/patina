@@ -246,7 +246,6 @@ class StationSyncStatus extends StatelessWidget {
         WH.padBelowProgress(Text(localizations.syncWorking)),
       ]));
     }
-    Loggers.ui.i("udp=${station.ephemeral?.capabilities.udp}");
     if (station.ephemeral?.capabilities.udp ?? false) {
       return SyncOptions(onDownload: onDownload, onUpload: onUpload);
     }

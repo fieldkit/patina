@@ -912,7 +912,7 @@ class UploadTask extends Task {
 
   @override
   String toString() {
-    return "UploadTask($deviceId, ${files.length} files)";
+    return "UploadTask($deviceId, ${files.length} files, $problem)";
   }
 
   @override
