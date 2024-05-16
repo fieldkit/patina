@@ -172,19 +172,25 @@ class UploadPanel extends StatelessWidget {
   final StationModel station;
   final void Function(UploadTask) onUpload;
   final UploadTask? uploadTask;
+  final bool hasLoginTasks;
 
   const UploadPanel(
       {super.key,
       required this.station,
       required this.onUpload,
-      this.uploadTask});
+      required this.uploadTask,
+      required this.hasLoginTasks});
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
     if (uploadTask == null) {
-      return padAll(Text(localizations.syncNoUpload));
+      if (hasLoginTasks) {
+        return const SizedBox.shrink();
+      } else {
+        return padAll(Text(localizations.syncNoUpload));
+      }
     }
 
     if (uploadTask?.problem == UploadProblem.connectivity) {
@@ -246,7 +252,11 @@ class DataSyncPage extends StatelessWidget {
       final download = DownloadPanel(
           station: station, downloadTask: downloadTask, onDownload: onDownload);
       final upload = UploadPanel(
-          station: station, uploadTask: uploadTask, onUpload: onUpload);
+        station: station,
+        uploadTask: uploadTask,
+        onUpload: onUpload,
+        hasLoginTasks: loginTasks.isNotEmpty,
+      );
       Loggers.ui.i(
           "data-sync: busy=$busy downloadTask=$downloadTask uploadTask=$uploadTask loginTasks=$loginTasks");
       return StationSyncStatus(
