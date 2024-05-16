@@ -392,10 +392,13 @@ impl Sdk {
             let authenticated = client.to_authenticated(tokens.into())?;
             let publish_tx = self.publish_tx.clone();
             let device_id = device_id.clone();
+            let server = self.server.clone();
 
             async move {
                 for file in files.into_iter() {
                     info!("{:?} uploading", &file);
+
+                    let path = file.path.clone();
 
                     let res = authenticated
                         .upload_readings(&PathBuf::from(file.path))
@@ -418,6 +421,11 @@ impl Sdk {
                                     Err(e) => warn!("Publish failed: {:?}", e),
                                 }
                             }
+
+                            match server.uploaded(path).await {
+                                Err(e) => warn!("Error marking uploaded: {:?}", e),
+                                Ok(_) => {}
+                            };
 
                             TransferStatus::Completed
                         }
