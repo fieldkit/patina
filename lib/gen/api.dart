@@ -615,6 +615,7 @@ class RecordArchive {
   final String path;
   final int head;
   final int tail;
+  final int? uploaded;
 
   const RecordArchive({
     required this.deviceId,
@@ -622,6 +623,7 @@ class RecordArchive {
     required this.path,
     required this.head,
     required this.tail,
+    this.uploaded,
   });
 
   @override
@@ -630,7 +632,8 @@ class RecordArchive {
       generationId.hashCode ^
       path.hashCode ^
       head.hashCode ^
-      tail.hashCode;
+      tail.hashCode ^
+      uploaded.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -641,7 +644,8 @@ class RecordArchive {
           generationId == other.generationId &&
           path == other.path &&
           head == other.head &&
-          tail == other.tail;
+          tail == other.tail &&
+          uploaded == other.uploaded;
 }
 
 class Registered {

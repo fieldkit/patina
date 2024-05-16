@@ -84,10 +84,11 @@ async fn create_sdk(
 
     let nearby = NearbyDevices::new(bg_tx.clone());
 
-    let server = Arc::new(Server::new(
+    let (server, from_server) = Server::new(
         UdpTransport::new(),
         FilesRecordSink::new(&Path::new(&storage_path).join("fk-data")),
-    ));
+    );
+    let server = Arc::new(server);
 
     let sdk = Sdk::new(
         storage_path,
@@ -101,7 +102,7 @@ async fn create_sdk(
 
     let merge = MergeAndPublishReplies::new(db, publish_tx.clone());
 
-    tokio::spawn(async move { background_task(nearby, server, merge, bg_rx).await });
+    tokio::spawn(async move { background_task(nearby, server, merge, bg_rx, from_server).await });
 
     Ok(sdk)
 }
@@ -111,10 +112,10 @@ async fn background_task(
     server: Arc<Server<UdpTransport, FilesRecordSink>>,
     merge: MergeAndPublishReplies,
     bg_rx: Receiver<BackgroundMessage>,
+    from_server: Receiver<ServerEvent>,
 ) {
     info!("bg:started");
 
-    let (transfer_publish, transfer_events) = tokio::sync::mpsc::channel::<ServerEvent>(32);
     let (discovery_tx, discovery_rx) = tokio::sync::mpsc::channel::<Discovered>(8);
     let discovery = Discovery::default();
 
@@ -122,10 +123,10 @@ async fn background_task(
         d = discovery.run(discovery_tx) => {
             warn!("discovery: {:?}", d);
         },
-        n = nearby.run(discovery_rx, transfer_events) => {
+        n = nearby.run(discovery_rx, from_server) => {
             warn!("nearby: {:?}", n);
         },
-        s = server.run(transfer_publish) => {
+        s = server.run() => {
             warn!("server: {:?}", s);
         },
         m = merge.run(bg_rx) => {
@@ -443,6 +444,11 @@ impl Sdk {
                         }))
                         .await
                         .expect("Publish failed")
+                }
+
+                match server.check_for_archives().await {
+                    Ok(_) => {}
+                    Err(e) => warn!("Publish failed: {:?}", e),
                 }
             }
         });
@@ -1114,6 +1120,7 @@ pub struct RecordArchive {
     pub path: String,
     pub head: i64,
     pub tail: i64,
+    pub uploaded: Option<i64>,
 }
 
 #[derive(Debug)]
@@ -1182,11 +1189,6 @@ pub struct StationConfig {
     pub battery: BatteryInfo,
     pub solar: SolarInfo,
     pub modules: Vec<ModuleConfig>,
-}
-
-#[derive(Clone, Debug)]
-pub struct CapabilitiesInfo {
-    pub udp: bool,
 }
 
 #[derive(Clone, Debug)]

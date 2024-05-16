@@ -57,6 +57,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       dynamic raw);
 
   @protected
+  int dco_decode_box_autoadd_i_64(dynamic raw);
+
+  @protected
   LocalFirmware dco_decode_box_autoadd_local_firmware(dynamic raw);
 
   @protected
@@ -195,6 +198,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   EphemeralConfig? dco_decode_opt_box_autoadd_ephemeral_config(dynamic raw);
+
+  @protected
+  int? dco_decode_opt_box_autoadd_i_64(dynamic raw);
 
   @protected
   LoraConfig? dco_decode_opt_box_autoadd_lora_config(dynamic raw);
@@ -341,6 +347,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   FirmwareDownloadStatus sse_decode_box_autoadd_firmware_download_status(
       SseDeserializer deserializer);
+
+  @protected
+  int sse_decode_box_autoadd_i_64(SseDeserializer deserializer);
 
   @protected
   LocalFirmware sse_decode_box_autoadd_local_firmware(
@@ -503,6 +512,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
+  int? sse_decode_opt_box_autoadd_i_64(SseDeserializer deserializer);
+
+  @protected
   LoraConfig? sse_decode_opt_box_autoadd_lora_config(
       SseDeserializer deserializer);
 
@@ -654,6 +666,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_firmware_download_status(
       FirmwareDownloadStatus self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_i_64(int self, SseSerializer serializer);
 
   @protected
   void sse_encode_box_autoadd_local_firmware(
@@ -820,6 +835,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_ephemeral_config(
       EphemeralConfig? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_box_autoadd_i_64(int? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_box_autoadd_lora_config(

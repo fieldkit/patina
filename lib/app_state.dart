@@ -861,7 +861,9 @@ class UploadTaskFactory extends TaskFactory<UploadTask> {
 
   List<UploadTask> create() {
     final List<UploadTask> tasks = List.empty(growable: true);
-    final byId = _archives.groupListsBy((a) => a.deviceId);
+    final byId = _archives
+        .where((a) => a.uploaded == null)
+        .groupListsBy((a) => a.deviceId);
     for (final entry in byId.entries) {
       final account = portalAccounts.getAccountForDevice(entry.key);
       if (account != null) {

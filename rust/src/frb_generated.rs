@@ -1170,6 +1170,17 @@ impl SseDecode for Option<crate::api::EphemeralConfig> {
     }
 }
 
+impl SseDecode for Option<i64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<i64>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for Option<crate::api::LoraConfig> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1291,12 +1302,14 @@ impl SseDecode for crate::api::RecordArchive {
         let mut var_path = <String>::sse_decode(deserializer);
         let mut var_head = <i64>::sse_decode(deserializer);
         let mut var_tail = <i64>::sse_decode(deserializer);
+        let mut var_uploaded = <Option<i64>>::sse_decode(deserializer);
         return crate::api::RecordArchive {
             device_id: var_deviceId,
             generation_id: var_generationId,
             path: var_path,
             head: var_head,
             tail: var_tail,
+            uploaded: var_uploaded,
         };
     }
 }
@@ -2066,6 +2079,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::RecordArchive {
             self.path.into_into_dart().into_dart(),
             self.head.into_into_dart().into_dart(),
             self.tail.into_into_dart().into_dart(),
+            self.uploaded.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -2809,6 +2823,16 @@ impl SseEncode for Option<crate::api::EphemeralConfig> {
     }
 }
 
+impl SseEncode for Option<i64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <i64>::sse_encode(value, serializer);
+        }
+    }
+}
+
 impl SseEncode for Option<crate::api::LoraConfig> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2918,6 +2942,7 @@ impl SseEncode for crate::api::RecordArchive {
         <String>::sse_encode(self.path, serializer);
         <i64>::sse_encode(self.head, serializer);
         <i64>::sse_encode(self.tail, serializer);
+        <Option<i64>>::sse_encode(self.uploaded, serializer);
     }
 }
 

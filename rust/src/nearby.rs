@@ -394,6 +394,7 @@ impl NearbyDevices {
                         path: f.path.clone(),
                         head: f.meta.head,
                         tail: f.meta.tail,
+                        uploaded: f.meta.uploaded,
                     })
                     .collect();
                 publish_tx
