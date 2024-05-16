@@ -198,9 +198,12 @@ class KnownStationsModel extends ChangeNotifier {
       return;
     }
 
-    if (station.syncing != null) {
-      Loggers.state.w("$deviceId already syncing");
-      return;
+    final syncing = station.syncing;
+    if (syncing != null) {
+      if (!syncing.failed) {
+        Loggers.state.w("$deviceId already syncing");
+        return;
+      }
     }
 
     final progress = await startDownload(deviceId: deviceId, first: first);
