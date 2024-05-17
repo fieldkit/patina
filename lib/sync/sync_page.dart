@@ -137,6 +137,10 @@ class DownloadPanel extends StatelessWidget {
       return padAll(Text(localizations.syncDisconnected));
     }
 
+    if (station.ephemeral?.capabilities.udp == null) {
+      return UpgradeRequiredWidget(station: station);
+    }
+
     if (downloadTask == null) {
       return padAll(Text(localizations.syncNoDownload));
     }
@@ -310,10 +314,7 @@ class StationSyncStatus extends StatelessWidget {
         WH.padBelowProgress(Text(localizations.syncWorking)),
       ]));
     }
-    if (station.ephemeral?.capabilities.udp ?? false) {
-      return Column(children: [download, upload]);
-    }
-    return UpgradeRequiredWidget(station: station);
+    return Column(children: [download, upload]);
   }
 
   @override
