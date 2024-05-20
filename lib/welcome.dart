@@ -48,32 +48,39 @@ class WelcomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
                     child: ElevatedTextButton(
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const ProvideContentFlowsWidget(
-                                      eager: false,
-                                      child: QuickFlow(
-                                          start: flows.StartFlow(
-                                              prefix: "onboarding"))),
-                            ));
+                        // ignore: dead_code
+                        if (false) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ProvideContentFlowsWidget(
+                                        eager: false,
+                                        child: QuickFlow(
+                                            start: flows.StartFlow(
+                                                prefix: "onboarding"))),
+                              ));
+                        } else {
+                          onDone();
+                        }
                       },
                       text: AppLocalizations.of(context)!.welcomeButton,
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      onDone(); // Call the onDone callback when the skip button is pressed
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.skipInstructions,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16.0,
+                  if (false)
+                    // ignore: dead_code
+                    TextButton(
+                      onPressed: () {
+                        onDone(); // Call the onDone callback when the skip button is pressed
+                      },
+                      child: Text(
+                        AppLocalizations.of(context)!.skipInstructions,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16.0,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
