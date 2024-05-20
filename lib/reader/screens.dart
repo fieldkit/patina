@@ -74,8 +74,10 @@ class _QuickFlowState extends State<QuickFlow> {
 
 class ProvideContentFlowsWidget extends StatelessWidget {
   final Widget child;
+  final bool eager;
 
-  const ProvideContentFlowsWidget({super.key, required this.child});
+  const ProvideContentFlowsWidget(
+      {super.key, required this.child, required this.eager});
 
   @override
   Widget build(context) {
@@ -95,7 +97,11 @@ class ProvideContentFlowsWidget extends StatelessWidget {
               child: child,
             );
           } else {
-            return child;
+            if (eager) {
+              return child;
+            } else {
+              return const SizedBox.shrink();
+            }
           }
         });
   }

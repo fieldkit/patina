@@ -211,7 +211,8 @@ class _OurAppState extends State<OurApp> {
                   Colors.white, // changes the default Scaffold background color
             ),
             home: const LoaderOverlay(
-                child: ProvideContentFlowsWidget(child: HomePage())),
+                child:
+                    ProvideContentFlowsWidget(eager: true, child: HomePage())),
           ),
         ));
   }

@@ -49,12 +49,15 @@ class WelcomeScreen extends StatelessWidget {
                     child: ElevatedTextButton(
                       onPressed: () {
                         Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const QuickFlow(
-                                  start:
-                                      flows.StartFlow(prefix: "onboarding"))),
-                        );
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const ProvideContentFlowsWidget(
+                                      eager: false,
+                                      child: QuickFlow(
+                                          start: flows.StartFlow(
+                                              prefix: "onboarding"))),
+                            ));
                       },
                       text: AppLocalizations.of(context)!.welcomeButton,
                     ),
