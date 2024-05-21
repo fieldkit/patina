@@ -63,10 +63,15 @@ class _HelpPageState extends State<HelpPage> {
           ListTile(
             title: Text(AppLocalizations.of(context)!.helpUploadLogs),
             onTap: () async {
+              final localizations = AppLocalizations.of(context)!;
+              final messenger = ScaffoldMessenger.of(context);
               final overlay = context.loaderOverlay;
               try {
                 overlay.show();
                 await ShareDiagnostics().upload();
+                messenger.showSnackBar(SnackBar(
+                  content: Text(localizations.logsUploaded),
+                ));
               } finally {
                 overlay.hide();
               }

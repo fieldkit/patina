@@ -8,7 +8,6 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'api.freezed.dart';
 
-// The type `CapabilitiesInfo` is not used by any `pub` functions, thus it is ignored.
 // The type `LogSink` is not used by any `pub` functions, thus it is ignored.
 // The type `MergeAndPublishReplies` is not used by any `pub` functions, thus it is ignored.
 // The type `RuntimeError` is not used by any `pub` functions, thus it is ignored.
