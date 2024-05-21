@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fk/connections.dart';
 import 'package:fk/diagnostics.dart';
 import 'package:fk/preferences.dart';
 import 'package:fk/reader/screens.dart';
@@ -96,8 +97,8 @@ Future<AppEnv> initializeCurrentEnv(
     Configuration config, AppEventDispatcher dispatcher) async {
   Loggers.initialize(config.storagePath);
 
-  logger.i("Storage: ${config.storagePath}");
-  logger.i("Portal: ${config.portalBaseUrl}");
+  logger.i("storage: ${config.storagePath}");
+  logger.i("portal: ${config.portalBaseUrl}");
 
   final completer = Completer<AppEnv>();
 
@@ -211,8 +212,9 @@ class _OurAppState extends State<OurApp> {
                   Colors.white, // changes the default Scaffold background color
             ),
             home: const LoaderOverlay(
-                child:
-                    ProvideContentFlowsWidget(eager: true, child: HomePage())),
+                child: MonitorConnectionWidget(
+                    child: ProvideContentFlowsWidget(
+                        eager: true, child: HomePage()))),
           ),
         ));
   }

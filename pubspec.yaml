@@ -85,6 +85,7 @@ dependencies:
     path: rust_builder
   flutter_svg: ^2.0.9
   path: ^1.9.0
+  connectivity_plus: ^6.0.3
 
 dev_dependencies:
   flutter_test:

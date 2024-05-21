@@ -1270,10 +1270,11 @@ class PortalAccounts extends ChangeNotifier {
       try {
         // A little messy, I know.
         final loaded = PortalAccounts.fromJson(jsonDecode(value));
+        /*
         for (final account in loaded.accounts) {
-          Loggers.state.v(
-              "Account email=${account.email} url=${account.tokens?.transmission.url} #devonly");
+          Loggers.state.v( "Account email=${account.email} url=${account.tokens?.transmission.url} #devonly");
         }
+        */
         _accounts.clear();
         _accounts.addAll(loaded.accounts);
         notifyListeners();
