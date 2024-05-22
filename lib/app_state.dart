@@ -626,6 +626,11 @@ class StationConfiguration extends ChangeNotifier {
         deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
   }
 
+  bool canEnableWifiUploading() {
+    final account = portalAccounts.getAccountForDevice(deviceId);
+    return account != null;
+  }
+
   Future<void> enableWifiUploading() async {
     final account = portalAccounts.getAccountForDevice(deviceId);
     if (account == null) {
