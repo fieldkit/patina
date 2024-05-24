@@ -22,6 +22,37 @@ class LoadingWidget extends StatefulWidget {
 class _LoadingState extends State<LoadingWidget> {
   final List<String> _values = List.empty(growable: true);
 
+  Widget progress() {
+    return Container(
+        decoration: const BoxDecoration(color: Colors.white),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 100),
+                child: LargeLogo(),
+              ),
+              const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 50),
+                  child: SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: CircularProgressIndicator())),
+              Expanded(
+                  child: Column(
+                      children: _values
+                          .map((e) => Text(
+                                e,
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ))
+                          .toList())),
+            ]));
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,34 +70,7 @@ class _LoadingState extends State<LoadingWidget> {
                 }
               }
 
-              return Container(
-                  decoration: const BoxDecoration(color: Colors.white),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 100),
-                          child: LargeLogo(),
-                        ),
-                        const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 50),
-                            child: SizedBox(
-                                width: 100,
-                                height: 100,
-                                child: CircularProgressIndicator())),
-                        Expanded(
-                            child: Column(
-                                children: _values
-                                    .map((e) => Text(
-                                          e,
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black),
-                                        ))
-                                    .toList())),
-                      ]));
+              return progress();
             }));
   }
 }
