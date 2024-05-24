@@ -1269,30 +1269,29 @@ class PortalAccounts extends ChangeNotifier {
   Future<PortalAccounts> load() async {
     Loggers.state.i("accounts:loading");
 
-    const storage = FlutterSecureStorage();
-    String? value = await storage.read(key: secureStorageKey);
-    if (value != null) {
-      try {
-        // A little messy, I know.
-        final loaded = PortalAccounts.fromJson(jsonDecode(value));
-        /*
-        for (final account in loaded.accounts) {
-          Loggers.state.v( "Account email=${account.email} url=${account.tokens?.transmission.url} #devonly");
+    try {
+      const storage = FlutterSecureStorage();
+      String? value = await storage.read(key: secureStorageKey);
+      if (value != null) {
+        try {
+          // A little messy, I know.
+          final loaded = PortalAccounts.fromJson(jsonDecode(value));
+          _accounts.clear();
+          _accounts.addAll(loaded.accounts);
+          notifyListeners();
+        } catch (e) {
+          Loggers.state.e("accounts:exception: $e");
         }
-        */
-        _accounts.clear();
-        _accounts.addAll(loaded.accounts);
-        notifyListeners();
-      } catch (e) {
-        Loggers.state.e("Exception loading accounts: $e");
       }
+
+      validate(); // In background
+
+      refreshFirmware(); // In background
+
+      Loggers.state.i("accounts:load exiting");
+    } catch (e) {
+      Loggers.state.e("accounts:fatal-exception: $e");
     }
-
-    validate(); // In background
-
-    refreshFirmware(); // In background
-
-    Loggers.state.i("accounts:load exiting");
 
     return this;
   }
