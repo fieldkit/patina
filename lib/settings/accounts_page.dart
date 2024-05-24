@@ -111,25 +111,23 @@ class AccountsPage extends StatelessWidget {
                     showDialog(
                         context: context,
                         builder: (context) {
+                          final localizations = AppLocalizations.of(context)!;
                           return AlertDialog(
-                            title: Text(AppLocalizations.of(context)!
-                                .confirmDeleteAccountTitle),
-                            content: Text(
-                                AppLocalizations.of(context)!.confirmDelete),
+                            title:
+                                Text(localizations.confirmDeleteAccountTitle),
+                            content: Text(localizations.confirmDelete),
                             actions: <Widget>[
                               TextButton(
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  child: Text(AppLocalizations.of(context)!
-                                      .confirmCancel)),
+                                  child: Text(localizations.confirmCancel)),
                               TextButton(
                                   onPressed: () async {
                                     Navigator.pop(context);
                                     await accounts.delete(account);
                                   },
-                                  child: Text(
-                                      AppLocalizations.of(context)!.confirmYes))
+                                  child: Text(localizations.confirmYes))
                             ],
                           );
                         });
