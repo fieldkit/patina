@@ -9,9 +9,26 @@ class FullScreenLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         decoration: const BoxDecoration(color: Colors.white),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
-          Image.asset("resources/images/logo_fk_blue.png"),
-          const Padding(padding: EdgeInsets.only(top: 50), child: SizedBox(width: 100, height: 100, child: CircularProgressIndicator()))
-        ]));
+        child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              LargeLogo(),
+              Padding(
+                  padding: EdgeInsets.only(top: 50),
+                  child: SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: CircularProgressIndicator()))
+            ]));
+  }
+}
+
+class LargeLogo extends StatelessWidget {
+  const LargeLogo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset("resources/images/logo_fk_blue.png");
   }
 }

@@ -5,7 +5,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../app_state.dart';
-import '../splash_screen.dart';
 
 import 'edit_account_page.dart';
 
@@ -176,7 +175,10 @@ class ProvideAccountsWidget extends StatelessWidget {
               child: child,
             );
           } else {
-            return const FullScreenLogo();
+            return ChangeNotifierProvider(
+              create: (context) => PortalAccounts(accounts: []),
+              child: child,
+            );
           }
         });
   }

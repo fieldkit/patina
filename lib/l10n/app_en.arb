@@ -1,6 +1,10 @@
 {
   "fieldKit": "FieldKit",
 
+  "loadingConfiguration": "Configuration",
+  "loadingEnvironment": "Environment",
+  "loadingLocale": "Locale",
+
   "welcomeTitle": "Welcome!",
   "welcomeMessage": "Our mobile app makes it easy to set up and deploy your FieldKit station.",
   "welcomeButton": "Get Started",

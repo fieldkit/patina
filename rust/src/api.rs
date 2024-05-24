@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::Result;
 use chrono::Utc;
 use std::{
     io::Write,
@@ -871,7 +871,7 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
         .with_writer(LogSink { sink })
         .try_init()
     {
-        bail!("{}", err);
+        error!("{}", err);
     }
 
     Ok(())
