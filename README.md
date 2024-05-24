@@ -33,7 +33,7 @@ echo "ANDROID_NDK=path/to/ndk" >> ~/.gradle/gradle.properties
 
 ### .env
 
-You will likely need to copy `env.template` to `.env`
+You will need to copy `env.template` to `.env`
 
 ### RustFK
 
