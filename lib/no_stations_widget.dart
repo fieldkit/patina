@@ -54,22 +54,20 @@ class NoStationsHelpWidget extends StatelessWidget {
                     fit: BoxFit.contain),
               )),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          padding: const EdgeInsets.only(top: 10.0),
           child: Text(
-            localizations.connectStation, // TODO: Make Functional
+            localizations.connectStation,
             style: const TextStyle(
-              fontFamily: 'Avenir',
               fontSize: 22.0,
               fontWeight: FontWeight.w700,
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30.0),
+          padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 30.0),
           child: Text(
             localizations.noStationsDescription,
             style: const TextStyle(
-              fontFamily: 'Avenir',
               fontSize: 18.0,
               fontWeight: FontWeight.w500,
             ),

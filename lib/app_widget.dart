@@ -43,7 +43,28 @@ class _OurAppState extends State<OurApp> {
   }
 
   ThemeData theme() {
+    final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
+      backgroundColor: AppColors.primaryColor,
+      foregroundColor: Colors.white,
+      minimumSize: const Size(88, 36),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(2)),
+      ),
+      textStyle: const TextStyle(fontWeight: FontWeight.w700),
+    );
+
+    final ButtonStyle flatButtonStyle = TextButton.styleFrom(
+      minimumSize: const Size(88, 36),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(2)),
+      ),
+      textStyle: const TextStyle(fontWeight: FontWeight.w700),
+    );
+
     return ThemeData(
+      fontFamily: 'Avenir',
       textButtonTheme: TextButtonThemeData(style: flatButtonStyle),
       elevatedButtonTheme: ElevatedButtonThemeData(style: raisedButtonStyle),
       primaryColor: Colors.white, // changes the default AppBar color
@@ -52,6 +73,7 @@ class _OurAppState extends State<OurApp> {
       primaryTextTheme: const TextTheme(
         titleLarge: TextStyle(
           color: Color.fromARGB(255, 48, 44, 44),
+          fontWeight: FontWeight.w500,
         ),
       ),
       appBarTheme: const AppBarTheme(
@@ -109,21 +131,3 @@ class _OurAppState extends State<OurApp> {
     );
   }
 }
-
-final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
-  backgroundColor: AppColors.primaryColor,
-  foregroundColor: Colors.white,
-  minimumSize: const Size(88, 36),
-  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(2)),
-  ),
-);
-
-final ButtonStyle flatButtonStyle = TextButton.styleFrom(
-  minimumSize: const Size(88, 36),
-  padding: const EdgeInsets.symmetric(horizontal: 16),
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(2)),
-  ),
-);
