@@ -1,5 +1,7 @@
+import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:url_launcher/link.dart';
 
 import 'common_widgets.dart';
 
@@ -75,6 +77,23 @@ class NoStationsHelpWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
+        ),
+        Link(
+          uri: Uri.parse(
+              'https://www.fieldkit.org/product-guide/what-is-a-fieldkit-station'),
+          target: LinkTarget.blank,
+          builder: (BuildContext ctx, FollowLink? openLink) {
+            return Center(
+                child: TextButton(
+              onPressed: openLink,
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.primaryColor,
+                textStyle: const TextStyle(
+                    color: AppColors.primaryColor, fontWeight: FontWeight.w500),
+              ),
+              child: Text(localizations.noStationsWhatIsStation),
+            ));
+          },
         ),
         if (false)
           // ignore: dead_code
