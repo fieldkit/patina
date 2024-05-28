@@ -133,7 +133,7 @@ class DownloadPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    if (!station.connected) {
+    if (!station.connected || station.ephemeral == null) {
       return padAll(Text(localizations.syncDisconnected));
     }
 
