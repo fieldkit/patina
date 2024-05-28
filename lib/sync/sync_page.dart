@@ -137,7 +137,7 @@ class DownloadPanel extends StatelessWidget {
       return padAll(Text(localizations.syncDisconnected));
     }
 
-    if (station.ephemeral?.capabilities.udp == null) {
+    if (!(station.ephemeral?.capabilities.udp ?? false)) {
       return UpgradeRequiredWidget(station: station);
     }
 
