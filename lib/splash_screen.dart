@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-const Color logoBlue = Color.fromRGBO(27, 128, 201, 1);
-
 class FullScreenLogo extends StatelessWidget {
   const FullScreenLogo({super.key});
 
