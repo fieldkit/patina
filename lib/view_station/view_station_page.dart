@@ -1,7 +1,6 @@
 import 'package:fk/common_widgets.dart';
 import 'package:fk/constants.dart';
 import 'package:fk/deploy/deploy_page.dart';
-import 'package:fk/diagnostics.dart';
 import 'package:fk/providers.dart';
 import 'package:fk/view_station/module_widgets.dart';
 import 'package:flutter/material.dart';
@@ -137,18 +136,45 @@ class TimerCircle extends StatelessWidget {
 
   const TimerCircle({super.key, required this.enabled, required this.deployed});
 
+  Color color() {
+    if (enabled) {
+      if (deployed == null) {
+        return Colors.black;
+      } else {
+        return AppColors.logoBlue;
+      }
+    }
+    return Colors.grey;
+  }
+
+  String label() {
+    if (deployed == null) {
+      return "00:00:00";
+    } else {
+      final deployed =
+          DateTime.fromMillisecondsSinceEpoch(this.deployed! * 1000);
+      final e = DateTime.now().toUtc().difference(deployed);
+      final days = e.inDays;
+      final hours = e.inHours - (days * 24);
+      final minutes = e.inMinutes - (hours * 60);
+      final paddedHours = hours.toString().padLeft(2, '0');
+      final paddedMins = minutes.toString().padLeft(2, '0');
+      return "$days:$paddedHours:$paddedMins";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Loggers.ui.i("Deployed: $deployed");
-
-    final color = enabled ? AppColors.logoBlue : Colors.grey;
+    final localizations = AppLocalizations.of(context)!;
     return Container(
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        decoration: BoxDecoration(color: color(), shape: BoxShape.circle),
         alignment: Alignment.center,
-        child: const Text(
-          "00:00:00",
-          style: TextStyle(fontSize: 20, color: Colors.white),
-        ));
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(label(),
+              style: const TextStyle(fontSize: 20, color: Colors.white)),
+          Text(localizations.daysHoursMinutes,
+              style: const TextStyle(fontSize: 12, color: Colors.white)),
+        ]));
   }
 }
 
