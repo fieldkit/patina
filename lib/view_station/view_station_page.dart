@@ -1,5 +1,7 @@
 import 'package:fk/common_widgets.dart';
+import 'package:fk/constants.dart';
 import 'package:fk/deploy/deploy_page.dart';
+import 'package:fk/diagnostics.dart';
 import 'package:fk/providers.dart';
 import 'package:fk/view_station/module_widgets.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +70,88 @@ class ViewStationPage extends StatelessWidget {
   }
 }
 
+class BatteryIndicator extends StatelessWidget {
+  final bool enabled;
+  final double level;
+
+  const BatteryIndicator(
+      {super.key, required this.enabled, required this.level});
+
+  String icon() {
+    final String prefix = enabled ? "normal" : "grayed";
+    if (level >= 95) {
+      return "resources/images/battery/${prefix}_100.png";
+    }
+    if (level >= 80) {
+      return "resources/images/battery/${prefix}_80.png";
+    }
+    if (level >= 60) {
+      return "resources/images/battery/${prefix}_60.png";
+    }
+    if (level >= 40) {
+      return "resources/images/battery/${prefix}_40.png";
+    }
+    if (level >= 20) {
+      return "resources/images/battery/${prefix}_20.png";
+    }
+    return "resources/images/battery/${prefix}_0.png";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return ListTile(
+        leading: Image.asset(icon(), cacheWidth: 16),
+        title: Text(localizations.batteryLife),
+        subtitle: Text("$level%"));
+  }
+}
+
+class MemoryIndicator extends StatelessWidget {
+  final bool enabled;
+  final int bytesUsed;
+
+  const MemoryIndicator(
+      {super.key, required this.enabled, required this.bytesUsed});
+
+  String icon() {
+    if (enabled) {
+      return "resources/images/memory/icon.png";
+    }
+    return "resources/images/memory/icon_gray.png";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return ListTile(
+        leading: Image.asset(icon(), cacheWidth: 16),
+        title: Text(localizations.memoryUsage),
+        subtitle: Text("${bytesUsed}b of 512MB"));
+  }
+}
+
+class TimerCircle extends StatelessWidget {
+  final bool enabled;
+  final int? deployed;
+
+  const TimerCircle({super.key, required this.enabled, required this.deployed});
+
+  @override
+  Widget build(BuildContext context) {
+    Loggers.ui.i("Deployed: $deployed");
+
+    final color = enabled ? AppColors.logoBlue : Colors.grey;
+    return Container(
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        alignment: Alignment.center,
+        child: const Text(
+          "00:00:00",
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ));
+  }
+}
+
 class HighLevelsDetails extends StatelessWidget {
   final StationModel station;
 
@@ -92,39 +176,25 @@ class HighLevelsDetails extends StatelessWidget {
       );
     }).toList();
 
-    final circle = Container(
-        decoration:
-            const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
-        alignment: Alignment.center,
-        child: const Text(
-          "00:00:00",
-          style: TextStyle(fontSize: 20, color: Colors.white),
-        ));
-
-    final localizations = AppLocalizations.of(context)!;
-
     return Flex(
       direction: Axis.vertical,
       children: [
         Container(
             padding: const EdgeInsets.only(top: 20),
             child: Row(children: [
-              Expanded(child: SizedBox(height: 150, child: circle)),
+              Expanded(
+                  child: SizedBox(
+                      height: 150,
+                      child: TimerCircle(
+                          enabled: station.connected,
+                          deployed: station.ephemeral?.deployment?.startTime))),
               Expanded(
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ListTile(
-                      leading: Image.asset(
-                          "resources/images/battery/normal_40.png",
-                          cacheWidth: 16),
-                      title: Text(localizations.batteryLife),
-                      subtitle: Text("$battery%")),
-                  ListTile(
-                      leading: Image.asset("resources/images/memory/icon.png",
-                          cacheWidth: 16),
-                      title: Text(localizations.memoryUsage),
-                      subtitle: Text("${bytesUsed}b of 512MB")),
+                  BatteryIndicator(enabled: station.connected, level: battery),
+                  MemoryIndicator(
+                      enabled: station.connected, bytesUsed: bytesUsed),
                 ],
               ))
             ])),
