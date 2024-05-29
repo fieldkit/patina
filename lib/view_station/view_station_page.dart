@@ -101,6 +101,8 @@ class HighLevelsDetails extends StatelessWidget {
           style: TextStyle(fontSize: 20, color: Colors.white),
         ));
 
+    final localizations = AppLocalizations.of(context)!;
+
     return Flex(
       direction: Axis.vertical,
       children: [
@@ -116,32 +118,33 @@ class HighLevelsDetails extends StatelessWidget {
                       leading: Image.asset(
                           "resources/images/battery/normal_40.png",
                           cacheWidth: 16),
-                      title: Text(AppLocalizations.of(context)!.batteryLife),
+                      title: Text(localizations.batteryLife),
                       subtitle: Text("$battery%")),
                   ListTile(
                       leading: Image.asset("resources/images/memory/icon.png",
                           cacheWidth: 16),
-                      title: Text(AppLocalizations.of(context)!.memoryUsage),
+                      title: Text(localizations.memoryUsage),
                       subtitle: Text("${bytesUsed}b of 512MB")),
                 ],
               ))
             ])),
-        if (deployTask != null)
-          Container(
-            padding: const EdgeInsets.all(10),
-            width: double.infinity,
-            child: ElevatedTextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          DeployStationRoute(deviceId: station.deviceId),
-                    ),
-                  );
-                },
-                text: AppLocalizations.of(context)!.deployButton),
-          ),
+        Container(
+          padding: const EdgeInsets.all(10),
+          width: double.infinity,
+          child: ElevatedTextButton(
+              onPressed: deployTask != null
+                  ? () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DeployStationRoute(deviceId: station.deviceId),
+                        ),
+                      );
+                    }
+                  : null,
+              text: AppLocalizations.of(context)!.deployButton),
+        ),
         Column(children: modules)
       ],
     );
