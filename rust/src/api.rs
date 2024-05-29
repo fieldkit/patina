@@ -1277,6 +1277,7 @@ impl TryInto<EphemeralConfig> for HttpReply {
             .status
             .map(|s| s.recording)
             .flatten()
+            .filter(|d| d.started_time > 0)
             .map(|s| DeploymentConfig {
                 start_time: s.started_time,
             });
