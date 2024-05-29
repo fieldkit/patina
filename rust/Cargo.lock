@@ -352,7 +352,7 @@ dependencies = [
 [[package]]
 name = "discovery"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=70ecd87e78f1a8aa9703c9300986451f2e11a256#70ecd87e78f1a8aa9703c9300986451f2e11a256"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=18573bbe1836e8a8f64db95e08aa20ec013043ec#18573bbe1836e8a8f64db95e08aa20ec013043ec"
 dependencies = [
  "anyhow",
  "hex",
@@ -819,6 +819,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1112,7 +1121,7 @@ dependencies = [
 [[package]]
 name = "protos"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=70ecd87e78f1a8aa9703c9300986451f2e11a256#70ecd87e78f1a8aa9703c9300986451f2e11a256"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=18573bbe1836e8a8f64db95e08aa20ec013043ec#18573bbe1836e8a8f64db95e08aa20ec013043ec"
 dependencies = [
  "anyhow",
  "prost",
@@ -1140,7 +1149,7 @@ dependencies = [
 [[package]]
 name = "query"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=70ecd87e78f1a8aa9703c9300986451f2e11a256#70ecd87e78f1a8aa9703c9300986451f2e11a256"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=18573bbe1836e8a8f64db95e08aa20ec013043ec#18573bbe1836e8a8f64db95e08aa20ec013043ec"
 dependencies = [
  "anyhow",
  "async-stream",
@@ -1556,11 +1565,12 @@ dependencies = [
 [[package]]
 name = "store"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=70ecd87e78f1a8aa9703c9300986451f2e11a256#70ecd87e78f1a8aa9703c9300986451f2e11a256"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=18573bbe1836e8a8f64db95e08aa20ec013043ec#18573bbe1836e8a8f64db95e08aa20ec013043ec"
 dependencies = [
  "anyhow",
  "chrono",
  "hex",
+ "itertools 0.13.0",
  "miette",
  "query",
  "rusqlite",
@@ -1594,7 +1604,7 @@ dependencies = [
 [[package]]
 name = "sync"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=70ecd87e78f1a8aa9703c9300986451f2e11a256#70ecd87e78f1a8aa9703c9300986451f2e11a256"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=18573bbe1836e8a8f64db95e08aa20ec013043ec#18573bbe1836e8a8f64db95e08aa20ec013043ec"
 dependencies = [
  "anyhow",
  "async-trait",

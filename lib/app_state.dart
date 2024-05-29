@@ -698,7 +698,7 @@ class DeployTaskFactory extends TaskFactory<DeployTask> {
   List<DeployTask> create() {
     final List<DeployTask> tasks = List.empty(growable: true);
     for (final station in knownStations.stations) {
-      if (station.ephemeral?.deployment == null) {
+      if (station.ephemeral != null && station.ephemeral?.deployment == null) {
         tasks.add(DeployTask(station: station));
       }
     }

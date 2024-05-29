@@ -1357,7 +1357,7 @@ pub struct StationAndConnection {
 impl TryInto<StationConfig> for StationAndConnection {
     type Error = SdkMappingError;
 
-    fn try_into(self) -> std::result::Result<StationConfig, Self::Error> {
+    fn try_into(self) -> Result<StationConfig, Self::Error> {
         let station = self.station;
 
         Ok(StationConfig {
