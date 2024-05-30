@@ -25,11 +25,13 @@
   "connectStation": "Connect a Station",
   "noStationsDescription": "You have no stations. Add a station to start collecting data.",
   "stationScan": "Double tap to scan for stations.",
+  "noStationsWhatIsStation": "What is a FieldKit Station?",
 
   "locationDenied": "Location permission denied!",
   "mapFullScreen": "Full Screen Map",
 
   "lastReadingLabel": " (Last Reading)",
+  "daysHoursMinutes": "days  hrs  mins",
 
   "download": "Download",
   "upload": "Upload",

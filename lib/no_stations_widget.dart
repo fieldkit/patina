@@ -1,5 +1,7 @@
+import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:url_launcher/link.dart';
 
 import 'common_widgets.dart';
 
@@ -54,27 +56,42 @@ class NoStationsHelpWidget extends StatelessWidget {
                     fit: BoxFit.contain),
               )),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          padding: const EdgeInsets.only(top: 10.0),
           child: Text(
-            localizations.connectStation, // TODO: Make Functional
+            localizations.connectStation,
             style: const TextStyle(
-              fontFamily: 'Avenir',
               fontSize: 22.0,
               fontWeight: FontWeight.w700,
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30.0),
+          padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 30.0),
           child: Text(
             localizations.noStationsDescription,
             style: const TextStyle(
-              fontFamily: 'Avenir',
               fontSize: 18.0,
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
           ),
+        ),
+        Link(
+          uri: Uri.parse(
+              'https://www.fieldkit.org/product-guide/what-is-a-fieldkit-station'),
+          target: LinkTarget.blank,
+          builder: (BuildContext ctx, FollowLink? openLink) {
+            return Center(
+                child: TextButton(
+              onPressed: openLink,
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.primaryColor,
+                textStyle: const TextStyle(
+                    color: AppColors.primaryColor, fontWeight: FontWeight.w500),
+              ),
+              child: Text(localizations.noStationsWhatIsStation),
+            ));
+          },
         ),
         if (false)
           // ignore: dead_code

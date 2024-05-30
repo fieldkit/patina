@@ -1277,6 +1277,7 @@ impl TryInto<EphemeralConfig> for HttpReply {
             .status
             .map(|s| s.recording)
             .flatten()
+            .filter(|d| d.started_time > 0)
             .map(|s| DeploymentConfig {
                 start_time: s.started_time,
             });
@@ -1357,7 +1358,7 @@ pub struct StationAndConnection {
 impl TryInto<StationConfig> for StationAndConnection {
     type Error = SdkMappingError;
 
-    fn try_into(self) -> std::result::Result<StationConfig, Self::Error> {
+    fn try_into(self) -> Result<StationConfig, Self::Error> {
         let station = self.station;
 
         Ok(StationConfig {
