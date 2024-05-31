@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/link.dart';
 
 import '../reader/screens.dart';
 
@@ -35,9 +36,10 @@ class _HelpPageState extends State<HelpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.helpTitle),
+        title: Text(localizations.helpTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -49,7 +51,7 @@ class _HelpPageState extends State<HelpPage> {
         padding: const EdgeInsets.all(16.0),
         children: <Widget>[
           ListTile(
-            title: Text(AppLocalizations.of(context)!.tutorialGuide),
+            title: Text(localizations.tutorialGuide),
             onTap: () {
               Navigator.push(
                 context,
@@ -60,8 +62,20 @@ class _HelpPageState extends State<HelpPage> {
             },
           ),
           const Divider(),
+          Link(
+            uri: Uri.parse(
+                'https://www.fieldkit.org/product-guide/set-up-station'),
+            target: LinkTarget.blank,
+            builder: (BuildContext ctx, FollowLink? openLink) {
+              return ListTile(
+                onTap: openLink,
+                title: Text(localizations.helpCheckList),
+              );
+            },
+          ),
+          const Divider(),
           ListTile(
-            title: Text(AppLocalizations.of(context)!.helpUploadLogs),
+            title: Text(localizations.helpUploadLogs),
             onTap: () async {
               final localizations = AppLocalizations.of(context)!;
               final messenger = ScaffoldMessenger.of(context);
@@ -79,7 +93,7 @@ class _HelpPageState extends State<HelpPage> {
           ),
           const Divider(),
           ListTile(
-            title: Text(AppLocalizations.of(context)!.appVersion),
+            title: Text(localizations.appVersion),
             trailing: Icon(
               isArrowUp ? Icons.arrow_drop_up : Icons.arrow_drop_down,
               size: 30.0,
@@ -100,7 +114,7 @@ class _HelpPageState extends State<HelpPage> {
                       style: DefaultTextStyle.of(context).style,
                       children: [
                         TextSpan(
-                          text: AppLocalizations.of(context)!.appVersion,
+                          text: localizations.appVersion,
                           style: _textStyle,
                         ),
                         TextSpan(
@@ -117,7 +131,7 @@ class _HelpPageState extends State<HelpPage> {
                         ),
                         TextSpan(
                           text: getCommitRefName() ??
-                              AppLocalizations.of(context)!.developerBuild,
+                              localizations.developerBuild,
                           style: _textStyle,
                         ),
                         TextSpan(
@@ -125,8 +139,7 @@ class _HelpPageState extends State<HelpPage> {
                           style: _textStyle,
                         ),
                         TextSpan(
-                          text: getCommitSha() ??
-                              AppLocalizations.of(context)!.developerBuild,
+                          text: getCommitSha() ?? localizations.developerBuild,
                           style: _textStyle,
                         ),
                       ],
