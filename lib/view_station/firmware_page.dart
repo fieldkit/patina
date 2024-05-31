@@ -31,6 +31,9 @@ class UpgradeProgressWidget extends StatelessWidget {
     if (status is UpgradeStatus_Restarting) {
       return Text(localizations.firmwareRestarting);
     }
+    if (status is UpgradeStatus_ReconnectTimeout) {
+      return Text(localizations.firmwareReconnectTimeout);
+    }
     if (status is UpgradeStatus_Completed) {
       return Text(localizations.firmwareCompleted);
     }

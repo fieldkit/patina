@@ -1,3 +1,4 @@
+import 'package:fk/settings/accounts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +15,20 @@ class EnableButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final StationConfiguration configuration =
-        context.read<StationConfiguration>();
+        context.watch<StationConfiguration>();
+
+    if (!configuration.canEnableWifiUploading()) {
+      return ElevatedTextButton(
+          text: localizations.login,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AccountsPage(),
+              ),
+            );
+          });
+    }
 
     return ElevatedTextButton(
         onPressed: () async {

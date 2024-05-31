@@ -2,6 +2,7 @@ import 'package:fk/diagnostics.dart';
 import 'package:flows/flows.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../reader/screens.dart';
@@ -61,8 +62,19 @@ class _HelpPageState extends State<HelpPage> {
           const Divider(),
           ListTile(
             title: Text(AppLocalizations.of(context)!.helpUploadLogs),
-            onTap: () {
-              ShareDiagnostics().upload();
+            onTap: () async {
+              final localizations = AppLocalizations.of(context)!;
+              final messenger = ScaffoldMessenger.of(context);
+              final overlay = context.loaderOverlay;
+              try {
+                overlay.show();
+                await ShareDiagnostics().upload();
+                messenger.showSnackBar(SnackBar(
+                  content: Text(localizations.logsUploaded),
+                ));
+              } finally {
+                overlay.hide();
+              }
             },
           ),
           const Divider(),

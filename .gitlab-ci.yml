@@ -68,6 +68,7 @@ build:android:
     name: "fk-patina-android-${CI_COMMIT_REF_NAME}"
     paths:
       - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/release/*.aab
 
 .setup: &common
   image: "ghcr.io/cirruslabs/flutter:3.19.5"

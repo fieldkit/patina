@@ -89,9 +89,18 @@ impl NearbyDevices {
         });
 
         tokio::select! {
-            _ = maintain_discoveries => Ok(()),
-            _ = query_stations => Ok(()),
-            _ = handle_server_events => Ok(()),
+            e = maintain_discoveries => {
+                warn!("maintain-discoveries: {:?}", e);
+                Ok(())
+            },
+            e = query_stations => {
+                warn!("query-stations: {:?}", e);
+                Ok(())
+            },
+            e = handle_server_events => {
+                warn!("handle-server-events: {:?}", e);
+                Ok(())
+            },
         }
     }
 
@@ -132,8 +141,8 @@ impl NearbyDevices {
         let mut devices = self.devices.lock().await;
         let device_id = &discovered.device_id;
         if let Some(connected) = devices.get_mut(device_id) {
-            if connected.is_disconnected() && connected.retry.is_none() {
-                info!("bg:rediscovered: {:?}", connected);
+            if connected.is_disconnected() {
+                info!("bg:rediscovered {:?}", connected);
 
                 connected.attempted = None;
                 connected.finished = None;
@@ -385,6 +394,7 @@ impl NearbyDevices {
                         path: f.path.clone(),
                         head: f.meta.head,
                         tail: f.meta.tail,
+                        uploaded: f.meta.uploaded,
                     })
                     .collect();
                 publish_tx

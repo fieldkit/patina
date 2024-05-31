@@ -145,21 +145,27 @@ class KnownStationsModel extends ChangeNotifier {
     final status = transferProgress.status;
 
     if (status is TransferStatus_Starting) {
-      station.syncing = SyncingProgress(download: null, upload: null);
+      station.syncing =
+          SyncingProgress(download: null, upload: null, failed: false);
     }
     if (status is TransferStatus_Downloading) {
       station.syncing = SyncingProgress(
-          download: DownloadOperation(status: status), upload: null);
+          download: DownloadOperation(status: status),
+          upload: null,
+          failed: false);
     }
     if (status is TransferStatus_Uploading) {
       station.syncing = SyncingProgress(
-          download: null, upload: UploadOperation(status: status));
+          download: null,
+          upload: UploadOperation(status: status),
+          failed: false);
     }
     if (status is TransferStatus_Completed) {
       station.syncing = null;
     }
     if (status is TransferStatus_Failed) {
-      station.syncing = SyncingProgress(download: null, upload: null);
+      station.syncing =
+          SyncingProgress(download: null, upload: null, failed: true);
     }
 
     station.connected = true;
@@ -192,9 +198,12 @@ class KnownStationsModel extends ChangeNotifier {
       return;
     }
 
-    if (station.syncing != null) {
-      Loggers.state.w("$deviceId already syncing");
-      return;
+    final syncing = station.syncing;
+    if (syncing != null) {
+      if (!syncing.failed) {
+        Loggers.state.w("$deviceId already syncing");
+        return;
+      }
     }
 
     final progress = await startDownload(deviceId: deviceId, first: first);
@@ -406,7 +415,9 @@ class UpgradeOperation extends Operation {
 
   @override
   bool get done =>
-      status is UpgradeStatus_Completed || status is UpgradeStatus_Failed;
+      status is UpgradeStatus_Completed ||
+      status is UpgradeStatus_Failed ||
+      status is UpgradeStatus_ReconnectTimeout;
 }
 
 class FirmwareDownloadOperation extends Operation {
@@ -615,6 +626,11 @@ class StationConfiguration extends ChangeNotifier {
         deviceId: deviceId, config: WifiNetworksConfig(networks: networks));
   }
 
+  bool canEnableWifiUploading() {
+    final account = portalAccounts.getAccountForDevice(deviceId);
+    return account != null;
+  }
+
   Future<void> enableWifiUploading() async {
     final account = portalAccounts.getAccountForDevice(deviceId);
     if (account == null) {
@@ -682,7 +698,7 @@ class DeployTaskFactory extends TaskFactory<DeployTask> {
   List<DeployTask> create() {
     final List<DeployTask> tasks = List.empty(growable: true);
     for (final station in knownStations.stations) {
-      if (station.ephemeral?.deployment == null) {
+      if (station.ephemeral != null && station.ephemeral?.deployment == null) {
         tasks.add(DeployTask(station: station));
       }
     }
@@ -853,7 +869,9 @@ class UploadTaskFactory extends TaskFactory<UploadTask> {
 
   List<UploadTask> create() {
     final List<UploadTask> tasks = List.empty(growable: true);
-    final byId = _archives.groupListsBy((a) => a.deviceId);
+    final byId = _archives
+        .where((a) => a.uploaded == null)
+        .groupListsBy((a) => a.deviceId);
     for (final entry in byId.entries) {
       final account = portalAccounts.getAccountForDevice(entry.key);
       if (account != null) {
@@ -902,9 +920,11 @@ class UploadTask extends Task {
 
   bool get allowed => problem == UploadProblem.none;
 
+  int get total => files.map((e) => e.tail - e.head).sum;
+
   @override
   String toString() {
-    return "UploadTask($deviceId, ${files.length} files)";
+    return "UploadTask($deviceId, ${files.length} files, $problem)";
   }
 
   @override
@@ -1063,6 +1083,7 @@ class AppEnv {
 class SyncingProgress extends ChangeNotifier {
   final DownloadOperation? download;
   final UploadOperation? upload;
+  final bool failed;
 
   double? get completed {
     if (download != null) {
@@ -1074,7 +1095,7 @@ class SyncingProgress extends ChangeNotifier {
     return null;
   }
 
-  SyncingProgress({this.download, this.upload});
+  SyncingProgress({this.download, this.upload, required this.failed});
 }
 
 extension CompletedProperty on UploadProgress {
@@ -1246,25 +1267,31 @@ class PortalAccounts extends ChangeNotifier {
       };
 
   Future<PortalAccounts> load() async {
-    const storage = FlutterSecureStorage();
-    String? value = await storage.read(key: secureStorageKey);
-    if (value != null) {
-      try {
-        // A little messy, I know.
-        final loaded = PortalAccounts.fromJson(jsonDecode(value));
-        for (final account in loaded.accounts) {
-          Loggers.state.v(
-              "Account email=${account.email} url=${account.tokens?.transmission.url} #devonly");
-        }
-        _accounts.clear();
-        _accounts.addAll(loaded.accounts);
-        notifyListeners();
-      } catch (e) {
-        Loggers.state.e("Exception loading accounts: $e");
-      }
-    }
+    Loggers.state.i("accounts:loading");
 
-    await refreshFirmware();
+    try {
+      const storage = FlutterSecureStorage();
+      String? value = await storage.read(key: secureStorageKey);
+      if (value != null) {
+        try {
+          // A little messy, I know.
+          final loaded = PortalAccounts.fromJson(jsonDecode(value));
+          _accounts.clear();
+          _accounts.addAll(loaded.accounts);
+          notifyListeners();
+        } catch (e) {
+          Loggers.state.e("accounts:exception: $e");
+        }
+      }
+
+      validate(); // In background
+
+      refreshFirmware(); // In background
+
+      Loggers.state.i("accounts:load exiting");
+    } catch (e) {
+      Loggers.state.e("accounts:fatal-exception: $e");
+    }
 
     return this;
   }
@@ -1296,11 +1323,12 @@ class PortalAccounts extends ChangeNotifier {
     try {
       final authenticated =
           await authenticatePortal(email: email, password: password);
-      refreshFirmware(); // In background
       return PortalAccount.fromAuthenticated(authenticated);
     } catch (e) {
       Loggers.state.e("Exception authenticating: $e");
       return null;
+    } finally {
+      refreshFirmware(); // In background
     }
   }
 

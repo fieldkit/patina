@@ -1,6 +1,10 @@
 {
   "fieldKit": "FieldKit",
 
+  "loadingConfiguration": "Configuration",
+  "loadingEnvironment": "Environment",
+  "loadingLocale": "Locale",
+
   "welcomeTitle": "Welcome!",
   "welcomeMessage": "Our mobile app makes it easy to set up and deploy your FieldKit station.",
   "welcomeButton": "Get Started",
@@ -21,19 +25,26 @@
   "connectStation": "Connect a Station",
   "noStationsDescription": "You have no stations. Add a station to start collecting data.",
   "stationScan": "Double tap to scan for stations.",
+  "noStationsWhatIsStation": "What is a FieldKit Station?",
 
   "locationDenied": "Location permission denied!",
   "mapFullScreen": "Full Screen Map",
 
   "lastReadingLabel": " (Last Reading)",
+  "daysHoursMinutes": "days  hrs  mins",
 
   "download": "Download",
   "upload": "Upload",
   "readingsAvailable": "{readings} readings can be downloaded.",
   "readingsAvailableAndAlreadyHave": "Already have {alreadyHave} readings and {readings} more can be downloaded.",
+  "readingsPendingUpload": "{readings} readings can be uploaded.",
   "syncProgressReadings": "Received {received} of {readings} readings.",
   "syncWorking": "Working...",
+  "syncDisconnected": "Station disconnected.",
   "syncElapsed": "{elapsed} elapsed.",
+  "syncNoInternet": "No internet connection.",
+  "syncNoUpload": "No data to upload.",
+  "syncNoDownload": "No data to download.",
   "syncPercentageComplete": "{complete} complete.",
   "@syncPercentageComplete" :{
     "placeholders": {
@@ -154,6 +165,7 @@
   "firmwareStarting": "Starting...",
   "firmwareUploading": "Uploading...",
   "firmwareRestarting": "Restarting...",
+  "firmwareReconnectTimeout": "Unable to reconnect to station.",
   "firmwareCompleted": "Completed",
   "firmwareFailed": "Failed!",
   "firmwareConnected": "Connected",
@@ -214,6 +226,7 @@
   "yesUpdates": "Tap for updates!",
   "helpUploadLogs": "Send Logs",
   "developerBuild": "Developer Build",
+  "logsUploaded": "Logs Uploaded",
 
   "legalTitle": "Legal",
   "termsOfService": "Terms of Service",

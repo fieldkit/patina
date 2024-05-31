@@ -42,6 +42,15 @@ class _MapState extends State<MapWidget> {
     ));
   }
 
+  Future<PermissionStatus> _getPermission(Location location) async {
+    final permission = await location.hasPermission();
+    if (permission == PermissionStatus.denied) {
+      return await location.requestPermission();
+    } else {
+      return permission;
+    }
+  }
+
   Future<void> _getUserLocation(ScaffoldMessengerState scaffoldMessenger,
       AppLocalizations localizations) async {
     // lyokone/location doesn't support Linux, silences noisy exception at startup.
@@ -50,13 +59,15 @@ class _MapState extends State<MapWidget> {
     }
 
     final location = Location();
-    var hasPermission = await location.hasPermission();
 
-    if (hasPermission == PermissionStatus.denied) {
-      hasPermission = await location.requestPermission();
+    // If location services aren't enabled, don't bother the user.
+    if (!await location.serviceEnabled()) {
+      return;
     }
 
-    if (hasPermission == PermissionStatus.granted) {
+    // Asks for permission if we're allowed to.
+    final permission = await _getPermission(location);
+    if (permission == PermissionStatus.granted) {
       final currentLocation = await location.getLocation();
       setState(() {
         _userLocation =

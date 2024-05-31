@@ -74,7 +74,9 @@ class StartCalibrationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final content = context.read<ContentFlows>();
-    final moduleConfigurations = context.watch<ModuleConfigurations>();
+    final ModuleConfigurations moduleConfigurations =
+        context.watch<ModuleConfigurations>();
+    final StationConfiguration station = context.watch<StationConfiguration>();
     final isCalibrated =
         moduleConfigurations.find(module.identity).isCalibrated;
 
@@ -82,25 +84,29 @@ class StartCalibrationButton extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         width: double.infinity,
         child: ElevatedTextButton(
-          onPressed: () {
-            calibrationPage() {
-              final config =
-                  CalibrationConfig.fromModule(module, localizations, content);
-              if (isCalibrated) {
-                return ClearCalibrationPage(config: config, module: module);
-              } else {
-                return CalibrationPage(config: config);
-              }
-            }
+          onPressed: station.config.connected
+              ? () {
+                  calibrationPage() {
+                    final config = CalibrationConfig.fromModule(
+                        module, localizations, content);
+                    if (isCalibrated) {
+                      return ClearCalibrationPage(
+                          config: config, module: module);
+                    } else {
+                      return CalibrationPage(config: config);
+                    }
+                  }
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ModuleProviders(
-                    moduleIdentity: module.identity, child: calibrationPage()),
-              ),
-            );
-          },
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ModuleProviders(
+                          moduleIdentity: module.identity,
+                          child: calibrationPage()),
+                    ),
+                  );
+                }
+              : null,
           text: AppLocalizations.of(context)!.calibrateButton,
         ));
   }

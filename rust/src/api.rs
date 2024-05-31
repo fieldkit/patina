@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::Result;
 use chrono::Utc;
 use std::{
     io::Write,
@@ -84,10 +84,11 @@ async fn create_sdk(
 
     let nearby = NearbyDevices::new(bg_tx.clone());
 
-    let server = Arc::new(Server::new(
+    let (server, from_server) = Server::new(
         UdpTransport::new(),
         FilesRecordSink::new(&Path::new(&storage_path).join("fk-data")),
-    ));
+    );
+    let server = Arc::new(server);
 
     let sdk = Sdk::new(
         storage_path,
@@ -101,7 +102,7 @@ async fn create_sdk(
 
     let merge = MergeAndPublishReplies::new(db, publish_tx.clone());
 
-    tokio::spawn(async move { background_task(nearby, server, merge, bg_rx).await });
+    tokio::spawn(async move { background_task(nearby, server, merge, bg_rx, from_server).await });
 
     Ok(sdk)
 }
@@ -111,10 +112,10 @@ async fn background_task(
     server: Arc<Server<UdpTransport, FilesRecordSink>>,
     merge: MergeAndPublishReplies,
     bg_rx: Receiver<BackgroundMessage>,
+    from_server: Receiver<ServerEvent>,
 ) {
     info!("bg:started");
 
-    let (transfer_publish, transfer_events) = tokio::sync::mpsc::channel::<ServerEvent>(32);
     let (discovery_tx, discovery_rx) = tokio::sync::mpsc::channel::<Discovered>(8);
     let discovery = Discovery::default();
 
@@ -122,10 +123,10 @@ async fn background_task(
         d = discovery.run(discovery_tx) => {
             warn!("discovery: {:?}", d);
         },
-        n = nearby.run(discovery_rx, transfer_events) => {
+        n = nearby.run(discovery_rx, from_server) => {
             warn!("nearby: {:?}", n);
         },
-        s = server.run(transfer_publish) => {
+        s = server.run() => {
             warn!("server: {:?}", s);
         },
         m = merge.run(bg_rx) => {
@@ -222,7 +223,9 @@ impl Sdk {
 
     async fn open(&self) -> Result<Arc<Mutex<Db>>> {
         let mut db = self.db.lock().await;
-        db.open()?;
+        let path = PathBuf::from(self.storage_path.clone()).join("db.sqlite3");
+
+        db.open(path)?;
 
         Ok(self.db.clone())
     }
@@ -390,10 +393,13 @@ impl Sdk {
             let authenticated = client.to_authenticated(tokens.into())?;
             let publish_tx = self.publish_tx.clone();
             let device_id = device_id.clone();
+            let server = self.server.clone();
 
             async move {
                 for file in files.into_iter() {
                     info!("{:?} uploading", &file);
+
+                    let path = file.path.clone();
 
                     let res = authenticated
                         .upload_readings(&PathBuf::from(file.path))
@@ -417,6 +423,11 @@ impl Sdk {
                                 }
                             }
 
+                            match server.uploaded(path).await {
+                                Err(e) => warn!("Error marking uploaded: {:?}", e),
+                                Ok(_) => {}
+                            };
+
                             TransferStatus::Completed
                         }
                         Err(e) => {
@@ -433,6 +444,11 @@ impl Sdk {
                         }))
                         .await
                         .expect("Publish failed")
+                }
+
+                match server.check_for_archives().await {
+                    Ok(_) => {}
+                    Err(e) => warn!("Publish failed: {:?}", e),
                 }
             }
         });
@@ -855,7 +871,7 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
         .with_writer(LogSink { sink })
         .try_init()
     {
-        bail!("{}", err);
+        error!("{}", err);
     }
 
     Ok(())
@@ -1075,11 +1091,11 @@ pub enum FirmwareDownloadStatus {
 }
 
 #[derive(Debug)]
-#[allow(dead_code)]
 pub enum UpgradeStatus {
     Starting,
     Uploading(UploadProgress),
     Restarting,
+    ReconnectTimeout,
     Completed,
     Failed,
 }
@@ -1104,6 +1120,7 @@ pub struct RecordArchive {
     pub path: String,
     pub head: i64,
     pub tail: i64,
+    pub uploaded: Option<i64>,
 }
 
 #[derive(Debug)]
@@ -1126,6 +1143,12 @@ pub struct LocalFirmware {
     pub time: i64,
     pub module: String,
     pub profile: String,
+}
+
+impl LocalFirmware {
+    pub(crate) fn file_name(&self) -> String {
+        format!("firmware-{}.bin", self.id)
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -1166,11 +1189,6 @@ pub struct StationConfig {
     pub battery: BatteryInfo,
     pub solar: SolarInfo,
     pub modules: Vec<ModuleConfig>,
-}
-
-#[derive(Clone, Debug)]
-pub struct CapabilitiesInfo {
-    pub udp: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -1259,6 +1277,7 @@ impl TryInto<EphemeralConfig> for HttpReply {
             .status
             .map(|s| s.recording)
             .flatten()
+            .filter(|d| d.started_time > 0)
             .map(|s| DeploymentConfig {
                 start_time: s.started_time,
             });
@@ -1339,7 +1358,7 @@ pub struct StationAndConnection {
 impl TryInto<StationConfig> for StationAndConnection {
     type Error = SdkMappingError;
 
-    fn try_into(self) -> std::result::Result<StationConfig, Self::Error> {
+    fn try_into(self) -> Result<StationConfig, Self::Error> {
         let station = self.station;
 
         Ok(StationConfig {

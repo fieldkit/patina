@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result};
 use discovery::DeviceId;
 use query::portal::Firmware;
 use std::path::PathBuf;
@@ -91,7 +91,6 @@ pub async fn cache_firmware(
 }
 
 pub struct FirmwareUpgrader {
-    nearby: NearbyDevices,
     publish_tx: Sender<DomainMessage>,
     storage_path: String,
     device_id: DeviceId,
@@ -113,15 +112,11 @@ impl FirmwareUpgrader {
     }
 
     async fn run(&self) -> Result<()> {
-        let path =
-            PathBuf::from(&self.storage_path).join(format!("firmware-{}.bin", self.firmware.id));
+        let path = PathBuf::from(&self.storage_path).join(self.firmware.file_name());
 
-        let device_id = self.device_id.clone();
         let client = query::device::Client::new()?;
         match client.upgrade(&self.addr, &path, self.swap).await {
             Ok(mut stream) => {
-                let mut failed = false;
-
                 while let Some(res) = stream.next().await {
                     match res {
                         Ok(bytes) => {
@@ -131,45 +126,55 @@ impl FirmwareUpgrader {
                             }))
                             .await?;
                         }
-                        Err(_) => {
-                            self.publish(UpgradeStatus::Failed).await?;
-
-                            failed = true;
+                        Err(e) => {
+                            return Err(e.into());
                         }
                     }
                 }
 
-                if !failed {
-                    if self.swap {
-                        self.publish(UpgradeStatus::Restarting).await?;
+                if self.swap {
+                    self.publish(UpgradeStatus::Restarting).await?;
 
-                        match wait_for_station_restart(&self.addr).await {
-                            Ok(_) => {
+                    match self.wait_for_station_restart().await {
+                        Ok(success) => {
+                            if success {
                                 self.publish(UpgradeStatus::Completed).await?;
+                            } else {
+                                self.publish(UpgradeStatus::ReconnectTimeout).await?;
                             }
-                            Err(_) => {
-                                self.publish(UpgradeStatus::Failed).await?;
-                            }
+
+                            Ok(())
                         }
-                    } else {
-                        self.publish(UpgradeStatus::Completed).await?;
+                        Err(e) => Err(e),
                     }
+                } else {
+                    self.publish(UpgradeStatus::Completed).await?;
+
+                    Ok(())
                 }
-
-                self.nearby.mark_busy(&device_id, false).await?;
-
-                Ok(())
             }
-            Err(e) => {
-                warn!("Error: {:?}", e);
+            Err(e) => Err(e),
+        }
+    }
 
-                self.publish(UpgradeStatus::Failed).await?;
+    async fn wait_for_station_restart(&self) -> Result<bool> {
+        use std::time::Duration;
+        use tokio::time::sleep;
 
-                self.nearby.mark_busy(&device_id, false).await?;
+        for i in 0..30 {
+            sleep(Duration::from_secs(if i == 0 { 5 } else { 1 })).await;
 
-                Ok(())
+            info!("upgrade: Checking station");
+            let client = query::device::Client::new()?;
+            match client.query_status(&self.addr).await {
+                Err(e) => info!("upgrade: Waiting for station: {:?}", e),
+                Ok(_) => {
+                    return Ok(true);
+                }
             }
         }
+
+        Ok(false)
     }
 }
 
@@ -183,7 +188,6 @@ pub async fn upgrade(
     addr: String,
 ) -> Result<UpgradeProgress> {
     let upgrader = FirmwareUpgrader {
-        nearby: nearby.clone(),
         publish_tx,
         storage_path,
         device_id: device_id.clone(),
@@ -194,38 +198,33 @@ pub async fn upgrade(
 
     nearby.mark_busy(&device_id, true).await?;
 
-    tokio::task::spawn(async move {
-        match upgrader.run().await {
-            Err(e) => warn!("Error upgrading: {:?}", e),
-            Ok(_) => {}
+    tokio::task::spawn({
+        let device_id = device_id.clone();
+
+        async move {
+            match upgrader.run().await {
+                Err(e) => {
+                    warn!("Error upgrading: {:?}", e);
+                    match upgrader.publish(UpgradeStatus::Failed).await {
+                        Err(e) => warn!("Error published failure: {:?}", e),
+                        Ok(_) => {}
+                    }
+                }
+                Ok(_) => {}
+            }
+
+            match nearby.mark_busy(&device_id, false).await {
+                Err(e) => warn!("Error marking ready: {:?}", e),
+                Ok(_) => {}
+            }
         }
     });
 
     Ok(UpgradeProgress {
-        device_id: device_id.0.clone(),
+        device_id: device_id.0,
         firmware_id: firmware.id,
         status: UpgradeStatus::Starting,
     })
-}
-
-async fn wait_for_station_restart(addr: &str) -> Result<()> {
-    use std::time::Duration;
-    use tokio::time::sleep;
-
-    for i in 0..30 {
-        sleep(Duration::from_secs(if i == 0 { 5 } else { 1 })).await;
-
-        info!("upgrade: Checking station");
-        let client = query::device::Client::new()?;
-        match client.query_status(addr).await {
-            Err(e) => info!("upgrade: Waiting for station: {:?}", e),
-            Ok(_) => {
-                return Ok(());
-            }
-        }
-    }
-
-    Err(anyhow!("Station did not come back online."))
 }
 
 async fn check_cached_firmware(storage_path: &str) -> Result<Vec<Firmware>> {
@@ -239,6 +238,8 @@ async fn check_cached_firmware(storage_path: &str) -> Result<Vec<Firmware>> {
         reading.read_to_string(&mut buffer).await?;
         found.push(serde_json::from_str(&buffer)?);
     }
+
+    info!("check_cached_firmware: {}", found.len());
 
     Ok(found)
 }
@@ -301,6 +302,9 @@ async fn cache_firmware_and_json_if_newer(
     tokens: Option<Tokens>,
     cached: Vec<Firmware>,
 ) -> Result<()> {
+    // Publish available before querying, since we may fail below if offline.
+    publish_available_firmware(storage_path, publish_tx.clone()).await?;
+
     let client = query::portal::Client::new(portal_base_url)?;
     let firmwares = query_available_firmware(&client, tokens).await?;
 
@@ -346,8 +350,6 @@ async fn cache_firmware_and_json_if_newer(
 
         publish_available_firmware(storage_path, publish_tx.clone()).await?;
     }
-
-    publish_available_firmware(storage_path, publish_tx.clone()).await?;
 
     Ok(())
 }

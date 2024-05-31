@@ -770,6 +770,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  int dco_decode_box_autoadd_i_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_i_64(raw);
+  }
+
+  @protected
   LocalFirmware dco_decode_box_autoadd_local_firmware(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_local_firmware(raw);
@@ -1195,6 +1201,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  int? dco_decode_opt_box_autoadd_i_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_i_64(raw);
+  }
+
+  @protected
   LoraConfig? dco_decode_opt_box_autoadd_lora_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_lora_config(raw);
@@ -1266,14 +1278,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   RecordArchive dco_decode_record_archive(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return RecordArchive(
       deviceId: dco_decode_String(arr[0]),
       generationId: dco_decode_String(arr[1]),
       path: dco_decode_String(arr[2]),
       head: dco_decode_i_64(arr[3]),
       tail: dco_decode_i_64(arr[4]),
+      uploaded: dco_decode_opt_box_autoadd_i_64(arr[5]),
     );
   }
 
@@ -1497,8 +1510,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 2:
         return UpgradeStatus_Restarting();
       case 3:
-        return UpgradeStatus_Completed();
+        return UpgradeStatus_ReconnectTimeout();
       case 4:
+        return UpgradeStatus_Completed();
+      case 5:
         return UpgradeStatus_Failed();
       default:
         throw Exception("unreachable");
@@ -1664,6 +1679,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_firmware_download_status(deserializer));
+  }
+
+  @protected
+  int sse_decode_box_autoadd_i_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_i_64(deserializer));
   }
 
   @protected
@@ -2166,6 +2187,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  int? sse_decode_opt_box_autoadd_i_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_i_64(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   LoraConfig? sse_decode_opt_box_autoadd_lora_config(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -2284,12 +2316,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_path = sse_decode_String(deserializer);
     var var_head = sse_decode_i_64(deserializer);
     var var_tail = sse_decode_i_64(deserializer);
+    var var_uploaded = sse_decode_opt_box_autoadd_i_64(deserializer);
     return RecordArchive(
         deviceId: var_deviceId,
         generationId: var_generationId,
         path: var_path,
         head: var_head,
-        tail: var_tail);
+        tail: var_tail,
+        uploaded: var_uploaded);
   }
 
   @protected
@@ -2491,8 +2525,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 2:
         return UpgradeStatus_Restarting();
       case 3:
-        return UpgradeStatus_Completed();
+        return UpgradeStatus_ReconnectTimeout();
       case 4:
+        return UpgradeStatus_Completed();
+      case 5:
         return UpgradeStatus_Failed();
       default:
         throw UnimplementedError('');
@@ -2639,6 +2675,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       FirmwareDownloadStatus self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_firmware_download_status(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_i_64(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self, serializer);
   }
 
   @protected
@@ -3066,6 +3108,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_opt_box_autoadd_i_64(int? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_i_64(self, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_opt_box_autoadd_lora_config(
       LoraConfig? self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -3175,6 +3227,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.path, serializer);
     sse_encode_i_64(self.head, serializer);
     sse_encode_i_64(self.tail, serializer);
+    sse_encode_opt_box_autoadd_i_64(self.uploaded, serializer);
   }
 
   @protected
@@ -3337,10 +3390,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_box_autoadd_upload_progress(field0, serializer);
       case UpgradeStatus_Restarting():
         sse_encode_i_32(2, serializer);
-      case UpgradeStatus_Completed():
+      case UpgradeStatus_ReconnectTimeout():
         sse_encode_i_32(3, serializer);
-      case UpgradeStatus_Failed():
+      case UpgradeStatus_Completed():
         sse_encode_i_32(4, serializer);
+      case UpgradeStatus_Failed():
+        sse_encode_i_32(5, serializer);
     }
   }
 

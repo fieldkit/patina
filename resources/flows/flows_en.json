@@ -945,7 +945,7 @@
       },
       {
         "id": "45",
-        "name": "onboarding.00",
+        "name": "z.onboarding.00",
         "locale": "en_US",
         "forward": "Get Started",
         "skip": "Skip instructions",

@@ -116,8 +116,7 @@ class ShareDiagnostics {
 
       final sending = File(Loggers.path);
       final body = await sending.readAsBytes();
-      Loggers.main.i("uploading: $sending");
-
+      Loggers.main.i("uploading: $sending (${body.length} bytes)");
       final url = Uri.https("code.conservify.org", "diagnostics/$id/logs.txt");
       Loggers.main.i("uploading: $url");
       final response = await http.post(url, body: body);

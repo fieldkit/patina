@@ -8,7 +8,6 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'api.freezed.dart';
 
-// The type `CapabilitiesInfo` is not used by any `pub` functions, thus it is ignored.
 // The type `LogSink` is not used by any `pub` functions, thus it is ignored.
 // The type `MergeAndPublishReplies` is not used by any `pub` functions, thus it is ignored.
 // The type `RuntimeError` is not used by any `pub` functions, thus it is ignored.
@@ -615,6 +614,7 @@ class RecordArchive {
   final String path;
   final int head;
   final int tail;
+  final int? uploaded;
 
   const RecordArchive({
     required this.deviceId,
@@ -622,6 +622,7 @@ class RecordArchive {
     required this.path,
     required this.head,
     required this.tail,
+    this.uploaded,
   });
 
   @override
@@ -630,7 +631,8 @@ class RecordArchive {
       generationId.hashCode ^
       path.hashCode ^
       head.hashCode ^
-      tail.hashCode;
+      tail.hashCode ^
+      uploaded.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -641,7 +643,8 @@ class RecordArchive {
           generationId == other.generationId &&
           path == other.path &&
           head == other.head &&
-          tail == other.tail;
+          tail == other.tail &&
+          uploaded == other.uploaded;
 }
 
 class Registered {
@@ -959,6 +962,8 @@ sealed class UpgradeStatus with _$UpgradeStatus {
     UploadProgress field0,
   ) = UpgradeStatus_Uploading;
   const factory UpgradeStatus.restarting() = UpgradeStatus_Restarting;
+  const factory UpgradeStatus.reconnectTimeout() =
+      UpgradeStatus_ReconnectTimeout;
   const factory UpgradeStatus.completed() = UpgradeStatus_Completed;
   const factory UpgradeStatus.failed() = UpgradeStatus_Failed;
 }

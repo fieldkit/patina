@@ -106,6 +106,128 @@ class LoginRequiredWidget extends StatelessWidget {
   }
 }
 
+Widget padAll(Widget child) {
+  return Container(
+      width: double.infinity, padding: const EdgeInsets.all(14), child: child);
+}
+
+Widget padVertical(Widget child) {
+  return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: child);
+}
+
+class DownloadPanel extends StatelessWidget {
+  final StationModel station;
+  final void Function(DownloadTask) onDownload;
+  final DownloadTask? downloadTask;
+
+  const DownloadPanel(
+      {super.key,
+      required this.station,
+      required this.onDownload,
+      this.downloadTask});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    if (!station.connected || station.ephemeral == null) {
+      return padAll(Text(localizations.syncDisconnected));
+    }
+
+    if (!(station.ephemeral?.capabilities.udp ?? false)) {
+      return UpgradeRequiredWidget(station: station);
+    }
+
+    if (downloadTask == null) {
+      return padAll(Text(localizations.syncNoDownload));
+    }
+
+    return padAll(Column(children: [
+      padVertical(Text(availableReadings(context))),
+      SizedBox(
+          width: double.infinity,
+          child: ElevatedTextButton(
+              onPressed: () => onDownload(downloadTask!),
+              text: localizations.download))
+    ]));
+  }
+
+  String availableReadings(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final DownloadTask? task = downloadTask;
+    if (task == null) {
+      return localizations.syncWorking;
+    } else {
+      final int? first = task.first;
+      if (first != null) {
+        return localizations.readingsAvailableAndAlreadyHave(
+            first, task.total - first);
+      } else {
+        return localizations.readingsAvailable(task.total);
+      }
+    }
+  }
+}
+
+class UploadPanel extends StatelessWidget {
+  final StationModel station;
+  final void Function(UploadTask) onUpload;
+  final UploadTask? uploadTask;
+  final bool hasLoginTasks;
+
+  const UploadPanel(
+      {super.key,
+      required this.station,
+      required this.onUpload,
+      required this.uploadTask,
+      required this.hasLoginTasks});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    if (uploadTask == null) {
+      if (hasLoginTasks) {
+        return const SizedBox.shrink();
+      } else {
+        return padAll(Text(localizations.syncNoUpload));
+      }
+    }
+
+    if (uploadTask?.problem == UploadProblem.connectivity) {
+      return padAll(Text(localizations.syncNoInternet));
+    }
+
+    if (uploadTask?.problem == UploadProblem.authentication) {
+      // We could do this, but right now we show a Login button at the top of the page.
+      // return Text("Not logged in to portal.");
+      return const SizedBox.shrink();
+    }
+
+    return padAll(Column(children: [
+      padVertical(Text(availableReadings(context))),
+      SizedBox(
+          width: double.infinity,
+          child: ElevatedTextButton(
+              onPressed: () => onUpload(uploadTask!),
+              text: localizations.upload))
+    ]));
+  }
+
+  String availableReadings(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final UploadTask? task = uploadTask;
+    if (task == null) {
+      return localizations.syncWorking;
+    } else {
+      return localizations.readingsPendingUpload(task.total);
+    }
+  }
+}
+
 class DataSyncPage extends StatelessWidget {
   final KnownStationsModel known;
   final TasksModel tasks;
@@ -131,19 +253,18 @@ class DataSyncPage extends StatelessWidget {
       final downloadTask = tasks.getMaybeOne<DownloadTask>(station.deviceId);
       final uploadTask = tasks.getMaybeOne<UploadTask>(station.deviceId);
       final busy = stationOperations.isBusy(station.deviceId);
+      final download = DownloadPanel(
+          station: station, downloadTask: downloadTask, onDownload: onDownload);
+      final upload = UploadPanel(
+        station: station,
+        uploadTask: uploadTask,
+        onUpload: onUpload,
+        hasLoginTasks: loginTasks.isNotEmpty,
+      );
       Loggers.ui.i(
           "data-sync: busy=$busy downloadTask=$downloadTask uploadTask=$uploadTask loginTasks=$loginTasks");
       return StationSyncStatus(
-        station: station,
-        downloadTask: downloadTask,
-        uploadTask: uploadTask,
-        onDownload: (!busy && downloadTask != null)
-            ? () => onDownload(downloadTask)
-            : null,
-        onUpload: (!busy && uploadTask != null && uploadTask.allowed)
-            ? () => onUpload(uploadTask)
-            : null,
-      );
+          station: station, busy: busy, download: download, upload: upload);
     }).toList();
 
     return Scaffold(
@@ -158,77 +279,26 @@ class DataSyncPage extends StatelessWidget {
   }
 }
 
-class SyncOptions extends StatelessWidget {
-  final VoidCallback? onDownload;
-  final VoidCallback? onUpload;
-
-  const SyncOptions(
-      {super.key, required this.onDownload, required this.onUpload});
-
-  @override
-  Widget build(BuildContext context) {
-    pad(child) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(14),
-        child: child);
-
-    final localizations = AppLocalizations.of(context)!;
-
-    return Column(children: [
-      pad(ElevatedTextButton(
-          onPressed: onDownload, text: localizations.download)),
-      pad(ElevatedTextButton(onPressed: onUpload, text: localizations.upload)),
-    ]);
-  }
-}
-
-class UpgradeRequiredWidget extends StatelessWidget {
-  final StationModel station;
-
-  StationConfig get config => station.config!;
-
-  const UpgradeRequiredWidget({super.key, required this.station});
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return WH.padPage(MessageAndButton(
-        title: localizations.alertTitle,
-        message: localizations.syncUpgradeRequiredMessage,
-        button: localizations.syncManageFirmware,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => StationFirmwarePage(
-                station: station,
-              ),
-            ),
-          );
-        }));
-  }
-}
-
 class StationSyncStatus extends StatelessWidget {
   final StationModel station;
-  final DownloadTask? downloadTask;
-  final UploadTask? uploadTask;
-  final VoidCallback? onDownload;
-  final VoidCallback? onUpload;
+  final bool busy;
+  final Widget download;
+  final Widget upload;
 
   StationConfig get config => station.config!;
 
   bool get isSyncing => station.syncing != null;
+  bool get isFailed => station.syncing?.failed == true;
   bool get isDownloading => station.syncing?.download != null;
   bool get isUploading => station.syncing?.upload != null;
 
-  const StationSyncStatus(
-      {super.key,
-      required this.station,
-      required this.downloadTask,
-      required this.uploadTask,
-      required this.onDownload,
-      required this.onUpload});
+  const StationSyncStatus({
+    super.key,
+    required this.station,
+    required this.busy,
+    required this.download,
+    required this.upload,
+  });
 
   Widget _progress(BuildContext context) {
     if (isDownloading) {
@@ -237,34 +307,14 @@ class StationSyncStatus extends StatelessWidget {
     if (isUploading) {
       return UploadProgressPanel(progress: station.syncing!.upload!);
     }
-    if (isSyncing) {
+    if ((isSyncing || busy) && !isFailed) {
       final localizations = AppLocalizations.of(context)!;
       return WH.padColumn(Column(children: [
         WH.progressBar(0.0),
         WH.padBelowProgress(Text(localizations.syncWorking)),
       ]));
     }
-    Loggers.ui.i("udp=${station.ephemeral?.capabilities.udp}");
-    if (station.ephemeral?.capabilities.udp ?? false) {
-      return SyncOptions(onDownload: onDownload, onUpload: onUpload);
-    }
-    return UpgradeRequiredWidget(station: station);
-  }
-
-  String downloadSubtitle(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    final DownloadTask? task = downloadTask;
-    if (task == null) {
-      return localizations.syncWorking;
-    } else {
-      final int? first = task.first;
-      if (first != null) {
-        return localizations.readingsAvailableAndAlreadyHave(
-            first, task.total - first);
-      } else {
-        return localizations.readingsAvailable(task.total);
-      }
-    }
+    return Column(children: [download, upload]);
   }
 
   @override
@@ -274,7 +324,7 @@ class StationSyncStatus extends StatelessWidget {
     final title = config.name;
     final subtitle = isSyncing
         ? localizations.syncPercentageComplete(station.syncing?.completed ?? 0)
-        : downloadSubtitle(context);
+        : null;
 
     return BorderedListItem(
         header: GenericListItemHeader(title: title, subtitle: subtitle),
@@ -318,5 +368,32 @@ class UploadProgressPanel extends StatelessWidget {
       WH.progressBar(progress.completed),
       WH.padBelowProgress(const SizedBox.shrink())
     ]));
+  }
+}
+
+class UpgradeRequiredWidget extends StatelessWidget {
+  final StationModel station;
+
+  StationConfig get config => station.config!;
+
+  const UpgradeRequiredWidget({super.key, required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return WH.padPage(MessageAndButton(
+        title: localizations.alertTitle,
+        message: localizations.syncUpgradeRequiredMessage,
+        button: localizations.syncManageFirmware,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StationFirmwarePage(
+                station: station,
+              ),
+            ),
+          );
+        }));
   }
 }

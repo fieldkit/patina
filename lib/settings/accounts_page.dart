@@ -5,7 +5,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../app_state.dart';
-import '../splash_screen.dart';
 
 import 'edit_account_page.dart';
 
@@ -112,25 +111,23 @@ class AccountsPage extends StatelessWidget {
                     showDialog(
                         context: context,
                         builder: (context) {
+                          final localizations = AppLocalizations.of(context)!;
                           return AlertDialog(
-                            title: Text(AppLocalizations.of(context)!
-                                .confirmDeleteAccountTitle),
-                            content: Text(
-                                AppLocalizations.of(context)!.confirmDelete),
+                            title:
+                                Text(localizations.confirmDeleteAccountTitle),
+                            content: Text(localizations.confirmDelete),
                             actions: <Widget>[
                               TextButton(
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  child: Text(AppLocalizations.of(context)!
-                                      .confirmCancel)),
+                                  child: Text(localizations.confirmCancel)),
                               TextButton(
                                   onPressed: () async {
                                     Navigator.pop(context);
                                     await accounts.delete(account);
                                   },
-                                  child: Text(
-                                      AppLocalizations.of(context)!.confirmYes))
+                                  child: Text(localizations.confirmYes))
                             ],
                           );
                         });
@@ -168,10 +165,7 @@ class ProvideAccountsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final accounts = context.read<AppState>().portalAccounts;
     return FutureBuilder<PortalAccounts>(
-        future: Future.wait([
-          accounts.load().then((a) => a.validate()),
-          Future.delayed(const Duration(seconds: 0))
-        ]).then((responses) => responses[0]),
+        future: accounts.load(),
         builder: (context, AsyncSnapshot<PortalAccounts> snapshot) {
           if (snapshot.hasData) {
             return ChangeNotifierProvider(
@@ -179,7 +173,10 @@ class ProvideAccountsWidget extends StatelessWidget {
               child: child,
             );
           } else {
-            return const FullScreenLogo();
+            return ChangeNotifierProvider(
+              create: (context) => PortalAccounts(accounts: []),
+              child: child,
+            );
           }
         });
   }
