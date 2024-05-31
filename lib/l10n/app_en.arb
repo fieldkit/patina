@@ -209,7 +209,7 @@
   "bayNumber": "Bay #{bay}",
   "configureButton": "Configure",
   "batteryLife": "Battery Life",
-  "memoryUsage": "Memory",
+  "memoryUsage": "Memory Used",
 
   "confirmClearCalibrationTitle": "Clear Calibration",
   "confirmDeleteAccountTitle": "Delete Account",
