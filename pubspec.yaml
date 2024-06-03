@@ -107,7 +107,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "resources/images/launcher/ic_launcher_round.png"
+  image_path: "resources/images/launcher/ic_launcher.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

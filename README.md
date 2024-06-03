@@ -33,7 +33,7 @@ echo "ANDROID_NDK=path/to/ndk" >> ~/.gradle/gradle.properties
 
 ### .env
 
-You will likely need to copy `env.template` to `.env`
+You will need to copy `env.template` to `.env`
 
 ### RustFK
 
@@ -70,6 +70,8 @@ cargo install -f --version 2.0.0-dev.28 flutter_rust_bridge_codegen
 
 
 > 🔧 **Tip**: Whenever you adjust the version in `pubspec.yaml`, ensure to run `flutter clean`.
+> 🔧 **Tip2**: If running on Linux, run the following command before all else.
+>```sudo apt-get install build-essential libssl-dev pkg-config libsqlite3-dev```
 
 ### 🍏 iOS Troubleshooting
 
