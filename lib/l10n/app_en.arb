@@ -60,6 +60,9 @@
   "syncUpgradeRequiredMessage": "An upgrade is required to sync data from this station.",
   "syncManageFirmware": "Manage Firmware",
   "quickTip": "Quick Tip",
+  "stationConnected": "Connected",
+  "notConnectedSince": "Not Connected Since",
+  "notConnected": "Not Connected",
 
   "deployButton": "Deploy",
   "deployTitle": "Deploy Station",
