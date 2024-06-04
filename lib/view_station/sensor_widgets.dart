@@ -54,24 +54,40 @@ class DisplaySensorValue extends StatelessWidget {
       }
     }
 
-    final suffix = Container(
-        padding: const EdgeInsets.only(left: 4),
-        child: Text(uom, style: unitsStyle));
+    String displayValue;
+    String displayUom = uom;
 
     if (value == null || !isConnected) {
       final localizations = AppLocalizations.of(context)!;
       return Row(mainAxisSize: mainAxisSize, children: [
         Text("--", style: valueStyle),
-        suffix,
+        Container(
+          padding: const EdgeInsets.only(left: 4),
+          child: Text(uom, style: unitsStyle),
+        ),
         if (!isConnected)
           Text(localizations.lastReadingLabel,
               style: TextStyle(fontSize: unitsSize, color: Colors.grey)),
       ]);
     }
+
+    if (uom == 'ms') {
+      final formattedMilliseconds = formatMilliseconds(value.toInt());
+      displayValue = formattedMilliseconds['value']!;
+      displayUom = formattedMilliseconds['uom']!;
+    } else {
+      displayValue = valueFormatter.format(value);
+    }
+
+    final suffix = Container(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(displayUom, style: unitsStyle),
+    );
+
     return Row(mainAxisSize: mainAxisSize, children: [
-      Text(valueFormatter.format(value), style: valueStyle),
+      Text(displayValue, style: valueStyle),
       suffix,
-      changeIcon
+      changeIcon,
     ]);
   }
 }
@@ -139,5 +155,22 @@ class SensorsGrid extends StatelessWidget {
             }).toList(),
           ));
     });
+  }
+}
+
+Map<String, String> formatMilliseconds(int milliseconds) {
+  if (milliseconds < 1000) {
+    return {'value': '$milliseconds', 'uom': 'ms'};
+  } else if (milliseconds < 60000) {
+    return {'value': (milliseconds / 1000).toStringAsFixed(0), 'uom': 'sec'};
+  } else if (milliseconds < 3600000) {
+    return {'value': (milliseconds / 60000).toStringAsFixed(0), 'uom': 'min'};
+  } else if (milliseconds < 86400000) {
+    return {'value': (milliseconds / 3600000).toStringAsFixed(0), 'uom': 'hr'};
+  } else {
+    return {
+      'value': (milliseconds / 86400000).toStringAsFixed(0),
+      'uom': 'days'
+    };
   }
 }

@@ -65,10 +65,12 @@ class AccountsPage extends StatelessWidget {
       );
     }
 
+    final localizations = AppLocalizations.of(context)!;
+
     // If there are accounts, display the regular content
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.accountsTitle),
+        title: Text(localizations.accountsTitle),
         actions: [
           TextButton(
               onPressed: () {
@@ -81,7 +83,7 @@ class AccountsPage extends StatelessWidget {
                   ),
                 );
               },
-              child: Text(AppLocalizations.of(context)!.accountsAddButton,
+              child: Text(localizations.accountsAddButton,
                   style: const TextStyle(color: Colors.white)))
         ],
       ),
@@ -108,10 +110,9 @@ class AccountsPage extends StatelessWidget {
                     );
                   },
                   onDelete: (account) async {
-                    showDialog(
+                    await showDialog(
                         context: context,
                         builder: (context) {
-                          final localizations = AppLocalizations.of(context)!;
                           return AlertDialog(
                             title:
                                 Text(localizations.confirmDeleteAccountTitle),
@@ -147,7 +148,7 @@ class AccountsPage extends StatelessWidget {
                   ),
                 );
               },
-              text: AppLocalizations.of(context)!.accountsAddButton,
+              text: localizations.accountsAddButton,
             ),
           ),
         ],
