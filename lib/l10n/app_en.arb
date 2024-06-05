@@ -61,7 +61,7 @@
   "syncManageFirmware": "Manage Firmware",
   "quickTip": "Quick Tip",
   "stationConnected": "Connected",
-  "notConnectedSince": "Not Connected Since",
+  "notConnectedSince": "Last Connected",
   "notConnected": "Not Connected",
 
   "deployButton": "Deploy",
