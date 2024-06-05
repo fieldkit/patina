@@ -80,6 +80,9 @@ Stream<LoadingStep> initialize() async* {
   final locale = Locale(await prefs.getLocale());
   yield LoadingStep.info("Locale");
 
+  // It would be nice to localize these, but it's obvious how outside of the
+  // normal AppLocalizations framework.
+
   await Future.delayed(const Duration(milliseconds: 10));
   final config = await Configuration.load();
   yield LoadingStep.info("Configuration");
@@ -87,6 +90,10 @@ Stream<LoadingStep> initialize() async* {
 
   final env = await _initializeCurrentEnv(config, AppEventDispatcher());
   yield LoadingStep.info("Environment");
+  await Future.delayed(const Duration(milliseconds: 10));
+
+  await env.appState.value!.portalAccounts.load();
+  yield LoadingStep.info("Accounts");
   await Future.delayed(const Duration(milliseconds: 10));
 
   Loggers.main.i("Initialized: config=$config locale=$locale");
