@@ -61,6 +61,8 @@ class UpdatePortal {
             deviceId: station.deviceId,
             locationName: "",
             statusPb: hex.encode(config.pb!));
+      } else {
+        Loggers.state.w("${station.deviceId} no config $config");
       }
     }
 
@@ -117,10 +119,10 @@ class UpdatePortal {
         if (update.isLeft()) {
           final error = update.getLeftValue();
           if (error is PortalError_Authentication) {
-            Loggers.main.e("portal-error: auth $e");
+            Loggers.main.e("portal: auth $e");
             await portalAccounts.validateAccount(account);
           } else {
-            Loggers.state.e("portal-error: $error");
+            Loggers.state.e("portal: $error");
           }
         }
       } else {
@@ -128,7 +130,7 @@ class UpdatePortal {
       }
     }
 
-    Loggers.state.i("portal:tick done");
+    Loggers.state.i("portal: tick");
 
     return true;
   }
@@ -210,11 +212,12 @@ class KnownStationsModel extends ChangeNotifier {
   }
 
   void _load() async {
-    var stations = await getMyStations();
-    Loggers.state.i("(load) my-stations: $stations");
+    final stations = await getMyStations();
+    Loggers.state.i("stations: ${stations.length} stations");
     for (var station in stations) {
       findOrCreate(station.deviceId).config = station;
     }
+    Loggers.state.i("stations: loaded");
     notifyListeners();
   }
 
@@ -1306,7 +1309,7 @@ class PortalAccounts extends ChangeNotifier {
       };
 
   Future<PortalAccounts> load() async {
-    Loggers.state.i("accounts:loading");
+    Loggers.state.i("portal: loading");
 
     try {
       const storage = FlutterSecureStorage();
@@ -1319,7 +1322,7 @@ class PortalAccounts extends ChangeNotifier {
           _accounts.addAll(loaded.accounts);
           notifyListeners();
         } catch (e) {
-          Loggers.state.e("accounts:exception: $e");
+          Loggers.state.e("portal: $e");
         }
       }
 
@@ -1338,16 +1341,16 @@ class PortalAccounts extends ChangeNotifier {
   Future<void> refreshFirmware() async {
     try {
       if (_accounts.isEmpty) {
-        Loggers.state.w("Checking firmware (unauthenticated)");
+        Loggers.state.w("firmware: unauthenticated");
         await cacheFirmware(tokens: null);
       } else {
         for (PortalAccount account in _accounts) {
-          Loggers.state.i("Checking firmware (${account.email})");
+          Loggers.state.i("firmware: ${account.email}");
           await cacheFirmware(tokens: account.tokens);
         }
       }
     } catch (e) {
-      Loggers.main.i("Firmware update error: $e");
+      Loggers.main.e("firmware: $e");
     }
   }
 
@@ -1364,7 +1367,7 @@ class PortalAccounts extends ChangeNotifier {
           await authenticatePortal(email: email, password: password);
       return PortalAccount.fromAuthenticated(authenticated);
     } catch (e) {
-      Loggers.state.e("Exception authenticating: $e");
+      Loggers.state.e("portal: $e");
       return null;
     } finally {
       refreshFirmware(); // In background
@@ -1381,6 +1384,7 @@ class PortalAccounts extends ChangeNotifier {
     _removeByEmail(account.email);
     _accounts.add(account);
     await _save();
+    Loggers.state.i("portal: add");
     notifyListeners();
     return account;
   }
@@ -1400,6 +1404,7 @@ class PortalAccounts extends ChangeNotifier {
     _accounts.clear();
     _accounts.addAll(updated);
     await _save();
+    Loggers.state.i("portal: activate");
     notifyListeners();
   }
 
@@ -1416,6 +1421,7 @@ class PortalAccounts extends ChangeNotifier {
   Future<void> delete(PortalAccount account) async {
     _removeByEmail(account.email);
     await _save();
+    Loggers.state.i("portal: delete");
     notifyListeners();
   }
 
@@ -1427,10 +1433,10 @@ class PortalAccounts extends ChangeNotifier {
         _accounts.add(PortalAccount.fromAuthenticated(
             await validateTokens(tokens: tokens)));
       } on PortalError_Authentication catch (e) {
-        Loggers.state.e("Exception validating: $e");
+        Loggers.state.e("portal(validate): $e");
         _accounts.add(account.invalid());
       } catch (e) {
-        Loggers.state.e("Exception validating: $e");
+        Loggers.state.e("portal(validate): $e");
         _accounts.add(account.connectivity());
       }
       await _save();
@@ -1471,12 +1477,14 @@ class PortalAccounts extends ChangeNotifier {
   void markValid(PortalAccount account) {
     _accounts.removeWhere((el) => el.email == account.email);
     _accounts.add(account.valid());
+    Loggers.state.i("portal: mark-valid");
     notifyListeners();
   }
 
   void markConnectivyIssue(PortalAccount account) {
     _accounts.removeWhere((el) => el.email == account.email);
     _accounts.add(account.connectivity());
+    Loggers.state.i("portal: mark-issue");
     notifyListeners();
   }
 }

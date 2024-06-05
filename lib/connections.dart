@@ -20,7 +20,7 @@ class _MonitorConnectionWidget extends State<MonitorConnectionWidget> {
   void initState() {
     super.initState();
     _subscription = Connectivity().onConnectivityChanged.listen((event) {
-      Loggers.state.i("Connectivity $event");
+      Loggers.state.i("connectivity: $event");
     });
   }
 
