@@ -79,10 +79,11 @@ class LastConnected extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final iconColor = connected ? Colors.black : const Color(0xFFCCCDCF);
 
     if (connected) {
       return ListTile(
-        leading: const Icon(Icons.access_time),
+        leading: Icon(Icons.access_time, color: iconColor),
         title: Text(localizations.stationConnected),
       );
     } else {
@@ -90,15 +91,15 @@ class LastConnected extends StatelessWidget {
         final lastConnectedDateTime =
             DateTime.fromMicrosecondsSinceEpoch(lastConnected!.field0 * 1000);
         final formattedLastConnected =
-            DateFormat.yMd().format(lastConnectedDateTime);
+            DateFormat.yMd().add_jm().format(lastConnectedDateTime);
         return ListTile(
-          leading: const Icon(Icons.access_time),
+          leading: Icon(Icons.access_time, color: iconColor),
           title: Text(localizations.notConnectedSince),
           subtitle: Text(formattedLastConnected),
         );
       } else {
         return ListTile(
-          leading: const Icon(Icons.access_time),
+          leading: Icon(Icons.access_time, color: iconColor),
           title: Text(localizations.notConnected),
         );
       }
