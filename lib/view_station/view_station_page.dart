@@ -6,6 +6,7 @@ import 'package:fk/view_station/module_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:fk/view_station/no_modules.dart';
 
 import '../gen/api.dart';
 

@@ -125,6 +125,10 @@
   "settingsLanguage": "Language",
   "endDeployment": "End Deployment",
 
+  "noModulesTitle": "No Modules Attached",
+  "noModulesMessage": "Your station needs modules in order to complete setup, deploy, and capture data.",
+  "addModulesButton": "Add Modules",
+
   "languageEnglish": "English",
   "languageSpanish": "Spanish",
 
