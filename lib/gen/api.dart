@@ -770,6 +770,7 @@ class StationConfig {
   final StreamInfo data;
   final BatteryInfo battery;
   final SolarInfo solar;
+  final Uint8List? pb;
   final List<ModuleConfig> modules;
 
   const StationConfig({
@@ -782,6 +783,7 @@ class StationConfig {
     required this.data,
     required this.battery,
     required this.solar,
+    this.pb,
     required this.modules,
   });
 
@@ -796,6 +798,7 @@ class StationConfig {
       data.hashCode ^
       battery.hashCode ^
       solar.hashCode ^
+      pb.hashCode ^
       modules.hashCode;
 
   @override
@@ -812,6 +815,7 @@ class StationConfig {
           data == other.data &&
           battery == other.battery &&
           solar == other.solar &&
+          pb == other.pb &&
           modules == other.modules;
 }
 

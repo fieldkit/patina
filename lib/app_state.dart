@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:convert/convert.dart';
 import 'package:fk/gen/api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -31,25 +32,56 @@ class StationModel {
 }
 
 class UpdatePortal {
+  final PortalAccounts portalAccounts;
   final Map<String, ExponentialBackOff> _active = {};
   final Map<String, AddOrUpdatePortalStation> _updates = {};
 
-  UpdatePortal(PortalAccounts portalAccounts, AppEventDispatcher dispatcher) {
+  UpdatePortal(
+      {required this.portalAccounts, required AppEventDispatcher dispatcher}) {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) async {
       final deviceId = refreshed.field0.deviceId;
 
       // Always update what we'll be sending to the server. So when we do succeed it's the fresh data.
-      final name = refreshed.field0.name;
       _updates[deviceId] = AddOrUpdatePortalStation(
-          name: name,
+          name: refreshed.field0.name,
           deviceId: deviceId,
           locationName: "",
           statusPb: refreshed.field2);
 
+      await tick();
+    });
+  }
+
+  Future<bool> updateAll(UnmodifiableListView<StationModel> stations) async {
+    for (final station in stations) {
+      final config = station.config;
+      if (config != null && config.pb != null) {
+        _updates[station.deviceId] = AddOrUpdatePortalStation(
+            name: config.name,
+            deviceId: station.deviceId,
+            locationName: "",
+            statusPb: hex.encode(config.pb!));
+      }
+    }
+
+    await tick();
+
+    return true;
+  }
+
+  Future<bool> tick() async {
+    for (final kv in _updates.entries) {
+      final deviceId = kv.key;
+      final update = kv.value;
+      final name = update.name;
+
       if (_active.containsKey(deviceId) &&
           _active[deviceId]!.isProcessRunning()) {
         Loggers.state.i("$deviceId $name portal update active");
-        return;
+        continue;
+      } else {
+        Loggers.state
+            .i("$deviceId $name portal update ${update.statusPb.length}");
       }
 
       final account = portalAccounts.getAccountForDevice(deviceId);
@@ -70,9 +102,9 @@ class UpdatePortal {
                   tokens: tokens, station: _updates[deviceId]!);
               portalAccounts.markValid(account);
               if (idIfOk == null) {
-                Loggers.main.w("$deviceId permissions-conflict");
+                Loggers.state.w("$deviceId permissions-conflict");
               } else {
-                Loggers.main.v("$deviceId refreshed portal-id=$idIfOk");
+                Loggers.state.v("$deviceId refreshed portal-id=$idIfOk");
               }
             },
             retryIf: (e) => e is PortalError_Connecting,
@@ -88,13 +120,17 @@ class UpdatePortal {
             Loggers.main.e("portal-error: auth $e");
             await portalAccounts.validateAccount(account);
           } else {
-            Loggers.main.e("portal-error: $error");
+            Loggers.state.e("portal-error: $error");
           }
         }
       } else {
-        Loggers.main.w("$deviceId need-auth");
+        Loggers.state.w("$deviceId need-auth");
       }
-    });
+    }
+
+    Loggers.state.i("portal:tick done");
+
+    return true;
   }
 }
 
@@ -1029,7 +1065,8 @@ class AppState {
       portalAccounts: portalAccounts,
       dispatcher: dispatcher,
     );
-    final updatePortal = UpdatePortal(portalAccounts, dispatcher);
+    final updatePortal =
+        UpdatePortal(portalAccounts: portalAccounts, dispatcher: dispatcher);
     return AppState._(
       dispatcher,
       knownStations,
@@ -1052,7 +1089,9 @@ class AppState {
     while (true) {
       await Future.delayed(const Duration(minutes: 5));
 
-      portalAccounts.refreshFirmware();
+      await portalAccounts.refreshFirmware();
+
+      await updatePortal.updateAll(knownStations.stations);
     }
   }
 

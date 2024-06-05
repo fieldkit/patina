@@ -1188,6 +1188,7 @@ pub struct StationConfig {
     pub data: StreamInfo,
     pub battery: BatteryInfo,
     pub solar: SolarInfo,
+    pub pb: Option<Vec<u8>>,
     pub modules: Vec<ModuleConfig>,
 }
 
@@ -1385,6 +1386,7 @@ impl TryInto<StationConfig> for StationAndConnection {
             solar: SolarInfo {
                 voltage: station.solar.voltage,
             },
+            pb: station.status,
             modules: station
                 .modules
                 .into_iter()

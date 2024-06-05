@@ -1360,8 +1360,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   StationConfig dco_decode_station_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 10)
-      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
+    if (arr.length != 11)
+      throw Exception('unexpected arr length: expect 11 but see ${arr.length}');
     return StationConfig(
       deviceId: dco_decode_String(arr[0]),
       generationId: dco_decode_String(arr[1]),
@@ -1372,7 +1372,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       data: dco_decode_stream_info(arr[6]),
       battery: dco_decode_battery_info(arr[7]),
       solar: dco_decode_solar_info(arr[8]),
-      modules: dco_decode_list_module_config(arr[9]),
+      pb: dco_decode_opt_list_prim_u_8_strict(arr[9]),
+      modules: dco_decode_list_module_config(arr[10]),
     );
   }
 
@@ -2398,6 +2399,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_data = sse_decode_stream_info(deserializer);
     var var_battery = sse_decode_battery_info(deserializer);
     var var_solar = sse_decode_solar_info(deserializer);
+    var var_pb = sse_decode_opt_list_prim_u_8_strict(deserializer);
     var var_modules = sse_decode_list_module_config(deserializer);
     return StationConfig(
         deviceId: var_deviceId,
@@ -2409,6 +2411,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         data: var_data,
         battery: var_battery,
         solar: var_solar,
+        pb: var_pb,
         modules: var_modules);
   }
 
@@ -3285,6 +3288,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_stream_info(self.data, serializer);
     sse_encode_battery_info(self.battery, serializer);
     sse_encode_solar_info(self.solar, serializer);
+    sse_encode_opt_list_prim_u_8_strict(self.pb, serializer);
     sse_encode_list_module_config(self.modules, serializer);
   }
 

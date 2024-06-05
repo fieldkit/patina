@@ -1400,6 +1400,7 @@ impl SseDecode for crate::api::StationConfig {
         let mut var_data = <crate::api::StreamInfo>::sse_decode(deserializer);
         let mut var_battery = <crate::api::BatteryInfo>::sse_decode(deserializer);
         let mut var_solar = <crate::api::SolarInfo>::sse_decode(deserializer);
+        let mut var_pb = <Option<Vec<u8>>>::sse_decode(deserializer);
         let mut var_modules = <Vec<crate::api::ModuleConfig>>::sse_decode(deserializer);
         return crate::api::StationConfig {
             device_id: var_deviceId,
@@ -1411,6 +1412,7 @@ impl SseDecode for crate::api::StationConfig {
             data: var_data,
             battery: var_battery,
             solar: var_solar,
+            pb: var_pb,
             modules: var_modules,
         };
     }
@@ -2185,6 +2187,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::StationConfig {
             self.data.into_into_dart().into_dart(),
             self.battery.into_into_dart().into_dart(),
             self.solar.into_into_dart().into_dart(),
+            self.pb.into_into_dart().into_dart(),
             self.modules.into_into_dart().into_dart(),
         ]
         .into_dart()
@@ -3007,6 +3010,7 @@ impl SseEncode for crate::api::StationConfig {
         <crate::api::StreamInfo>::sse_encode(self.data, serializer);
         <crate::api::BatteryInfo>::sse_encode(self.battery, serializer);
         <crate::api::SolarInfo>::sse_encode(self.solar, serializer);
+        <Option<Vec<u8>>>::sse_encode(self.pb, serializer);
         <Vec<crate::api::ModuleConfig>>::sse_encode(self.modules, serializer);
     }
 }
