@@ -5,6 +5,7 @@ import 'package:fk/providers.dart';
 import 'package:fk/view_station/module_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:fk/view_station/no_modules.dart';
 
@@ -67,6 +68,43 @@ class ViewStationPage extends StatelessWidget {
         HighLevelsDetails(station: station),
       ]),
     );
+  }
+}
+
+class LastConnected extends StatelessWidget {
+  final UtcDateTime? lastConnected;
+  final bool connected;
+
+  const LastConnected({super.key, this.lastConnected, required this.connected});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final iconColor = connected ? Colors.black : const Color(0xFFCCCDCF);
+
+    if (connected) {
+      return ListTile(
+        leading: Icon(Icons.access_time, color: iconColor),
+        title: Text(localizations.stationConnected),
+      );
+    } else {
+      if (lastConnected != null) {
+        final lastConnectedDateTime =
+            DateTime.fromMicrosecondsSinceEpoch(lastConnected!.field0 * 1000);
+        final formattedLastConnected =
+            DateFormat.yMd().add_jm().format(lastConnectedDateTime);
+        return ListTile(
+          leading: Icon(Icons.access_time, color: iconColor),
+          title: Text(localizations.notConnectedSince),
+          subtitle: Text(formattedLastConnected),
+        );
+      } else {
+        return ListTile(
+          leading: Icon(Icons.access_time, color: iconColor),
+          title: Text(localizations.notConnected),
+        );
+      }
+    }
   }
 }
 
@@ -238,6 +276,9 @@ class HighLevelsDetails extends StatelessWidget {
                           enabled: station.connected, level: battery),
                       MemoryIndicator(
                           enabled: station.connected, bytesUsed: bytesUsed),
+                      LastConnected(
+                          lastConnected: station.config?.lastSeen,
+                          connected: station.connected),
                     ],
                   ),
                 ),
