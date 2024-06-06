@@ -64,7 +64,7 @@ class _HelpPageState extends State<HelpPage> {
           const Divider(),
           Link(
             uri: Uri.parse(
-                'https://www.fieldkit.org/product-guide/set-up-station'),
+                'https://www.fieldkit.org/product-guide/set-up-station/#ready-to-deploy'),
             target: LinkTarget.blank,
             builder: (BuildContext ctx, FollowLink? openLink) {
               return ListTile(
