@@ -127,8 +127,13 @@ fn wire_cache_firmware_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_tokens = <Option<crate::api::Tokens>>::sse_decode(&mut deserializer);
+            let api_background = <bool>::sse_decode(&mut deserializer);
             deserializer.end();
-            move |context| transform_result_sse((move || crate::api::cache_firmware(api_tokens))())
+            move |context| {
+                transform_result_sse((move || {
+                    crate::api::cache_firmware(api_tokens, api_background)
+                })())
+            }
         },
     )
 }

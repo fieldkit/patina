@@ -70,7 +70,8 @@ abstract class RustLibApi extends BaseApi {
   Future<Authenticated> authenticatePortal(
       {required String email, required String password, dynamic hint});
 
-  Future<FirmwareDownloadStatus> cacheFirmware({Tokens? tokens, dynamic hint});
+  Future<FirmwareDownloadStatus> cacheFirmware(
+      {Tokens? tokens, required bool background, dynamic hint});
 
   Future<void> calibrate(
       {required String deviceId,
@@ -203,11 +204,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<FirmwareDownloadStatus> cacheFirmware({Tokens? tokens, dynamic hint}) {
+  Future<FirmwareDownloadStatus> cacheFirmware(
+      {Tokens? tokens, required bool background, dynamic hint}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_opt_box_autoadd_tokens(tokens, serializer);
+        sse_encode_bool(background, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 16, port: port_);
       },
@@ -216,7 +219,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData: sse_decode_portal_error,
       ),
       constMeta: kCacheFirmwareConstMeta,
-      argValues: [tokens],
+      argValues: [tokens, background],
       apiImpl: this,
       hint: hint,
     ));
@@ -224,7 +227,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCacheFirmwareConstMeta => const TaskConstMeta(
         debugName: "cache_firmware",
-        argNames: ["tokens"],
+        argNames: ["tokens", "background"],
       );
 
   @override

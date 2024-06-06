@@ -110,8 +110,10 @@ Future<TransferProgress> startUpload(
     RustLib.instance.api.startUpload(
         deviceId: deviceId, tokens: tokens, files: files, hint: hint);
 
-Future<FirmwareDownloadStatus> cacheFirmware({Tokens? tokens, dynamic hint}) =>
-    RustLib.instance.api.cacheFirmware(tokens: tokens, hint: hint);
+Future<FirmwareDownloadStatus> cacheFirmware(
+        {Tokens? tokens, required bool background, dynamic hint}) =>
+    RustLib.instance.api
+        .cacheFirmware(tokens: tokens, background: background, hint: hint);
 
 Future<UpgradeProgress> upgradeStation(
         {required String deviceId,

@@ -1339,14 +1339,15 @@ class PortalAccounts extends ChangeNotifier {
   }
 
   Future<void> refreshFirmware() async {
+    Loggers.state.i("firmware: refresh");
     try {
       if (_accounts.isEmpty) {
         Loggers.state.w("firmware: unauthenticated");
-        await cacheFirmware(tokens: null);
+        await cacheFirmware(tokens: null, background: true);
       } else {
         for (PortalAccount account in _accounts) {
           Loggers.state.i("firmware: ${account.email}");
-          await cacheFirmware(tokens: account.tokens);
+          await cacheFirmware(tokens: account.tokens, background: true);
         }
       }
     } catch (e) {

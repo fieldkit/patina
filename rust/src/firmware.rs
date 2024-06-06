@@ -71,6 +71,7 @@ pub async fn cache_firmware(
     storage_path: String,
     publish_tx: Sender<DomainMessage>,
     tokens: Option<Tokens>,
+    background: bool,
 ) -> Result<FirmwareDownloadStatus, PortalError> {
     let task = CheckForAndCacheFirmware {
         portal_base_url,
@@ -78,16 +79,27 @@ pub async fn cache_firmware(
         publish_tx,
         tokens,
     };
-    info!("cache_firwmare");
+    info!(%background, "cache_firwmare");
 
-    tokio::task::spawn(async move {
+    if background {
+        tokio::task::spawn(async move {
+            match task.run().await {
+                Err(e) => warn!("Error caching firmware: {:?}", e),
+                Ok(_) => {}
+            }
+        });
+
+        Ok(FirmwareDownloadStatus::Checking)
+    } else {
         match task.run().await {
-            Err(e) => warn!("Error caching firmware: {:?}", e),
-            Ok(_) => {}
-        }
-    });
+            Err(e) => {
+                warn!("Error caching firmware: {:?}", e);
 
-    Ok(FirmwareDownloadStatus::Checking)
+                Ok(FirmwareDownloadStatus::Failed)
+            }
+            Ok(_) => Ok(FirmwareDownloadStatus::Completed),
+        }
+    }
 }
 
 pub struct FirmwareUpgrader {

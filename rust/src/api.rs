@@ -581,12 +581,14 @@ impl Sdk {
     async fn cache_firmware(
         &self,
         tokens: Option<Tokens>,
+        background: bool,
     ) -> Result<FirmwareDownloadStatus, PortalError> {
         crate::firmware::cache_firmware(
             self.portal_base_url.clone(),
             self.storage_path.clone(),
             self.publish_tx.clone(),
             tokens,
+            background,
         )
         .await
     }
@@ -726,9 +728,12 @@ pub fn start_upload(
     })?)
 }
 
-pub fn cache_firmware(tokens: Option<Tokens>) -> Result<FirmwareDownloadStatus, PortalError> {
+pub fn cache_firmware(
+    tokens: Option<Tokens>,
+    background: bool,
+) -> Result<FirmwareDownloadStatus, PortalError> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.cache_firmware(tokens))
+        rt.block_on(sdk.cache_firmware(tokens, background))
     })?)
 }
 
