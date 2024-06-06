@@ -13,12 +13,19 @@ class MonitorConnectionWidget extends StatefulWidget {
   State<StatefulWidget> createState() => _MonitorConnectionWidget();
 }
 
-class _MonitorConnectionWidget extends State<MonitorConnectionWidget> {
+class _MonitorConnectionWidget extends State<MonitorConnectionWidget>
+    with WidgetsBindingObserver {
   StreamSubscription<List<ConnectivityResult>>? _subscription;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    Loggers.state.i("lifecycle(widget): $state");
+  }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _subscription = Connectivity().onConnectivityChanged.listen((event) {
       Loggers.state.i("connectivity: $event");
     });
@@ -27,6 +34,7 @@ class _MonitorConnectionWidget extends State<MonitorConnectionWidget> {
   @override
   void dispose() {
     _subscription?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
