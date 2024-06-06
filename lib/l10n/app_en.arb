@@ -131,9 +131,11 @@
   "noModulesTitle": "No Modules Attached",
   "noModulesMessage": "Your station needs modules in order to complete setup, deploy, and capture data.",
   "addModulesButton": "Add Modules",
+  "onboardingNextButton": "Next",
+  "onboardingCompleteButton": "Done",
 
   "languageEnglish": "English",
-  "languageSpanish": "Spanish",
+  "languageSpanish": "Español",
 
   "eventUnknown": "Unknown Event",
   "eventRestart": "Restart Event",

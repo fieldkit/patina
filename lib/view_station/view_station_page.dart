@@ -40,7 +40,8 @@ class ViewStationRoute extends StatelessWidget {
 class ViewStationPage extends StatelessWidget {
   final StationModel station;
 
-  StationConfig get config => station.config!;
+  StationConfig get config =>
+      station.config!; // TODO: check if config is null, fix null error
 
   const ViewStationPage({super.key, required this.station});
 
@@ -206,6 +207,8 @@ class TimerCircle extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Container(
+        width: double.infinity,
+        height: 300,
         decoration: BoxDecoration(color: color(), shape: BoxShape.circle),
         alignment: Alignment.center,
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -241,12 +244,10 @@ class HighLevelsDetails extends StatelessWidget {
       );
     }).toList();
 
-    return Flex(
-      direction: Axis.vertical,
+    return Column(
       children: [
         Container(
           padding: const EdgeInsets.fromLTRB(10, 40, 10, 10),
-          width: double.infinity,
           margin: const EdgeInsets.all(40),
           child: DecoratedBox(
             decoration: BoxDecoration(
@@ -257,34 +258,41 @@ class HighLevelsDetails extends StatelessWidget {
                 width: 1,
               ),
             ),
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 150,
-                    child: TimerCircle(
-                      enabled: station.connected,
-                      deployed: station.ephemeral?.deployment?.startTime,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                IntrinsicHeight(
+                  child: Row(
                     children: [
-                      BatteryIndicator(
-                          enabled: station.connected, level: battery),
-                      MemoryIndicator(
-                          enabled: station.connected, bytesUsed: bytesUsed),
-                      LastConnected(
-                          lastConnected: station.config?.lastSeen,
-                          connected: station.connected),
+                      Expanded(
+                        child: Center(
+                          child: TimerCircle(
+                            enabled: station.connected,
+                            deployed: station.ephemeral?.deployment?.startTime,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            BatteryIndicator(
+                                enabled: station.connected, level: battery),
+                            MemoryIndicator(
+                                enabled: station.connected,
+                                bytesUsed: bytesUsed),
+                            LastConnected(
+                                lastConnected: station.config?.lastSeen,
+                                connected: station.connected),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.all(10),
-                  width: double.infinity,
+                  width: 500,
+                  height: 90,
                   child: ElevatedTextButton(
                     onPressed: deployTask != null
                         ? () {
@@ -304,7 +312,8 @@ class HighLevelsDetails extends StatelessWidget {
             ),
           ),
         ),
-        if (modules.length == 1)
+        if (modules.length ==
+            1) // Note: This is on purpose, checking for only diagnostics module
           const NoModulesWidget()
         else
           Column(children: modules),
