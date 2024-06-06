@@ -207,42 +207,66 @@ class HighLevelsDetails extends StatelessWidget {
       direction: Axis.vertical,
       children: [
         Container(
-            padding: const EdgeInsets.only(top: 20),
-            child: Row(children: [
-              Expanded(
-                  child: SizedBox(
-                      height: 150,
-                      child: TimerCircle(
-                          enabled: station.connected,
-                          deployed: station.ephemeral?.deployment?.startTime))),
-              Expanded(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  BatteryIndicator(enabled: station.connected, level: battery),
-                  MemoryIndicator(
-                      enabled: station.connected, bytesUsed: bytesUsed),
-                ],
-              ))
-            ])),
-        Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.fromLTRB(10, 40, 10, 10),
           width: double.infinity,
-          child: ElevatedTextButton(
-              onPressed: deployTask != null
-                  ? () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              DeployStationRoute(deviceId: station.deviceId),
-                        ),
-                      );
-                    }
-                  : null,
-              text: AppLocalizations.of(context)!.deployButton),
+          margin: const EdgeInsets.all(40),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Colors.grey.shade300,
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 150,
+                    child: TimerCircle(
+                      enabled: station.connected,
+                      deployed: station.ephemeral?.deployment?.startTime,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      BatteryIndicator(
+                          enabled: station.connected, level: battery),
+                      MemoryIndicator(
+                          enabled: station.connected, bytesUsed: bytesUsed),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  width: double.infinity,
+                  child: ElevatedTextButton(
+                    onPressed: deployTask != null
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DeployStationRoute(
+                                    deviceId: station.deviceId),
+                              ),
+                            );
+                          }
+                        : null,
+                    text: AppLocalizations.of(context)!.deployButton,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        Column(children: modules)
+        if (modules.length == 1)
+          const NoModulesWidget()
+        else
+          Column(children: modules),
       ],
     );
   }
