@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:convert/convert.dart';
 import 'package:fk/gen/api.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:exponential_back_off/exponential_back_off.dart';
 import 'package:protobuf/protobuf.dart';
@@ -31,25 +33,58 @@ class StationModel {
 }
 
 class UpdatePortal {
+  final PortalAccounts portalAccounts;
   final Map<String, ExponentialBackOff> _active = {};
   final Map<String, AddOrUpdatePortalStation> _updates = {};
 
-  UpdatePortal(PortalAccounts portalAccounts, AppEventDispatcher dispatcher) {
+  UpdatePortal(
+      {required this.portalAccounts, required AppEventDispatcher dispatcher}) {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) async {
       final deviceId = refreshed.field0.deviceId;
 
       // Always update what we'll be sending to the server. So when we do succeed it's the fresh data.
-      final name = refreshed.field0.name;
       _updates[deviceId] = AddOrUpdatePortalStation(
-          name: name,
+          name: refreshed.field0.name,
           deviceId: deviceId,
           locationName: "",
           statusPb: refreshed.field2);
 
+      await tick();
+    });
+  }
+
+  Future<bool> updateAll(UnmodifiableListView<StationModel> stations) async {
+    for (final station in stations) {
+      final config = station.config;
+      if (config != null && config.pb != null) {
+        _updates[station.deviceId] = AddOrUpdatePortalStation(
+            name: config.name,
+            deviceId: station.deviceId,
+            locationName: "",
+            statusPb: hex.encode(config.pb!));
+      } else {
+        Loggers.state.w("${station.deviceId} no config $config");
+      }
+    }
+
+    await tick();
+
+    return true;
+  }
+
+  Future<bool> tick() async {
+    for (final kv in _updates.entries) {
+      final deviceId = kv.key;
+      final update = kv.value;
+      final name = update.name;
+
       if (_active.containsKey(deviceId) &&
           _active[deviceId]!.isProcessRunning()) {
         Loggers.state.i("$deviceId $name portal update active");
-        return;
+        continue;
+      } else {
+        Loggers.state.i(
+            "$deviceId $name portal update (${update.statusPb.length} bytes)");
       }
 
       final account = portalAccounts.getAccountForDevice(deviceId);
@@ -70,9 +105,9 @@ class UpdatePortal {
                   tokens: tokens, station: _updates[deviceId]!);
               portalAccounts.markValid(account);
               if (idIfOk == null) {
-                Loggers.main.w("$deviceId permissions-conflict");
+                Loggers.state.w("$deviceId permissions-conflict");
               } else {
-                Loggers.main.v("$deviceId refreshed portal-id=$idIfOk");
+                Loggers.state.v("$deviceId refreshed portal-id=$idIfOk");
               }
             },
             retryIf: (e) => e is PortalError_Connecting,
@@ -85,14 +120,32 @@ class UpdatePortal {
         if (update.isLeft()) {
           final error = update.getLeftValue();
           if (error is PortalError_Authentication) {
-            Loggers.main.e("portal-error: auth $e");
+            Loggers.main.e("portal: auth $e");
             await portalAccounts.validateAccount(account);
           } else {
-            Loggers.main.e("portal-error: $error");
+            Loggers.state.e("portal: $error");
           }
         }
       } else {
-        Loggers.main.w("$deviceId need-auth");
+        Loggers.state.w("$deviceId need-auth");
+      }
+    }
+
+    Loggers.state.i("portal: tick");
+
+    return true;
+  }
+}
+
+class AuthenticationStatus extends ChangeNotifier {
+  AuthenticationStatus(
+      PortalStateMachine portalState, PortalAccounts accounts) {
+    portalState.addListener(() {
+      if (portalState.state == PortalState.loaded) {
+        accounts.validate();
+      }
+      if (portalState.state == PortalState.validated) {
+        accounts.refreshFirmware();
       }
     });
   }
@@ -174,11 +227,12 @@ class KnownStationsModel extends ChangeNotifier {
   }
 
   void _load() async {
-    var stations = await getMyStations();
-    Loggers.state.i("(load) my-stations: $stations");
+    final stations = await getMyStations();
+    Loggers.state.i("stations: ${stations.length} stations");
     for (var station in stations) {
       findOrCreate(station.deviceId).config = station;
     }
+    Loggers.state.i("stations: loaded");
     notifyListeners();
   }
 
@@ -1002,6 +1056,7 @@ class AppState {
   final KnownStationsModel knownStations;
   final StationOperations stationOperations;
   final ModuleConfigurations moduleConfigurations;
+  final AuthenticationStatus authenticationStatus;
   final PortalAccounts portalAccounts;
   final TasksModel tasks;
   final UpdatePortal updatePortal;
@@ -1010,6 +1065,7 @@ class AppState {
       this.dispatcher,
       this.knownStations,
       this.moduleConfigurations,
+      this.authenticationStatus,
       this.portalAccounts,
       this.firmware,
       this.stationOperations,
@@ -1022,18 +1078,23 @@ class AppState {
     final knownStations = KnownStationsModel(dispatcher);
     final moduleConfigurations =
         ModuleConfigurations(knownStations: knownStations);
-    final portalAccounts = PortalAccounts(accounts: List.empty());
+    final PortalStateMachine portalState = PortalStateMachine();
+    final portalAccounts = PortalAccounts(portalState: portalState);
+    final authenticationStatus =
+        AuthenticationStatus(portalState, portalAccounts);
     final tasks = TasksModel(
       availableFirmware: firmware,
       knownStations: knownStations,
       portalAccounts: portalAccounts,
       dispatcher: dispatcher,
     );
-    final updatePortal = UpdatePortal(portalAccounts, dispatcher);
+    final updatePortal =
+        UpdatePortal(portalAccounts: portalAccounts, dispatcher: dispatcher);
     return AppState._(
       dispatcher,
       knownStations,
       moduleConfigurations,
+      authenticationStatus,
       portalAccounts,
       firmware,
       stationOperations,
@@ -1042,17 +1103,49 @@ class AppState {
     );
   }
 
+  late final AppLifecycleListener _listener;
+  DateTime? _periodicRan;
+
   AppState start() {
     _everyFiveMinutes();
 
+    _listener = AppLifecycleListener(
+      onStateChange: (AppLifecycleState state) {
+        Loggers.state.i("lifecycle: $state");
+
+        if (state == AppLifecycleState.resumed) {
+          if (_periodicRan != null &&
+              DateTime.now().difference(_periodicRan!).inSeconds < 30) {
+            Loggers.state.i("periodc: $_periodicRan");
+          } else {
+            _periodic();
+          }
+        }
+      },
+    );
+
     return this;
+  }
+
+  AppState stop() {
+    _listener.dispose();
+
+    return this;
+  }
+
+  Future<void> _periodic() async {
+    _periodicRan = DateTime.now();
+
+    await portalAccounts.refreshFirmware();
+
+    await updatePortal.updateAll(knownStations.stations);
   }
 
   Future<void> _everyFiveMinutes() async {
     while (true) {
       await Future.delayed(const Duration(minutes: 5));
 
-      portalAccounts.refreshFirmware();
+      await _periodic();
     }
   }
 
@@ -1240,9 +1333,32 @@ class PortalAccount extends ChangeNotifier {
   }
 }
 
+enum PortalState {
+  started,
+  loading,
+  loaded,
+  validating,
+  validated,
+}
+
+class PortalStateMachine extends ChangeNotifier {
+  PortalState _state = PortalState.started;
+
+  PortalState get state => _state;
+
+  void transition(PortalState to) {
+    if (_state != to) {
+      Loggers.state.i("portal: $to");
+      _state = to;
+      notifyListeners();
+    }
+  }
+}
+
 class PortalAccounts extends ChangeNotifier {
   static const secureStorageKey = "fk.accounts";
 
+  final PortalStateMachine portalState;
   final List<PortalAccount> _accounts = List.empty(growable: true);
 
   UnmodifiableListView<PortalAccount> get accounts =>
@@ -1250,16 +1366,13 @@ class PortalAccounts extends ChangeNotifier {
 
   PortalAccount? get active => _accounts.where((a) => a.active).first;
 
-  PortalAccounts({required List<PortalAccount> accounts}) {
-    _accounts.addAll(accounts);
-  }
+  PortalAccounts({required this.portalState});
 
-  factory PortalAccounts.fromJson(Map<String, dynamic> data) {
+  static List<PortalAccount> fromJson(Map<String, dynamic> data) {
     final accountsData = data['accounts'] as List<dynamic>;
-    final accounts = accountsData
+    return accountsData
         .map((accountData) => PortalAccount.fromJson(accountData))
         .toList();
-    return PortalAccounts(accounts: accounts);
   }
 
   Map<String, dynamic> toJson() => {
@@ -1267,48 +1380,43 @@ class PortalAccounts extends ChangeNotifier {
       };
 
   Future<PortalAccounts> load() async {
-    Loggers.state.i("accounts:loading");
+    Loggers.state.i("portal: loading");
 
     try {
       const storage = FlutterSecureStorage();
       String? value = await storage.read(key: secureStorageKey);
       if (value != null) {
         try {
-          // A little messy, I know.
           final loaded = PortalAccounts.fromJson(jsonDecode(value));
           _accounts.clear();
-          _accounts.addAll(loaded.accounts);
-          notifyListeners();
+          _accounts.addAll(loaded);
         } catch (e) {
-          Loggers.state.e("accounts:exception: $e");
+          Loggers.state.e("portal: $e");
         }
       }
-
-      validate(); // In background
-
-      refreshFirmware(); // In background
-
-      Loggers.state.i("accounts:load exiting");
     } catch (e) {
-      Loggers.state.e("accounts:fatal-exception: $e");
+      Loggers.state.e("portal: fatal-exception: $e");
+    } finally {
+      portalState.transition(PortalState.loaded);
     }
 
     return this;
   }
 
   Future<void> refreshFirmware() async {
+    Loggers.state.i("firmware: refresh");
     try {
       if (_accounts.isEmpty) {
-        Loggers.state.w("Checking firmware (unauthenticated)");
-        await cacheFirmware(tokens: null);
+        Loggers.state.w("firmware: unauthenticated");
+        await cacheFirmware(tokens: null, background: true);
       } else {
         for (PortalAccount account in _accounts) {
-          Loggers.state.i("Checking firmware (${account.email})");
-          await cacheFirmware(tokens: account.tokens);
+          Loggers.state.i("firmware: ${account.email}");
+          await cacheFirmware(tokens: account.tokens, background: true);
         }
       }
     } catch (e) {
-      Loggers.main.i("Firmware update error: $e");
+      Loggers.main.e("firmware: $e");
     }
   }
 
@@ -1325,10 +1433,8 @@ class PortalAccounts extends ChangeNotifier {
           await authenticatePortal(email: email, password: password);
       return PortalAccount.fromAuthenticated(authenticated);
     } catch (e) {
-      Loggers.state.e("Exception authenticating: $e");
+      Loggers.state.e("portal: $e");
       return null;
-    } finally {
-      refreshFirmware(); // In background
     }
   }
 
@@ -1342,6 +1448,7 @@ class PortalAccounts extends ChangeNotifier {
     _removeByEmail(account.email);
     _accounts.add(account);
     await _save();
+    Loggers.state.i("portal: add");
     notifyListeners();
     return account;
   }
@@ -1361,6 +1468,7 @@ class PortalAccounts extends ChangeNotifier {
     _accounts.clear();
     _accounts.addAll(updated);
     await _save();
+    Loggers.state.i("portal: activate");
     notifyListeners();
   }
 
@@ -1377,6 +1485,7 @@ class PortalAccounts extends ChangeNotifier {
   Future<void> delete(PortalAccount account) async {
     _removeByEmail(account.email);
     await _save();
+    Loggers.state.i("portal: delete");
     notifyListeners();
   }
 
@@ -1388,10 +1497,10 @@ class PortalAccounts extends ChangeNotifier {
         _accounts.add(PortalAccount.fromAuthenticated(
             await validateTokens(tokens: tokens)));
       } on PortalError_Authentication catch (e) {
-        Loggers.state.e("Exception validating: $e");
+        Loggers.state.e("portal(validate): $e");
         _accounts.add(account.invalid());
       } catch (e) {
-        Loggers.state.e("Exception validating: $e");
+        Loggers.state.e("portal(validate): $e");
         _accounts.add(account.connectivity());
       }
       await _save();
@@ -1401,6 +1510,8 @@ class PortalAccounts extends ChangeNotifier {
   }
 
   Future<PortalAccounts> validate() async {
+    portalState.transition(PortalState.validating);
+
     final validating = _accounts.map((e) => e).toList();
     _accounts.clear();
     for (final iter in validating) {
@@ -1411,8 +1522,11 @@ class PortalAccounts extends ChangeNotifier {
         _accounts.add(iter);
       }
     }
+
     await _save();
-    notifyListeners();
+
+    portalState.transition(PortalState.validated);
+
     return this;
   }
 
@@ -1432,12 +1546,14 @@ class PortalAccounts extends ChangeNotifier {
   void markValid(PortalAccount account) {
     _accounts.removeWhere((el) => el.email == account.email);
     _accounts.add(account.valid());
+    Loggers.state.i("portal: mark-valid");
     notifyListeners();
   }
 
   void markConnectivyIssue(PortalAccount account) {
     _accounts.removeWhere((el) => el.email == account.email);
     _accounts.add(account.connectivity());
+    Loggers.state.i("portal: mark-issue");
     notifyListeners();
   }
 }
