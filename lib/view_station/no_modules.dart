@@ -12,7 +12,6 @@ class NoModulesWidget extends StatelessWidget {
       width: double.infinity,
       child: Container(
         padding: const EdgeInsets.all(10),
-        margin: const EdgeInsets.all(40),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -22,35 +21,38 @@ class NoModulesWidget extends StatelessWidget {
               width: 1,
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'resources/images/Icon_Warning_error.png',
-                width: 48,
-                height: 48,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                localizations.noModulesTitle,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'resources/images/Icon_Warning_error.png',
+                  width: 48,
+                  height: 48,
                 ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                localizations.noModulesMessage,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  // Add logic here
-                },
-                child: Text(localizations.addModulesButton),
-              ),
-            ],
+                const SizedBox(height: 16),
+                Text(
+                  localizations.noModulesTitle,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  localizations.noModulesMessage,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    // Add logic here
+                  },
+                  child: Text(localizations.addModulesButton),
+                ),
+              ],
+            ),
           ),
         ),
       ),
