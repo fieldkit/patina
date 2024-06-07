@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fk/reader/screens.dart';
 
 class NoModulesWidget extends StatelessWidget {
   const NoModulesWidget({super.key});
@@ -47,7 +48,17 @@ class NoModulesWidget extends StatelessWidget {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
-                    // Add logic here
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MultiScreenFlow(
+                          screenNames: const ['onboarding.07'],
+                          onComplete: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+                    );
                   },
                   child: Text(localizations.addModulesButton),
                 ),
