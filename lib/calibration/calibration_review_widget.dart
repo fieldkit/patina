@@ -212,7 +212,7 @@ class CalibrationSection extends StatelessWidget {
           border: Border.all(
             color: const Color.fromRGBO(212, 212, 212, 1),
           ),
-          borderRadius: const BorderRadius.all(Radius.circular(5)),
+          borderRadius: const BorderRadius.all(Radius.circular(2)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,7 +333,7 @@ class TimeWidget extends StatelessWidget {
             border: Border.all(
               color: const Color.fromRGBO(212, 212, 212, 1),
             ),
-            borderRadius: const BorderRadius.all(Radius.circular(5))),
+            borderRadius: const BorderRadius.all(Radius.circular(2))),
         padding: const EdgeInsets.all(8),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
