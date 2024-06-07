@@ -455,20 +455,31 @@ class FirmwareComparison {
 class UpgradeOperation extends Operation {
   int firmwareId;
   UpgradeStatus status = const UpgradeStatus.starting();
+  UpgradeError? error;
 
   UpgradeOperation(this.firmwareId);
 
   @override
   void update(DomainMessage message) {
     if (message is DomainMessage_UpgradeProgress) {
+      final upgradeStatus = message.field0.status;
+      if (upgradeStatus is UpgradeStatus_Failed) {
+        error = upgradeStatus.field0;
+        Loggers.state.i("upgrade: $error");
+      } else {
+        error = null;
+        Loggers.state.i("upgrade: $upgradeStatus");
+      }
       firmwareId = message.field0.firmwareId;
-      status = message.field0.status;
+      status = upgradeStatus;
       notifyListeners();
     }
   }
 
   @override
-  bool get done =>
+  bool get done => false;
+
+  bool get completed =>
       status is UpgradeStatus_Completed ||
       status is UpgradeStatus_Failed ||
       status is UpgradeStatus_ReconnectTimeout;

@@ -38,9 +38,28 @@ class UpgradeProgressWidget extends StatelessWidget {
       return Text(localizations.firmwareCompleted);
     }
     if (status is UpgradeStatus_Failed) {
-      return Text(localizations.firmwareFailed);
+      if (operation.error == UpgradeError.sdCard) {
+        return const SdCardError();
+      } else {
+        return Text(localizations.firmwareFailed);
+      }
     }
     return const SizedBox.shrink();
+  }
+}
+
+class SdCardError extends StatelessWidget {
+  const SdCardError({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    const IconData warning = IconData(0xe6cb, fontFamily: 'MaterialIcons');
+    final localizations = AppLocalizations.of(context)!;
+    return ListTile(
+        iconColor: Color.fromARGB(255, 0xf9, 0x00, 0x00),
+        leading: Icon(warning),
+        title: Text(localizations.firmwareSdCardError,
+            style: TextStyle(fontWeight: FontWeight.bold)));
   }
 }
 
@@ -89,14 +108,14 @@ class FirmwareItem extends StatelessWidget {
         header: header(),
         expanded: comparison.newer || operations.isNotEmpty,
         children: [
+          ...operations
+              .map((operation) => UpgradeProgressWidget(operation: operation)),
           ElevatedTextButton(
             onPressed: canUpgrade ? onUpgrade : null,
             text: comparison.newer
                 ? localizations.firmwareUpgrade
                 : localizations.firmwareSwitch,
           ),
-          ...operations
-              .map((operation) => UpgradeProgressWidget(operation: operation))
         ].map((child) => pad(child)).toList());
   }
 }
@@ -112,7 +131,6 @@ class StationFirmwarePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final stationOps = context.watch<StationOperations>();
-    final busy = stationOps.isBusy(config.deviceId);
     final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
     final availableFirmware = context.watch<AvailableFirmwareModel>();
 
@@ -123,9 +141,8 @@ class StationFirmwarePage extends StatelessWidget {
           _buildStationCard(context, localizations),
           _buildFirmwareUpdateCard(context, localizations, availableFirmware),
           _buildFirmwareActionButton(context, localizations, availableFirmware),
-          // _buildQuickTipCard(context, localizations), // Hide the quick tip card for now
-          // TODO: Add quick tip card back once internet connection is available not just on restart for updates
-          ..._buildFirmwareItems(availableFirmware, operations, busy, context)
+          _buildQuickTipCard(context, localizations),
+          ..._buildFirmwareItems(availableFirmware, operations, context)
         ],
       ),
     );
@@ -146,6 +163,19 @@ class StationFirmwarePage extends StatelessWidget {
     );
   }
 
+  Widget _buildQuickTipCard(
+      BuildContext context, AppLocalizations localizations) {
+    IconData bulb = const IconData(0xe37c, fontFamily: 'MaterialIcons');
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ListTile(
+            tileColor: const Color.fromARGB(255, 0xf9, 0xf9, 0xf9),
+            leading: Icon(bulb),
+            title: Text(localizations.quickTip,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text(localizations.firmwareTip)));
+  }
+
   Widget _buildStationCard(
       BuildContext context, AppLocalizations localizations) {
     final firmwareVersion = config.firmware.label;
@@ -155,29 +185,32 @@ class StationFirmwarePage extends StatelessWidget {
         color: Colors.white,
         padding: const EdgeInsets.all(8.0),
         child: ListTile(
-          tileColor: Colors.white,
-          leading: SizedBox(
-            width: 48.0,
-            height: 48.0,
-            child: Image(
-                image: station.connected
-                    ? const AssetImage(
-                        "resources/images/Icon_Station_Connected.png")
-                    : const AssetImage(
-                        "resources/images/Icon_Station_Not_Connected.png",
-                      )),
-          ),
-          title:
-              Text(station.config!.name, style: const TextStyle(fontSize: 18)),
-          subtitle: Text(
-              AppLocalizations.of(context)!.firmwareVersion(firmwareVersion),
-              style: const TextStyle(fontSize: 14)),
-          trailing: Text(
-              station.connected
-                  ? AppLocalizations.of(context)!.firmwareConnected
-                  : AppLocalizations.of(context)!.firmwareNotConnected,
-              style: const TextStyle(fontSize: 14)),
-        ),
+            tileColor: Colors.white,
+            leading: SizedBox(
+              width: 48.0,
+              height: 48.0,
+              child: Image(
+                  image: station.connected
+                      ? const AssetImage(
+                          "resources/images/Icon_Station_Connected.png")
+                      : const AssetImage(
+                          "resources/images/Icon_Station_Not_Connected.png",
+                        )),
+            ),
+            title: Text(station.config!.name,
+                style: const TextStyle(fontSize: 18)),
+            subtitle: Column(children: [
+              Text(localizations.firmwareVersion(firmwareVersion),
+                  style: const TextStyle(fontSize: 14)),
+              Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                      station.connected
+                          ? localizations.firmwareConnected
+                          : localizations.firmwareNotConnected,
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.bold))),
+            ])),
       ),
     );
   }
@@ -202,10 +235,10 @@ class StationFirmwarePage extends StatelessWidget {
         child: ListTile(
             tileColor: Colors.white,
             title: Text(!isFirmwareNewer
-                ? AppLocalizations.of(context)!.firmwareUpdated
-                : AppLocalizations.of(context)!.firmwareNotUpdated),
-            subtitle: Text(AppLocalizations.of(context)!.firmwareReleased(
-                firmwareReleaseDate))), // TODO: Double check that the date is actually fix, was just shorted
+                ? localizations.firmwareUpdated
+                : localizations.firmwareNotUpdated),
+            subtitle:
+                Text(localizations.firmwareReleased(firmwareReleaseDate))),
       ),
     );
   }
@@ -239,7 +272,7 @@ class StationFirmwarePage extends StatelessWidget {
   }
 
   List<Widget> _buildFirmwareItems(AvailableFirmwareModel availableFirmware,
-      List<UpgradeOperation> operations, bool busy, BuildContext context) {
+      List<UpgradeOperation> operations, BuildContext context) {
     return availableFirmware.firmware
         .where((firmware) => firmware.module == "fk-core")
         .map((firmware) => FirmwareItem(
@@ -247,8 +280,7 @@ class StationFirmwarePage extends StatelessWidget {
             operations:
                 operations.where((op) => op.firmwareId == firmware.id).toList(),
             canUpgrade: station.connected &&
-                !busy &&
-                operations.where((op) => op.busy).isEmpty,
+                operations.where((op) => !op.completed).isEmpty,
             onUpgrade: () async {
               await availableFirmware.upgrade(config.deviceId, firmware);
             }))
