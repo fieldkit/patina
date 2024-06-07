@@ -4404,7 +4404,7 @@ mixin _$UpgradeStatus {
     required TResult Function() restarting,
     required TResult Function() reconnectTimeout,
     required TResult Function() completed,
-    required TResult Function() failed,
+    required TResult Function(UpgradeError? field0) failed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -4414,7 +4414,7 @@ mixin _$UpgradeStatus {
     TResult? Function()? restarting,
     TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
-    TResult? Function()? failed,
+    TResult? Function(UpgradeError? field0)? failed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -4424,7 +4424,7 @@ mixin _$UpgradeStatus {
     TResult Function()? restarting,
     TResult Function()? reconnectTimeout,
     TResult Function()? completed,
-    TResult Function()? failed,
+    TResult Function(UpgradeError? field0)? failed,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -4526,7 +4526,7 @@ class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
     required TResult Function() restarting,
     required TResult Function() reconnectTimeout,
     required TResult Function() completed,
-    required TResult Function() failed,
+    required TResult Function(UpgradeError? field0) failed,
   }) {
     return starting();
   }
@@ -4539,7 +4539,7 @@ class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
     TResult? Function()? restarting,
     TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
-    TResult? Function()? failed,
+    TResult? Function(UpgradeError? field0)? failed,
   }) {
     return starting?.call();
   }
@@ -4552,7 +4552,7 @@ class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
     TResult Function()? restarting,
     TResult Function()? reconnectTimeout,
     TResult Function()? completed,
-    TResult Function()? failed,
+    TResult Function(UpgradeError? field0)? failed,
     required TResult orElse(),
   }) {
     if (starting != null) {
@@ -4682,7 +4682,7 @@ class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
     required TResult Function() restarting,
     required TResult Function() reconnectTimeout,
     required TResult Function() completed,
-    required TResult Function() failed,
+    required TResult Function(UpgradeError? field0) failed,
   }) {
     return uploading(field0);
   }
@@ -4695,7 +4695,7 @@ class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
     TResult? Function()? restarting,
     TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
-    TResult? Function()? failed,
+    TResult? Function(UpgradeError? field0)? failed,
   }) {
     return uploading?.call(field0);
   }
@@ -4708,7 +4708,7 @@ class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
     TResult Function()? restarting,
     TResult Function()? reconnectTimeout,
     TResult Function()? completed,
-    TResult Function()? failed,
+    TResult Function(UpgradeError? field0)? failed,
     required TResult orElse(),
   }) {
     if (uploading != null) {
@@ -4818,7 +4818,7 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
     required TResult Function() restarting,
     required TResult Function() reconnectTimeout,
     required TResult Function() completed,
-    required TResult Function() failed,
+    required TResult Function(UpgradeError? field0) failed,
   }) {
     return restarting();
   }
@@ -4831,7 +4831,7 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
     TResult? Function()? restarting,
     TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
-    TResult? Function()? failed,
+    TResult? Function(UpgradeError? field0)? failed,
   }) {
     return restarting?.call();
   }
@@ -4844,7 +4844,7 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
     TResult Function()? restarting,
     TResult Function()? reconnectTimeout,
     TResult Function()? completed,
-    TResult Function()? failed,
+    TResult Function(UpgradeError? field0)? failed,
     required TResult orElse(),
   }) {
     if (restarting != null) {
@@ -4950,7 +4950,7 @@ class _$UpgradeStatus_ReconnectTimeoutImpl
     required TResult Function() restarting,
     required TResult Function() reconnectTimeout,
     required TResult Function() completed,
-    required TResult Function() failed,
+    required TResult Function(UpgradeError? field0) failed,
   }) {
     return reconnectTimeout();
   }
@@ -4963,7 +4963,7 @@ class _$UpgradeStatus_ReconnectTimeoutImpl
     TResult? Function()? restarting,
     TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
-    TResult? Function()? failed,
+    TResult? Function(UpgradeError? field0)? failed,
   }) {
     return reconnectTimeout?.call();
   }
@@ -4976,7 +4976,7 @@ class _$UpgradeStatus_ReconnectTimeoutImpl
     TResult Function()? restarting,
     TResult Function()? reconnectTimeout,
     TResult Function()? completed,
-    TResult Function()? failed,
+    TResult Function(UpgradeError? field0)? failed,
     required TResult orElse(),
   }) {
     if (reconnectTimeout != null) {
@@ -5081,7 +5081,7 @@ class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
     required TResult Function() restarting,
     required TResult Function() reconnectTimeout,
     required TResult Function() completed,
-    required TResult Function() failed,
+    required TResult Function(UpgradeError? field0) failed,
   }) {
     return completed();
   }
@@ -5094,7 +5094,7 @@ class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
     TResult? Function()? restarting,
     TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
-    TResult? Function()? failed,
+    TResult? Function(UpgradeError? field0)? failed,
   }) {
     return completed?.call();
   }
@@ -5107,7 +5107,7 @@ class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
     TResult Function()? restarting,
     TResult Function()? reconnectTimeout,
     TResult Function()? completed,
-    TResult Function()? failed,
+    TResult Function(UpgradeError? field0)? failed,
     required TResult orElse(),
   }) {
     if (completed != null) {
@@ -5170,6 +5170,8 @@ abstract class _$$UpgradeStatus_FailedImplCopyWith<$Res> {
   factory _$$UpgradeStatus_FailedImplCopyWith(_$UpgradeStatus_FailedImpl value,
           $Res Function(_$UpgradeStatus_FailedImpl) then) =
       __$$UpgradeStatus_FailedImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({UpgradeError? field0});
 }
 
 /// @nodoc
@@ -5179,27 +5181,52 @@ class __$$UpgradeStatus_FailedImplCopyWithImpl<$Res>
   __$$UpgradeStatus_FailedImplCopyWithImpl(_$UpgradeStatus_FailedImpl _value,
       $Res Function(_$UpgradeStatus_FailedImpl) _then)
       : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = freezed,
+  }) {
+    return _then(_$UpgradeStatus_FailedImpl(
+      freezed == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as UpgradeError?,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
-  const _$UpgradeStatus_FailedImpl();
+  const _$UpgradeStatus_FailedImpl([this.field0]);
+
+  @override
+  final UpgradeError? field0;
 
   @override
   String toString() {
-    return 'UpgradeStatus.failed()';
+    return 'UpgradeStatus.failed(field0: $field0)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$UpgradeStatus_FailedImpl);
+            other is _$UpgradeStatus_FailedImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UpgradeStatus_FailedImplCopyWith<_$UpgradeStatus_FailedImpl>
+      get copyWith =>
+          __$$UpgradeStatus_FailedImplCopyWithImpl<_$UpgradeStatus_FailedImpl>(
+              this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -5209,9 +5236,9 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
     required TResult Function() restarting,
     required TResult Function() reconnectTimeout,
     required TResult Function() completed,
-    required TResult Function() failed,
+    required TResult Function(UpgradeError? field0) failed,
   }) {
-    return failed();
+    return failed(field0);
   }
 
   @override
@@ -5222,9 +5249,9 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
     TResult? Function()? restarting,
     TResult? Function()? reconnectTimeout,
     TResult? Function()? completed,
-    TResult? Function()? failed,
+    TResult? Function(UpgradeError? field0)? failed,
   }) {
-    return failed?.call();
+    return failed?.call(field0);
   }
 
   @override
@@ -5235,11 +5262,11 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
     TResult Function()? restarting,
     TResult Function()? reconnectTimeout,
     TResult Function()? completed,
-    TResult Function()? failed,
+    TResult Function(UpgradeError? field0)? failed,
     required TResult orElse(),
   }) {
     if (failed != null) {
-      return failed();
+      return failed(field0);
     }
     return orElse();
   }
@@ -5290,5 +5317,11 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
 }
 
 abstract class UpgradeStatus_Failed implements UpgradeStatus {
-  const factory UpgradeStatus_Failed() = _$UpgradeStatus_FailedImpl;
+  const factory UpgradeStatus_Failed([final UpgradeError? field0]) =
+      _$UpgradeStatus_FailedImpl;
+
+  UpgradeError? get field0;
+  @JsonKey(ignore: true)
+  _$$UpgradeStatus_FailedImplCopyWith<_$UpgradeStatus_FailedImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
