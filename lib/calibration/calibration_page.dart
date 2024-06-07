@@ -26,10 +26,11 @@ class CalibrationPage extends StatelessWidget {
   CalibrationPage({super.key, this.current, required this.config});
 
   Future<bool?> _confirmBackDialog(BuildContext context) async {
+    final localizations = AppLocalizations.of(context)!;
+
     return showDialog<bool>(
         context: context,
         builder: (context) {
-          final localizations = AppLocalizations.of(context)!;
           final navigator = Navigator.of(context);
 
           return AlertDialog(
@@ -45,7 +46,7 @@ class CalibrationPage extends StatelessWidget {
                   onPressed: () async {
                     navigator.pop(true);
                   },
-                  child: Text(AppLocalizations.of(context)!.confirmYes))
+                  child: Text(localizations.confirmYes))
             ],
           );
         });

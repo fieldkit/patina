@@ -113,7 +113,7 @@ class StationCard extends StatelessWidget {
                 border: Border.all(
                   color: const Color.fromRGBO(212, 212, 212, 1),
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(5))),
+                borderRadius: const BorderRadius.all(Radius.circular(2))),
             child: Column(children: [
               ListTile(
                 title: Container(

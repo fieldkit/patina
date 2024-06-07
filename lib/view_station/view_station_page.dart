@@ -81,31 +81,46 @@ class LastConnected extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final iconColor = connected ? Colors.black : const Color(0xFFCCCDCF);
+    const connectedIcon = 'resources/images/Icon_Station_Connected.png';
+    const notConnectedIcon = 'resources/images/Icon_Station_Not_Connected.png';
+    const boxConstraints = BoxConstraints(
+      minHeight: 5,
+      minWidth: 5,
+      maxHeight: 150,
+      maxWidth: 200,
+    );
 
     if (connected) {
-      return ListTile(
-        leading: Icon(Icons.access_time, color: iconColor),
-        title: Text(localizations.stationConnected),
+      return ConstrainedBox(
+        constraints: boxConstraints,
+        child: ListTile(
+          visualDensity: const VisualDensity(vertical: -4),
+          leading: Image.asset(connectedIcon, cacheWidth: 36),
+          title: Text(localizations.stationConnected,
+              style: const TextStyle(fontSize: 12)),
+        ),
       );
-    } else {
-      if (lastConnected != null) {
-        final lastConnectedDateTime =
-            DateTime.fromMicrosecondsSinceEpoch(lastConnected!.field0 * 1000);
-        final formattedLastConnected =
-            DateFormat.yMd().add_jm().format(lastConnectedDateTime);
-        return ListTile(
-          leading: Icon(Icons.access_time, color: iconColor),
-          title: Text(localizations.notConnectedSince),
-          subtitle: Text(formattedLastConnected),
-        );
-      } else {
-        return ListTile(
-          leading: Icon(Icons.access_time, color: iconColor),
-          title: Text(localizations.notConnected),
-        );
-      }
     }
+    final titleText = lastConnected != null
+        ? localizations.notConnectedSince
+        : localizations.notConnected;
+    final subtitleText = lastConnected != null
+        ? DateFormat.yMd().add_jm().format(
+            DateTime.fromMicrosecondsSinceEpoch(lastConnected!.field0 * 1000))
+        : null;
+
+    return ConstrainedBox(
+      constraints: boxConstraints,
+      child: ListTile(
+        visualDensity: const VisualDensity(vertical: -4),
+        leading: Image.asset(notConnectedIcon, cacheWidth: 36),
+        title: Text(titleText, style: const TextStyle(fontSize: 12)),
+        subtitle: subtitleText != null
+            ? Text(subtitleText,
+                style: const TextStyle(fontSize: 11, color: Colors.grey))
+            : null,
+      ),
+    );
   }
 }
 
@@ -139,10 +154,12 @@ class BatteryIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return ListTile(
-        leading: Image.asset(icon(), cacheWidth: 16),
-        title: Text(localizations.batteryLife),
-        subtitle: Text("$level%"));
+    return Container(
+        margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+        child: ListTile(
+            leading: Image.asset(icon(), cacheWidth: 16),
+            title: Text(localizations.batteryLife),
+            subtitle: Text("$level%")));
   }
 }
 
@@ -207,8 +224,9 @@ class TimerCircle extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Container(
+        margin: const EdgeInsets.all(10),
         width: double.infinity,
-        height: 300,
+        height: 200,
         decoration: BoxDecoration(color: color(), shape: BoxShape.circle),
         alignment: Alignment.center,
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -246,72 +264,89 @@ class HighLevelsDetails extends StatelessWidget {
 
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.fromLTRB(10, 40, 10, 10),
-          margin: const EdgeInsets.all(40),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Colors.grey.shade300,
-                width: 1,
+        Stack(children: [
+          Container(
+            margin: const EdgeInsets.fromLTRB(20, 40, 20, 20),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(2),
+                border: Border.all(
+                  color: Colors.grey.shade300,
+                  width: 1,
+                ),
               ),
-            ),
-            child: Column(
-              children: [
-                IntrinsicHeight(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: TimerCircle(
-                            enabled: station.connected,
-                            deployed: station.ephemeral?.deployment?.startTime,
+              child: Column(
+                children: [
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: TimerCircle(
+                              enabled: station.connected,
+                              deployed:
+                                  station.ephemeral?.deployment?.startTime,
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            BatteryIndicator(
-                                enabled: station.connected, level: battery),
-                            MemoryIndicator(
-                                enabled: station.connected,
-                                bytesUsed: bytesUsed),
-                            LastConnected(
-                                lastConnected: station.config?.lastSeen,
-                                connected: station.connected),
-                          ],
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              BatteryIndicator(
+                                  enabled: station.connected, level: battery),
+                              MemoryIndicator(
+                                  enabled: station.connected,
+                                  bytesUsed: bytesUsed),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  width: 500,
-                  height: 90,
-                  child: ElevatedTextButton(
-                    onPressed: deployTask != null
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DeployStationRoute(
-                                    deviceId: station.deviceId),
-                              ),
-                            );
-                          }
-                        : null,
-                    text: AppLocalizations.of(context)!.deployButton,
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    width: 500,
+                    height: 90,
+                    child: ElevatedTextButton(
+                      onPressed: deployTask != null
+                          ? () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DeployStationRoute(
+                                      deviceId: station.deviceId),
+                                ),
+                              );
+                            }
+                          : null,
+                      text: AppLocalizations.of(context)!.deployButton,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
+          Positioned.fill(
+            top: 8,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(2),
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                  ),
+                ),
+                child: LastConnected(
+                    lastConnected: station.config?.lastSeen,
+                    connected: station.connected),
+              ),
+            ),
+          )
+        ]),
         if (modules.length ==
             1) // Note: This is on purpose, checking for only diagnostics module
           const NoModulesWidget()

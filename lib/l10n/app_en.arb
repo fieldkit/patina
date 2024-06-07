@@ -20,6 +20,9 @@
   "dataLoginMessage": "To upload data you need to login:",
 
   "modulesTitle": "Modules",
+  "addModulesButton": "Add Modules",
+  "noModulesMessage": "Your stations needs modules in order to complete setup, deploy, and capture data.",
+  "noModulesTitle": "No Modules Attached",
 
   "dataSyncTitle": "Data",
   "connectStation": "Connect a Station",

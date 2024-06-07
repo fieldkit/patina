@@ -165,20 +165,9 @@ class ProvideAccountsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accounts = context.read<AppState>().portalAccounts;
-    return FutureBuilder<PortalAccounts>(
-        future: accounts.load(),
-        builder: (context, AsyncSnapshot<PortalAccounts> snapshot) {
-          if (snapshot.hasData) {
-            return ChangeNotifierProvider(
-              create: (context) => snapshot.data!,
-              child: child,
-            );
-          } else {
-            return ChangeNotifierProvider(
-              create: (context) => PortalAccounts(accounts: []),
-              child: child,
-            );
-          }
-        });
+    return ChangeNotifierProvider(
+      create: (context) => accounts,
+      child: child,
+    );
   }
 }
