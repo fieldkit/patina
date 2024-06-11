@@ -72,7 +72,8 @@
   "deployLocation": "Name your location",
 
   "myStationsTitle": "My Stations",
-  "readyToDeploy": "Ready to deploy",
+  "readyToDeploy": "Ready to Deploy",
+  "readyToCalibrate": "Ready to Calibrate",
   "busyWorking": "Busy...",
   "busyUploading": "Uploading...",
   "busyDownloading": "Downloading...",

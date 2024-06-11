@@ -1627,4 +1627,19 @@ class ModuleConfigurations extends ChangeNotifier {
       }
     }
   }
+
+  bool areAllModulesCalibrated(StationModel station) {
+    final config = station.config;
+    if (config != null) {
+      for (final module in config.modules) {
+        final moduleIdentity = module.identity;
+        final moduleConfig = find(moduleIdentity);
+        if (!moduleConfig.isCalibrated) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
 }

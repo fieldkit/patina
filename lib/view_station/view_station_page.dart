@@ -45,9 +45,21 @@ class ViewStationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ModuleConfigurations moduleConfigurations =
+        context.watch<ModuleConfigurations>();
     return Scaffold(
       appBar: AppBar(
         title: Text(config.name),
+        bottom: moduleConfigurations.areAllModulesCalibrated(station) == false
+            ? PreferredSize(
+                preferredSize: const Size.fromHeight(-10),
+                child: Text(
+                  AppLocalizations.of(context)!.readyToCalibrate,
+                ))
+            : PreferredSize(
+                preferredSize: const Size.fromHeight(-10),
+                child: Text(AppLocalizations.of(context)!.readyToDeploy),
+              ),
         actions: [
           TextButton(
               onPressed: () {
