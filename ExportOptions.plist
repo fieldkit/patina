@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>method</key>
+    <string>ad-hoc</string>
+    <key>provisioningProfiles</key>
+    <dict>
+      <key>org.fieldkit.app</key>
+      <string>63711f69-c818-41d1-b4e5-cccb492d8729</string>
+    </dict>
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string>
+    <key>teamID</key>
+    <string>5X96U27N9J</string>
+  </dict>
+</plist>
