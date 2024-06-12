@@ -328,24 +328,43 @@ class HighLevelsDetails extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (station.ephemeral?.deployment?.startTime != null)
+                    if (!station.connected)
                       Container(
                         padding: const EdgeInsets.all(10),
-                        width: 500,
-                        height: 90,
+                        margin: const EdgeInsets.all(10),
+                        width: 400,
+                        height: 50,
+                        color: Colors.grey.shade300,
+                        child: TextButton(
+                          onPressed: null,
+                          child: Text(
+                            AppLocalizations.of(context)!.deployButton,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      )
+                    else if (deployTask != null && station.connected)
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        width: 400,
+                        height: 50,
                         child: ElevatedTextButton(
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => DeployStationRoute(
-                                    deviceId: station.deviceId),
+                                  deviceId: station.deviceId,
+                                ),
                               ),
                             );
                           },
                           text: AppLocalizations.of(context)!.deployButton,
                         ),
-                      ),
+                      )
                   ],
                 ),
               ),
