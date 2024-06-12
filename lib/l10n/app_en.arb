@@ -142,6 +142,7 @@
   "eventTime": "Time",
   "eventCode": "Code",
   "eventReason": "Reason",
+  "noEvents": "No Events",
 
   "networksTitle": "WiFi Networks",
   "networkAddButton": "Add Network",

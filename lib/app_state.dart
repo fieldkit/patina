@@ -1634,9 +1634,9 @@ class ModuleConfigurations extends ChangeNotifier {
       for (final module in config.modules) {
         final moduleIdentity = module.identity;
         final moduleConfig = find(moduleIdentity);
-        if (moduleConfig.calibrations.isEmpty ||
-            (module.key != "modules.diagnostics" ||
-                module.key != "modules.weather")) {
+        if (moduleConfig.calibrations.isEmpty &&
+            module.key != "modules.diagnostics" &&
+            module.key != "modules.weather") {
           return false;
         }
       }
