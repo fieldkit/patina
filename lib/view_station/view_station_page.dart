@@ -50,16 +50,26 @@ class ViewStationPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(config.name),
-        bottom: moduleConfigurations.areAllModulesCalibrated(station) == false
+        bottom: station.ephemeral?.deployment?.startTime != null
             ? PreferredSize(
                 preferredSize: const Size.fromHeight(-10),
                 child: Text(
-                  AppLocalizations.of(context)!.readyToCalibrate,
-                ))
-            : PreferredSize(
-                preferredSize: const Size.fromHeight(-10),
-                child: Text(AppLocalizations.of(context)!.readyToDeploy),
-              ),
+                  "${AppLocalizations.of(context)!.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000))}",
+                ),
+              )
+            : moduleConfigurations.areAllModulesCalibrated(station) == false
+                ? PreferredSize(
+                    preferredSize: const Size.fromHeight(-10),
+                    child: Text(
+                      AppLocalizations.of(context)!.readyToCalibrate,
+                    ),
+                  )
+                : PreferredSize(
+                    preferredSize: const Size.fromHeight(-10),
+                    child: Text(
+                      AppLocalizations.of(context)!.readyToDeploy,
+                    ),
+                  ),
         actions: [
           TextButton(
               onPressed: () {
@@ -318,25 +328,24 @@ class HighLevelsDetails extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      width: 500,
-                      height: 90,
-                      child: ElevatedTextButton(
-                        onPressed: deployTask != null
-                            ? () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DeployStationRoute(
-                                        deviceId: station.deviceId),
-                                  ),
-                                );
-                              }
-                            : null,
-                        text: AppLocalizations.of(context)!.deployButton,
+                    if (station.ephemeral?.deployment?.startTime != null)
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        width: 500,
+                        height: 90,
+                        child: ElevatedTextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DeployStationRoute(
+                                    deviceId: station.deviceId),
+                              ),
+                            );
+                          },
+                          text: AppLocalizations.of(context)!.deployButton,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
