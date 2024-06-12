@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
 use discovery::DeviceId;
 use query::{
-    device::{self},
-    portal::Firmware,
+    device,
+    portal::{Firmware, FirmwareFilter},
 };
 use std::path::PathBuf;
 use thiserror::Error;
@@ -318,14 +318,15 @@ impl From<Firmware> for LocalFirmware {
 async fn query_available_firmware(
     client: &query::portal::Client,
     tokens: Option<Tokens>,
+    filter: Option<FirmwareFilter>,
 ) -> Result<Vec<Firmware>> {
     if let Some(tokens) = tokens {
         client
             .to_authenticated(tokens.into())?
-            .available_firmware()
+            .available_firmware(filter)
             .await
     } else {
-        client.available_firmware().await
+        client.available_firmware(filter).await
     }
 }
 
@@ -340,19 +341,31 @@ async fn cache_firmware_and_json_if_newer(
     publish_available_firmware(storage_path, publish_tx.clone()).await?;
 
     let client = query::portal::Client::new(portal_base_url)?;
-    let firmwares = query_available_firmware(&client, tokens).await?;
+    let firmwares = query_available_firmware(
+        &client,
+        tokens,
+        Some(FirmwareFilter {
+            module: Some("fk-core".to_owned()),
+            profile: None,
+            page: None,
+            page_size: Some(20),
+        }),
+    )
+    .await?;
+
+    info!("{} firmware", firmwares.len());
 
     for firmware in firmwares.iter() {
         let has = cached.iter().any(|f| f.etag == firmware.etag);
         if has {
             info!(
-                "Firmware already cached {:?} ({})",
+                "firmware already cached {:?} ({})",
                 firmware.etag, storage_path
             );
             continue;
         }
 
-        info!("New firmware! {:?}", firmware.etag);
+        info!("firmware! {:?}", firmware.etag);
         let path = PathBuf::from(storage_path).join(format!("firmware-{}.bin", firmware.id));
         let stream = client.download_firmware(firmware, &path).await?;
 

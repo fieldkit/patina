@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+import 'package:fk/diagnostics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -56,10 +58,10 @@ class SdCardError extends StatelessWidget {
     const IconData warning = IconData(0xe6cb, fontFamily: 'MaterialIcons');
     final localizations = AppLocalizations.of(context)!;
     return ListTile(
-        iconColor: Color.fromARGB(255, 0xf9, 0x00, 0x00),
-        leading: Icon(warning),
+        iconColor: const Color.fromARGB(255, 0xf9, 0x00, 0x00),
+        leading: const Icon(warning),
         title: Text(localizations.firmwareSdCardError,
-            style: TextStyle(fontWeight: FontWeight.bold)));
+            style: const TextStyle(fontWeight: FontWeight.bold)));
   }
 }
 
@@ -120,6 +122,97 @@ class FirmwareItem extends StatelessWidget {
   }
 }
 
+class FirmwareBranch extends StatelessWidget {
+  final StationModel station;
+  final List<(LocalFirmware, LocalFirmwareBranchInfo)> firmware;
+
+  const FirmwareBranch(
+      {super.key, required this.station, required this.firmware});
+
+  StationConfig get config => station.config!;
+
+  @override
+  Widget build(BuildContext context) {
+    final stationOps = context.watch<StationOperations>();
+    final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
+    final availableFirmware = context.watch<AvailableFirmwareModel>();
+    final first = firmware[0];
+
+    final items = firmware
+        .where((row) => row.$1.module == "fk-core")
+        .map((row) => FirmwareItem(
+            comparison: FirmwareComparison.compare(row.$1, config.firmware),
+            operations:
+                operations.where((op) => op.firmwareId == row.$1.id).toList(),
+            canUpgrade: station.connected &&
+                operations.where((op) => !op.completed).isEmpty,
+            onUpgrade: () async {
+              await availableFirmware.upgrade(config.deviceId, row.$1);
+            }))
+        .toList();
+
+    return Column(children: [
+      items[0],
+      ExpandableItems(
+          heading: Text("${items.length - 1} more"),
+          children: items.skip(1).toList())
+    ]);
+  }
+}
+
+class ExpandableItems extends StatefulWidget {
+  final Widget heading;
+  final List<Widget> children;
+
+  const ExpandableItems(
+      {super.key, required this.heading, required this.children});
+
+  @override
+  State<StatefulWidget> createState() => _ExpandableBorderedListItemState();
+}
+
+class _ExpandableBorderedListItemState extends State<ExpandableItems> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: () {
+          setState(() {
+            _expanded = !_expanded;
+          });
+        },
+        child: _expanded
+            ? Column(children: [widget.heading, ...widget.children])
+            : Column(children: [widget.heading]));
+  }
+}
+
+class AvailableFirmware extends StatelessWidget {
+  final StationModel station;
+  final AvailableFirmwareModel available;
+  final List<UpgradeOperation> operations;
+
+  const AvailableFirmware(
+      {super.key,
+      required this.station,
+      required this.available,
+      required this.operations});
+
+  @override
+  Widget build(BuildContext context) {
+    final byBranch = available.firmware
+        .map((el) => (el, LocalFirmwareBranchInfo.parse(el.label)))
+        .where((el) => el.$2 != null)
+        .map((el) => (el.$1, el.$2!))
+        .groupListsBy((el) => el.$2.branch);
+    return Column(
+        children: byBranch.values
+            .map((value) => FirmwareBranch(station: station, firmware: value))
+            .toList());
+  }
+}
+
 class StationFirmwarePage extends StatelessWidget {
   final StationModel station;
 
@@ -141,8 +234,10 @@ class StationFirmwarePage extends StatelessWidget {
           _buildStationCard(context, localizations),
           _buildFirmwareUpdateCard(context, localizations, availableFirmware),
           _buildFirmwareActionButton(context, localizations, availableFirmware),
-          _buildQuickTipCard(context, localizations),
-          ..._buildFirmwareItems(availableFirmware, operations, context)
+          AvailableFirmware(
+              station: station,
+              available: availableFirmware,
+              operations: operations)
         ],
       ),
     );
@@ -163,6 +258,7 @@ class StationFirmwarePage extends StatelessWidget {
     );
   }
 
+  // ignore: unused_element
   Widget _buildQuickTipCard(
       BuildContext context, AppLocalizations localizations) {
     IconData bulb = const IconData(0xe37c, fontFamily: 'MaterialIcons');
@@ -200,8 +296,10 @@ class StationFirmwarePage extends StatelessWidget {
             title: Text(station.config!.name,
                 style: const TextStyle(fontSize: 18)),
             subtitle: Column(children: [
-              Text(localizations.firmwareVersion(firmwareVersion),
-                  style: const TextStyle(fontSize: 14)),
+              Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(localizations.firmwareVersion(firmwareVersion),
+                      style: const TextStyle(fontSize: 14))),
               Align(
                   alignment: Alignment.topLeft,
                   child: Text(
@@ -221,6 +319,9 @@ class StationFirmwarePage extends StatelessWidget {
       AvailableFirmwareModel availableFirmware) {
     bool isFirmwareNewer = false;
     for (var firmware in availableFirmware.firmware) {
+      final time = DateTime.fromMillisecondsSinceEpoch(firmware.time);
+      Loggers.ui.i(
+          "$time ${firmware.label} ${LocalFirmwareBranchInfo.parse(firmware.label)}");
       if (FirmwareComparison.compare(firmware, config.firmware).newer) {
         isFirmwareNewer = true;
         break;
@@ -249,7 +350,7 @@ class StationFirmwarePage extends StatelessWidget {
       AvailableFirmwareModel availableFirmware) {
     bool isFirmwareNewer = false;
     LocalFirmware? newFirmware;
-    for (var firmware in availableFirmware.firmware) {
+    for (final firmware in availableFirmware.firmware) {
       if (FirmwareComparison.compare(firmware, config.firmware).newer) {
         isFirmwareNewer = true;
         newFirmware = firmware;
@@ -269,22 +370,6 @@ class StationFirmwarePage extends StatelessWidget {
         text: localizations.firmwareUpdate,
       ),
     );
-  }
-
-  List<Widget> _buildFirmwareItems(AvailableFirmwareModel availableFirmware,
-      List<UpgradeOperation> operations, BuildContext context) {
-    return availableFirmware.firmware
-        .where((firmware) => firmware.module == "fk-core")
-        .map((firmware) => FirmwareItem(
-            comparison: FirmwareComparison.compare(firmware, config.firmware),
-            operations:
-                operations.where((op) => op.firmwareId == firmware.id).toList(),
-            canUpgrade: station.connected &&
-                operations.where((op) => !op.completed).isEmpty,
-            onUpgrade: () async {
-              await availableFirmware.upgrade(config.deviceId, firmware);
-            }))
-        .toList();
   }
 
   String _formatFirmwareReleaseDate() {
