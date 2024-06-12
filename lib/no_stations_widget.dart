@@ -82,15 +82,20 @@ class NoStationsHelpWidget extends StatelessWidget {
           target: LinkTarget.blank,
           builder: (BuildContext ctx, FollowLink? openLink) {
             return Center(
-                child: TextButton(
-              onPressed: openLink,
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.primaryColor,
-                textStyle: const TextStyle(
-                    color: AppColors.primaryColor, fontWeight: FontWeight.w500),
+              child: TextButton(
+                onPressed: openLink,
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primaryColor,
+                  textStyle: const TextStyle(
+                    color: AppColors.primaryColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Avenir-Medium',
+                  ),
+                ),
+                child: Text(localizations.noStationsWhatIsStation),
               ),
-              child: Text(localizations.noStationsWhatIsStation),
-            ));
+            );
           },
         ),
         if (false)

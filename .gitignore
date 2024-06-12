@@ -9,6 +9,8 @@
 .history
 .svn/
 .vscode/
+# Ignore test coverage documentation, too large of files
+coverage/
 
 # IntelliJ related
 *.iml
