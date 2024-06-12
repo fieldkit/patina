@@ -111,7 +111,7 @@ build:ios:
     - cat .env
     - export PATH=$PWD/flutter/bin:$PATH
     - flutter clean
-    - flutter build ipa --export-options-plist=ExportOptions.plist -vv
+    - flutter build ipa --export-options-plist=ExportOptions.plist -vv > build.log
   artifacts:
     name: "fk-patina-ios-${CI_COMMIT_REF_NAME}"
     paths:
