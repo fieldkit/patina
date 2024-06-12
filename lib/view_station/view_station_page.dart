@@ -52,20 +52,20 @@ class ViewStationPage extends StatelessWidget {
         title: Text(config.name),
         bottom: station.ephemeral?.deployment?.startTime != null
             ? PreferredSize(
-                preferredSize: const Size.fromHeight(-10),
+                preferredSize: Size.zero,
                 child: Text(
                   "${AppLocalizations.of(context)!.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000))}",
                 ),
               )
             : moduleConfigurations.areAllModulesCalibrated(station) == false
                 ? PreferredSize(
-                    preferredSize: const Size.fromHeight(-10),
+                    preferredSize: Size.zero,
                     child: Text(
                       AppLocalizations.of(context)!.readyToCalibrate,
                     ),
                   )
                 : PreferredSize(
-                    preferredSize: const Size.fromHeight(-10),
+                    preferredSize: Size.zero,
                     child: Text(
                       AppLocalizations.of(context)!.readyToDeploy,
                     ),
