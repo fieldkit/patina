@@ -112,7 +112,8 @@ class StationCard extends StatelessWidget {
               "${localizations.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000))}",
             ),
           )
-        : moduleConfigurations.areAllModulesCalibrated(station) == false
+        : moduleConfigurations.areAllModulesCalibrated(station, context) ==
+                false
             ? PreferredSize(
                 preferredSize: const Size.fromHeight(-10),
                 child: Text(

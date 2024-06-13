@@ -57,7 +57,8 @@ class ViewStationPage extends StatelessWidget {
                   "${AppLocalizations.of(context)!.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000))}",
                 ),
               )
-            : moduleConfigurations.areAllModulesCalibrated(station) == false
+            : moduleConfigurations.areAllModulesCalibrated(station, context) ==
+                    false
                 ? PreferredSize(
                     preferredSize: Size.zero,
                     child: Text(
@@ -271,6 +272,10 @@ class HighLevelsDetails extends StatelessWidget {
     final TasksModel tasks = context.watch<TasksModel>();
     final DeployTask? deployTask =
         tasks.getMaybeOne<DeployTask>(station.deviceId);
+    final ModuleConfigurations moduleConfigurations =
+        context.watch<ModuleConfigurations>();
+    final modulesCalibrated =
+        moduleConfigurations.areAllModulesCalibrated(station, context);
 
     final battery = config.battery.percentage;
     final bytesUsed = config.meta.size + config.data.size;
@@ -346,7 +351,9 @@ class HighLevelsDetails extends StatelessWidget {
                           ),
                         ),
                       )
-                    else if (deployTask != null && station.connected)
+                    else if (deployTask != null &&
+                        station.connected &&
+                        modulesCalibrated)
                       Container(
                         padding: const EdgeInsets.all(10),
                         width: 400,

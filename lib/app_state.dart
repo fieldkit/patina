@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:fk/meta.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:collection/collection.dart';
 import 'package:convert/convert.dart';
@@ -1628,15 +1630,15 @@ class ModuleConfigurations extends ChangeNotifier {
     }
   }
 
-  bool areAllModulesCalibrated(StationModel station) {
+  bool areAllModulesCalibrated(StationModel station, BuildContext context) {
     final config = station.config;
     if (config != null) {
       for (final module in config.modules) {
         final moduleIdentity = module.identity;
         final moduleConfig = find(moduleIdentity);
-        if (moduleConfig.calibrations.isEmpty &&
-            module.key != "modules.diagnostics" &&
-            module.key != "modules.weather") {
+        final localizations = AppLocalizations.of(context)!;
+        final localized = LocalizedModule.get(module, localizations);
+        if (moduleConfig.calibrations.isEmpty && localized.canCalibrate) {
           return false;
         }
       }
