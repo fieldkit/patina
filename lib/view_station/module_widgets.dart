@@ -26,6 +26,7 @@ class ModuleInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final StationConfiguration station = context.watch<StationConfiguration>();
     final localizations = AppLocalizations.of(context)!;
     final localized = LocalizedModule.get(module, localizations);
     final bay = localizations.bayNumber(module.position);
@@ -35,7 +36,10 @@ class ModuleInfo extends StatelessWidget {
 
     final List<Widget> sensors = showSensors
         ? module.sensors.sorted(defaultSensorSorter).map((sensor) {
-            return SensorInfo(sensor: sensor);
+            return SensorInfo(
+              sensor: sensor,
+              isConnected: station.config.connected,
+            );
           }).toList()
         : List<Widget>.empty();
 
@@ -50,11 +54,14 @@ class ModuleInfo extends StatelessWidget {
           border: Border.all(
             color: const Color.fromRGBO(212, 212, 212, 1),
           ),
-          borderRadius: const BorderRadius.all(Radius.circular(5))),
+          borderRadius: const BorderRadius.all(Radius.circular(2))),
       child: Column(
         children: [
           ListTile(
-              leading: Image(image: localized.icon),
+              leading: Image(
+                  image: station.config.connected
+                      ? localized.icon
+                      : localized.iconGray),
               title: Text(localized.name),
               subtitle: Text(bay)),
           maybeCalibration,

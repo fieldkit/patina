@@ -1,3 +1,4 @@
+import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -97,8 +98,8 @@ class StationCard extends StatelessWidget {
         height: 54.0,
         child: Image(
           image: AssetImage(station.connected
-              ? "resources/images/Icon_Station_Connected.png"
-              : "resources/images/Icon_Station_Not_Connected.png"),
+              ? AppIcons.StationConnected
+              : AppIcons.StationNotConnected),
         ));
     final tinyOperations =
         operations.map((op) => TinyOperation(operation: op)).toList();
@@ -113,7 +114,7 @@ class StationCard extends StatelessWidget {
                 border: Border.all(
                   color: const Color.fromRGBO(212, 212, 212, 1),
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(5))),
+                borderRadius: const BorderRadius.all(Radius.circular(2))),
             child: Column(children: [
               ListTile(
                 title: Container(
