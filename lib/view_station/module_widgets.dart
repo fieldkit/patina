@@ -36,7 +36,10 @@ class ModuleInfo extends StatelessWidget {
 
     final List<Widget> sensors = showSensors
         ? module.sensors.sorted(defaultSensorSorter).map((sensor) {
-            return SensorInfo(sensor: sensor);
+            return SensorInfo(
+              sensor: sensor,
+              isConnected: station.config.connected,
+            );
           }).toList()
         : List<Widget>.empty();
 
