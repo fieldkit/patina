@@ -26,6 +26,7 @@ class ModuleInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final StationConfiguration station = context.watch<StationConfiguration>();
     final localizations = AppLocalizations.of(context)!;
     final localized = LocalizedModule.get(module, localizations);
     final bay = localizations.bayNumber(module.position);
@@ -54,7 +55,10 @@ class ModuleInfo extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-              leading: Image(image: localized.icon),
+              leading: Image(
+                  image: station.config.connected
+                      ? localized.icon
+                      : localized.iconGray),
               title: Text(localized.name),
               subtitle: Text(bay)),
           maybeCalibration,
