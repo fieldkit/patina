@@ -137,7 +137,6 @@ class FirmwareBranch extends StatelessWidget {
     final stationOps = context.watch<StationOperations>();
     final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
     final availableFirmware = context.watch<AvailableFirmwareModel>();
-    final first = firmware[0];
 
     final items = firmware
         .where((row) => row.$1.module == "fk-core")
