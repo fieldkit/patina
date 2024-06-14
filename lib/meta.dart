@@ -9,75 +9,111 @@ class LocalizedModule {
   String key;
   String name;
   AssetImage icon;
+  AssetImage iconGray;
 
   CalibrationTemplate? get calibrationTemplate =>
       CalibrationTemplate.forModuleKey(key);
 
   bool get canCalibrate => calibrationTemplate != null;
 
-  LocalizedModule({required this.key, required this.name, required this.icon});
+  LocalizedModule(
+      {required this.key,
+      required this.name,
+      required this.icon,
+      required this.iconGray});
 
   static LocalizedModule get(
       ModuleConfig module, AppLocalizations localizations) {
     switch (module.key) {
       case "modules.water.temp":
         return LocalizedModule(
-            key: module.key,
-            icon:
-                const AssetImage("resources/images/icon_module_water_temp.png"),
-            name: localizations.modulesWaterTemp);
+          key: module.key,
+          name: localizations.modulesWaterTemp,
+          icon: const AssetImage("resources/images/icon_module_water_temp.png"),
+          iconGray: const AssetImage(
+              "resources/images/icon_module_water_temp_gray.png"),
+        );
       case "modules.water.ph":
         return LocalizedModule(
-            key: module.key,
-            icon: const AssetImage("resources/images/icon_module_water_ph.png"),
-            name: localizations.modulesWaterPh);
+          key: module.key,
+          name: localizations.modulesWaterPh,
+          icon: const AssetImage("resources/images/icon_module_water_ph.png"),
+          iconGray: const AssetImage(
+              "resources/images/icon_module_water_ph_gray.png"),
+        );
       case "modules.water.orp":
         return LocalizedModule(
-            key: module.key,
-            icon:
-                const AssetImage("resources/images/icon_module_water_orp.png"),
-            name: localizations.modulesWaterOrp);
+          key: module.key,
+          name: localizations.modulesWaterOrp,
+          icon: const AssetImage("resources/images/icon_module_water_orp.png"),
+          iconGray: const AssetImage(
+              "resources/images/icon_module_water_orp_gray.png"),
+        );
       case "modules.water.do":
         return LocalizedModule(
-            key: module.key,
-            icon: const AssetImage("resources/images/icon_module_water_do.png"),
-            name: localizations.modulesWaterDo);
+          key: module.key,
+          name: localizations.modulesWaterDo,
+          icon: const AssetImage("resources/images/icon_module_water_do.png"),
+          iconGray: const AssetImage(
+              "resources/images/icon_module_water_do_gray.png"),
+        );
       case "modules.water.ec":
         return LocalizedModule(
-            key: module.key,
-            icon: const AssetImage("resources/images/icon_module_water_ec.png"),
-            name: localizations.modulesWaterEc);
+          key: module.key,
+          name: localizations.modulesWaterEc,
+          icon: const AssetImage("resources/images/icon_module_water_ec.png"),
+          iconGray: const AssetImage(
+              "resources/images/icon_module_water_ec_gray.png"),
+        );
       case "modules.water.depth":
         return LocalizedModule(
-            key: module.key,
-            icon: const AssetImage("resources/images/icon_module_generic.png"),
-            name: localizations.modulesWaterDepth);
+          key: module.key,
+          name: localizations.modulesWaterDepth,
+          icon: const AssetImage("resources/images/icon_module_generic.png"),
+          iconGray:
+              const AssetImage("resources/images/icon_module_generic_gray.png"),
+        );
       case "modules.weather":
         return LocalizedModule(
-            key: module.key,
-            icon: const AssetImage("resources/images/icon_module_weather.png"),
-            name: localizations.modulesWeather);
+          key: module.key,
+          name: localizations.modulesWeather,
+          icon: const AssetImage("resources/images/icon_module_weather.png"),
+          iconGray:
+              const AssetImage("resources/images/icon_module_weather_gray.png"),
+        );
       case "modules.diagnostics":
         return LocalizedModule(
-            key: module.key,
-            icon: const AssetImage("resources/images/icon_module_generic.png"),
-            name: localizations.modulesDiagnostics);
+          key: module.key,
+          name: localizations.modulesDiagnostics,
+          icon: const AssetImage("resources/images/icon_module_generic.png"),
+          iconGray:
+              const AssetImage("resources/images/icon_module_generic_gray.png"),
+        );
       case "modules.random":
         return LocalizedModule(
-            key: module.key,
-            icon: const AssetImage("resources/images/icon_module_generic.png"),
-            name: localizations.modulesRandom);
+          key: module.key,
+          name: localizations.modulesRandom,
+          icon: const AssetImage("resources/images/icon_module_generic.png"),
+          iconGray:
+              const AssetImage("resources/images/icon_module_generic_gray.png"),
+        );
       case "modules.distance":
         return LocalizedModule(
-            key: module.key,
-            icon: const AssetImage("resources/images/icon_module_generic.png"),
-            name: localizations.modulesDistance);
+          key: module.key,
+          name: localizations.modulesDistance,
+          icon: const AssetImage("resources/images/icon_module_generic.png"),
+          iconGray:
+              const AssetImage("resources/images/icon_module_generic_gray.png"),
+        );
       default:
         Loggers.main.e("Unknown module key: ${module.key}");
         return LocalizedModule(
-            key: module.key,
-            icon: const AssetImage("resources/images/icon_module_generic.png"),
-            name: localizations.modulesUnknown);
+          key: module.key,
+          name: localizations.modulesUnknown,
+          icon: const AssetImage("resources/images/icon_module_generic.png"),
+          iconGray:
+              const AssetImage("resources/images/icon_module_generic_gray.png"),
+        );
     }
   }
 }

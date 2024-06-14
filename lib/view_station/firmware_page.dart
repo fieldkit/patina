@@ -1,3 +1,4 @@
+import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -161,10 +162,9 @@ class StationFirmwarePage extends StatelessWidget {
             height: 48.0,
             child: Image(
                 image: station.connected
-                    ? const AssetImage(
-                        "resources/images/Icon_Station_Connected.png")
+                    ? const AssetImage(AppIcons.StationConnected)
                     : const AssetImage(
-                        "resources/images/Icon_Station_Not_Connected.png",
+                        AppIcons.StationNotConnected,
                       )),
           ),
           title:

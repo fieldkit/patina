@@ -13,10 +13,10 @@ class DisplaySensorValue extends StatelessWidget {
 
   const DisplaySensorValue({
     super.key,
+    this.mainAxisSize = MainAxisSize.max,
     required this.sensor,
     required this.localized,
-    this.mainAxisSize = MainAxisSize.max,
-    this.isConnected = true,
+    required this.isConnected,
   });
 
   @override
@@ -42,7 +42,7 @@ class DisplaySensorValue extends StatelessWidget {
     // Determine the direction of the value change
     final previousValue = sensor.previousValue?.value;
     Widget changeIcon = const SizedBox.shrink();
-    if (previousValue != null && value != null) {
+    if (isConnected && previousValue != null && value != null) {
       if (value > previousValue) {
         // Value is rising
         changeIcon = const Icon(Icons.arrow_upward, color: Colors.blue);
@@ -57,7 +57,7 @@ class DisplaySensorValue extends StatelessWidget {
     String displayValue;
     String displayUom = uom;
 
-    if (value == null || !isConnected) {
+    if (value == null) {
       final localizations = AppLocalizations.of(context)!;
       return Row(mainAxisSize: mainAxisSize, children: [
         Text("--", style: valueStyle),
@@ -99,7 +99,7 @@ class SensorInfo extends StatelessWidget {
   const SensorInfo({
     super.key,
     required this.sensor,
-    this.isConnected = true,
+    required this.isConnected,
   });
 
   @override

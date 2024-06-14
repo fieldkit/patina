@@ -81,8 +81,6 @@ class LastConnected extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    const connectedIcon = 'resources/images/Icon_Station_Connected.png';
-    const notConnectedIcon = 'resources/images/Icon_Station_Not_Connected.png';
     const boxConstraints = BoxConstraints(
       minHeight: 5,
       minWidth: 5,
@@ -95,7 +93,7 @@ class LastConnected extends StatelessWidget {
         constraints: boxConstraints,
         child: ListTile(
           visualDensity: const VisualDensity(vertical: -4),
-          leading: Image.asset(connectedIcon, cacheWidth: 36),
+          leading: Image.asset(AppIcons.StationConnected, cacheWidth: 36),
           title: Text(localizations.stationConnected,
               style: const TextStyle(fontSize: 12)),
         ),
@@ -113,7 +111,7 @@ class LastConnected extends StatelessWidget {
       constraints: boxConstraints,
       child: ListTile(
         visualDensity: const VisualDensity(vertical: -4),
-        leading: Image.asset(notConnectedIcon, cacheWidth: 36),
+        leading: Image.asset(AppIcons.StationNotConnected, cacheWidth: 36),
         title: Text(titleText, style: const TextStyle(fontSize: 12)),
         subtitle: subtitleText != null
             ? Text(subtitleText,
