@@ -133,11 +133,11 @@ class LastConnected extends StatelessWidget {
       constraints: boxConstraints,
       child: ListTile(
         visualDensity: const VisualDensity(vertical: -4),
-        leading: Image.asset(AppIcons.StationNotConnected, cacheWidth: 36),
-        title: Text(titleText, style: const TextStyle(fontSize: 12)),
+        leading: Image.asset(AppIcons.StationNotConnected, cacheWidth: 34),
+        title: Text(titleText, style: const TextStyle(fontSize: 11)),
         subtitle: subtitleText != null
             ? Text(subtitleText,
-                style: const TextStyle(fontSize: 11, color: Colors.grey))
+                style: const TextStyle(fontSize: 10, color: Colors.grey))
             : null,
       ),
     );
