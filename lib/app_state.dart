@@ -479,10 +479,10 @@ class UpgradeOperation extends Operation {
   @override
   bool get done => false;
 
-  bool get completed =>
-      status is UpgradeStatus_Completed ||
+  @override
+  bool get busy => !(status is UpgradeStatus_Completed ||
       status is UpgradeStatus_Failed ||
-      status is UpgradeStatus_ReconnectTimeout;
+      status is UpgradeStatus_ReconnectTimeout);
 }
 
 class FirmwareDownloadOperation extends Operation {

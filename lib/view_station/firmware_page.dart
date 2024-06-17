@@ -144,8 +144,8 @@ class FirmwareBranch extends StatelessWidget {
             comparison: FirmwareComparison.compare(row.$1, config.firmware),
             operations:
                 operations.where((op) => op.firmwareId == row.$1.id).toList(),
-            canUpgrade: station.connected &&
-                operations.where((op) => !op.completed).isEmpty,
+            canUpgrade:
+                station.connected && operations.where((op) => op.busy).isEmpty,
             onUpgrade: () async {
               await availableFirmware.upgrade(config.deviceId, row.$1);
             }))
