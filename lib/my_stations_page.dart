@@ -98,8 +98,8 @@ class StationCard extends StatelessWidget {
         height: 54.0,
         child: Image(
           image: AssetImage(station.connected
-              ? AppIcons.StationConnected
-              : AppIcons.StationNotConnected),
+              ? AppIcons.stationConnected
+              : AppIcons.stationNotConnected),
         ));
     final tinyOperations =
         operations.map((op) => TinyOperation(operation: op)).toList();

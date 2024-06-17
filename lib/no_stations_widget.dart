@@ -60,6 +60,7 @@ class NoStationsHelpWidget extends StatelessWidget {
           child: Text(
             localizations.connectStation,
             style: const TextStyle(
+              color: AppColors.text,
               fontSize: 22.0,
               fontWeight: FontWeight.w700,
             ),
@@ -70,6 +71,7 @@ class NoStationsHelpWidget extends StatelessWidget {
           child: Text(
             localizations.noStationsDescription,
             style: const TextStyle(
+              color: AppColors.text,
               fontSize: 18.0,
               fontWeight: FontWeight.w500,
             ),
