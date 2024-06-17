@@ -14,3 +14,12 @@ class AppIcons {
   static const String stationNotConnected =
       "resources/images/icon_station_not_connected.png";
 }
+
+class AppStyles {
+  static const TextStyle title = TextStyle(
+    fontFamily: "Avenir-Medium",
+    color: Color.fromARGB(255, 0, 44, 44),
+    fontWeight: FontWeight.w500,
+    fontSize: 17,
+  );
+}
