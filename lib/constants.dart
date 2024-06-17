@@ -3,8 +3,9 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const primaryColor = Color(0xFFCE596B);
+  static const Color primaryColor = Color(0xFFCE596B);
   static const Color logoBlue = Color.fromRGBO(27, 128, 201, 1);
+  static const Color text = Color(0xFF2C3E50);
 }
 
 class AppIcons {
