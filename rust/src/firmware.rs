@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use discovery::DeviceId;
 use query::{
-    device,
+    device::{self, UpgradeOptions},
     portal::{Firmware, FirmwareFilter},
 };
 use std::path::PathBuf;
@@ -146,7 +146,10 @@ impl FirmwareUpgrader {
         let path = PathBuf::from(&self.storage_path).join(self.firmware.file_name());
 
         let client = query::device::Client::new().map_err(|_| Error::Unknown)?;
-        match client.upgrade(&self.addr, &path, self.swap).await {
+        match client
+            .upgrade(&self.addr, &path, UpgradeOptions::default())
+            .await
+        {
             Ok(mut stream) => {
                 while let Some(res) = stream.next().await {
                     match res {
