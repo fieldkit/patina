@@ -24,7 +24,10 @@ class CurrentReadingAndStandard extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final localized = LocalizedSensor.get(sensor, localizations);
     final sensorValue = DisplaySensorValue(
-        sensor: sensor, localized: localized, mainAxisSize: MainAxisSize.min);
+        sensor: sensor,
+        localized: localized,
+        mainAxisSize: MainAxisSize.min,
+        isConnected: true);
 
     return Column(children: [
       Padding(
