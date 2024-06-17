@@ -82,6 +82,7 @@ class _OurAppState extends State<OurApp> {
           color: Color.fromARGB(255, 44, 37, 37),
         ),
         titleTextStyle: TextStyle(
+          fontFamily: "Avenir-Medium",
           color: Color.fromARGB(255, 48, 44, 44),
           fontWeight: FontWeight.w500,
           fontSize: 17,
