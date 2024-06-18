@@ -45,7 +45,10 @@ class ModuleInfo extends StatelessWidget {
 
     final Widget maybeCalibration =
         (localized.canCalibrate && (alwaysShowCalibrate || !isCalibrated))
-            ? StartCalibrationButton(module: module)
+            ? StartCalibrationButton(
+                module: module,
+                stationName: station.name,
+              )
             : const SizedBox.shrink();
 
     return Container(
@@ -74,8 +77,10 @@ class ModuleInfo extends StatelessWidget {
 
 class StartCalibrationButton extends StatelessWidget {
   final ModuleConfig module;
+  final String stationName;
 
-  const StartCalibrationButton({super.key, required this.module});
+  const StartCalibrationButton(
+      {super.key, required this.module, required this.stationName});
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +103,15 @@ class StartCalibrationButton extends StatelessWidget {
                         module, localizations, content);
                     if (isCalibrated) {
                       return ClearCalibrationPage(
-                          config: config, module: module);
+                        config: config,
+                        module: module,
+                        stationName: station.name,
+                      );
                     } else {
-                      return CalibrationPage(config: config);
+                      return CalibrationPage(
+                        config: config,
+                        stationName: station.name,
+                      );
                     }
                   }
 

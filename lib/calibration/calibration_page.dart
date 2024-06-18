@@ -22,8 +22,13 @@ class CalibrationPage extends StatelessWidget {
   final ActiveCalibration active = ActiveCalibration();
   final CurrentCalibration? current;
   final CalibrationConfig config;
+  final String stationName;
 
-  CalibrationPage({super.key, this.current, required this.config});
+  CalibrationPage(
+      {super.key,
+      this.current,
+      required this.config,
+      required this.stationName});
 
   Future<bool?> _confirmBackDialog(BuildContext context) async {
     final localizations = AppLocalizations.of(context)!;
@@ -87,7 +92,7 @@ class CalibrationPage extends StatelessWidget {
                 title: Column(children: [
                   Text(localizations.calibrationTitle),
                   Text(
-                    bay,
+                    '$stationName - $bay',
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.normal),
                   ),
@@ -272,48 +277,82 @@ class CalibrationWait extends StatelessWidget {
   final VoidCallback onSkipTimer;
   final CanContinue canContinue;
 
-  const CalibrationWait(
-      {super.key,
-      required this.config,
-      required this.sensor,
-      required this.onStartTimer,
-      required this.onCalibrateAndContinue,
-      required this.canContinue,
-      required this.onSkipTimer});
+  const CalibrationWait({
+    super.key,
+    required this.config,
+    required this.sensor,
+    required this.onStartTimer,
+    required this.onCalibrateAndContinue,
+    required this.canContinue,
+    required this.onSkipTimer,
+  });
 
   Widget continueWidget(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final stepCounter = Provider.of<StepCounter>(context);
 
     switch (canContinue) {
       case CanContinue.ready:
         return ElevatedTextButton(
-            onPressed: onStartTimer, text: localizations.calibrationStartTimer);
+          onPressed: () {
+            stepCounter.increment();
+            onStartTimer();
+          },
+          text: localizations.calibrationStartTimer,
+        );
       case CanContinue.yes:
         return ElevatedTextButton(
-            onPressed: () => onCalibrateAndContinue(),
-            text: localizations.calibrateButton);
+          onPressed: () {
+            stepCounter.increment();
+            onCalibrateAndContinue();
+          },
+          text: localizations.calibrateButton,
+        );
       case CanContinue.form:
         return ElevatedTextButton(
-            onPressed: null, text: localizations.waitingOnForm);
+          onPressed: null,
+          text: localizations.waitingOnForm,
+        );
       case CanContinue.countdown:
         return GestureDetector(
-            onLongPress: onSkipTimer,
-            child: ElevatedTextButton(
-                onPressed: null, text: localizations.waitingOnTimer));
+          onLongPress: onSkipTimer,
+          child: ElevatedTextButton(
+            onPressed: null,
+            text: localizations.waitingOnTimer,
+          ),
+        );
       case CanContinue.staleValue:
         return ElevatedTextButton(
-            onPressed: null, text: localizations.waitingOnReading);
+          onPressed: null,
+          text: localizations.waitingOnReading,
+        );
+      default:
+        return Container();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final stepCounter = Provider.of<StepCounter>(context);
+
     final children = [
+      Container(
+        padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+        child: Text(
+          "Calibration Point ${stepCounter.steps}",
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.black54,
+            fontSize: 20,
+          ),
+        ),
+      ),
       Expanded(
-          child: CurrentReadingAndStandard(
-        sensor: sensor,
-        standard: config.standard,
-      )),
+        child: CurrentReadingAndStandard(
+          sensor: sensor,
+          standard: config.standard,
+        ),
+      ),
       Padding(
         padding: const EdgeInsets.all(20),
         child: Container(
@@ -330,13 +369,16 @@ class CalibrationWait extends StatelessWidget {
         ),
       ),
       Container(
-          margin: const EdgeInsets.all(30.0), child: continueWidget(context)),
+        margin: const EdgeInsets.all(30.0),
+        child: continueWidget(context),
+      ),
     ];
 
     return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: children);
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: children,
+    );
   }
 }
 

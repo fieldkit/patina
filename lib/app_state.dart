@@ -32,6 +32,28 @@ class StationModel {
   });
 }
 
+class StepCounter with ChangeNotifier {
+  int _steps = 1;
+
+  int get steps => _steps;
+
+  void increment() {
+    _steps++;
+    notifyListeners();
+  }
+
+  void reset() {
+    _steps = 1;
+    notifyListeners();
+  }
+
+  // Delay to pervent double tap incrementation on button
+  Future<void> delayIncrement() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    increment();
+  }
+}
+
 class UpdatePortal {
   final PortalAccounts portalAccounts;
   final Map<String, ExponentialBackOff> _active = {};
@@ -137,7 +159,7 @@ class UpdatePortal {
   }
 }
 
-class AuthenticationStatus extends ChangeNotifier {
+class AuthenticationStatus {
   AuthenticationStatus(
       PortalStateMachine portalState, PortalAccounts accounts) {
     portalState.addListener(() {
