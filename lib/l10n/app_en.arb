@@ -186,7 +186,7 @@
   "firmwareCheck": "Check for New Firmware",
   "firmwareVersion": "Firmware version: {firmwareVersion}",
   "firmwareReleased": "Version released: {firmwareReleaseDate}",
-  "firmwareTip": "Make sure you are connected to the internet before checking for new firmware.",
+  "firmwareTip": "During the upgrade, make sure to reconnect to your station after it has restarted.",
   "firmwarePrepareTitle": "Prepare For Update",
   "firmwarePrepareTime": "This update may take several minutes.",
   "firmwarePrepareSd": "You will need an SD card in your station to complete the update.",

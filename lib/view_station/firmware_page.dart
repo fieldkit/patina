@@ -240,6 +240,7 @@ class StationFirmwarePage extends StatelessWidget {
           _buildStationCard(context, localizations),
           _buildFirmwareUpdateCard(context, localizations, availableFirmware),
           _buildFirmwareActionButton(context, localizations, availableFirmware),
+          _buildQuickTipCard(context, localizations),
           AvailableFirmware(
               station: station,
               available: availableFirmware,
@@ -264,7 +265,6 @@ class StationFirmwarePage extends StatelessWidget {
     );
   }
 
-  // ignore: unused_element
   Widget _buildQuickTipCard(
       BuildContext context, AppLocalizations localizations) {
     IconData bulb = const IconData(0xe37c, fontFamily: 'MaterialIcons');
