@@ -81,8 +81,6 @@ class _HomePageState extends State<HomePage> {
                       // Should we just push this to the top?
                       MultiProvider(
                           providers: [
-                            ChangeNotifierProvider(
-                                create: (_) => StepCounter()),
                             ChangeNotifierProvider.value(
                                 value: state.moduleConfigurations),
                             ChangeNotifierProvider.value(

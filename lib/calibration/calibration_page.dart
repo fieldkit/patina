@@ -15,6 +15,7 @@ import 'calibration_review_page.dart';
 import 'calibration_model.dart';
 import 'countdown.dart';
 import 'standard_form.dart';
+import 'step_counter.dart';
 
 enum CanContinue { ready, form, countdown, staleValue, yes }
 
@@ -73,31 +74,34 @@ class CalibrationPage extends StatelessWidget {
         .module;
     final localizations = AppLocalizations.of(context)!;
     final bay = localizations.bayNumber(module.position);
-
-    return PopScope(
-        canPop: false,
-        onPopInvoked: (bool didPop) async {
-          if (didPop) {
-            return;
-          }
-          final NavigatorState navigator = Navigator.of(context);
-          final bool? shouldPop = await _confirmBackDialog(context);
-          if (shouldPop ?? false) {
-            navigator.popUntil((route) => route.isFirst);
-          }
-        },
-        child: dismissKeyboardOnOutsideGap(Scaffold(
-            appBar: AppBar(
-                centerTitle: true,
-                title: Column(children: [
-                  Text(localizations.calibrationTitle),
-                  Text(
-                    '$stationName - $bay',
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.normal),
-                  ),
-                ])),
-            body: body())));
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StepCounter()),
+        ],
+        child: PopScope(
+            canPop: false,
+            onPopInvoked: (bool didPop) async {
+              if (didPop) {
+                return;
+              }
+              final NavigatorState navigator = Navigator.of(context);
+              final bool? shouldPop = await _confirmBackDialog(context);
+              if (shouldPop ?? false) {
+                navigator.popUntil((route) => route.isFirst);
+              }
+            },
+            child: dismissKeyboardOnOutsideGap(Scaffold(
+                appBar: AppBar(
+                    centerTitle: true,
+                    title: Column(children: [
+                      Text(localizations.calibrationTitle),
+                      Text(
+                        '$stationName - $bay',
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.normal),
+                      ),
+                    ])),
+                body: body()))));
   }
 }
 
@@ -295,7 +299,6 @@ class CalibrationWait extends StatelessWidget {
       case CanContinue.ready:
         return ElevatedTextButton(
           onPressed: () {
-            stepCounter.increment();
             onStartTimer();
           },
           text: localizations.calibrationStartTimer,
@@ -339,7 +342,7 @@ class CalibrationWait extends StatelessWidget {
       Container(
         padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Text(
-          "Calibration Point ${stepCounter.steps}",
+          AppLocalizations.of(context)!.calibrationPoint(stepCounter.steps),
           style: const TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.black54,

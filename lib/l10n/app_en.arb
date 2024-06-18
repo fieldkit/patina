@@ -87,6 +87,7 @@
   "calibrationDelete": "Delete",
   "calibrationBack": "Back",
   "calibrationKeepButton": "Keep",
+  "calibrationPoint": "Calibration Point #{steps}",
   "factory": "Factory",
   "uncalibrated": "Uncalibrated",
   "calibrated": "Calibrated",
