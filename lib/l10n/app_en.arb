@@ -167,6 +167,8 @@
 
   "firmwareTitle": "Firmware",
   "firmwareUpgrade": "Upgrade",
+  "firmwareContinue": "Continue Update",
+  "firmwareCancel": "Cancel",
   "firmwareSwitch": "Switch",
   "firmwareStarting": "Starting...",
   "firmwareUploading": "Uploading...",
@@ -184,8 +186,13 @@
   "firmwareCheck": "Check for New Firmware",
   "firmwareVersion": "Firmware version: {firmwareVersion}",
   "firmwareReleased": "Version released: {firmwareReleaseDate}",
-  "quickTip": "Quick Tip",
   "firmwareTip": "Make sure you are connected to the internet before checking for new firmware.",
+  "firmwarePrepareTitle": "Prepare For Update",
+  "firmwarePrepareTime": "This update may take several minutes.",
+  "firmwarePrepareSd": "You will need an SD card in your station to complete the update.",
+  "firmwarePreparePower": "Keep your station plugged in and close to your device or smart phone.",
+  "firmwarePrepareConnection": "Your station will restart and you might have to reconnect to the station.",
+  "quickTip": "Quick Tip",
 
   "settingsAccounts": "Accounts",
   "accountsTitle": "Accounts",

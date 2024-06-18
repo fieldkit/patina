@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:fk/diagnostics.dart';
 import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -136,7 +137,7 @@ class FirmwareBranch extends StatelessWidget {
   Widget build(BuildContext context) {
     final stationOps = context.watch<StationOperations>();
     final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
-    final availableFirmware = context.watch<AvailableFirmwareModel>();
+    final navigator = Navigator.of(context);
 
     final items = firmware
         .where((row) => row.$1.module == "fk-core")
@@ -147,7 +148,12 @@ class FirmwareBranch extends StatelessWidget {
             canUpgrade:
                 station.connected && operations.where((op) => op.busy).isEmpty,
             onUpgrade: () async {
-              await availableFirmware.upgrade(config.deviceId, row.$1);
+              navigator.push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      PrepareFirmwareWidget(station: station, firmware: row.$1),
+                ),
+              );
             }))
         .toList();
 
@@ -357,13 +363,19 @@ class StationFirmwarePage extends StatelessWidget {
       }
     }
 
+    final navigator = Navigator.of(context);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
       child: ElevatedTextButton(
         onPressed: isFirmwareNewer
-            ? () async {
-                await availableFirmware.upgrade(config.deviceId,
-                    newFirmware ?? availableFirmware.firmware.last);
+            ? () {
+                navigator.push(
+                  MaterialPageRoute(
+                    builder: (context) => PrepareFirmwareWidget(
+                        station: station, firmware: newFirmware!),
+                  ),
+                );
               }
             : null,
         text: localizations.firmwareUpdate,
@@ -375,5 +387,130 @@ class StationFirmwarePage extends StatelessWidget {
     final formatter = DateFormat('MM-dd HH:mm:ss');
     return formatter
         .format(DateTime.fromMillisecondsSinceEpoch(config.firmware.time));
+  }
+}
+
+class PrepareFirmwareWidget extends StatelessWidget {
+  final StationModel station;
+  final LocalFirmware firmware;
+
+  const PrepareFirmwareWidget(
+      {super.key, required this.station, required this.firmware});
+
+  @override
+  Widget build(BuildContext context) {
+    final availableFirmware = context.read<AvailableFirmwareModel>();
+    final localizations = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+
+    fullWidthButton(Widget button) {
+      return Container(
+        padding: const EdgeInsets.all(10),
+        width: double.infinity,
+        child: button,
+      );
+    }
+
+    final ButtonStyle cancelButtonStyle = TextButton.styleFrom(
+      backgroundColor: Colors.white,
+      foregroundColor: AppColors.primaryColor,
+      minimumSize: const Size(88, 36),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(2)),
+      ),
+      textStyle: const TextStyle(fontWeight: FontWeight.w700),
+    );
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(localizations.firmwarePrepareTitle),
+        ),
+        body: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(children: [
+              Expanded(
+                  child: Column(children: [
+                Row(
+                  children: [
+                    const BulletNumber(number: 1),
+                    Expanded(
+                        child: Text(
+                      localizations.firmwarePrepareTime,
+                      softWrap: true,
+                    ))
+                  ],
+                ),
+                Row(
+                  children: [
+                    const BulletNumber(number: 2),
+                    Expanded(
+                        child: Text(
+                      localizations.firmwarePrepareSd,
+                      softWrap: true,
+                    )),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const BulletNumber(number: 3),
+                    Expanded(
+                        child: Text(
+                      localizations.firmwarePreparePower,
+                      softWrap: true,
+                    )),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const BulletNumber(number: 4),
+                    Expanded(
+                        child: Text(
+                      localizations.firmwarePrepareConnection,
+                      softWrap: true,
+                    )),
+                  ],
+                ),
+              ])),
+              Column(
+                children: [
+                  fullWidthButton(ElevatedTextButton(
+                    onPressed: () async {
+                      navigator.pop();
+                      await availableFirmware.upgrade(
+                          station.deviceId, firmware);
+                    },
+                    text: localizations.firmwareContinue,
+                  )),
+                  fullWidthButton(ElevatedTextButton(
+                      onPressed: () async {
+                        navigator.pop();
+                      },
+                      text: localizations.firmwareCancel,
+                      style: cancelButtonStyle))
+                ],
+              ),
+            ])));
+  }
+}
+
+class BulletNumber extends StatelessWidget {
+  final int number;
+
+  const BulletNumber({super.key, required this.number});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Container(
+          padding: const EdgeInsets.all(20.0),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.logoBlue,
+          ),
+          child: Text(number.toString(),
+              style: const TextStyle(color: Colors.white, fontSize: 45.0)),
+        ));
   }
 }
