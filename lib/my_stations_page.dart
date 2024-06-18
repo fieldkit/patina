@@ -42,9 +42,11 @@ class ListStationsPage extends StatelessWidget {
       }
     }).toList();
 
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.myStationsTitle),
+          title: Text(localizations.myStationsTitle),
         ),
         body: ListView(children: [
           ...map,
