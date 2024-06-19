@@ -130,37 +130,39 @@ class _HomePageState extends State<HomePage> {
           : BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               selectedItemColor: const Color(0xFF2C3E50),
-              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+              unselectedLabelStyle: const TextStyle(fontSize: 12.0),
+              selectedLabelStyle:
+                  const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w700),
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Image.asset(
-                      'resources/images/Icon_Station_inactive2.png',
+                      'resources/images/icon_station_inactive.png',
                       width: 24,
                       height: 24),
                   activeIcon: Image.asset(
-                      'resources/images/Icon_Station_active2.png',
+                      'resources/images/icon_station_active.png',
                       width: 24,
                       height: 24),
                   label: AppLocalizations.of(context)!.stationsTab,
                 ),
                 BottomNavigationBarItem(
                   icon: Image.asset(
-                      'resources/images/Icon_DataSync_inactive2.png',
+                      'resources/images/icon_data_sync_inactive.png',
                       width: 24,
                       height: 24),
                   activeIcon: Image.asset(
-                      'resources/images/Icon_DataSync_active2.png',
+                      'resources/images/icon_data_sync_active.png',
                       width: 24,
                       height: 24),
                   label: AppLocalizations.of(context)!.dataSyncTab,
                 ),
                 BottomNavigationBarItem(
                   icon: Image.asset(
-                      'resources/images/Icon_Settings_inactive2.png',
+                      'resources/images/icon_settings_inactive.png',
                       width: 24,
                       height: 24),
                   activeIcon: Image.asset(
-                      'resources/images/Icon_Settings_active2.png',
+                      'resources/images/icon_settings_active.png',
                       width: 24,
                       height: 24),
                   label: AppLocalizations.of(context)!.settingsTab,
