@@ -162,9 +162,9 @@ class StationFirmwarePage extends StatelessWidget {
             height: 48.0,
             child: Image(
                 image: station.connected
-                    ? const AssetImage(AppIcons.StationConnected)
+                    ? const AssetImage(AppIcons.stationConnected)
                     : const AssetImage(
-                        AppIcons.StationNotConnected,
+                        AppIcons.stationNotConnected,
                       )),
           ),
           title:

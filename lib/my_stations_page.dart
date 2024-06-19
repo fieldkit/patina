@@ -42,9 +42,11 @@ class ListStationsPage extends StatelessWidget {
       }
     }).toList();
 
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.myStationsTitle),
+          title: Text(localizations.myStationsTitle),
         ),
         body: ListView(children: [
           ...map,
@@ -98,8 +100,8 @@ class StationCard extends StatelessWidget {
         height: 54.0,
         child: Image(
           image: AssetImage(station.connected
-              ? AppIcons.StationConnected
-              : AppIcons.StationNotConnected),
+              ? AppIcons.stationConnected
+              : AppIcons.stationNotConnected),
         ));
     final tinyOperations =
         operations.map((op) => TinyOperation(operation: op)).toList();
