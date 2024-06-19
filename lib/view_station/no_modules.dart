@@ -52,7 +52,11 @@ class NoModulesWidget extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => MultiScreenFlow(
-                          screenNames: const ['onboarding.07'],
+                          screenNames: const [
+                            'no_modules.01',
+                            'no_modules.02',
+                            'no_modules.03'
+                          ],
                           onComplete: () {
                             Navigator.pop(context);
                           },
