@@ -54,13 +54,14 @@ class EventsList extends StatelessWidget {
         context.watch<StationConfiguration>();
     Loggers.ui.i("Events ${stationConfig.events()}");
 
+    final events = stationConfig.events();
+    if (events.isEmpty) {
+      return Text(AppLocalizations.of(context)!.noEvents);
+    }
+
     return Column(
-        children: WH.divideWith(
-            () => const Divider(),
-            stationConfig
-                .events()
-                .map((e) => WH.padColumn(getEventWidget(e)))
-                .toList()));
+        children: WH.divideWith(() => const Divider(),
+            events.map((e) => WH.padColumn(getEventWidget(e))).toList()));
   }
 }
 
