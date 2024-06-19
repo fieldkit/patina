@@ -82,18 +82,42 @@ class NoStationsHelpWidget extends StatelessWidget {
           target: LinkTarget.blank,
           builder: (BuildContext ctx, FollowLink? openLink) {
             return Center(
-              child: TextButton(
-                onPressed: openLink,
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.primaryColor,
-                  textStyle: const TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Avenir-Medium',
-                  ),
-                ),
-                child: Text(localizations.noStationsWhatIsStation),
+              child: StatefulBuilder(
+                builder: (context, setState) {
+                  bool isPressed = false;
+
+                  return TextButton(
+                    onPressed: () {
+                      setState(() {
+                        isPressed = !isPressed;
+                      });
+                      openLink;
+                    },
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.pressed)) {
+                            return Colors.grey;
+                          }
+                          return AppColors.primaryColor;
+                        },
+                      ),
+                      textStyle: MaterialStateProperty.resolveWith<TextStyle>(
+                        (Set<MaterialState> states) {
+                          return TextStyle(
+                            color: isPressed
+                                ? Colors.grey
+                                : AppColors.primaryColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Avenir-Medium',
+                          );
+                        },
+                      ),
+                    ),
+                    child: Text(localizations.noStationsWhatIsStation),
+                  );
+                },
               ),
             );
           },
