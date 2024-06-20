@@ -1,4 +1,4 @@
-# 📱 FieldKit Mobile App
+`# 📱 FieldKit Mobile App
 
 Stay ahead in the field with FieldKit mobile app. Here's everything you need to get started to build the fieldkit app.
 
@@ -137,4 +137,14 @@ Test the Flutter application with:
 
 ```bash
 flutter test
+```
+
+## 📖 Updating Strapi
+To Update Strapi, or the static content, run:
+```bash
+dart flows/example/sync.dart --test
+```
+then
+```bash
+dart flows/example/sync.dart --sync
 ```

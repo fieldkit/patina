@@ -55,7 +55,8 @@ class NoModulesWidget extends StatelessWidget {
                           screenNames: const [
                             'no_modules.01',
                             'no_modules.02',
-                            'no_modules.03'
+                            'no_modules.03',
+                            'no_modules.04',
                           ],
                           onComplete: () {
                             Navigator.pop(context);
