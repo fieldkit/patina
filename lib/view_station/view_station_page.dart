@@ -47,9 +47,32 @@ class ViewStationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ModuleConfigurations moduleConfigurations =
+        context.watch<ModuleConfigurations>();
     return Scaffold(
       appBar: AppBar(
         title: Text(config.name),
+        bottom: station.ephemeral?.deployment?.startTime != null
+            ? PreferredSize(
+                preferredSize: Size.zero,
+                child: Text(
+                  "${AppLocalizations.of(context)!.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000))}",
+                ),
+              )
+            : moduleConfigurations.areAllModulesCalibrated(station, context) ==
+                    false
+                ? PreferredSize(
+                    preferredSize: Size.zero,
+                    child: Text(
+                      AppLocalizations.of(context)!.readyToCalibrate,
+                    ),
+                  )
+                : PreferredSize(
+                    preferredSize: Size.zero,
+                    child: Text(
+                      AppLocalizations.of(context)!.readyToDeploy,
+                    ),
+                  ),
         actions: [
           TextButton(
               onPressed: () {
@@ -111,11 +134,11 @@ class LastConnected extends StatelessWidget {
       constraints: boxConstraints,
       child: ListTile(
         visualDensity: const VisualDensity(vertical: -4),
-        leading: Image.asset(AppIcons.stationNotConnected, cacheWidth: 36),
-        title: Text(titleText, style: const TextStyle(fontSize: 12)),
+        leading: Image.asset(AppIcons.stationNotConnected, cacheWidth: 34),
+        title: Text(titleText, style: const TextStyle(fontSize: 11)),
         subtitle: subtitleText != null
             ? Text(subtitleText,
-                style: const TextStyle(fontSize: 11, color: Colors.grey))
+                style: const TextStyle(fontSize: 10, color: Colors.grey))
             : null,
       ),
     );
@@ -248,6 +271,10 @@ class HighLevelsDetails extends StatelessWidget {
     final TasksModel tasks = context.watch<TasksModel>();
     final DeployTask? deployTask =
         tasks.getMaybeOne<DeployTask>(station.deviceId);
+    final ModuleConfigurations moduleConfigurations =
+        context.watch<ModuleConfigurations>();
+    final modulesCalibrated =
+        moduleConfigurations.areAllModulesCalibrated(station, context);
 
     final battery = config.battery.percentage;
     final bytesUsed = config.meta.size + config.data.size;
@@ -338,9 +365,76 @@ class HighLevelsDetails extends StatelessWidget {
                     color: Colors.grey.shade300,
                   ),
                 ),
-                child: LastConnected(
-                    lastConnected: station.config?.lastSeen,
-                    connected: station.connected),
+                child: Column(
+                  children: [
+                    IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: TimerCircle(
+                                enabled: station.connected,
+                                deployed:
+                                    station.ephemeral?.deployment?.startTime,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                BatteryIndicator(
+                                    enabled: station.connected, level: battery),
+                                MemoryIndicator(
+                                    enabled: station.connected,
+                                    bytesUsed: bytesUsed),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (!station.connected)
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(10),
+                        width: 400,
+                        height: 50,
+                        color: Colors.grey.shade300,
+                        child: TextButton(
+                          onPressed: null,
+                          child: Text(
+                            AppLocalizations.of(context)!.deployButton,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      )
+                    else if (deployTask != null &&
+                        station.connected &&
+                        modulesCalibrated)
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        width: 400,
+                        height: 50,
+                        child: ElevatedTextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DeployStationRoute(
+                                  deviceId: station.deviceId,
+                                ),
+                              ),
+                            );
+                          },
+                          text: AppLocalizations.of(context)!.deployButton,
+                        ),
+                      )
+                  ],
+                ),
               ),
             ),
           )
