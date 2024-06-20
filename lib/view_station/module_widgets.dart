@@ -46,8 +46,7 @@ class ModuleInfo extends StatelessWidget {
     final Widget maybeCalibration =
         (localized.canCalibrate && (alwaysShowCalibrate || !isCalibrated))
             ? StartCalibrationButton(
-                module: module,
-                stationName: station.name,
+                module: module, stationName: station.name,
               )
             : const SizedBox.shrink();
 

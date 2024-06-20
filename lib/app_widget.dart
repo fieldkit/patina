@@ -71,21 +71,15 @@ class _OurAppState extends State<OurApp> {
       hintColor: Colors.grey, // changes the default color of many widgets
       brightness: Brightness.light, // changes the AppBar content color to dark
       primaryTextTheme: const TextTheme(
-        titleLarge: TextStyle(
-          color: Color.fromARGB(255, 48, 44, 44),
-          fontWeight: FontWeight.w500,
-        ),
+        // NOTE: I couldn't find any place that this affected.
+        titleLarge: AppStyles.title,
       ),
       appBarTheme: const AppBarTheme(
         centerTitle: true,
         iconTheme: IconThemeData(
           color: Color.fromARGB(255, 44, 37, 37),
         ),
-        titleTextStyle: TextStyle(
-          color: Color.fromARGB(255, 48, 44, 44),
-          fontWeight: FontWeight.w500,
-          fontSize: 17,
-        ),
+        titleTextStyle: AppStyles.title,
         shape: Border(
             bottom: BorderSide(
                 color: Color.fromARGB(255, 221, 221, 221), width: 2)),

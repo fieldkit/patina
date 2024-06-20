@@ -130,7 +130,9 @@ class _HomePageState extends State<HomePage> {
           : BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               selectedItemColor: const Color(0xFF2C3E50),
-              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+              unselectedLabelStyle: const TextStyle(fontSize: 12.0),
+              selectedLabelStyle:
+                  const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w700),
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Image.asset(
