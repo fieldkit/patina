@@ -48,7 +48,7 @@ class _QuickFlowState extends State<QuickFlow> {
         if (index == length - 1) {
           Loggers.ui.i("forward:exit");
           onForwardEnd();
-        } else if ( index < length - 1 ) {
+        } else if (index < length - 1) {
           Loggers.ui.i("forward");
           setState(() {
             index += 1;
