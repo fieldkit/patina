@@ -28,11 +28,13 @@ class WelcomeScreen extends StatelessWidget {
                 children: [
                   Image.asset('resources/images/logo_fk_blue.png'),
                   Image.asset('resources/images/art/welcome.jpg'),
-                  Text(
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                    child: Text(
                     AppLocalizations.of(context)!.welcomeTitle,
                     style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),),
                   Text(
                     AppLocalizations.of(context)!.welcomeMessage,
                     textAlign: TextAlign.center,
@@ -45,7 +47,7 @@ class WelcomeScreen extends StatelessWidget {
                     endIndent: 50,
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                     child: ElevatedTextButton(
                       onPressed: () {
                         // ignore: dead_code
@@ -67,17 +69,15 @@ class WelcomeScreen extends StatelessWidget {
                       text: AppLocalizations.of(context)!.welcomeButton,
                     ),
                   ),
-                  if (false)
-                    // ignore: dead_code
                     TextButton(
                       onPressed: () {
-                        onDone(); // Call the onDone callback when the skip button is pressed
+                        onDone();
                       },
                       child: Text(
                         AppLocalizations.of(context)!.skipInstructions,
                         style: const TextStyle(
                           color: Colors.grey,
-                          fontSize: 16.0,
+                          fontSize: 14.0,
                         ),
                       ),
                     ),
