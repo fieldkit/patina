@@ -154,6 +154,6 @@ class _HelpPageState extends State<HelpPage> {
   }
   
   onDone() {
-    Navigator.of(context).pop(); // Return to the page after the tutorial
+    return Navigator.pop(context); // Return to the help page after the tutorial guide is completed
   }
 }

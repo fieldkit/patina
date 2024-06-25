@@ -53,12 +53,12 @@ class WelcomeScreen extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
+                                builder: (BuildContext context) =>
                                     ProvideContentFlowsWidget(
                                         eager: false,
                                         child: QuickFlow(
                                             start: const flows.StartFlow(
-                                                prefix: "onboarding"), onForwardEnd: () => onDone())),
+                                                prefix: "onboarding"), onForwardEnd: () => onFinishTutorial(context))),
                               ));
                       },
                       text: AppLocalizations.of(context)!.welcomeButton,
@@ -67,6 +67,7 @@ class WelcomeScreen extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         onDone();
+                        Navigator.pop(context);
                       },
                       child: Text(
                         AppLocalizations.of(context)!.skipInstructions,
@@ -81,5 +82,10 @@ class WelcomeScreen extends StatelessWidget {
             ),
           ),
         ));
+  }
+  
+  onFinishTutorial(context) {
+    onDone();
+    Navigator.pop(context);
   }
 }

@@ -32,7 +32,7 @@ class _QuickFlowState extends State<QuickFlow> {
   }
 
   void onForwardEnd() {
-    onForwardEnd();
+    widget.onForwardEnd();
   }
 
   @override
@@ -56,6 +56,7 @@ class _QuickFlowState extends State<QuickFlow> {
         } else {
           Loggers.ui.i("forward:exit");
           onForwardEnd();
+          Navigator.of(context).pop();
         }
       },
       onBack: onBack,
