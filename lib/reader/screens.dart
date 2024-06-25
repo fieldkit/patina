@@ -8,8 +8,9 @@ import '../diagnostics.dart';
 
 class QuickFlow extends StatefulWidget {
   final flows.StartFlow start;
+  final VoidCallback onForwardEnd;
 
-  const QuickFlow({super.key, required this.start});
+  const QuickFlow({super.key, required this.start, required this.onForwardEnd});
 
   @override
   State<QuickFlow> createState() => _QuickFlowState();
@@ -30,23 +31,37 @@ class _QuickFlowState extends State<QuickFlow> {
     }
   }
 
+  void onForwardEnd() {
+    onForwardEnd();
+  }
+
   @override
   Widget build(BuildContext context) {
     final flowsContent = context.read<flows.ContentFlows>();
     final screens = flowsContent.getScreens(widget.start);
     final screen = screens[index];
+    final length = screens.length;
 
     final body = FlowScreenWidget(
       screen: screen,
       onForward: () {
-        Loggers.ui.i("forward");
-        setState(() {
-          index += 1;
-        });
+        if (index == length - 1) {
+          Loggers.ui.i("forward:exit");
+          onForwardEnd();
+        } else if ( index < length - 1 ) {
+          Loggers.ui.i("forward");
+          setState(() {
+            index += 1;
+          });
+        } else {
+          Loggers.ui.i("forward:exit");
+          onForwardEnd();
+        }
       },
       onBack: onBack,
       onSkip: () {
         Loggers.ui.i("skip");
+        onForwardEnd();
       },
       onGuide: () {
         Loggers.ui.i("guide");
