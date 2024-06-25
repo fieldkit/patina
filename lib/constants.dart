@@ -17,9 +17,9 @@ class AppIcons {
 
 class AppStyles {
   static const TextStyle title = TextStyle(
-    fontFamily: "Avenir-Medium",
+    fontFamily: "Avenir",
     color: Color.fromARGB(255, 0, 44, 44),
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w700,
     fontSize: 17,
   );
 }
