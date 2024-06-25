@@ -50,8 +50,6 @@ class WelcomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                     child: ElevatedTextButton(
                       onPressed: () {
-                        // ignore: dead_code
-                        if (false) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -62,9 +60,6 @@ class WelcomeScreen extends StatelessWidget {
                                             start: flows.StartFlow(
                                                 prefix: "onboarding"))),
                               ));
-                        } else {
-                          onDone();
-                        }
                       },
                       text: AppLocalizations.of(context)!.welcomeButton,
                     ),
