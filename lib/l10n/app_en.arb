@@ -112,11 +112,8 @@
   "countdownInstructions": "Tap the Calibrate button to record the sensor value and the standard value.",
   "calibrationMessage": "Recording these values together allows us to later calibrate the sensor.",
   "standardFieldLabel": "Standard",
-  "standardFieldLabel": "Standard",
   "backAreYouSure": "Are you sure?",
-  "backWarning": "Navigating away will require you start this calibration over.",
-  "countdownInstructions": "Tap the Calibrate button to record the sensor value and the standard value.",
-  "calibrationMessage": "Recording these values together allows us to later calibrate the sensor.",
+  "backWarning": "Navigating away will require you start this calibration over.", 
 
   "settingsTitle": "Settings",
   "settingsGeneral": "General",
