@@ -67,7 +67,6 @@ class WelcomeScreen extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         onDone();
-                        Navigator.pop(context);
                       },
                       child: Text(
                         AppLocalizations.of(context)!.skipInstructions,
