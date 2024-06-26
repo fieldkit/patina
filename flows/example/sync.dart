@@ -67,7 +67,7 @@ Future<void> test(Logger logger, String resources) async {
 
 void main(List<String> args) async {
   final logger = Logger(printer: SimplePrinter());
-  final resourcesPath = "../resources/flows";
+  final resourcesPath = "resources/flows";
 
   for (final arg in args) {
     if (arg == "--sync") {
