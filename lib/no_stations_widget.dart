@@ -112,7 +112,7 @@ class NoStationsHelpWidget extends StatelessWidget {
                                 : AppColors.primaryColor,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            fontFamily: 'Avenir-Medium',
+                            fontFamily: 'Avenir',
                           );
                         },
                       ),
