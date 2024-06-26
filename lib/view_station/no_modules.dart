@@ -1,9 +1,13 @@
+import 'package:fk/app_state.dart';
+import 'package:fk/view_station/view_station_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fk/reader/screens.dart';
 
 class NoModulesWidget extends StatelessWidget {
-  const NoModulesWidget({super.key});
+  final StationModel station;
+
+  const NoModulesWidget({super.key, required this.station});
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +63,13 @@ class NoModulesWidget extends StatelessWidget {
                             'no_modules.04',
                           ],
                           onComplete: () {
-                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ViewStationRoute(deviceId: station.deviceId),
+                              ),
+                            );
                           },
                         ),
                       ),

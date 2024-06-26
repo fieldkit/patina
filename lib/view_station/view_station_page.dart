@@ -441,7 +441,7 @@ class HighLevelsDetails extends StatelessWidget {
         ]),
         if (modules.length ==
             1) // Note: This is on purpose, checking for only diagnostics module
-          const NoModulesWidget()
+          NoModulesWidget(station: station)
         else
           Column(children: modules),
       ],
