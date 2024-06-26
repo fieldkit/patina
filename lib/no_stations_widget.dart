@@ -101,17 +101,14 @@ class NoStationsHelpWidget extends StatelessWidget {
                           if (states.contains(MaterialState.pressed)) {
                             return Colors.grey;
                           }
-                          return AppColors.primaryColor;
+                          return const Color(0xFF2C3E50);
                         },
                       ),
                       textStyle: MaterialStateProperty.resolveWith<TextStyle>(
                         (Set<MaterialState> states) {
-                          return TextStyle(
-                            color: isPressed
-                                ? Colors.grey
-                                : AppColors.primaryColor,
+                          return const TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                             fontFamily: 'Avenir',
                           );
                         },
