@@ -96,11 +96,16 @@ class NoStationsHelpWidget extends StatelessWidget {
                       openLink;
                     },
                     style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.pressed) == true) {
+                            return Colors.black12;
+                          }
+                          return Colors.white;
+                        },
+                      ),
                       foregroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.pressed)) {
-                            return Colors.grey;
-                          }
                           return const Color(0xFF2C3E50);
                         },
                       ),
