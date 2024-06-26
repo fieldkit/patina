@@ -274,7 +274,7 @@
 
   "sensorDiagnosticsBatteryVBus": "Battery (VBus)",
   "sensorDiagnosticsBatteryVs": "Battery (Vs)",
-  "sensorDiagnosticsBatteryMa": "Batteyr (ma)",
+  "sensorDiagnosticsBatteryMa": "Battery (ma)",
   "sensorDiagnosticsBatteryPower": "Battery (Power)",
 
   "sensorDiagnosticsSolarVBus": "Solar (VBus)",
