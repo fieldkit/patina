@@ -154,11 +154,11 @@ class DownloadPanel extends StatelessWidget {
   Widget buildDownloadButton(BuildContext context, DownloadTask? downloadTask, void Function(DownloadTask) onDownload) {
         final localizations = AppLocalizations.of(context)!;
         final DownloadTask? task = downloadTask;
-        if (task == null || task.first == null) {
+        if (task == null || task.first == null) { // If there are no readings to download hide the button
           return const SizedBox.shrink();
         } else {
           final num first = task.first as num;
-          if (task.total - first == 0) {
+          if (task.total - first != 0) { // If there are readings to download show the button
           return SizedBox(
             width: double.infinity,
             child: ElevatedTextButton(
