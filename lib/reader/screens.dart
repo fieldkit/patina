@@ -32,19 +32,21 @@ class _MultiScreenFlowState extends State<MultiScreenFlow> {
         if (widget.onComplete != null) {
           widget.onComplete!();
         }
-        Navigator.of(context).pop();
+        widget.onComplete!();
       }
     });
   }
 
   void onBack() {
-    setState(() {
-      if (index > 0) {
+    if (index > 0) {
+      Loggers.ui.i("back");
+      setState(() {
         index--;
-      } else {
-        Navigator.of(context).pop();
-      }
-    });
+      });
+    } else {
+      Loggers.ui.i("back:exit");
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -68,6 +70,7 @@ class _MultiScreenFlowState extends State<MultiScreenFlow> {
         screen: screen,
         onForward: onForward,
         onBack: onBack,
+        onSkip: widget.onComplete,
       ),
     );
   }
@@ -90,7 +93,7 @@ class _QuickFlowState extends State<QuickFlow> {
     if (index > 0) {
       Loggers.ui.i("back");
       setState(() {
-        index -= 1;
+        index--;
       });
     } else {
       Loggers.ui.i("back:exit");
@@ -98,8 +101,23 @@ class _QuickFlowState extends State<QuickFlow> {
     }
   }
 
-  void onForwardEnd() {
-    widget.onForwardEnd();
+  void onForward() {
+    setState(() {
+      if (widget.start.names != null) {
+        if (index < widget.start.names!.length - 1) {
+          Loggers.ui.i("forward");
+          index++;
+        } else {
+          Loggers.ui.i("forward:exit");
+          widget.onForwardEnd();
+          Navigator.of(context).pop();
+        }
+      } else {
+        Loggers.ui.i("forward:exit");
+        widget.onForwardEnd();
+        Navigator.of(context).pop();
+      }
+    });
   }
 
   @override
@@ -107,51 +125,32 @@ class _QuickFlowState extends State<QuickFlow> {
     final flowsContent = context.read<flows.ContentFlows>();
     final screens = flowsContent.getScreens(widget.start);
     final screen = screens[index];
-    final length = screens.length;
-
-    final body = FlowScreenWidget(
-      screen: screen,
-      onForward: () {
-        if (index == length - 1) {
-          Loggers.ui.i("forward:exit");
-          onForwardEnd();
-        } else if (index < length - 1) {
-          Loggers.ui.i("forward");
-          setState(() {
-            index += 1;
-          });
-        } else {
-          Loggers.ui.i("forward:exit");
-          onForwardEnd();
-          Navigator.of(context).pop();
-        }
-      },
-      onBack: onBack,
-      onSkip: () {
-        Loggers.ui.i("skip");
-        onForwardEnd();
-      },
-      onGuide: () {
-        Loggers.ui.i("guide");
-      },
-    );
 
     return PopScope(
-        canPop: false,
-        onPopInvoked: (bool didPop) async {
-          onBack();
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed:
-                  onBack, // If onBack is not provided, the IconButton will be disabled.
-            ),
-            title: Text(screen.header?.title ?? ""),
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        onBack();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: onBack, // If onBack is not provided, the IconButton will be disabled.
+
           ),
-          body: body,
-        ));
+          title: Text(screen.header?.title ?? ""),
+        ),
+        body: FlowScreenWidget(
+          screen: screen,
+          onForward: onForward,
+          onBack: onBack,
+          onSkip: widget.onForwardEnd,
+          onGuide: () {
+            Loggers.ui.i("guide");
+          },
+        ),
+      ),
+    );
   }
 }
 
@@ -159,34 +158,37 @@ class ProvideContentFlowsWidget extends StatelessWidget {
   final Widget child;
   final bool eager;
 
-  const ProvideContentFlowsWidget(
-      {super.key, required this.child, required this.eager});
+  const ProvideContentFlowsWidget({
+    super.key,
+    required this.child,
+    required this.eager,
+  });
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     final Locale active = Localizations.localeOf(context);
     final String path = "resources/flows/flows_${active.languageCode}.json";
     Loggers.ui.i("flows:loading $path");
     return FutureBuilder<String>(
-        future: DefaultAssetBundle.of(context).loadString(path),
-        builder: (context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.hasData) {
-            final flowsContent = flows.ContentFlows.get(snapshot.data!);
-            Loggers.ui.i("flows:ready $flowsContent");
-            return Provider<flows.ContentFlows>(
-              create: (context) => flowsContent,
-              dispose: (context, value) => {},
-              lazy: false,
-              child: child,
-            );
-          } else {
-            if (eager) {
+      future: DefaultAssetBundle.of(context).loadString(path),
+      builder: (context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.hasData) {
+          final flowsContent = flows.ContentFlows.get(snapshot.data!);
+          Loggers.ui.i("flows:ready $flowsContent");
+          return Provider<flows.ContentFlows>(
+            create: (context) => flowsContent,
+                          dispose: (context, value) => {},
+            lazy: false,
+            child: child,
+          );
+        } else {
+                      if (eager) {
               return child;
             } else {
               return const SizedBox.shrink();
-            }
-          }
-        });
+        }
+      }
+      });
   }
 }
 
@@ -242,8 +244,9 @@ class FlowScreenWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     assert(screen.simple.length == 1);
+    
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Row(
@@ -269,8 +272,10 @@ class FlowSimpleScreenWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MarkdownWidgetParser(logger: Loggers.markDown, images: screen.images)
-        .parse(screen.body);
+    return MarkdownWidgetParser(
+      logger: Loggers.markDown,
+      images: screen.images,
+    ).parse(screen.body);
   }
 }
 
@@ -281,13 +286,14 @@ class FlowNamedScreenWidget extends StatelessWidget {
   final VoidCallback? onGuide;
   final VoidCallback? onBack;
 
-  const FlowNamedScreenWidget(
-      {super.key,
-      required this.name,
-      this.onForward,
-      this.onSkip,
-      this.onGuide,
-      this.onBack});
+  const FlowNamedScreenWidget({
+    super.key,
+    required this.name,
+    this.onForward,
+    this.onSkip,
+    this.onGuide,
+    this.onBack,
+  });
 
   @override
   Widget build(BuildContext context) {
