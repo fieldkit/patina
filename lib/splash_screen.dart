@@ -23,10 +23,16 @@ class FullScreenLogo extends StatelessWidget {
 }
 
 class LargeLogo extends StatelessWidget {
-  const LargeLogo({super.key});
+  final bool white;
+
+  const LargeLogo({super.key, this.white = false});
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset("resources/images/logo_fk_blue.png");
+    if (white) {
+      return Image.asset("resources/images/logo_fk_white.png");
+    } else {
+      return Image.asset("resources/images/logo_fk_blue.png");
+    }
   }
 }
