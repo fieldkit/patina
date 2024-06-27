@@ -8,12 +8,12 @@ import '../diagnostics.dart';
 
 class MultiScreenFlow extends StatefulWidget {
   final List<String> screenNames;
-  final VoidCallback? onComplete;
+  final VoidCallback onComplete;
 
   const MultiScreenFlow({
     super.key,
     required this.screenNames,
-    this.onComplete,
+    required this.onComplete,
   });
 
   @override
@@ -29,10 +29,8 @@ class _MultiScreenFlowState extends State<MultiScreenFlow> {
       if (index < widget.screenNames.length - 1) {
         index++;
       } else {
-        if (widget.onComplete != null) {
-          widget.onComplete!();
-        }
-        widget.onComplete!();
+        widget.onComplete;
+        Navigator.of(context).pop();
       }
     });
   }
@@ -51,9 +49,6 @@ class _MultiScreenFlowState extends State<MultiScreenFlow> {
 
   @override
   Widget build(BuildContext context) {
-    if (index >= widget.screenNames.length) {
-      Navigator.of(context).pop();
-    }
 
     final flowsContent = context.read<flows.ContentFlows>();
     final screen = flowsContent.getScreen(widget.screenNames[index]);
@@ -78,9 +73,9 @@ class _MultiScreenFlowState extends State<MultiScreenFlow> {
 
 class QuickFlow extends StatefulWidget {
   final flows.StartFlow start;
-  final VoidCallback onForwardEnd;
+  final VoidCallback onComplete;
 
-  const QuickFlow({super.key, required this.start, required this.onForwardEnd});
+  const QuickFlow({super.key, required this.start, required this.onComplete});
 
   @override
   State<QuickFlow> createState() => _QuickFlowState();
@@ -103,18 +98,16 @@ class _QuickFlowState extends State<QuickFlow> {
 
   void onForward() {
     setState(() {
-      if (widget.start.names != null) {
-        if (index < widget.start.names!.length - 1) {
-          Loggers.ui.i("forward");
-          index++;
-        } else {
-          Loggers.ui.i("forward:exit");
-          widget.onForwardEnd();
-          Navigator.of(context).pop();
-        }
+    final flowsContent = context.read<flows.ContentFlows>();
+    final screens = flowsContent.getScreens(widget.start);
+    final length = screens.length;
+
+      if (index < length - 1) {
+        Loggers.ui.i("forward");
+        index++;
       } else {
         Loggers.ui.i("forward:exit");
-        widget.onForwardEnd();
+        widget.onComplete;
         Navigator.of(context).pop();
       }
     });
@@ -144,7 +137,7 @@ class _QuickFlowState extends State<QuickFlow> {
           screen: screen,
           onForward: onForward,
           onBack: onBack,
-          onSkip: widget.onForwardEnd,
+          onSkip: widget.onComplete,
           onGuide: () {
             Loggers.ui.i("guide");
           },
@@ -182,10 +175,10 @@ class ProvideContentFlowsWidget extends StatelessWidget {
             child: child,
           );
         } else {
-                      if (eager) {
-              return child;
-            } else {
-              return const SizedBox.shrink();
+          if (eager) {
+            return child;
+          } else {
+            return const SizedBox.shrink();
         }
       }
       });

@@ -57,7 +57,7 @@ class _HelpPageState extends State<HelpPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => QuickFlow(
-                        start: const StartFlow(prefix: "onboarding"), onForwardEnd: () => onDone())),
+                        start: const StartFlow(prefix: "onboarding"), onComplete: () => onDone())),
               );
             },
           ),

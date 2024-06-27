@@ -58,7 +58,7 @@ class WelcomeScreen extends StatelessWidget {
                                         eager: false,
                                         child: QuickFlow(
                                             start: const flows.StartFlow(
-                                                prefix: "onboarding"), onForwardEnd: () => onFinishTutorial(context))),
+                                                prefix: "onboarding"), onComplete: () => onFinishTutorial(context))),
                               ));
                       },
                       text: AppLocalizations.of(context)!.welcomeButton,
