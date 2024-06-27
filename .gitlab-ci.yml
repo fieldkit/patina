@@ -39,7 +39,6 @@ test:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   image: $IMAGE_TAG
   script:
-    - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
     - cp -f env.template .env
     - flutter test
 
@@ -58,7 +57,6 @@ build:android:
     - stat $PWD/android/key.properties
     - stat $PWD/android/app/fk-release-key.keystore
     - ls -alh android/app
-    - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
     - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env
     - echo "CI_COMMIT_SHA=${CI_COMMIT_SHA}" >> .env
     - cat .env
@@ -92,7 +90,6 @@ build:ios:
   tags:
     - mac-lab
   script:
-    - git clone https://gitlab.com/fieldkit/libraries/rustfk.git
     # BEGIN Signing
     - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
     - export KEYCHAIN_PASSWORD=`cat .secure_files/secure-lab-mac-keychain-pw.txt`
