@@ -1235,7 +1235,7 @@
         "header": { "title": "Attach Modules", "subtitle": "" },
         "simple": [
           {
-            "body": "# Attach Module Boards\n\nAttach your individual Module Boards to the Module Base, and secure with Module Board Screws.\n\n## Use caution to avoid bending the Module Base pins, and make sure the pins never touch each other, as it could damage the board.",
+            "body": "# Attach Module Boards\n\nAttach your individual Module Boards to the Module Base, and secure with Module Board Screws.\n\n## Use caution to avoid bending the Module Base pins, and make sure the pins never touch each other, as it could damage the board.\n\n##Remember to remove the small transparent yellow tape circles from the standoffs where you’ll attach your Module Board(s) to the Module Base.",
             "images": [
               { "url": "/uploads/small_TI_4_A_e9dc955a94_ff618a7209.jpg" },
               { "url": "/uploads/small_TI_4_B_ca5ad842a0_61d9cc2eb0.png" }
@@ -1273,7 +1273,7 @@
         "name": "no_modules.04",
         "locale": "en_US",
         "forward": "Continue",
-        "skip": "Skip this step",
+        "skip": "Skip \"Attach Modules\" instructions",
         "guide_title": "View Product Guide for full \"Connect Station\" instructions",
         "guide_url": "https://www.fieldkit.org/product-guide/set-up-station/#connect-station",
         "header": { "title": "Attach Modules", "subtitle": "Reconnect" },
