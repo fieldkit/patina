@@ -1,6 +1,6 @@
 `# 📱 FieldKit Mobile App
 
-Stay ahead in the field with FieldKit mobile app. Here's everything you need to get started to build the fieldkit app.
+Stay ahead in the field with FieldKit mobile app. Here's everything you need to get started to build the FieldKit app.
 
 This version is for contributors or developers, to download the [Android app](https://play.google.com/store/apps/details?id=com.fieldkit) or the [iOS app](https://apps.apple.com/us/app/fieldkit-org/id1463631293).
 
@@ -50,7 +50,6 @@ local copy is necessary.
 ```bash
 git clone https://github.com/fieldkit/rustfk
 ```
-
 
 2. **Integrate your Rust code**: Edit `api.rs` as needed. Afterwards, get the "just" task runner:
 ```bash
