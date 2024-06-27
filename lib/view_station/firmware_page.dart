@@ -11,47 +11,6 @@ import '../app_state.dart';
 import '../common_widgets.dart';
 import '../gen/api.dart';
 
-class UpgradeProgressWidget extends StatelessWidget {
-  final UpgradeOperation operation;
-
-  const UpgradeProgressWidget({super.key, required this.operation});
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    final status = operation.status;
-    if (status is UpgradeStatus_Starting) {
-      return Column(children: [
-        WH.progressBar(0.0),
-        WH.padBelowProgress(Text(localizations.firmwareStarting)),
-      ]);
-    }
-    if (status is UpgradeStatus_Uploading) {
-      return Column(children: [
-        WH.progressBar(status.field0.completed),
-        WH.padBelowProgress(Text(localizations.firmwareUploading)),
-      ]);
-    }
-    if (status is UpgradeStatus_Restarting) {
-      return Text(localizations.firmwareRestarting);
-    }
-    if (status is UpgradeStatus_ReconnectTimeout) {
-      return Text(localizations.firmwareReconnectTimeout);
-    }
-    if (status is UpgradeStatus_Completed) {
-      return Text(localizations.firmwareCompleted);
-    }
-    if (status is UpgradeStatus_Failed) {
-      if (operation.error == UpgradeError.sdCard) {
-        return const SdCardError();
-      } else {
-        return Text(localizations.firmwareFailed);
-      }
-    }
-    return const SizedBox.shrink();
-  }
-}
-
 class SdCardError extends StatelessWidget {
   const SdCardError({super.key});
 
@@ -112,8 +71,9 @@ class FirmwareItem extends StatelessWidget {
         header: header(),
         expanded: comparison.newer || operations.isNotEmpty,
         children: [
-          ...operations
-              .map((operation) => UpgradeProgressWidget(operation: operation)),
+          ...operations.map(
+            (operation) => UpgradeProgressWidget(operation: operation),
+          ),
           ElevatedTextButton(
             onPressed: canUpgrade ? onUpgrade : null,
             text: comparison.newer
@@ -233,21 +193,48 @@ class StationFirmwarePage extends StatelessWidget {
     final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
     final availableFirmware = context.watch<AvailableFirmwareModel>();
 
-    return Scaffold(
-      appBar: _buildAppBar(context, localizations),
-      body: ListView(
-        children: [
-          _buildStationCard(context, localizations),
-          _buildFirmwareUpdateCard(context, localizations, availableFirmware),
-          _buildFirmwareActionButton(context, localizations, availableFirmware),
-          _buildQuickTipCard(context, localizations),
-          AvailableFirmware(
-              station: station,
-              available: availableFirmware,
-              operations: operations)
-        ],
-      ),
-    );
+    if (operations.isEmpty) {
+      return Scaffold(
+        appBar: _buildAppBar(context, localizations),
+        body: ListView(
+          children: [
+            _buildStationCard(context, localizations),
+            _buildFirmwareUpdateCard(context, localizations, availableFirmware),
+            _buildFirmwareActionButton(
+                context, localizations, availableFirmware),
+            _buildQuickTipCard(context, localizations),
+            AvailableFirmware(
+                station: station,
+                available: availableFirmware,
+                operations: operations)
+          ],
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: _buildAppBar(context, localizations),
+        body: ListView(
+          children: [
+            _buildStationCard(context, localizations),
+            ...operations.map((operation) => Column(
+                  children: [
+                    UpgradeProgressWidget(operation: operation),
+                    Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        child: ElevatedTextButton(
+                            text: localizations.firmwareDismiss,
+                            onPressed: operation.busy
+                                ? null
+                                : () {
+                                    stationOps.dismiss(operation);
+                                  })),
+                  ],
+                )),
+          ],
+        ),
+      );
+    }
   }
 
   AppBar _buildAppBar(BuildContext context, AppLocalizations localizations) {
@@ -387,6 +374,47 @@ class StationFirmwarePage extends StatelessWidget {
     final formatter = DateFormat('MM-dd HH:mm:ss');
     return formatter
         .format(DateTime.fromMillisecondsSinceEpoch(config.firmware.time));
+  }
+}
+
+class UpgradeProgressWidget extends StatelessWidget {
+  final UpgradeOperation operation;
+
+  const UpgradeProgressWidget({super.key, required this.operation});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final status = operation.status;
+    if (status is UpgradeStatus_Starting) {
+      return Column(children: [
+        WH.progressBar(0.0),
+        WH.padBelowProgress(Text(localizations.firmwareStarting)),
+      ]);
+    }
+    if (status is UpgradeStatus_Uploading) {
+      return Column(children: [
+        WH.progressBar(status.field0.completed),
+        WH.padBelowProgress(Text(localizations.firmwareUploading)),
+      ]);
+    }
+    if (status is UpgradeStatus_Restarting) {
+      return Text(localizations.firmwareRestarting);
+    }
+    if (status is UpgradeStatus_ReconnectTimeout) {
+      return Text(localizations.firmwareReconnectTimeout);
+    }
+    if (status is UpgradeStatus_Completed) {
+      return Text(localizations.firmwareCompleted);
+    }
+    if (status is UpgradeStatus_Failed) {
+      if (operation.error == UpgradeError.sdCard) {
+        return const SdCardError();
+      } else {
+        return Text(localizations.firmwareFailed);
+      }
+    }
+    return const SizedBox.shrink();
   }
 }
 

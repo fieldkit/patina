@@ -369,6 +369,11 @@ class StationOperations extends ChangeNotifier {
   bool isBusy(String deviceId) {
     return getBusy<Operation>(deviceId).isNotEmpty;
   }
+
+  void dismiss(UpgradeOperation operation) {
+    operation.dismiss();
+    notifyListeners();
+  }
 }
 
 abstract class Operation extends ChangeNotifier {
@@ -456,6 +461,7 @@ class FirmwareComparison {
 
 class UpgradeOperation extends Operation {
   int firmwareId;
+  bool dismissed = false;
   UpgradeStatus status = const UpgradeStatus.starting();
   UpgradeError? error;
 
@@ -474,17 +480,22 @@ class UpgradeOperation extends Operation {
       }
       firmwareId = message.field0.firmwareId;
       status = upgradeStatus;
+      dismissed = false;
       notifyListeners();
     }
   }
 
   @override
-  bool get done => false;
+  bool get done => dismissed;
 
   @override
   bool get busy => !(status is UpgradeStatus_Completed ||
       status is UpgradeStatus_Failed ||
       status is UpgradeStatus_ReconnectTimeout);
+
+  void dismiss() {
+    dismissed = true;
+  }
 }
 
 class FirmwareDownloadOperation extends Operation {

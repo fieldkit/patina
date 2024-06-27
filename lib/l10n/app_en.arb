@@ -186,6 +186,7 @@
   "firmwareUpdated": "Firmware is Up to Date",
   "firmwareNotUpdated": "Firmware is Not Up to Date",
   "firmwareUpdate": "Update Firmware",
+  "firmwareDismiss": "OK",
   "firmwareCheck": "Check for New Firmware",
   "firmwareVersion": "Firmware version: {firmwareVersion}",
   "firmwareReleased": "Version released: {firmwareReleaseDate}",
