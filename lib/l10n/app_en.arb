@@ -72,7 +72,9 @@
   "deployLocation": "Name your location",
 
   "myStationsTitle": "My Stations",
-  "readyToDeploy": "Ready to deploy",
+  "deployedAt": "Deployed",
+  "readyToDeploy": "Ready to Deploy",
+  "readyToCalibrate": "Ready to Calibrate",
   "busyWorking": "Busy...",
   "busyUploading": "Uploading...",
   "busyDownloading": "Downloading...",
@@ -140,6 +142,7 @@
   "eventTime": "Time",
   "eventCode": "Code",
   "eventReason": "Reason",
+  "noEvents": "No Events",
 
   "networksTitle": "WiFi Networks",
   "networkAddButton": "Add Network",
@@ -279,12 +282,12 @@
 
   "sensorDiagnosticsBatteryVBus": "Battery (VBus)",
   "sensorDiagnosticsBatteryVs": "Battery (Vs)",
-  "sensorDiagnosticsBatteryMa": "Batteyr (ma)",
+  "sensorDiagnosticsBatteryMa": "Battery (mA)",
   "sensorDiagnosticsBatteryPower": "Battery (Power)",
 
   "sensorDiagnosticsSolarVBus": "Solar (VBus)",
   "sensorDiagnosticsSolarVs": "Solar (Vs)",
-  "sensorDiagnosticsSolarMa": "Solar (ma)",
+  "sensorDiagnosticsSolarMa": "Solar (mA)",
   "sensorDiagnosticsSolarPower": "Solar (Power)",
 
   "sensorWeatherRain": "Rain",

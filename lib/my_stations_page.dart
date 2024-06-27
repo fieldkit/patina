@@ -2,6 +2,7 @@ import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import 'common_widgets.dart';
 import 'gen/api.dart';
@@ -42,9 +43,11 @@ class ListStationsPage extends StatelessWidget {
       }
     }).toList();
 
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.myStationsTitle),
+          title: Text(localizations.myStationsTitle),
         ),
         body: ListView(children: [
           ...map,
@@ -95,6 +98,8 @@ class StationCard extends StatelessWidget {
         .getBusy<Operation>(config.deviceId)
         .where((op) => op.done);
     final localizations = AppLocalizations.of(context)!;
+    final ModuleConfigurations moduleConfigurations =
+        context.watch<ModuleConfigurations>();
     final icon = SizedBox(
         width: 54.0,
         height: 54.0,
@@ -105,9 +110,27 @@ class StationCard extends StatelessWidget {
         ));
     final tinyOperations =
         operations.map((op) => TinyOperation(operation: op)).toList();
-    final subtitle = operations.isEmpty
-        ? Text(localizations.readyToDeploy)
-        : Text(localizations.busyWorking);
+    final subtitle = station.ephemeral?.deployment?.startTime != null
+        ? PreferredSize(
+            preferredSize: const Size.fromHeight(-10),
+            child: Text(
+              "${localizations.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000))}",
+            ),
+          )
+        : moduleConfigurations.areAllModulesCalibrated(station, context) ==
+                false
+            ? PreferredSize(
+                preferredSize: const Size.fromHeight(-10),
+                child: Text(
+                  localizations.readyToCalibrate,
+                ),
+              )
+            : PreferredSize(
+                preferredSize: const Size.fromHeight(-10),
+                child: Text(
+                  localizations.readyToDeploy,
+                ),
+              );
 
     return Container(
         padding: const EdgeInsets.all(10),

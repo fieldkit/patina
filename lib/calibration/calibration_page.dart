@@ -23,7 +23,13 @@ class CalibrationPage extends StatelessWidget {
   final CurrentCalibration? current;
   final CalibrationConfig config;
 
-  CalibrationPage({super.key, this.current, required this.config});
+  final String stationName;
+
+  CalibrationPage(
+      {super.key,
+      this.current,
+      required this.config,
+      required this.stationName});
 
   Future<bool?> _confirmBackDialog(BuildContext context) async {
     final localizations = AppLocalizations.of(context)!;
@@ -87,7 +93,7 @@ class CalibrationPage extends StatelessWidget {
                 title: Column(children: [
                   Text(localizations.calibrationTitle),
                   Text(
-                    bay,
+                    '$stationName - $bay',
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.normal),
                   ),

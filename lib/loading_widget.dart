@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fk/app_widget.dart';
+import 'package:fk/constants.dart';
 import 'package:fk/diagnostics.dart';
 import 'package:fk/gen/api.dart';
 import 'package:fk/preferences.dart';
@@ -24,54 +25,55 @@ class _LoadingState extends State<LoadingWidget> {
 
   Widget progress() {
     return Container(
-        decoration: const BoxDecoration(color: Colors.white),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 100),
-                child: LargeLogo(),
-              ),
-              const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 50),
-                  child: SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: CircularProgressIndicator())),
-              Expanded(
-                  child: Column(
-                      children: _values
-                          .map((e) => Text(
-                                e,
-                                style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
-                              ))
-                          .toList())),
-            ]));
+        decoration: const BoxDecoration(
+          gradient: AppColors.blueGradient,
+        ),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Stack(children: [
+              const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(100, 0, 100, 0),
+                      child: LargeLogo(white: true),
+                    ),
+                  ]),
+              Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: _values
+                      .map((e) => Center(
+                              child: Text(
+                            e,
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )))
+                      .toList()),
+            ])));
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: StreamBuilder(
-            stream: initialize(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data != null && snapshot.data?.message != null) {
-                  Loggers.ui.i("${snapshot.data}");
-                  _values.add(snapshot.data!.message!);
-                } else {
-                  _values.clear();
-                  return OurApp(
-                      env: snapshot.data!.env!, locale: snapshot.data!.locale!);
-                }
-              }
+    return StreamBuilder(
+        stream: initialize(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data != null && snapshot.data?.message != null) {
+              Loggers.ui.i("${snapshot.data}");
+              _values.add(snapshot.data!.message!);
+            } else {
+              _values.clear();
+              return OurApp(
+                  env: snapshot.data!.env!, locale: snapshot.data!.locale!);
+            }
+          }
 
-              return progress();
-            }));
+          return progress();
+        });
   }
 }
 
