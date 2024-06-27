@@ -11,174 +11,6 @@ import '../app_state.dart';
 import '../common_widgets.dart';
 import '../gen/api.dart';
 
-class SdCardError extends StatelessWidget {
-  const SdCardError({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    const IconData warning = IconData(0xe6cb, fontFamily: 'MaterialIcons');
-    final localizations = AppLocalizations.of(context)!;
-    return ListTile(
-        iconColor: const Color.fromARGB(255, 0xf9, 0x00, 0x00),
-        leading: const Icon(warning),
-        title: Text(localizations.firmwareSdCardError,
-            style: const TextStyle(fontWeight: FontWeight.bold)));
-  }
-}
-
-class FirmwareItem extends StatelessWidget {
-  final FirmwareComparison comparison;
-  final List<UpgradeOperation> operations;
-  final VoidCallback onUpgrade;
-  final bool canUpgrade;
-
-  const FirmwareItem(
-      {super.key,
-      required this.comparison,
-      required this.operations,
-      required this.onUpgrade,
-      required this.canUpgrade});
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    final title = comparison.label;
-    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
-
-    GenericListItemHeader header() {
-      if (comparison.newer) {
-        return GenericListItemHeader(
-            title: AppLocalizations.of(context)!.firmwareVersion(title),
-            subtitle: AppLocalizations.of(context)!
-                .firmwareReleased(formatter.format(comparison.time)));
-      } else {
-        return GenericListItemHeader(
-          title: AppLocalizations.of(context)!.firmwareVersion(title),
-          subtitle: AppLocalizations.of(context)!
-              .firmwareReleased(formatter.format(comparison.time)),
-          titleStyle: const TextStyle(color: Colors.black54, fontSize: 16),
-          subtitleStyle: const TextStyle(color: Colors.black54),
-        );
-      }
-    }
-
-    pad(child) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(10),
-        child: child);
-
-    return ExpandableBorderedListItem(
-        header: header(),
-        expanded: comparison.newer || operations.isNotEmpty,
-        children: [
-          ...operations.map(
-            (operation) => UpgradeProgressWidget(operation: operation),
-          ),
-          ElevatedTextButton(
-            onPressed: canUpgrade ? onUpgrade : null,
-            text: comparison.newer
-                ? localizations.firmwareUpgrade
-                : localizations.firmwareSwitch,
-          ),
-        ].map((child) => pad(child)).toList());
-  }
-}
-
-class FirmwareBranch extends StatelessWidget {
-  final StationModel station;
-  final List<(LocalFirmware, LocalFirmwareBranchInfo)> firmware;
-
-  const FirmwareBranch(
-      {super.key, required this.station, required this.firmware});
-
-  StationConfig get config => station.config!;
-
-  @override
-  Widget build(BuildContext context) {
-    final stationOps = context.watch<StationOperations>();
-    final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
-    final navigator = Navigator.of(context);
-
-    final items = firmware
-        .where((row) => row.$1.module == "fk-core")
-        .map((row) => FirmwareItem(
-            comparison: FirmwareComparison.compare(row.$1, config.firmware),
-            operations:
-                operations.where((op) => op.firmwareId == row.$1.id).toList(),
-            canUpgrade:
-                station.connected && operations.where((op) => op.busy).isEmpty,
-            onUpgrade: () async {
-              navigator.push(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      PrepareFirmwareWidget(station: station, firmware: row.$1),
-                ),
-              );
-            }))
-        .toList();
-
-    return Column(children: [
-      items[0],
-      ExpandableItems(
-          heading: Text("${items.length - 1} more"),
-          children: items.skip(1).toList())
-    ]);
-  }
-}
-
-class ExpandableItems extends StatefulWidget {
-  final Widget heading;
-  final List<Widget> children;
-
-  const ExpandableItems(
-      {super.key, required this.heading, required this.children});
-
-  @override
-  State<StatefulWidget> createState() => _ExpandableBorderedListItemState();
-}
-
-class _ExpandableBorderedListItemState extends State<ExpandableItems> {
-  bool _expanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () {
-          setState(() {
-            _expanded = !_expanded;
-          });
-        },
-        child: _expanded
-            ? Column(children: [widget.heading, ...widget.children])
-            : Column(children: [widget.heading]));
-  }
-}
-
-class AvailableFirmware extends StatelessWidget {
-  final StationModel station;
-  final AvailableFirmwareModel available;
-  final List<UpgradeOperation> operations;
-
-  const AvailableFirmware(
-      {super.key,
-      required this.station,
-      required this.available,
-      required this.operations});
-
-  @override
-  Widget build(BuildContext context) {
-    final byBranch = available.firmware
-        .map((el) => (el, LocalFirmwareBranchInfo.parse(el.label)))
-        .where((el) => el.$2 != null)
-        .map((el) => (el.$1, el.$2!))
-        .groupListsBy((el) => el.$2.branch);
-    return Column(
-        children: byBranch.values
-            .map((value) => FirmwareBranch(station: station, firmware: value))
-            .toList());
-  }
-}
-
 class StationFirmwarePage extends StatelessWidget {
   final StationModel station;
 
@@ -377,6 +209,131 @@ class StationFirmwarePage extends StatelessWidget {
   }
 }
 
+class FirmwareItem extends StatelessWidget {
+  final FirmwareComparison comparison;
+  final List<UpgradeOperation> operations;
+  final VoidCallback onUpgrade;
+  final bool canUpgrade;
+
+  const FirmwareItem(
+      {super.key,
+      required this.comparison,
+      required this.operations,
+      required this.onUpgrade,
+      required this.canUpgrade});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final title = comparison.label;
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+
+    GenericListItemHeader header() {
+      if (comparison.newer) {
+        return GenericListItemHeader(
+            title: AppLocalizations.of(context)!.firmwareVersion(title),
+            subtitle: AppLocalizations.of(context)!
+                .firmwareReleased(formatter.format(comparison.time)));
+      } else {
+        return GenericListItemHeader(
+          title: AppLocalizations.of(context)!.firmwareVersion(title),
+          subtitle: AppLocalizations.of(context)!
+              .firmwareReleased(formatter.format(comparison.time)),
+          titleStyle: const TextStyle(color: Colors.black54, fontSize: 16),
+          subtitleStyle: const TextStyle(color: Colors.black54),
+        );
+      }
+    }
+
+    pad(child) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(10),
+        child: child);
+
+    return ExpandableBorderedListItem(
+        header: header(),
+        expanded: comparison.newer || operations.isNotEmpty,
+        children: [
+          ...operations.map(
+            (operation) => UpgradeProgressWidget(operation: operation),
+          ),
+          ElevatedTextButton(
+            onPressed: canUpgrade ? onUpgrade : null,
+            text: comparison.newer
+                ? localizations.firmwareUpgrade
+                : localizations.firmwareSwitch,
+          ),
+        ].map((child) => pad(child)).toList());
+  }
+}
+
+class FirmwareBranch extends StatelessWidget {
+  final StationModel station;
+  final List<(LocalFirmware, LocalFirmwareBranchInfo)> firmware;
+
+  const FirmwareBranch(
+      {super.key, required this.station, required this.firmware});
+
+  StationConfig get config => station.config!;
+
+  @override
+  Widget build(BuildContext context) {
+    final stationOps = context.watch<StationOperations>();
+    final operations = stationOps.getBusy<UpgradeOperation>(config.deviceId);
+    final navigator = Navigator.of(context);
+
+    final items = firmware
+        .where((row) => row.$1.module == "fk-core")
+        .map((row) => FirmwareItem(
+            comparison: FirmwareComparison.compare(row.$1, config.firmware),
+            operations:
+                operations.where((op) => op.firmwareId == row.$1.id).toList(),
+            canUpgrade:
+                station.connected && operations.where((op) => op.busy).isEmpty,
+            onUpgrade: () async {
+              navigator.push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      PrepareFirmwareWidget(station: station, firmware: row.$1),
+                ),
+              );
+            }))
+        .toList();
+
+    return Column(children: [
+      items[0],
+      ExpandableItems(
+          heading: Text("${items.length - 1} more"),
+          children: items.skip(1).toList())
+    ]);
+  }
+}
+
+class AvailableFirmware extends StatelessWidget {
+  final StationModel station;
+  final AvailableFirmwareModel available;
+  final List<UpgradeOperation> operations;
+
+  const AvailableFirmware(
+      {super.key,
+      required this.station,
+      required this.available,
+      required this.operations});
+
+  @override
+  Widget build(BuildContext context) {
+    final byBranch = available.firmware
+        .map((el) => (el, LocalFirmwareBranchInfo.parse(el.label)))
+        .where((el) => el.$2 != null)
+        .map((el) => (el.$1, el.$2!))
+        .groupListsBy((el) => el.$2.branch);
+    return Column(
+        children: byBranch.values
+            .map((value) => FirmwareBranch(station: station, firmware: value))
+            .toList());
+  }
+}
+
 class UpgradeProgressWidget extends StatelessWidget {
   final UpgradeOperation operation;
 
@@ -540,5 +497,48 @@ class BulletNumber extends StatelessWidget {
           child: Text(number.toString(),
               style: const TextStyle(color: Colors.white, fontSize: 45.0)),
         ));
+  }
+}
+
+class SdCardError extends StatelessWidget {
+  const SdCardError({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    const IconData warning = IconData(0xe6cb, fontFamily: 'MaterialIcons');
+    final localizations = AppLocalizations.of(context)!;
+    return ListTile(
+        iconColor: const Color.fromARGB(255, 0xf9, 0x00, 0x00),
+        leading: const Icon(warning),
+        title: Text(localizations.firmwareSdCardError,
+            style: const TextStyle(fontWeight: FontWeight.bold)));
+  }
+}
+
+class ExpandableItems extends StatefulWidget {
+  final Widget heading;
+  final List<Widget> children;
+
+  const ExpandableItems(
+      {super.key, required this.heading, required this.children});
+
+  @override
+  State<StatefulWidget> createState() => _ExpandableBorderedListItemState();
+}
+
+class _ExpandableBorderedListItemState extends State<ExpandableItems> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: () {
+          setState(() {
+            _expanded = !_expanded;
+          });
+        },
+        child: _expanded
+            ? Column(children: [widget.heading, ...widget.children])
+            : Column(children: [widget.heading]));
   }
 }
