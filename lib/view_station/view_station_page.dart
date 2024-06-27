@@ -292,7 +292,7 @@ class HighLevelsDetails extends StatelessWidget {
         Stack(
           children: [
             Container(
-              padding: const EdgeInsets.fromLTRB(10, 34, 10, 0),
+              padding: const EdgeInsets.fromLTRB(10, 38, 10, 0),
               child: Positioned.fill(
                 top: 32,
                 child: Align(
