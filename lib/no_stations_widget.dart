@@ -87,13 +87,13 @@ class NoStationsHelpWidget extends StatelessWidget {
               child: StatefulBuilder(
                 builder: (context, setState) {
                   bool isPressed = false;
-
+        
                   return TextButton(
                     onPressed: () {
                       setState(() {
                         isPressed = !isPressed;
                       });
-                      openLink;
+                      openLink!();
                     },
                     style: ButtonStyle(
                       overlayColor: MaterialStateProperty.resolveWith(
