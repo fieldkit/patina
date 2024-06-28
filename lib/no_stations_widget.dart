@@ -92,7 +92,7 @@ class NoStationsHelpWidget extends StatelessWidget {
                     color: AppColors.primaryColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    fontFamily: 'Avenir-Medium',
+                    fontFamily: 'Avenir',
                   ),
                 ),
                 child: Text(localizations.noStationsWhatIsStation),
