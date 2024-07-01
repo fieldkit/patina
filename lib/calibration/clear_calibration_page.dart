@@ -31,7 +31,9 @@ class ClearCalibrationPage extends StatelessWidget {
               builder: (context) => ModuleProviders(
                   moduleIdentity: config.moduleIdentity,
                   child: CalibrationPage(
-                      config: config, stationName: stationName)),
+                    config: config,
+                    stationName: stationName,
+                  )),
             ),
           );
         },
@@ -40,10 +42,8 @@ class ClearCalibrationPage extends StatelessWidget {
           final navigator = Navigator.of(context);
           navigator.push(
             MaterialPageRoute(
-              builder: (context) => CalibrationPage(
-                config: config,
-                stationName: stationName,
-              ),
+              builder: (context) =>
+                  CalibrationPage(config: config, stationName: stationName),
             ),
           );
         },
