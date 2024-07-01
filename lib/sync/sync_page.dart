@@ -7,8 +7,8 @@ import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
 import '../no_stations_widget.dart';
-import '../settings/accounts_page.dart';
 import '../view_station/firmware_page.dart';
+import '../settings/edit_account_page.dart';
 
 class DataSyncTab extends StatelessWidget {
   const DataSyncTab({super.key});
@@ -96,7 +96,9 @@ class LoginRequiredWidget extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AccountsPage(),
+                    builder: (context) => EditAccountPage(
+                        original: PortalAccount(
+                            email: "", name: "", tokens: null, active: false)),
                   ),
                 );
               }),
