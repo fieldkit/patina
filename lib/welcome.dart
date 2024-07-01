@@ -47,7 +47,7 @@ class WelcomeScreen extends StatelessWidget {
                     endIndent: 50,
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
                     child: ElevatedTextButton(
                       onPressed: () {
                           Navigator.push(
