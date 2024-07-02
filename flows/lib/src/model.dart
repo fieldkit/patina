@@ -90,7 +90,7 @@ class Screen {
     final locale = data["locale"] as String;
     final forward = data["forward"] as String;
     final skip = coerceEmptyStringsToNull(data["skip"] as String?);
-    final guideTitle = coerceEmptyStringsToNull(data["guideTItle"] as String?);
+    final guideTitle = coerceEmptyStringsToNull(data["guideTitle"] as String?);
     final guideUrl = coerceEmptyStringsToNull(data["guideUrl"] as String?);
     final headerData = data["header"] as Map<String, dynamic>?;
     final header = headerData != null ? Header.fromJson(headerData) : null;

@@ -84,18 +84,44 @@ class NoStationsHelpWidget extends StatelessWidget {
           target: LinkTarget.blank,
           builder: (BuildContext ctx, FollowLink? openLink) {
             return Center(
-              child: TextButton(
-                onPressed: openLink,
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.primaryColor,
-                  textStyle: const TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Avenir',
-                  ),
-                ),
-                child: Text(localizations.noStationsWhatIsStation),
+              child: StatefulBuilder(
+                builder: (context, setState) {
+                  bool isPressed = false;
+        
+                  return TextButton(
+                    onPressed: () {
+                      setState(() {
+                        isPressed = !isPressed;
+                      });
+                      openLink!();
+                    },
+                    style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.pressed) == true) {
+                            return Colors.black12;
+                          }
+                          return Colors.white;
+                        },
+                      ),
+                      foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          return const Color(0xFF2C3E50);
+                        },
+                      ),
+                      textStyle: MaterialStateProperty.resolveWith<TextStyle>(
+                        (Set<MaterialState> states) {
+                          return const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Avenir',
+                          );
+                        },
+                      ),
+                    ),
+                    child: Text(localizations.noStationsWhatIsStation),
+                  );
+                },
               ),
             );
           },

@@ -56,8 +56,8 @@ class _HelpPageState extends State<HelpPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const QuickFlow(
-                        start: StartFlow(prefix: "onboarding"))),
+                    builder: (context) => QuickFlow(
+                        start: const StartFlow(prefix: "onboarding"), onForwardEnd: () => onDone())),
               );
             },
           ),
@@ -151,5 +151,9 @@ class _HelpPageState extends State<HelpPage> {
         ],
       ),
     );
+  }
+  
+  onDone() {
+    return Navigator.pop(context); // Return to the help page after the tutorial guide is completed
   }
 }
