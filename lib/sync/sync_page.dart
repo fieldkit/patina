@@ -96,7 +96,9 @@ class LoginRequiredWidget extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AccountsPage(),
+                    builder: (context) => EditAccountPage(
+                    original: PortalAccount(
+                        email: "", name: "", tokens: null, active: false)),
                   ),
                 );
               }),
