@@ -1,4 +1,5 @@
 import 'package:fk/diagnostics.dart';
+import 'package:fk/settings/settings_page.dart';
 import 'package:flows/flows.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -43,7 +44,15 @@ class _HelpPageState extends State<HelpPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => const SettingsTab(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
+            );
           },
         ),
       ),
