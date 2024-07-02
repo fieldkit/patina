@@ -25,7 +25,7 @@ final GlobalKey<NavigatorState> settingsNavigatorKey = GlobalKey();
 
 class _HomePageState extends State<HomePage> {
   int _pageIndex = 0;
-  bool _showWelcome = false;
+  bool _showWelcome = true;
 
   @override
   void initState() {
