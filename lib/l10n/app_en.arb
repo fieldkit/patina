@@ -89,6 +89,7 @@
   "calibrationDelete": "Delete",
   "calibrationBack": "Back",
   "calibrationKeepButton": "Keep",
+  "calibrationPoint": "Calibration Point {steps}",
   "factory": "Factory",
   "uncalibrated": "Uncalibrated",
   "calibrated": "Calibrated",
@@ -271,12 +272,12 @@
 
   "sensorDiagnosticsBatteryVBus": "Battery (VBus)",
   "sensorDiagnosticsBatteryVs": "Battery (Vs)",
-  "sensorDiagnosticsBatteryMa": "Batteyr (ma)",
+  "sensorDiagnosticsBatteryMa": "Battery (mA)",
   "sensorDiagnosticsBatteryPower": "Battery (Power)",
 
   "sensorDiagnosticsSolarVBus": "Solar (VBus)",
   "sensorDiagnosticsSolarVs": "Solar (Vs)",
-  "sensorDiagnosticsSolarMa": "Solar (ma)",
+  "sensorDiagnosticsSolarMa": "Solar (mA)",
   "sensorDiagnosticsSolarPower": "Solar (Power)",
 
   "sensorWeatherRain": "Rain",

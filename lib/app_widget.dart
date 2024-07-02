@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +14,33 @@ import 'package:fk/home_page.dart';
 import 'package:fk/preferences.dart';
 import 'package:fk/reader/screens.dart';
 import 'package:fk/settings/accounts_page.dart';
+
+class AppRetainWidget extends StatelessWidget {
+  const AppRetainWidget({super.key, required this.child});
+
+  final Widget child;
+
+  final _channel = const MethodChannel('org.fieldkit/app_retain');
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        if (Platform.isAndroid) {
+          if (Navigator.of(context).canPop()) {
+            return true;
+          } else {
+            _channel.invokeMethod('sendToBackground');
+            return false;
+          }
+        } else {
+          return true;
+        }
+      },
+      child: child,
+    );
+  }
+}
 
 class OurApp extends StatefulWidget {
   final AppEnv env;
@@ -101,27 +131,28 @@ class _OurAppState extends State<OurApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      onGenerateTitle: (BuildContext context) =>
-          AppLocalizations.of(context)!.fieldKit,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: locales(),
-      locale: _locale ?? widget.locale,
-      theme: theme(),
-      home: MultiProvider(
-        providers: [
-          ValueListenableProvider.value(value: widget.env.appState),
+        onGenerateTitle: (BuildContext context) =>
+            AppLocalizations.of(context)!.fieldKit,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
         ],
-        child: const LoaderOverlay(
-            child: MonitorConnectionWidget(
-                child: ProvideContentFlowsWidget(
-                    eager: true,
-                    child: ProvideAccountsWidget(child: HomePage())))),
-      ),
-    );
+        supportedLocales: locales(),
+        locale: _locale ?? widget.locale,
+        theme: theme(),
+        home: AppRetainWidget(
+          child: MultiProvider(
+            providers: [
+              ValueListenableProvider.value(value: widget.env.appState),
+            ],
+            child: const LoaderOverlay(
+                child: MonitorConnectionWidget(
+                    child: ProvideContentFlowsWidget(
+                        eager: true,
+                        child: ProvideAccountsWidget(child: HomePage())))),
+          ),
+        ));
   }
 }
