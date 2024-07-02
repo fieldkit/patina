@@ -1,4 +1,5 @@
 import 'package:fk/diagnostics.dart';
+import 'package:fk/settings/settings_page.dart';
 import 'package:flows/flows.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -43,7 +44,17 @@ class _HelpPageState extends State<HelpPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const SettingsTab(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
+            );
           },
         ),
       ),
@@ -57,7 +68,8 @@ class _HelpPageState extends State<HelpPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => QuickFlow(
-                        start: const StartFlow(prefix: "onboarding"), onForwardEnd: () => onDone())),
+                        start: const StartFlow(prefix: "onboarding"),
+                        onForwardEnd: () => onDone())),
               );
             },
           ),
@@ -152,8 +164,9 @@ class _HelpPageState extends State<HelpPage> {
       ),
     );
   }
-  
+
   onDone() {
-    return Navigator.pop(context); // Return to the help page after the tutorial guide is completed
+    return Navigator.pop(
+        context); // Return to the help page after the tutorial guide is completed
   }
 }
