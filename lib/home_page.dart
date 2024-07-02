@@ -1,6 +1,5 @@
 import 'package:fk/diagnostics.dart';
 import 'package:fk/preferences.dart';
-import 'package:fk/settings/help_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -23,7 +22,6 @@ class HomePage extends StatefulWidget {
 final GlobalKey<NavigatorState> stationsNavigatorKey = GlobalKey();
 final GlobalKey<NavigatorState> dataNavigatorKey = GlobalKey();
 final GlobalKey<NavigatorState> settingsNavigatorKey = GlobalKey();
-final GlobalKey<NavigatorState> helpNavigatorKey = GlobalKey();
 
 class _HomePageState extends State<HomePage> {
   int _pageIndex = 0;
@@ -124,15 +122,6 @@ class _HomePageState extends State<HomePage> {
                                   return const SettingsTab();
                                 });
                           }),
-                          Navigator(
-                          key: helpNavigatorKey,
-                          onGenerateRoute: (RouteSettings settings) {
-                            return MaterialPageRoute(
-                                settings: settings,
-                                builder: (BuildContext context) {
-                                  return const HelpPage();
-                                });
-                          }),
                     ],
                   ),
       ),
@@ -178,11 +167,6 @@ class _HomePageState extends State<HomePage> {
                       height: 24),
                   label: AppLocalizations.of(context)!.settingsTab,
                 ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.question_mark, size: 24, color: Color(0xFF9a9fa6)),
-                  activeIcon: const Icon(Icons.question_mark, size: 24, color: Color(0xFF2c3e50)), 
-                  label: AppLocalizations.of(context)!.helpTab,
-                ),
               ],
               currentIndex: _pageIndex,
               onTap: (int index) {
@@ -190,8 +174,7 @@ class _HomePageState extends State<HomePage> {
                   final List<GlobalKey<NavigatorState>> keys = [
                     stationsNavigatorKey,
                     dataNavigatorKey,
-                    settingsNavigatorKey,
-                    helpNavigatorKey,
+                    settingsNavigatorKey
                   ];
                   final NavigatorState? navigator = keys[index].currentState;
                   if (navigator != null) {
