@@ -1,4 +1,3 @@
-import 'package:fk/settings/edit_account_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -97,9 +96,7 @@ class LoginRequiredWidget extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditAccountPage(
-                        original: PortalAccount(
-                            email: "", name: "", tokens: null, active: false)),
+                    builder: (context) => const AccountsPage(),
                   ),
                 );
               }),

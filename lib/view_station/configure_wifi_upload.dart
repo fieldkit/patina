@@ -1,3 +1,4 @@
+import 'package:fk/settings/accounts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -24,9 +25,7 @@ class EnableButton extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => EditAccountPage(
-                    original: PortalAccount(
-                        email: "", name: "", tokens: null, active: false)),
+                builder: (context) => const AccountsPage(),
               ),
             );
           });
