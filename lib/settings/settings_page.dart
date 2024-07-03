@@ -32,20 +32,6 @@ class SettingsTab extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: SvgPicture.asset(
-                      "resources/images/icon_help.svg",
-                      semanticsLabel: 'Help Settings Icon',
-                    ),
-            title: Text(AppLocalizations.of(context)!.helpTitle),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HelpPage()),
-              );
-            },
-          ),
-          const Divider(),
-          ListTile(
             leading: const Icon(Icons.shield_sharp),
             title: Text(AppLocalizations.of(context)!.settingsLanguage),
             onTap: () {
