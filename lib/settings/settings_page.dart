@@ -10,6 +10,8 @@ import 'legal_page.dart';
 class SettingsTab extends StatelessWidget {
   const SettingsTab({super.key});
 
+  final colorFilter = const ColorFilter.mode( Color(0xFF2c3e50), BlendMode.srcIn);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +51,7 @@ class SettingsTab extends StatelessWidget {
           ListTile(
             leading: SvgPicture.asset(
               "resources/images/icon_globe.svg",
-              semanticsLabel: 'Language Settings Icon'),
+              semanticsLabel: 'Language Settings Icon', colorFilter: colorFilter),
             title: Text(AppLocalizations.of(context)!.settingsLanguage),
             onTap: () {
               Navigator.push(
