@@ -18,8 +18,6 @@ class AppColors {
 class AppIcons {
   static const String stationConnected =
       "resources/images/icon_station_connected.png";
-  static const String stationNotConnected =
-      "resources/images/icon_station_not_connected.png";
 }
 
 class AppStyles {
