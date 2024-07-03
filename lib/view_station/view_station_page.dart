@@ -5,6 +5,7 @@ import 'package:fk/providers.dart';
 import 'package:fk/view_station/module_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -97,6 +98,8 @@ class LastConnected extends StatelessWidget {
   final UtcDateTime? lastConnected;
   final bool connected;
 
+  final colorFilter = const ColorFilter.mode(Color(0xFFcccdcf), BlendMode.srcIn);
+
   const LastConnected({super.key, this.lastConnected, required this.connected});
 
   @override
@@ -114,7 +117,10 @@ class LastConnected extends StatelessWidget {
         constraints: boxConstraints,
         child: ListTile(
           visualDensity: const VisualDensity(vertical: -4),
-          leading: Image.asset(AppIcons.stationConnected, cacheWidth: 36),
+          leading: SizedBox(
+            width: 36,
+            child: Image.asset(AppIcons.stationConnected, cacheWidth: 36),
+          ),
           title: Text(localizations.stationConnected,
               style: const TextStyle(fontSize: 12)),
         ),
@@ -133,7 +139,14 @@ class LastConnected extends StatelessWidget {
       constraints: boxConstraints,
       child: ListTile(
         visualDensity: const VisualDensity(vertical: -4),
-        leading: Image.asset(AppIcons.stationNotConnected, cacheWidth: 34),
+        leading: SizedBox(
+          width: 36,
+          child: SvgPicture.asset(
+            "resources/images/icon_station_disconnected.svg",
+            semanticsLabel: 'Help Settings Icon',
+            colorFilter: colorFilter,
+          ),
+        ),
         title: Text(titleText, style: const TextStyle(fontSize: 11)),
         subtitle: subtitleText != null
             ? Text(subtitleText,

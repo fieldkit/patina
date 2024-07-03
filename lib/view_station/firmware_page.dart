@@ -1,5 +1,6 @@
 import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -106,6 +107,8 @@ class StationFirmwarePage extends StatelessWidget {
   final StationModel station;
 
   StationConfig get config => station.config!;
+  final colorFilter =
+      const ColorFilter.mode(Color(0xFFcccdcf), BlendMode.srcIn);
 
   const StationFirmwarePage({super.key, required this.station});
 
@@ -158,15 +161,15 @@ class StationFirmwarePage extends StatelessWidget {
         child: ListTile(
           tileColor: Colors.white,
           leading: SizedBox(
-            width: 48.0,
-            height: 48.0,
-            child: Image(
-                image: station.connected
-                    ? const AssetImage(AppIcons.stationConnected)
-                    : const AssetImage(
-                        AppIcons.stationNotConnected,
-                      )),
-          ),
+              width: 48.0,
+              height: 48.0,
+              child: station.connected
+                  ? const Image(image: AssetImage(AppIcons.stationConnected))
+                  : SvgPicture.asset(
+                      "resources/images/icon_station_disconnected.svg",
+                      semanticsLabel: 'Help Settings Icon',
+                      colorFilter: colorFilter,
+                    )),
           title:
               Text(station.config!.name, style: const TextStyle(fontSize: 18)),
           subtitle: Text(
