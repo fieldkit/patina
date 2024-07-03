@@ -4,6 +4,7 @@ import 'package:fk/settings/help_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state.dart';
@@ -138,7 +139,7 @@ class HomePageState extends State<HomePage> {
                         return MaterialPageRoute(
                             settings: settings,
                             builder: (BuildContext context) {
-                              return const HelpPage();
+                              return const HelpTab();
                             });
                       },
                     ),
@@ -188,24 +189,21 @@ class HomePageState extends State<HomePage> {
                     label: AppLocalizations.of(context)!.settingsTab,
                   ),
                   BottomNavigationBarItem(
-                    icon: const Icon(Icons.question_mark,
-                        size: 24, color: Color(0xFF9a9fa6)),
-                    activeIcon: const Icon(Icons.question_mark,
-                        size: 24, color: Color(0xFF2c3e50)),
+                    icon: SvgPicture.asset("resources/images/icon_help_settings.svg",
+                        semanticsLabel: 'Help Settings Icon',
+                        colorFilter: const ColorFilter.mode(
+                            Color(0xFF9a9fa6), BlendMode.srcIn)),
+                    activeIcon: SvgPicture.asset("resources/images/icon_help_settings.svg",
+                        semanticsLabel: 'Help Settings Icon',
+                        colorFilter: const ColorFilter.mode(
+                            Color(0xFF2c3e50), BlendMode.srcIn)),
                     label: AppLocalizations.of(context)!.helpTab,
                   ),
                 ],
                 currentIndex: _pageIndex,
                 onTap: (int index) {
-                  if (index == 3) {
-                    // Assuming the help tab is the fourth item
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const HelpPage()),
-                    );
-                  } else {
                     setPageIndex(index);
                   }
-                },
               ));
   }
 }

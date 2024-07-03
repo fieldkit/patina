@@ -7,10 +7,8 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/link.dart';
 
-import '../home_page.dart';
-
-class HelpPage extends StatelessWidget {
-  const HelpPage({super.key});
+class HelpTab extends StatelessWidget {
+  const HelpTab({super.key});
 
   Future<String> _getAppVersion() async {
     final PackageInfo info = await PackageInfo.fromPlatform();
@@ -30,18 +28,7 @@ class HelpPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.helpTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-            final homePageState =
-                context.findAncestorStateOfType<HomePageState>();
-            if (homePageState != null) {
-              homePageState.setPageIndex(2);
-            }
-          },
-        ),
+        title: Text(localizations.helpTitle)
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -159,6 +146,6 @@ class HelpPage extends StatelessWidget {
 
   void onDone(BuildContext context) {
     Navigator.pop(
-        context); // Return to the help page after the tutorial guide is completed
+        context); // Return to the help tab after the tutorial guide is completed
   }
 }

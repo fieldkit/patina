@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_svg/svg.dart';
 
 import 'language_page.dart';
 import 'accounts_page.dart';
-import 'help_page.dart';
 import 'legal_page.dart';
 
 class SettingsTab extends StatelessWidget {
