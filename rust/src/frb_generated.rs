@@ -270,6 +270,39 @@ fn wire_configure_lora_transmission_impl(
         },
     )
 }
+fn wire_configure_name_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "configure_name",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_device_id = <String>::sse_decode(&mut deserializer);
+            let api_config = <crate::api::NameConfig>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse((move || {
+                    crate::api::configure_name(api_device_id, api_config)
+                })())
+            }
+        },
+    )
+}
 fn wire_configure_wifi_networks_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -1116,6 +1149,14 @@ impl SseDecode for crate::api::ModuleConfig {
     }
 }
 
+impl SseDecode for crate::api::NameConfig {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_name = <String>::sse_decode(deserializer);
+        return crate::api::NameConfig { name: var_name };
+    }
+}
+
 impl SseDecode for crate::api::NearbyStation {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1662,23 +1703,24 @@ fn pde_ffi_dispatcher_primary_impl(
     match func_id {
         5 => wire_add_or_update_station_in_portal_impl(port, ptr, rust_vec_len, data_len),
         3 => wire_authenticate_portal_impl(port, ptr, rust_vec_len, data_len),
-        16 => wire_cache_firmware_impl(port, ptr, rust_vec_len, data_len),
-        12 => wire_calibrate_impl(port, ptr, rust_vec_len, data_len),
-        11 => wire_clear_calibration_impl(port, ptr, rust_vec_len, data_len),
+        17 => wire_cache_firmware_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire_calibrate_impl(port, ptr, rust_vec_len, data_len),
+        12 => wire_clear_calibration_impl(port, ptr, rust_vec_len, data_len),
         6 => wire_configure_deploy_impl(port, ptr, rust_vec_len, data_len),
         9 => wire_configure_lora_transmission_impl(port, ptr, rust_vec_len, data_len),
+        10 => wire_configure_name_impl(port, ptr, rust_vec_len, data_len),
         7 => wire_configure_wifi_networks_impl(port, ptr, rust_vec_len, data_len),
         8 => wire_configure_wifi_transmission_impl(port, ptr, rust_vec_len, data_len),
-        19 => wire_create_log_sink_impl(port, ptr, rust_vec_len, data_len),
+        20 => wire_create_log_sink_impl(port, ptr, rust_vec_len, data_len),
         2 => wire_get_my_stations_impl(port, ptr, rust_vec_len, data_len),
         4 => wire_register_portal_account_impl(port, ptr, rust_vec_len, data_len),
-        18 => wire_rust_release_mode_impl(port, ptr, rust_vec_len, data_len),
-        14 => wire_start_download_impl(port, ptr, rust_vec_len, data_len),
+        19 => wire_rust_release_mode_impl(port, ptr, rust_vec_len, data_len),
+        15 => wire_start_download_impl(port, ptr, rust_vec_len, data_len),
         1 => wire_start_native_impl(port, ptr, rust_vec_len, data_len),
-        15 => wire_start_upload_impl(port, ptr, rust_vec_len, data_len),
-        17 => wire_upgrade_station_impl(port, ptr, rust_vec_len, data_len),
-        13 => wire_validate_tokens_impl(port, ptr, rust_vec_len, data_len),
-        10 => wire_verify_lora_transmission_impl(port, ptr, rust_vec_len, data_len),
+        16 => wire_start_upload_impl(port, ptr, rust_vec_len, data_len),
+        18 => wire_upgrade_station_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire_validate_tokens_impl(port, ptr, rust_vec_len, data_len),
+        11 => wire_verify_lora_transmission_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -2022,6 +2064,18 @@ impl flutter_rust_bridge::IntoDart for crate::api::ModuleConfig {
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ModuleConfig {}
 impl flutter_rust_bridge::IntoIntoDart<crate::api::ModuleConfig> for crate::api::ModuleConfig {
     fn into_into_dart(self) -> crate::api::ModuleConfig {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::NameConfig {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [self.name.into_into_dart().into_dart()].into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::NameConfig {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::NameConfig> for crate::api::NameConfig {
+    fn into_into_dart(self) -> crate::api::NameConfig {
         self
     }
 }
@@ -2781,6 +2835,13 @@ impl SseEncode for crate::api::ModuleConfig {
         <String>::sse_encode(self.key, serializer);
         <Vec<crate::api::SensorConfig>>::sse_encode(self.sensors, serializer);
         <Option<Vec<u8>>>::sse_encode(self.configuration, serializer);
+    }
+}
+
+impl SseEncode for crate::api::NameConfig {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.name, serializer);
     }
 }
 

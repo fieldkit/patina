@@ -34,7 +34,8 @@ class StationModel {
   });
 
   void updateName(String value) {
-    config?.name = value;
+    // See my comment on the merge request.
+    // config?.name = value;
   }
 }
 
