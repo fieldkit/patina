@@ -121,6 +121,7 @@
 
   "settingsTitle": "Settings",
   "settingsGeneral": "General",
+  "settingsNameHint": "Station Name",
   "settingsFirmware": "Firmware",
   "settingsModules": "Modules",
   "settingsWifi": "WiFi",
