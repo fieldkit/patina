@@ -17,7 +17,8 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  HomePageState createState() => HomePageState();
+  // ignore: library_private_types_in_public_api
+  _HomePageState createState() => _HomePageState();
 }
 
 final GlobalKey<NavigatorState> stationsNavigatorKey = GlobalKey();
@@ -25,7 +26,7 @@ final GlobalKey<NavigatorState> dataNavigatorKey = GlobalKey();
 final GlobalKey<NavigatorState> settingsNavigatorKey = GlobalKey();
 final GlobalKey<NavigatorState> helpNavigatorKey = GlobalKey();
 
-class HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> {
   int _pageIndex = 0;
   bool _showWelcome = true;
 
