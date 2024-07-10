@@ -7,8 +7,8 @@ import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
 import '../no_stations_widget.dart';
-import '../settings/accounts_page.dart';
 import '../view_station/firmware_page.dart';
+import '../settings/edit_account_page.dart';
 
 class DataSyncTab extends StatelessWidget {
   const DataSyncTab({super.key});
@@ -96,7 +96,9 @@ class LoginRequiredWidget extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AccountsPage(),
+                    builder: (context) => EditAccountPage(
+                    original: PortalAccount(
+                        email: "", name: "", tokens: null, active: false)),
                   ),
                 );
               }),
@@ -147,13 +149,30 @@ class DownloadPanel extends StatelessWidget {
 
     return padAll(Column(children: [
       padVertical(Text(availableReadings(context))),
-      SizedBox(
-          width: double.infinity,
-          child: ElevatedTextButton(
-              onPressed: () => onDownload(downloadTask!),
-              text: localizations.download))
+      buildDownloadButton(context, downloadTask, onDownload),
     ]));
   }
+
+  Widget buildDownloadButton(BuildContext context, DownloadTask? downloadTask, void Function(DownloadTask) onDownload) {
+        final localizations = AppLocalizations.of(context)!;
+        final DownloadTask? task = downloadTask;
+        if (task == null || task.first == null) { // If there are no readings to download hide the button
+          return const SizedBox.shrink();
+        } else {
+          final num first = task.first as num;
+          if (task.total - first != 0) { // If there are readings to download show the button
+          return SizedBox(
+            width: double.infinity,
+            child: ElevatedTextButton(
+              onPressed: () => onDownload(downloadTask!),
+              text: localizations.download,
+            ),
+          );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }
+      }
 
   String availableReadings(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;

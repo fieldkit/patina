@@ -3,6 +3,7 @@ import 'package:fk/diagnostics.dart';
 import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -12,6 +13,9 @@ import '../common_widgets.dart';
 import '../gen/api.dart';
 
 class StationFirmwarePage extends StatelessWidget {
+  final ColorFilter colorFilter =
+      const ColorFilter.mode(Color(0xffcccdcf), BlendMode.srcIn);
+
   final StationModel station;
 
   StationConfig get config => station.config!;
@@ -110,12 +114,13 @@ class StationFirmwarePage extends StatelessWidget {
             leading: SizedBox(
               width: 48.0,
               height: 48.0,
-              child: Image(
-                  image: station.connected
-                      ? const AssetImage(AppIcons.stationConnected)
-                      : const AssetImage(
-                          AppIcons.stationNotConnected,
-                        )),
+              child: station.connected
+                  ? const Image(image: AssetImage(AppIcons.stationConnected))
+                  : SvgPicture.asset(
+                      AppIcons.stationNotConnected,
+                      semanticsLabel: "Station disconnected",
+                      colorFilter: colorFilter,
+                    ),
             ),
             title: Text(station.config!.name,
                 style: const TextStyle(fontSize: 18)),

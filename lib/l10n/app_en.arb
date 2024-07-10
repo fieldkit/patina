@@ -13,6 +13,7 @@
   "stationsTab": "Stations",
   "dataSyncTab": "Data",
   "settingsTab": "Settings",
+  "helpTab": "Help",
 
   "dataSyncTitle": "Data",
   "alertTitle": "Important",
@@ -89,6 +90,7 @@
   "calibrationDelete": "Delete",
   "calibrationBack": "Back",
   "calibrationKeepButton": "Keep",
+  "calibrationPoint": "Calibration Point {steps}",
   "factory": "Factory",
   "uncalibrated": "Uncalibrated",
   "calibrated": "Calibrated",
@@ -112,14 +114,12 @@
   "countdownInstructions": "Tap the Calibrate button to record the sensor value and the standard value.",
   "calibrationMessage": "Recording these values together allows us to later calibrate the sensor.",
   "standardFieldLabel": "Standard",
-  "standardFieldLabel": "Standard",
   "backAreYouSure": "Are you sure?",
-  "backWarning": "Navigating away will require you start this calibration over.",
-  "countdownInstructions": "Tap the Calibrate button to record the sensor value and the standard value.",
-  "calibrationMessage": "Recording these values together allows us to later calibrate the sensor.",
+  "backWarning": "Navigating away will require you start this calibration over.", 
 
   "settingsTitle": "Settings",
   "settingsGeneral": "General",
+  "settingsNameHint": "Station Name",
   "settingsFirmware": "Firmware",
   "settingsModules": "Modules",
   "settingsWifi": "WiFi",
@@ -240,6 +240,7 @@
   "helpCheckList": "Pre-deployment Checklist",
   "tutorialGuide": "Tutorial Guide",
   "appVersion": "App Version",
+  "errorLoadingVersion": "Error Loading App Version",
   "noUpdates": "No updates available",
   "yesUpdates": "Tap for updates!",
   "helpUploadLogs": "Send Logs",
@@ -323,5 +324,13 @@
   "sensorRandomRandom6": "Random 6",
   "sensorRandomRandom7": "Random 7",
   "sensorRandomRandom8": "Random 8",
-  "sensorRandomRandom9": "Random 9"
+  "sensorRandomRandom9": "Random 9",
+
+  "helpSettingsIconActive": "Help Settings Icon - active",
+  "helpSettingsIconInactive": "Help Settings Icon - inactive",
+  "helpSettingsIcon": "Help Settings Icon",
+  "accountSettingsIcon": "Account Settings Icon",
+  "languageSettingsIcon": "Language Settings Icon",
+  "legalSettingsIcon": "Legal Settings Icon",
+  "stationDisconnectedIcon": "Station Disconnected Icon"
 }

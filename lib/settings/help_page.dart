@@ -1,4 +1,5 @@
 import 'package:fk/diagnostics.dart';
+import 'package:fk/reader/screens.dart';
 import 'package:flows/flows.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -6,46 +7,28 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/link.dart';
 
-import '../reader/screens.dart';
+class HelpTab extends StatelessWidget {
+  const HelpTab({super.key});
 
-class HelpPage extends StatefulWidget {
-  const HelpPage({super.key});
-
-  @override
-  State<HelpPage> createState() => _HelpPageState();
-}
-
-class _HelpPageState extends State<HelpPage> {
-  bool isArrowUp = false;
-  String appVersion = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _initPackageInfo();
-  }
-
-  Future<void> _initPackageInfo() async {
+  Future<String> _getAppVersion() async {
     final PackageInfo info = await PackageInfo.fromPlatform();
-    setState(() {
-      appVersion = info.version;
-    });
+    return info.version;
   }
 
-  final _textStyle = const TextStyle(fontSize: 20.0);
+  final _textStyle = const TextStyle(
+      fontSize: 14.0,
+      fontFamily: 'Avenir',
+      fontWeight: FontWeight.normal,
+      color: Colors.black,
+      decoration: TextDecoration.none);
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.helpTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        title: Text(localizations.helpTitle)
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -57,7 +40,8 @@ class _HelpPageState extends State<HelpPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => QuickFlow(
-                        start: const StartFlow(prefix: "onboarding"), onForwardEnd: () => onDone())),
+                        start: const StartFlow(prefix: "onboarding"),
+                        onForwardEnd: () => onDone(context))),
               );
             },
           ),
@@ -94,66 +78,74 @@ class _HelpPageState extends State<HelpPage> {
           const Divider(),
           ListTile(
             title: Text(localizations.appVersion),
-            trailing: Icon(
-              isArrowUp ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-              size: 30.0,
-            ),
-            onTap: () {
-              setState(() {
-                isArrowUp = !isArrowUp;
-              });
+          ),
+          FutureBuilder<String>(
+            future: _getAppVersion(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text(
+                  localizations.errorLoadingVersion,
+                  style: _textStyle,
+                );
+              } else {
+                return Container(
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.only(left: 30.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: [
+                            TextSpan(
+                              text: localizations.appVersion,
+                              style: _textStyle,
+                            ),
+                            TextSpan(
+                              text: ': ',
+                              style: _textStyle,
+                            ),
+                            TextSpan(
+                              text: snapshot.data ?? '',
+                              style: _textStyle,
+                            ),
+                            TextSpan(
+                              text: '\n',
+                              style: _textStyle,
+                            ),
+                            TextSpan(
+                              text: getCommitRefName() ??
+                                  localizations.developerBuild,
+                              style: _textStyle,
+                            ),
+                            TextSpan(
+                              text: '\n',
+                              style: _textStyle,
+                            ),
+                            TextSpan(
+                              text: getCommitSha() ??
+                                  localizations.developerBuild,
+                              style: _textStyle,
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              }
             },
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: Column(
-              children: [
-                if (isArrowUp)
-                  RichText(
-                    text: TextSpan(
-                      style: DefaultTextStyle.of(context).style,
-                      children: [
-                        TextSpan(
-                          text: localizations.appVersion,
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: ': ', // Add a colon and space
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: appVersion,
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: '\n',
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: getCommitRefName() ??
-                              localizations.developerBuild,
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: '\n',
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: getCommitSha() ?? localizations.developerBuild,
-                          style: _textStyle,
-                        ),
-                      ],
-                    ),
-                  )
-              ],
-            ),
-          )
         ],
       ),
     );
   }
-  
-  onDone() {
-    return Navigator.pop(context); // Return to the help page after the tutorial guide is completed
+
+  void onDone(BuildContext context) {
+    Navigator.pop(
+        context); // Return to the help tab after the tutorial guide is completed
   }
 }

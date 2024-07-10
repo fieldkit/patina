@@ -1,4 +1,3 @@
-import 'package:fk/settings/accounts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
+import '../settings/edit_account_page.dart';
 
 class EnableButton extends StatelessWidget {
   const EnableButton({super.key});
@@ -24,7 +24,9 @@ class EnableButton extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const AccountsPage(),
+                builder: (context) => EditAccountPage(
+                    original: PortalAccount(
+                        email: "", name: "", tokens: null, active: false)),
               ),
             );
           });
