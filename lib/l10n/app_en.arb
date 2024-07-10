@@ -135,6 +135,10 @@
   "settingsLoraVerify": "Verify",
   "settingsLanguage": "Language",
   "endDeployment": "End Deployment",
+  "error": "Error",
+  "ok": "OK",
+  "submit": "Submit",
+  "nameErrorDescription": "Name can only contain letters, numbers, underscores, and spaces.",
 
   "languageEnglish": "English",
   "languageSpanish": "Spanish",

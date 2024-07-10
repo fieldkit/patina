@@ -32,11 +32,6 @@ class StationModel {
     this.config,
     this.connected = false,
   });
-
-  void updateName(String value) {
-    // See my comment on the merge request.
-    // config?.name = value;
-  }
 }
 
 class UpdatePortal {
