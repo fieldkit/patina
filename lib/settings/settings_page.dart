@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'language_page.dart';
 import 'accounts_page.dart';
 import 'legal_page.dart';
+import 'help_page.dart';
 
 class SettingsTab extends StatelessWidget {
 
@@ -20,14 +21,10 @@ class SettingsTab extends StatelessWidget {
         ),
         body: ListView(children: [
           ListTile(
-<<<<<<< HEAD
             leading: 
             SvgPicture.asset(
               "resources/images/icon_account_settings.svg",
               semanticsLabel: 'Account Settings Icon'),
-=======
-            leading: const Icon(Icons.account_circle),
->>>>>>> a12aee72ca51e03128fe93ff85aecf6801ace60f
             title: Text(AppLocalizations.of(context)!.settingsAccounts),
             onTap: () {
               Navigator.push(
@@ -47,7 +44,7 @@ class SettingsTab extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const HelpPage()),
+                MaterialPageRoute(builder: (context) => const HelpTab()),
               );
             },
           ),
@@ -66,13 +63,9 @@ class SettingsTab extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-<<<<<<< HEAD
             leading: SvgPicture.asset(
               "resources/images/icon_legal_settings.svg",
               semanticsLabel: 'Legal Settings Icon'),
-=======
-            leading: const Icon(Icons.shield_sharp),
->>>>>>> a12aee72ca51e03128fe93ff85aecf6801ace60f
             title: Text(AppLocalizations.of(context)!.legalTitle),
             onTap: () {
               Navigator.push(
