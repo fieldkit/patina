@@ -149,13 +149,30 @@ class DownloadPanel extends StatelessWidget {
 
     return padAll(Column(children: [
       padVertical(Text(availableReadings(context))),
-      SizedBox(
-          width: double.infinity,
-          child: ElevatedTextButton(
-              onPressed: () => onDownload(downloadTask!),
-              text: localizations.download))
+      buildDownloadButton(context, downloadTask, onDownload),
     ]));
   }
+
+  Widget buildDownloadButton(BuildContext context, DownloadTask? downloadTask, void Function(DownloadTask) onDownload) {
+        final localizations = AppLocalizations.of(context)!;
+        final DownloadTask? task = downloadTask;
+        if (task == null || task.first == null) { // If there are no readings to download hide the button
+          return const SizedBox.shrink();
+        } else {
+          final num first = task.first as num;
+          if (task.total - first != 0) { // If there are readings to download show the button
+          return SizedBox(
+            width: double.infinity,
+            child: ElevatedTextButton(
+              onPressed: () => onDownload(downloadTask!),
+              text: localizations.download,
+            ),
+          );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }
+      }
 
   String availableReadings(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
