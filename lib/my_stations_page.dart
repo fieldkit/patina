@@ -96,8 +96,10 @@ class StationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final operations =
-        context.watch<StationOperations>().getBusy<Operation>(config.deviceId);
+    final operations = context
+        .watch<StationOperations>()
+        .getBusy<Operation>(config.deviceId)
+        .where((op) => op.done);
     final localizations = AppLocalizations.of(context)!;
     final ModuleConfigurations moduleConfigurations =
         context.watch<ModuleConfigurations>();

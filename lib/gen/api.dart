@@ -937,6 +937,11 @@ class TransmissionToken {
           url == other.url;
 }
 
+enum UpgradeError {
+  other,
+  sdCard,
+}
+
 class UpgradeProgress {
   final String deviceId;
   final int firmwareId;
@@ -971,7 +976,9 @@ sealed class UpgradeStatus with _$UpgradeStatus {
   const factory UpgradeStatus.reconnectTimeout() =
       UpgradeStatus_ReconnectTimeout;
   const factory UpgradeStatus.completed() = UpgradeStatus_Completed;
-  const factory UpgradeStatus.failed() = UpgradeStatus_Failed;
+  const factory UpgradeStatus.failed([
+    UpgradeError? field0,
+  ]) = UpgradeStatus_Failed;
 }
 
 class UploadProgress {

@@ -1,12 +1,16 @@
 use anyhow::{Context, Result};
 use discovery::DeviceId;
-use query::portal::Firmware;
+use query::{
+    device::{self, UpgradeOptions},
+    portal::{Firmware, FirmwareFilter},
+};
 use std::path::PathBuf;
+use thiserror::Error;
 use tokio::{
     fs::OpenOptions,
     io::{AsyncReadExt, AsyncWriteExt},
     pin,
-    sync::mpsc::Sender,
+    sync::mpsc::{error::SendError, Sender},
 };
 use tokio_stream::StreamExt;
 use tracing::*;
@@ -111,23 +115,41 @@ pub struct FirmwareUpgrader {
     addr: String,
 }
 
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("upgrade error")]
+    Upgrade(#[from] device::UpgradeError),
+    #[error("send error")]
+    Send,
+    #[error("unknown error")]
+    Unknown,
+}
+
+impl<T> From<SendError<T>> for Error {
+    fn from(_value: SendError<T>) -> Self {
+        Error::Send
+    }
+}
+
 impl FirmwareUpgrader {
-    async fn publish(&self, status: UpgradeStatus) -> Result<()> {
-        Ok(self
-            .publish_tx
+    async fn publish(&self, status: UpgradeStatus) -> Result<(), SendError<DomainMessage>> {
+        self.publish_tx
             .send(DomainMessage::UpgradeProgress(UpgradeProgress {
                 device_id: self.device_id.0.clone(),
                 firmware_id: self.firmware.id,
                 status,
             }))
-            .await?)
+            .await
     }
 
-    async fn run(&self) -> Result<()> {
+    async fn run(&self) -> Result<(), Error> {
         let path = PathBuf::from(&self.storage_path).join(self.firmware.file_name());
 
-        let client = query::device::Client::new()?;
-        match client.upgrade(&self.addr, &path, self.swap).await {
+        let client = query::device::Client::new().map_err(|_| Error::Unknown)?;
+        match client
+            .upgrade(&self.addr, &path, UpgradeOptions::default())
+            .await
+        {
             Ok(mut stream) => {
                 while let Some(res) = stream.next().await {
                     match res {
@@ -165,11 +187,11 @@ impl FirmwareUpgrader {
                     Ok(())
                 }
             }
-            Err(e) => Err(e),
+            Err(e) => Err(e.into()),
         }
     }
 
-    async fn wait_for_station_restart(&self) -> Result<bool> {
+    async fn wait_for_station_restart(&self) -> Result<bool, Error> {
         use std::time::Duration;
         use tokio::time::sleep;
 
@@ -177,7 +199,7 @@ impl FirmwareUpgrader {
             sleep(Duration::from_secs(if i == 0 { 5 } else { 1 })).await;
 
             info!("upgrade: Checking station");
-            let client = query::device::Client::new()?;
+            let client = query::device::Client::new().map_err(|_| Error::Unknown)?;
             match client.query_status(&self.addr).await {
                 Err(e) => info!("upgrade: Waiting for station: {:?}", e),
                 Ok(_) => {
@@ -217,7 +239,10 @@ pub async fn upgrade(
             match upgrader.run().await {
                 Err(e) => {
                     warn!("Error upgrading: {:?}", e);
-                    match upgrader.publish(UpgradeStatus::Failed).await {
+                    match upgrader
+                        .publish(UpgradeStatus::Failed(Some(e.into())))
+                        .await
+                    {
                         Err(e) => warn!("Error published failure: {:?}", e),
                         Ok(_) => {}
                     }
@@ -296,14 +321,15 @@ impl From<Firmware> for LocalFirmware {
 async fn query_available_firmware(
     client: &query::portal::Client,
     tokens: Option<Tokens>,
+    filter: Option<FirmwareFilter>,
 ) -> Result<Vec<Firmware>> {
     if let Some(tokens) = tokens {
         client
             .to_authenticated(tokens.into())?
-            .available_firmware()
+            .available_firmware(filter)
             .await
     } else {
-        client.available_firmware().await
+        client.available_firmware(filter).await
     }
 }
 
@@ -318,19 +344,31 @@ async fn cache_firmware_and_json_if_newer(
     publish_available_firmware(storage_path, publish_tx.clone()).await?;
 
     let client = query::portal::Client::new(portal_base_url)?;
-    let firmwares = query_available_firmware(&client, tokens).await?;
+    let firmwares = query_available_firmware(
+        &client,
+        tokens,
+        Some(FirmwareFilter {
+            module: Some("fk-core".to_owned()),
+            profile: None,
+            page: None,
+            page_size: Some(20),
+        }),
+    )
+    .await?;
+
+    info!("{} firmware", firmwares.len());
 
     for firmware in firmwares.iter() {
         let has = cached.iter().any(|f| f.etag == firmware.etag);
         if has {
             info!(
-                "Firmware already cached {:?} ({})",
+                "firmware already cached {:?} ({})",
                 firmware.etag, storage_path
             );
             continue;
         }
 
-        info!("New firmware! {:?}", firmware.etag);
+        info!("firmware! {:?}", firmware.etag);
         let path = PathBuf::from(storage_path).join(format!("firmware-{}.bin", firmware.id));
         let stream = client.download_firmware(firmware, &path).await?;
 
