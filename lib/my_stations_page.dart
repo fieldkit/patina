@@ -109,7 +109,7 @@ class StationCard extends StatelessWidget {
           ? const Image(image: AssetImage(AppIcons.stationConnected))
           : SvgPicture.asset(
               "resources/images/icon_station_disconnected.svg",
-              semanticsLabel: 'Help Settings Icon',
+              semanticsLabel: localizations.helpSettingsIcon,
               colorFilter: colorFilter,
             ),
     );

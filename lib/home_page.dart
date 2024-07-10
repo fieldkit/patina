@@ -1,8 +1,10 @@
 import 'package:fk/diagnostics.dart';
 import 'package:fk/preferences.dart';
+import 'package:fk/settings/help_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state.dart';
@@ -22,6 +24,7 @@ class HomePage extends StatefulWidget {
 final GlobalKey<NavigatorState> stationsNavigatorKey = GlobalKey();
 final GlobalKey<NavigatorState> dataNavigatorKey = GlobalKey();
 final GlobalKey<NavigatorState> settingsNavigatorKey = GlobalKey();
+final GlobalKey<NavigatorState> helpNavigatorKey = GlobalKey();
 
 class _HomePageState extends State<HomePage> {
   int _pageIndex = 0;
@@ -60,137 +63,170 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void setPageIndex(int index) {
+    setState(() {
+      _pageIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.read<AppState>();
 
     return Scaffold(
-      body: SafeArea(
-        child:
-            _showWelcome // Change to _showWelcome to true to test welcome feature
-                ? WelcomeScreen(
-                    onDone: () {
-                      setState(() {
-                        _showWelcome = false;
-                      });
-                    },
-                  )
-                : IndexedStack(
-                    index: _pageIndex,
-                    children: <Widget>[
-                      // Should we just push this to the top?
-                      MultiProvider(
-                          providers: [
-                            ChangeNotifierProvider.value(
-                                value: state.moduleConfigurations),
-                            ChangeNotifierProvider.value(
-                                value: state.knownStations),
-                            ChangeNotifierProvider.value(value: state.firmware),
-                            ChangeNotifierProvider.value(
-                                value: state.stationOperations),
-                            ChangeNotifierProvider.value(value: state.tasks),
-                          ],
-                          child: Navigator(
-                              key: stationsNavigatorKey,
-                              onGenerateRoute: (RouteSettings settings) {
-                                return MaterialPageRoute(
-                                    settings: settings,
-                                    builder: (context) => const StationsTab());
-                              })),
-                      MultiProvider(
-                          providers: [
-                            ChangeNotifierProvider.value(
-                                value: state.knownStations),
-                            ChangeNotifierProvider.value(value: state.firmware),
-                            ChangeNotifierProvider.value(
-                                value: state.stationOperations),
-                            ChangeNotifierProvider.value(value: state.tasks),
-                          ],
-                          child: Navigator(
-                              key: dataNavigatorKey,
-                              onGenerateRoute: (RouteSettings settings) {
-                                return MaterialPageRoute(
-                                    settings: settings,
-                                    builder: (context) => const DataSyncTab());
-                              })),
-                      Navigator(
-                          key: settingsNavigatorKey,
-                          onGenerateRoute: (RouteSettings settings) {
-                            return MaterialPageRoute(
-                                settings: settings,
-                                builder: (BuildContext context) {
-                                  return const SettingsTab();
-                                });
-                          }),
-                    ],
+        body: SafeArea(
+          child: _showWelcome
+              ? WelcomeScreen(
+                  onDone: () {
+                    setState(() {
+                      _showWelcome = false;
+                    });
+                  },
+                )
+              : IndexedStack(
+                  index: _pageIndex,
+                  children: <Widget>[
+                    MultiProvider(
+                      providers: [
+                        ChangeNotifierProvider.value(
+                            value: state.moduleConfigurations),
+                        ChangeNotifierProvider.value(
+                            value: state.knownStations),
+                        ChangeNotifierProvider.value(value: state.firmware),
+                        ChangeNotifierProvider.value(
+                            value: state.stationOperations),
+                        ChangeNotifierProvider.value(value: state.tasks),
+                      ],
+                      child: Navigator(
+                        key: stationsNavigatorKey,
+                        onGenerateRoute: (RouteSettings settings) {
+                          return MaterialPageRoute(
+                              settings: settings,
+                              builder: (context) => const StationsTab());
+                        },
+                      ),
+                    ),
+                    MultiProvider(
+                      providers: [
+                        ChangeNotifierProvider.value(
+                            value: state.knownStations),
+                        ChangeNotifierProvider.value(value: state.firmware),
+                        ChangeNotifierProvider.value(
+                            value: state.stationOperations),
+                        ChangeNotifierProvider.value(value: state.tasks),
+                      ],
+                      child: Navigator(
+                        key: dataNavigatorKey,
+                        onGenerateRoute: (RouteSettings settings) {
+                          return MaterialPageRoute(
+                              settings: settings,
+                              builder: (context) => const DataSyncTab());
+                        },
+                      ),
+                    ),
+                    Navigator(
+                      key: settingsNavigatorKey,
+                      onGenerateRoute: (RouteSettings settings) {
+                        return MaterialPageRoute(
+                            settings: settings,
+                            builder: (BuildContext context) {
+                              return const SettingsTab();
+                            });
+                      },
+                    ),
+                    Navigator(
+                      key: helpNavigatorKey,
+                      onGenerateRoute: (RouteSettings settings) {
+                        return MaterialPageRoute(
+                            settings: settings,
+                            builder: (BuildContext context) {
+                              return const HelpTab();
+                            });
+                      },
+                    ),
+                  ],
+                ),
+        ),
+        bottomNavigationBar: _showWelcome
+            ? null
+            : BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                selectedItemColor: const Color(0xFF2C3E50),
+                unselectedLabelStyle: const TextStyle(fontSize: 12.0),
+                selectedLabelStyle: const TextStyle(
+                    fontSize: 12.0, fontWeight: FontWeight.w700),
+                items: <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: Image.asset(
+                        'resources/images/icon_station_inactive.png',
+                        width: 24,
+                        height: 24),
+                    activeIcon: Image.asset(
+                        'resources/images/icon_station_active.png',
+                        width: 24,
+                        height: 24),
+                    label: AppLocalizations.of(context)!.stationsTab,
                   ),
-      ),
-      bottomNavigationBar: _showWelcome
-          ? null
-          : BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: const Color(0xFF2C3E50),
-              unselectedLabelStyle: const TextStyle(fontSize: 12.0),
-              selectedLabelStyle:
-                  const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w700),
-              items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Image.asset(
-                      'resources/images/icon_station_inactive.png',
-                      width: 24,
-                      height: 24),
-                  activeIcon: Image.asset(
-                      'resources/images/icon_station_active.png',
-                      width: 24,
-                      height: 24),
-                  label: AppLocalizations.of(context)!.stationsTab,
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset(
-                      'resources/images/icon_data_sync_inactive.png',
-                      width: 24,
-                      height: 24),
-                  activeIcon: Image.asset(
-                      'resources/images/icon_data_sync_active.png',
-                      width: 24,
-                      height: 24),
-                  label: AppLocalizations.of(context)!.dataSyncTab,
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset(
-                      'resources/images/icon_settings_inactive.png',
-                      width: 24,
-                      height: 24),
-                  activeIcon: Image.asset(
-                      'resources/images/icon_settings_active.png',
-                      width: 24,
-                      height: 24),
-                  label: AppLocalizations.of(context)!.settingsTab,
-                ),
-              ],
-              currentIndex: _pageIndex,
-              onTap: (int index) {
-                if (_pageIndex == index) {
-                  final List<GlobalKey<NavigatorState>> keys = [
-                    stationsNavigatorKey,
-                    dataNavigatorKey,
-                    settingsNavigatorKey
-                  ];
-                  final NavigatorState? navigator = keys[index].currentState;
-                  if (navigator != null) {
-                    while (navigator.canPop()) {
-                      navigator.pop();
-                    }
-                  }
-                } else {
-                  setState(
-                    () {
-                      _pageIndex = index;
-                    },
-                  );
-                }
-              },
-            ),
-    );
+                  BottomNavigationBarItem(
+                    icon: Image.asset(
+                        'resources/images/icon_data_sync_inactive.png',
+                        width: 24,
+                        height: 24),
+                    activeIcon: Image.asset(
+                        'resources/images/icon_data_sync_active.png',
+                        width: 24,
+                        height: 24),
+                    label: AppLocalizations.of(context)!.dataSyncTab,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Image.asset(
+                        'resources/images/icon_settings_inactive.png',
+                        width: 24,
+                        height: 24),
+                    activeIcon: Image.asset(
+                        'resources/images/icon_settings_active.png',
+                        width: 24,
+                        height: 24),
+                    label: AppLocalizations.of(context)!.settingsTab,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: SvgPicture.asset(
+                        "resources/images/icon_help_settings.svg",
+                        semanticsLabel: 'Help Settings Icon - inactive',
+                        colorFilter: const ColorFilter.mode(
+                            Color(0xFF9a9fa6), BlendMode.srcIn)),
+                    activeIcon: SvgPicture.asset(
+                        "resources/images/icon_help_settings.svg",
+                        semanticsLabel: 'Help Settings Icon - active',
+                        colorFilter: const ColorFilter.mode(
+                            Color(0xFF2c3e50), BlendMode.srcIn)),
+                    label: AppLocalizations.of(context)!.helpTab,
+                  ),
+                ],
+                currentIndex: _pageIndex,
+                onTap: (int index) {
+                  setPageIndex(index);
+                }));
+  }
+}
+
+class CustomPageRoute<T> extends MaterialPageRoute<T> {
+  CustomPageRoute({required super.builder, super.settings});
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    if (settings.name == '/settings') {
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(-1.0, 0.0),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      );
+    } else {
+      return super
+          .buildTransitions(context, animation, secondaryAnimation, child);
+    }
   }
 }
