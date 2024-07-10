@@ -190,11 +190,13 @@ class _HomePageState extends State<HomePage> {
                     label: AppLocalizations.of(context)!.settingsTab,
                   ),
                   BottomNavigationBarItem(
-                    icon: SvgPicture.asset("resources/images/icon_help_settings.svg",
+                    icon: SvgPicture.asset(
+                        "resources/images/icon_help_settings.svg",
                         semanticsLabel: 'Help Settings Icon',
                         colorFilter: const ColorFilter.mode(
                             Color(0xFF9a9fa6), BlendMode.srcIn)),
-                    activeIcon: SvgPicture.asset("resources/images/icon_help_settings.svg",
+                    activeIcon: SvgPicture.asset(
+                        "resources/images/icon_help_settings.svg",
                         semanticsLabel: 'Help Settings Icon',
                         colorFilter: const ColorFilter.mode(
                             Color(0xFF2c3e50), BlendMode.srcIn)),
@@ -203,9 +205,8 @@ class _HomePageState extends State<HomePage> {
                 ],
                 currentIndex: _pageIndex,
                 onTap: (int index) {
-                    setPageIndex(index);
-                  }
-              ));
+                  setPageIndex(index);
+                }));
   }
 }
 

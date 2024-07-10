@@ -11,7 +11,7 @@ class SettingsTab extends StatelessWidget {
 
   const SettingsTab({super.key});
 
-  final colorFilter = const ColorFilter.mode( Color(0xFF2c3e50), BlendMode.srcIn);
+  final colorFilter = const ColorFilter.mode(Color(0xFF2c3e50), BlendMode.srcIn);
 
   @override
   Widget build(BuildContext context) {
