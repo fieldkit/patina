@@ -61,13 +61,22 @@ class ConfigureStationPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(0),
         children: [
-          /*
-          ListTile(
-            title: Text(AppLocalizations.of(context)!.settingsGeneral),
-            onTap: () {},
-          ),
-          const Divider(),
-          */
+          Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.settingsNameHint,
+                  hintText: AppLocalizations.of(context)!.settingsNameHint,
+                ),
+                controller: TextEditingController(text: config.name),
+                onChanged: (value) {
+                  if (value.isEmpty) {
+                    station.updateName(config.name);
+                  } else {
+                    station.updateName(value);
+                  }
+                },
+              )),
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsWifi),
             onTap: () {

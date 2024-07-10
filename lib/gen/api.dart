@@ -765,7 +765,7 @@ class SolarInfo {
 class StationConfig {
   final String deviceId;
   final String generationId;
-  final String name;
+  String name;
   final FirmwareInfo firmware;
   final UtcDateTime lastSeen;
   final StreamInfo meta;
@@ -775,7 +775,7 @@ class StationConfig {
   final Uint8List? pb;
   final List<ModuleConfig> modules;
 
-  const StationConfig({
+  StationConfig({
     required this.deviceId,
     required this.generationId,
     required this.name,

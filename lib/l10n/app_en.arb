@@ -13,6 +13,7 @@
   "stationsTab": "Stations",
   "dataSyncTab": "Data",
   "settingsTab": "Settings",
+  "helpTab": "Help",
 
   "dataSyncTitle": "Data",
   "alertTitle": "Important",
@@ -121,6 +122,7 @@
 
   "settingsTitle": "Settings",
   "settingsGeneral": "General",
+  "settingsNameHint": "Station Name",
   "settingsFirmware": "Firmware",
   "settingsModules": "Modules",
   "settingsWifi": "WiFi",
@@ -232,6 +234,7 @@
   "helpCheckList": "Pre-deployment Checklist",
   "tutorialGuide": "Tutorial Guide",
   "appVersion": "App Version",
+  "errorLoadingVersion": "Error Loading App Version",
   "noUpdates": "No updates available",
   "yesUpdates": "Tap for updates!",
   "helpUploadLogs": "Send Logs",
