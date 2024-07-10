@@ -24,7 +24,7 @@ class SettingsTab extends StatelessWidget {
             leading: 
             SvgPicture.asset(
               "resources/images/icon_account_settings.svg",
-              semanticsLabel: 'Account Settings Icon'),
+              semanticsLabel: AppLocalizations.of(context)!.accountSettingsIcon),
             title: Text(AppLocalizations.of(context)!.settingsAccounts),
             onTap: () {
               Navigator.push(
@@ -39,7 +39,7 @@ class SettingsTab extends StatelessWidget {
           ListTile(
             leading: SvgPicture.asset(
               "resources/images/icon_help_settings.svg",
-              semanticsLabel: 'Help Settings Icon'),
+              semanticsLabel: AppLocalizations.of(context)!.helpSettingsIcon),
             title: Text(AppLocalizations.of(context)!.helpTitle),
             onTap: () {
               Navigator.push(
@@ -52,7 +52,7 @@ class SettingsTab extends StatelessWidget {
           ListTile(
             leading: SvgPicture.asset(
               "resources/images/icon_globe.svg",
-              semanticsLabel: 'Language Settings Icon', colorFilter: colorFilter),
+              semanticsLabel: AppLocalizations.of(context)!.languageSettingsIcon, colorFilter: colorFilter),
             title: Text(AppLocalizations.of(context)!.settingsLanguage),
             onTap: () {
               Navigator.push(
@@ -65,7 +65,7 @@ class SettingsTab extends StatelessWidget {
           ListTile(
             leading: SvgPicture.asset(
               "resources/images/icon_legal_settings.svg",
-              semanticsLabel: 'Legal Settings Icon'),
+              semanticsLabel: AppLocalizations.of(context)!.legalSettingsIcon),
             title: Text(AppLocalizations.of(context)!.legalTitle),
             onTap: () {
               Navigator.push(

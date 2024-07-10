@@ -192,12 +192,12 @@ class _HomePageState extends State<HomePage> {
                   BottomNavigationBarItem(
                     icon: SvgPicture.asset(
                         "resources/images/icon_help_settings.svg",
-                        semanticsLabel: 'Help Settings Icon',
+                        semanticsLabel: 'Help Settings Icon - inactive',
                         colorFilter: const ColorFilter.mode(
                             Color(0xFF9a9fa6), BlendMode.srcIn)),
                     activeIcon: SvgPicture.asset(
                         "resources/images/icon_help_settings.svg",
-                        semanticsLabel: 'Help Settings Icon',
+                        semanticsLabel: 'Help Settings Icon - active',
                         colorFilter: const ColorFilter.mode(
                             Color(0xFF2c3e50), BlendMode.srcIn)),
                     label: AppLocalizations.of(context)!.helpTab,
