@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:ansi_styles/ansi_styles.dart';
+import 'package:archive/archive_io.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 
@@ -126,7 +129,43 @@ class ShareDiagnostics {
 
       return id.toString();
     } catch (e) {
-      Loggers.ui.e("send logs failed: $e");
+      Loggers.main.e("send logs failed: $e");
+      return null;
+    }
+  }
+}
+
+class Backup {
+  Future<Directory> getDirectory() async {
+    return await getApplicationDocumentsDirectory();
+  }
+
+  Future<String?> create() async {
+    try {
+      final DateFormat formatter = DateFormat('yyyyMMdd_HHmmss');
+      final stamp = formatter.format(DateTime.now());
+      final destination = await getDirectory();
+      final zipPath = "${destination.path}/fk-$stamp.zip";
+
+      final support = await getApplicationSupportDirectory();
+      Loggers.main.i("backup: ${support.path}");
+
+      final encoder = ZipFileEncoder();
+      encoder.create(zipPath);
+      await encoder.addFile(File("${support.path}/db.sqlite3"));
+      await encoder.addFile(File("${support.path}/logs.txt"));
+      final data = Directory("${support.path}/fk-data");
+      if (data.existsSync()) {
+        await encoder.addDirectory(data);
+      } else {
+        Loggers.main.i("backup: no fk-data");
+      }
+      await encoder.close();
+
+      Loggers.main.i("backup: $zipPath");
+      return zipPath;
+    } catch (e) {
+      Loggers.main.e("backup:failed: $e");
       return null;
     }
   }
