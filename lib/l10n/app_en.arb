@@ -235,6 +235,11 @@
   "noUpdates": "No updates available",
   "yesUpdates": "Tap for updates!",
   "helpUploadLogs": "Send Logs",
+  "helpCreateBackup": "Create Phone Backup",
+  "helpBackupCreated": "Phone Backup Created",
+  "helpBackupFailed": "Phone Backup Failed!",
+  "backupShareSubject": "FieldKit Backup",
+  "backupShareMessage": "FieldKit application backup.",
   "developerBuild": "Developer Build",
   "logsUploaded": "Logs Uploaded",
 
