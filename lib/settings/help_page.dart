@@ -85,8 +85,9 @@ class HelpTab extends StatelessWidget {
                 overlay.show();
                 final file = await Backup().create();
                 if (file != null) {
-                  final res =
-                      await Share.shareXFiles([XFile(file)], text: 'Backup');
+                  final res = await Share.shareXFiles([XFile(file)],
+                      text: localizations.backupShareMessage,
+                      subject: localizations.backupShareSubject);
 
                   Loggers.ui.i("backup: $res");
 
