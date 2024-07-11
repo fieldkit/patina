@@ -19,6 +19,13 @@ import 'dispatcher.dart';
 
 const uuid = Uuid();
 
+class SyncStatus {
+  int uploaded;
+  int downloaded;
+
+  SyncStatus({required this.uploaded, required this.downloaded});
+}
+
 class StationModel {
   final String deviceId;
   StationConfig? config;
@@ -26,6 +33,7 @@ class StationModel {
   SyncingProgress? syncing;
   FirmwareInfo? get firmware => config?.firmware;
   bool connected;
+  SyncStatus? syncStatus;
 
   StationModel({
     required this.deviceId,
@@ -166,7 +174,7 @@ class KnownStationsModel extends ChangeNotifier {
   KnownStationsModel(AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
       final byDeviceId = {};
-      for (var station in nearby.field0) {
+      for (final station in nearby.field0) {
         findOrCreate(station.deviceId);
         byDeviceId[station.deviceId] = station;
       }
@@ -193,6 +201,19 @@ class KnownStationsModel extends ChangeNotifier {
 
     dispatcher.addListener<DomainMessage_UploadProgress>((transferProgress) {
       applyTransferProgress(transferProgress.field0);
+    });
+
+    dispatcher.addListener<DomainMessage_RecordArchives>((archives) {
+      final byDeviceId = archives.field0.groupListsBy((a) => a.deviceId);
+      for (final entry in byDeviceId.entries) {
+        final uploaded = entry.value
+            .where((e) => e.uploaded != null)
+            .map((e) => e.tail - e.head)
+            .sum;
+        final downloaded = entry.value.map((e) => e.tail - e.head).sum;
+        findOrCreate(entry.key).syncStatus =
+            SyncStatus(uploaded: uploaded, downloaded: downloaded);
+      }
     });
 
     _load();
@@ -1196,7 +1217,7 @@ class AppState {
         if (state == AppLifecycleState.resumed) {
           if (_periodicRan != null &&
               DateTime.now().difference(_periodicRan!).inSeconds < 30) {
-            Loggers.state.i("periodc: $_periodicRan");
+            Loggers.state.i("periodic: $_periodicRan");
           } else {
             _periodic();
           }

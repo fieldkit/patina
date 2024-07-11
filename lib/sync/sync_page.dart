@@ -121,11 +121,15 @@ Widget padVertical(Widget child) {
 }
 
 class StatusMessagePanel extends StatelessWidget {
+  final StationModel station;
   final DownloadTask? downloadTask;
   final UploadTask? uploadTask;
 
   const StatusMessagePanel(
-      {super.key, required this.downloadTask, required this.uploadTask});
+      {super.key,
+      required this.downloadTask,
+      required this.uploadTask,
+      required this.station});
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +149,14 @@ class StatusMessagePanel extends StatelessWidget {
         return padAll(
             Text(localizations.syncReadingsWaitingUpload(readingsUp)));
       } else {
-        return padAll(Text(localizations.syncReadingsNone));
+        final syncStatus = station.syncStatus;
+        if (syncStatus != null &&
+            syncStatus.downloaded == syncStatus.uploaded) {
+          return padAll(
+              Text(localizations.syncReadingsNoneWaiting(syncStatus.uploaded)));
+        } else {
+          return padAll(Text(localizations.syncReadingsNone));
+        }
       }
     }
   }
@@ -270,7 +281,7 @@ class DataSyncPage extends StatelessWidget {
       final uploadTask = tasks.getMaybeOne<UploadTask>(station.deviceId);
       final busy = stationOperations.isBusy(station.deviceId);
       final status = StatusMessagePanel(
-          downloadTask: downloadTask, uploadTask: uploadTask);
+          station: station, downloadTask: downloadTask, uploadTask: uploadTask);
       final download = DownloadPanel(
           station: station, downloadTask: downloadTask, onDownload: onDownload);
       final upload = UploadPanel(
