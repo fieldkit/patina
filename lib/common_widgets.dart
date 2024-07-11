@@ -18,6 +18,13 @@ class BorderedListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         margin: const EdgeInsets.all(16),
+        shadowColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        elevation: 0,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(2),
+            side: BorderSide(color: Colors.grey.shade300, width: 1)),
         child: Column(children: [header, ...children]));
   }
 }

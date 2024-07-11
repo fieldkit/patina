@@ -43,37 +43,34 @@ class MessageAndButton extends StatelessWidget {
   final String button;
   final VoidCallback? onPressed;
 
-  const MessageAndButton(
-      {super.key,
-      required this.title,
-      required this.message,
-      required this.button,
-      this.onPressed});
+  const MessageAndButton({
+    super.key,
+    required this.title,
+    required this.message,
+    required this.button,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      WH.align(
-        Text(
-          title,
-          style: const TextStyle(fontSize: 20.0),
+    return Column(
+      children: [
+        WH.align(
+          Text(title, style: const TextStyle(fontSize: 20.0)),
         ),
-      ),
-      WH.align(
-        Text(
-          message,
-          style: const TextStyle(fontSize: 16.0),
+        WH.align(
+          Text(message, style: const TextStyle(fontSize: 16.0)),
         ),
-      ),
-      WH.align(
-        WH.vertical(
-          ElevatedTextButton(
-            onPressed: onPressed,
-            text: button,
+        WH.align(
+          WH.vertical(
+            ElevatedTextButton(
+              onPressed: onPressed,
+              text: button,
+            ),
           ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -89,19 +86,21 @@ class LoginRequiredWidget extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: MessageAndButton(
-              title: localizations.alertTitle,
-              button: localizations.login,
-              message: localizations.dataLoginMessage,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditAccountPage(
+            title: localizations.alertTitle,
+            button: localizations.login,
+            message: localizations.dataLoginMessage,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditAccountPage(
                     original: PortalAccount(
-                        email: "", name: "", tokens: null, active: false)),
+                        email: "", name: "", tokens: null, active: false),
                   ),
-                );
-              }),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -110,14 +109,18 @@ class LoginRequiredWidget extends StatelessWidget {
 
 Widget padAll(Widget child) {
   return Container(
-      width: double.infinity, padding: const EdgeInsets.all(14), child: child);
+    width: double.infinity,
+    padding: const EdgeInsets.all(14),
+    child: child,
+  );
 }
 
 Widget padVertical(Widget child) {
   return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: child);
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: child,
+  );
 }
 
 class DownloadPanel extends StatelessWidget {
@@ -125,11 +128,12 @@ class DownloadPanel extends StatelessWidget {
   final void Function(DownloadTask) onDownload;
   final DownloadTask? downloadTask;
 
-  const DownloadPanel(
-      {super.key,
-      required this.station,
-      required this.onDownload,
-      this.downloadTask});
+  const DownloadPanel({
+    super.key,
+    required this.station,
+    required this.onDownload,
+    this.downloadTask,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -147,32 +151,35 @@ class DownloadPanel extends StatelessWidget {
       return padAll(Text(localizations.syncNoDownload));
     }
 
-    return padAll(Column(children: [
-      padVertical(Text(availableReadings(context))),
-      buildDownloadButton(context, downloadTask, onDownload),
-    ]));
+    return padAll(Column(
+      children: [
+        padVertical(Text(availableReadings(context))),
+        buildDownloadButton(context, downloadTask, onDownload),
+      ],
+    ));
   }
 
-  Widget buildDownloadButton(BuildContext context, DownloadTask? downloadTask, void Function(DownloadTask) onDownload) {
-        final localizations = AppLocalizations.of(context)!;
-        final DownloadTask? task = downloadTask;
-        if (task == null || task.first == null) { // If there are no readings to download hide the button
-          return const SizedBox.shrink();
-        } else {
-          final num first = task.first as num;
-          if (task.total - first != 0) { // If there are readings to download show the button
-          return SizedBox(
-            width: double.infinity,
-            child: ElevatedTextButton(
-              onPressed: () => onDownload(downloadTask!),
-              text: localizations.download,
-            ),
-          );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }
+  Widget buildDownloadButton(BuildContext context, DownloadTask? downloadTask,
+      void Function(DownloadTask) onDownload) {
+    final localizations = AppLocalizations.of(context)!;
+    final DownloadTask? task = downloadTask;
+    if (task == null || task.first == null) {
+      return const SizedBox.shrink();
+    } else {
+      final num first = task.first as num;
+      if (task.total - first != 0) {
+        return SizedBox(
+          width: double.infinity,
+          child: ElevatedTextButton(
+            onPressed: () => onDownload(downloadTask!),
+            text: localizations.download,
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
       }
+    }
+  }
 
   String availableReadings(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -197,12 +204,13 @@ class UploadPanel extends StatelessWidget {
   final UploadTask? uploadTask;
   final bool hasLoginTasks;
 
-  const UploadPanel(
-      {super.key,
-      required this.station,
-      required this.onUpload,
-      required this.uploadTask,
-      required this.hasLoginTasks});
+  const UploadPanel({
+    super.key,
+    required this.station,
+    required this.onUpload,
+    required this.uploadTask,
+    required this.hasLoginTasks,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -226,14 +234,18 @@ class UploadPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return padAll(Column(children: [
-      padVertical(Text(availableReadings(context))),
-      SizedBox(
+    return padAll(Column(
+      children: [
+        padVertical(Text(availableReadings(context))),
+        SizedBox(
           width: double.infinity,
           child: ElevatedTextButton(
-              onPressed: () => onUpload(uploadTask!),
-              text: localizations.upload))
-    ]));
+            onPressed: () => onUpload(uploadTask!),
+            text: localizations.upload,
+          ),
+        ),
+      ],
+    ));
   }
 
   String availableReadings(BuildContext context) {
@@ -254,13 +266,14 @@ class DataSyncPage extends StatelessWidget {
   final void Function(DownloadTask) onDownload;
   final void Function(UploadTask) onUpload;
 
-  const DataSyncPage(
-      {super.key,
-      required this.known,
-      required this.tasks,
-      required this.stationOperations,
-      required this.onDownload,
-      required this.onUpload});
+  const DataSyncPage({
+    super.key,
+    required this.known,
+    required this.tasks,
+    required this.stationOperations,
+    required this.onDownload,
+    required this.onUpload,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -275,11 +288,10 @@ class DataSyncPage extends StatelessWidget {
       final download = DownloadPanel(
           station: station, downloadTask: downloadTask, onDownload: onDownload);
       final upload = UploadPanel(
-        station: station,
-        uploadTask: uploadTask,
-        onUpload: onUpload,
-        hasLoginTasks: loginTasks.isNotEmpty,
-      );
+          station: station,
+          uploadTask: uploadTask,
+          onUpload: onUpload,
+          hasLoginTasks: loginTasks.isNotEmpty);
       Loggers.ui.i(
           "data-sync: busy=$busy downloadTask=$downloadTask uploadTask=$uploadTask loginTasks=$loginTasks");
       return StationSyncStatus(
@@ -287,14 +299,17 @@ class DataSyncPage extends StatelessWidget {
     }).toList();
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.dataSyncTitle),
-        ),
-        body: ListView(children: [
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.dataSyncTitle),
+      ),
+      body: ListView(
+        children: [
           if (loginTasks.isNotEmpty) const LoginRequiredWidget(),
           if (stations.isEmpty) const NoStationsHelpWidget(showImage: true),
           ...stations,
-        ]));
+        ],
+      ),
+    );
   }
 }
 
@@ -328,10 +343,14 @@ class StationSyncStatus extends StatelessWidget {
     }
     if ((isSyncing || busy) && !isFailed) {
       final localizations = AppLocalizations.of(context)!;
-      return WH.padColumn(Column(children: [
-        WH.progressBar(0.0),
-        WH.padBelowProgress(Text(localizations.syncWorking)),
-      ]));
+      return WH.padColumn(
+        Column(
+          children: [
+            WH.progressBar(0.0),
+            WH.padBelowProgress(Text(localizations.syncWorking)),
+          ],
+        ),
+      );
     }
     return Column(children: [download, upload]);
   }
@@ -346,8 +365,9 @@ class StationSyncStatus extends StatelessWidget {
         : null;
 
     return BorderedListItem(
-        header: GenericListItemHeader(title: title, subtitle: subtitle),
-        children: [_progress(context)]);
+      header: GenericListItemHeader(title: title, subtitle: subtitle),
+      children: [_progress(context)],
+    );
   }
 }
 
@@ -366,13 +386,21 @@ class DownloadProgressPanel extends StatelessWidget {
     final elapsed = DateTime.now().difference(started);
     final subtitle = localizations.syncElapsed(elapsed.toString());
 
-    return WH.padColumn(Column(children: [
-      WH.progressBar(progress.completed),
-      WH.padBelowProgress(Column(children: [
-        WH.padLabel(Text(label)),
-        WH.padLabel(Text(subtitle)),
-      ]))
-    ]));
+    return WH.padColumn(
+      Column(
+        children: [
+          WH.progressBar(progress.completed),
+          WH.padBelowProgress(
+            Column(
+              children: [
+                WH.padLabel(Text(label)),
+                WH.padLabel(Text(subtitle)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -383,10 +411,14 @@ class UploadProgressPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WH.padColumn(Column(children: [
-      WH.progressBar(progress.completed),
-      WH.padBelowProgress(const SizedBox.shrink())
-    ]));
+    return WH.padColumn(
+      Column(
+        children: [
+          WH.progressBar(progress.completed),
+          WH.padBelowProgress(const SizedBox.shrink()),
+        ],
+      ),
+    );
   }
 }
 
@@ -400,7 +432,8 @@ class UpgradeRequiredWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return WH.padPage(MessageAndButton(
+    return WH.padPage(
+      MessageAndButton(
         title: localizations.alertTitle,
         message: localizations.syncUpgradeRequiredMessage,
         button: localizations.syncManageFirmware,
@@ -408,11 +441,11 @@ class UpgradeRequiredWidget extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => StationFirmwarePage(
-                station: station,
-              ),
+              builder: (context) => StationFirmwarePage(station: station),
             ),
           );
-        }));
+        },
+      ),
+    );
   }
 }
