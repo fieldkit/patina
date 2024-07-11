@@ -223,7 +223,6 @@ class KnownStationsModel extends ChangeNotifier {
     final deviceId = transferProgress.deviceId;
     final station = findOrCreate(deviceId);
     final status = transferProgress.status;
-
     if (status is TransferStatus_Starting) {
       station.syncing =
           SyncingProgress(download: null, upload: null, failed: false);
@@ -395,14 +394,24 @@ class StationOperations extends ChangeNotifier {
     return getBusy<Operation>(deviceId).isNotEmpty;
   }
 
-  void dismiss(UpgradeOperation operation) {
+  void dismiss(Operation operation) {
     operation.dismiss();
     notifyListeners();
   }
 }
 
 abstract class Operation extends ChangeNotifier {
+  bool dismissed = false;
+
   void update(DomainMessage message);
+
+  void dismiss() {
+    dismissed = true;
+  }
+
+  void undismiss() {
+    dismissed = false;
+  }
 
   bool get done;
 
@@ -486,7 +495,6 @@ class FirmwareComparison {
 
 class UpgradeOperation extends Operation {
   int firmwareId;
-  bool dismissed = false;
   UpgradeStatus status = const UpgradeStatus.starting();
   UpgradeError? error;
 
@@ -505,7 +513,7 @@ class UpgradeOperation extends Operation {
       }
       firmwareId = message.field0.firmwareId;
       status = upgradeStatus;
-      dismissed = false;
+      undismiss();
       notifyListeners();
     }
   }
@@ -517,10 +525,6 @@ class UpgradeOperation extends Operation {
   bool get busy => !(status is UpgradeStatus_Completed ||
       status is UpgradeStatus_Failed ||
       status is UpgradeStatus_ReconnectTimeout);
-
-  void dismiss() {
-    dismissed = true;
-  }
 }
 
 class FirmwareDownloadOperation extends Operation {
