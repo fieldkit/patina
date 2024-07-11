@@ -448,7 +448,7 @@ abstract class TransferOperation extends Operation {
       return status.field0.received / status.field0.total;
     }
     if (status is TransferStatus_Completed) {
-      return 0.0;
+      return 100.0;
     }
     return 0.0;
   }
