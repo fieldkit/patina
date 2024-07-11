@@ -1304,6 +1304,17 @@ impl SseDecode for Option<u64> {
     }
 }
 
+impl SseDecode for Option<crate::api::UpgradeError> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<crate::api::UpgradeError>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for Option<Vec<u8>> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1580,6 +1591,18 @@ impl SseDecode for () {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {}
 }
 
+impl SseDecode for crate::api::UpgradeError {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::api::UpgradeError::Other,
+            1 => crate::api::UpgradeError::SdCard,
+            _ => unreachable!("Invalid variant for UpgradeError: {}", inner),
+        };
+    }
+}
+
 impl SseDecode for crate::api::UpgradeProgress {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1616,7 +1639,8 @@ impl SseDecode for crate::api::UpgradeStatus {
                 return crate::api::UpgradeStatus::Completed;
             }
             5 => {
-                return crate::api::UpgradeStatus::Failed;
+                let mut var_field0 = <Option<crate::api::UpgradeError>>::sse_decode(deserializer);
+                return crate::api::UpgradeStatus::Failed(var_field0);
             }
             _ => {
                 unimplemented!("");
@@ -2367,6 +2391,21 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::TransmissionToken>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::UpgradeError {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            Self::Other => 0.into_dart(),
+            Self::SdCard => 1.into_dart(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::UpgradeError {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::UpgradeError> for crate::api::UpgradeError {
+    fn into_into_dart(self) -> crate::api::UpgradeError {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api::UpgradeProgress {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -2396,7 +2435,9 @@ impl flutter_rust_bridge::IntoDart for crate::api::UpgradeStatus {
             crate::api::UpgradeStatus::Restarting => [2.into_dart()].into_dart(),
             crate::api::UpgradeStatus::ReconnectTimeout => [3.into_dart()].into_dart(),
             crate::api::UpgradeStatus::Completed => [4.into_dart()].into_dart(),
-            crate::api::UpgradeStatus::Failed => [5.into_dart()].into_dart(),
+            crate::api::UpgradeStatus::Failed(field0) => {
+                [5.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
         }
     }
 }
@@ -2972,6 +3013,16 @@ impl SseEncode for Option<u64> {
     }
 }
 
+impl SseEncode for Option<crate::api::UpgradeError> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <crate::api::UpgradeError>::sse_encode(value, serializer);
+        }
+    }
+}
+
 impl SseEncode for Option<Vec<u8>> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -3174,6 +3225,22 @@ impl SseEncode for () {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {}
 }
 
+impl SseEncode for crate::api::UpgradeError {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::api::UpgradeError::Other => 0,
+                crate::api::UpgradeError::SdCard => 1,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
+    }
+}
+
 impl SseEncode for crate::api::UpgradeProgress {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -3203,8 +3270,9 @@ impl SseEncode for crate::api::UpgradeStatus {
             crate::api::UpgradeStatus::Completed => {
                 <i32>::sse_encode(4, serializer);
             }
-            crate::api::UpgradeStatus::Failed => {
+            crate::api::UpgradeStatus::Failed(field0) => {
                 <i32>::sse_encode(5, serializer);
+                <Option<crate::api::UpgradeError>>::sse_encode(field0, serializer);
             }
         }
     }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/link.dart';
 
 class HelpTab extends StatelessWidget {
@@ -27,9 +28,7 @@ class HelpTab extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.helpTitle)
-      ),
+      appBar: AppBar(title: Text(localizations.helpTitle)),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: <Widget>[
@@ -70,6 +69,36 @@ class HelpTab extends StatelessWidget {
                 messenger.showSnackBar(SnackBar(
                   content: Text(localizations.logsUploaded),
                 ));
+              } finally {
+                overlay.hide();
+              }
+            },
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(localizations.helpCreateBackup),
+            onTap: () async {
+              final localizations = AppLocalizations.of(context)!;
+              final messenger = ScaffoldMessenger.of(context);
+              final overlay = context.loaderOverlay;
+              try {
+                overlay.show();
+                final file = await Backup().create();
+                if (file != null) {
+                  final res = await Share.shareXFiles([XFile(file)],
+                      text: localizations.backupShareMessage,
+                      subject: localizations.backupShareSubject);
+
+                  Loggers.ui.i("backup: $res");
+
+                  messenger.showSnackBar(SnackBar(
+                    content: Text(localizations.helpBackupCreated),
+                  ));
+                } else {
+                  messenger.showSnackBar(SnackBar(
+                    content: Text(localizations.helpBackupFailed),
+                  ));
+                }
               } finally {
                 overlay.hide();
               }

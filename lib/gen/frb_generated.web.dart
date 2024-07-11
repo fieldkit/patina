@@ -96,6 +96,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int dco_decode_box_autoadd_u_64(dynamic raw);
 
   @protected
+  UpgradeError dco_decode_box_autoadd_upgrade_error(dynamic raw);
+
+  @protected
   UpgradeProgress dco_decode_box_autoadd_upgrade_progress(dynamic raw);
 
   @protected
@@ -230,6 +233,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int? dco_decode_opt_box_autoadd_u_64(dynamic raw);
 
   @protected
+  UpgradeError? dco_decode_opt_box_autoadd_upgrade_error(dynamic raw);
+
+  @protected
   Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw);
 
   @protected
@@ -285,6 +291,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void dco_decode_unit(dynamic raw);
+
+  @protected
+  UpgradeError dco_decode_upgrade_error(dynamic raw);
 
   @protected
   UpgradeProgress dco_decode_upgrade_progress(dynamic raw);
@@ -396,6 +405,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int sse_decode_box_autoadd_u_64(SseDeserializer deserializer);
+
+  @protected
+  UpgradeError sse_decode_box_autoadd_upgrade_error(
+      SseDeserializer deserializer);
 
   @protected
   UpgradeProgress sse_decode_box_autoadd_upgrade_progress(
@@ -550,6 +563,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int? sse_decode_opt_box_autoadd_u_64(SseDeserializer deserializer);
 
   @protected
+  UpgradeError? sse_decode_opt_box_autoadd_upgrade_error(
+      SseDeserializer deserializer);
+
+  @protected
   Uint8List? sse_decode_opt_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
@@ -606,6 +623,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_decode_unit(SseDeserializer deserializer);
+
+  @protected
+  UpgradeError sse_decode_upgrade_error(SseDeserializer deserializer);
 
   @protected
   UpgradeProgress sse_decode_upgrade_progress(SseDeserializer deserializer);
@@ -724,6 +744,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_box_autoadd_u_64(int self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_upgrade_error(
+      UpgradeError self, SseSerializer serializer);
 
   @protected
   void sse_encode_box_autoadd_upgrade_progress(
@@ -884,6 +908,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_box_autoadd_u_64(int? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_opt_box_autoadd_upgrade_error(
+      UpgradeError? self, SseSerializer serializer);
+
+  @protected
   void sse_encode_opt_list_prim_u_8_strict(
       Uint8List? self, SseSerializer serializer);
 
@@ -944,6 +972,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_unit(void self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_upgrade_error(UpgradeError self, SseSerializer serializer);
 
   @protected
   void sse_encode_upgrade_progress(

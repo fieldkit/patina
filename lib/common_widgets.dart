@@ -158,14 +158,16 @@ class OopsBug extends StatelessWidget {
 class ElevatedTextButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
+  final ButtonStyle? style;
 
   const ElevatedTextButton(
-      {super.key, required this.text, required, this.onPressed});
+      {super.key, required this.text, required, this.onPressed, this.style});
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
         onPressed: onPressed,
+        style: style,
         child: Text(
           text,
           style: const TextStyle(
