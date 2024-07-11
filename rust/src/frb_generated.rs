@@ -1102,12 +1102,14 @@ impl SseDecode for crate::api::ModuleConfig {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_position = <u32>::sse_decode(deserializer);
+        let mut var_internal = <bool>::sse_decode(deserializer);
         let mut var_moduleId = <String>::sse_decode(deserializer);
         let mut var_key = <String>::sse_decode(deserializer);
         let mut var_sensors = <Vec<crate::api::SensorConfig>>::sse_decode(deserializer);
         let mut var_configuration = <Option<Vec<u8>>>::sse_decode(deserializer);
         return crate::api::ModuleConfig {
             position: var_position,
+            internal: var_internal,
             module_id: var_moduleId,
             key: var_key,
             sensors: var_sensors,
@@ -1362,6 +1364,7 @@ impl SseDecode for crate::api::SensorConfig {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_number = <u32>::sse_decode(deserializer);
+        let mut var_internal = <bool>::sse_decode(deserializer);
         let mut var_key = <String>::sse_decode(deserializer);
         let mut var_fullKey = <String>::sse_decode(deserializer);
         let mut var_calibratedUom = <String>::sse_decode(deserializer);
@@ -1370,6 +1373,7 @@ impl SseDecode for crate::api::SensorConfig {
         let mut var_previousValue = <Option<crate::api::SensorValue>>::sse_decode(deserializer);
         return crate::api::SensorConfig {
             number: var_number,
+            internal: var_internal,
             key: var_key,
             full_key: var_fullKey,
             calibrated_uom: var_calibratedUom,
@@ -2035,6 +2039,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::ModuleConfig {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.position.into_into_dart().into_dart(),
+            self.internal.into_into_dart().into_dart(),
             self.module_id.into_into_dart().into_dart(),
             self.key.into_into_dart().into_dart(),
             self.sensors.into_into_dart().into_dart(),
@@ -2158,6 +2163,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::SensorConfig {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.number.into_into_dart().into_dart(),
+            self.internal.into_into_dart().into_dart(),
             self.key.into_into_dart().into_dart(),
             self.full_key.into_into_dart().into_dart(),
             self.calibrated_uom.into_into_dart().into_dart(),
@@ -2818,6 +2824,7 @@ impl SseEncode for crate::api::ModuleConfig {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u32>::sse_encode(self.position, serializer);
+        <bool>::sse_encode(self.internal, serializer);
         <String>::sse_encode(self.module_id, serializer);
         <String>::sse_encode(self.key, serializer);
         <Vec<crate::api::SensorConfig>>::sse_encode(self.sensors, serializer);
@@ -3029,6 +3036,7 @@ impl SseEncode for crate::api::SensorConfig {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u32>::sse_encode(self.number, serializer);
+        <bool>::sse_encode(self.internal, serializer);
         <String>::sse_encode(self.key, serializer);
         <String>::sse_encode(self.full_key, serializer);
         <String>::sse_encode(self.calibrated_uom, serializer);

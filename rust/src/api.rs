@@ -15,7 +15,10 @@ use tracing_subscriber::{fmt::MakeWriter, EnvFilter};
 
 use discovery::{DeviceId, Discovered, Discovery};
 use query::{
-    device::{self, ConfigureLoraTransmission, HttpQuery, HttpReply, QueryType, Recording},
+    device::{
+        self, ConfigureLoraTransmission, HttpQuery, HttpReply, ModuleFlags, QueryType, Recording,
+        SensorFlags,
+    },
     portal::{DecodedToken, StatusCode},
 };
 use store::Db;
@@ -1225,6 +1228,7 @@ pub struct FirmwareInfo {
 #[derive(Clone, Debug)]
 pub struct ModuleConfig {
     pub position: u32,
+    pub internal: bool,
     pub module_id: String,
     pub key: String,
     pub sensors: Vec<SensorConfig>,
@@ -1234,6 +1238,7 @@ pub struct ModuleConfig {
 #[derive(Clone, Debug)]
 pub struct SensorConfig {
     pub number: u32,
+    pub internal: bool,
     pub key: String,
     pub full_key: String,
     pub calibrated_uom: String,
@@ -1416,6 +1421,8 @@ impl TryInto<StationConfig> for StationAndConnection {
                 .into_iter()
                 .map(|module| ModuleConfig {
                     position: module.position,
+                    internal: (module.flags & ModuleFlags::ModuleFlagInternal as u32)
+                        == ModuleFlags::ModuleFlagInternal as u32,
                     module_id: module.hardware_id,
                     key: module.key.clone(),
                     configuration: module.configuration,
@@ -1424,6 +1431,9 @@ impl TryInto<StationConfig> for StationAndConnection {
                         .into_iter()
                         .map(|sensor| SensorConfig {
                             number: sensor.number,
+                            // TODO Firmware currently uses the same flag. Pb SensorFlags is unused, confusing.
+                            internal: (sensor.flags & ModuleFlags::ModuleFlagInternal as u32)
+                                == ModuleFlags::ModuleFlagInternal as u32,
                             full_key: format!("{}.{}", &module.key, &sensor.key),
                             key: sensor.key,
                             calibrated_uom: sensor.calibrated_uom,

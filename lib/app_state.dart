@@ -34,7 +34,7 @@ class StationModel {
   });
 
   void updateName(String value) {
-    config?.name = value;
+    // config?.name = value;
   }
 }
 
