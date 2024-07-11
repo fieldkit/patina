@@ -87,7 +87,7 @@ class GenericListItemHeader extends StatelessWidget {
       Expanded(
         child: Text(title,
             style: titleStyle ??
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
+                const TextStyle(fontSize: 20, fontWeight: FontWeight.normal)),
       ),
       if (trailing != null) trailing!,
     ])));

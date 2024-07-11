@@ -1,8 +1,10 @@
+import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fk/gen/api.dart';
-
 import '../app_state.dart';
 import '../common_widgets.dart';
 import '../diagnostics.dart';
@@ -56,10 +58,10 @@ class MessageAndButton extends StatelessWidget {
     return Column(
       children: [
         WH.align(
-          Text(title, style: const TextStyle(fontSize: 20.0)),
+          Text(title, style: const TextStyle(fontSize: 16.0)),
         ),
         WH.align(
-          Text(message, style: const TextStyle(fontSize: 16.0)),
+          Text(message, style: const TextStyle(fontSize: 14.0)),
         ),
         WH.align(
           WH.vertical(
@@ -140,7 +142,9 @@ class DownloadPanel extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
 
     if (!station.connected || station.ephemeral == null) {
-      return padAll(Text(localizations.syncDisconnected));
+      return padAll(LastConnected(
+          lastConnected: station.config?.lastSeen,
+          connected: station.connected));
     }
 
     if (!(station.ephemeral?.capabilities.udp ?? false)) {
@@ -220,7 +224,15 @@ class UploadPanel extends StatelessWidget {
       if (hasLoginTasks) {
         return const SizedBox.shrink();
       } else {
-        return padAll(Text(localizations.syncNoUpload));
+        return Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Divider(),
+            ),
+            padAll(Text(localizations.syncNoUpload)),
+          ],
+        );
       }
     }
 
@@ -229,8 +241,6 @@ class UploadPanel extends StatelessWidget {
     }
 
     if (uploadTask?.problem == UploadProblem.authentication) {
-      // We could do this, but right now we show a Login button at the top of the page.
-      // return Text("Not logged in to portal.");
       return const SizedBox.shrink();
     }
 
@@ -445,6 +455,71 @@ class UpgradeRequiredWidget extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class LastConnected extends StatelessWidget {
+  final UtcDateTime? lastConnected;
+  final bool connected;
+
+  final colorFilter =
+      const ColorFilter.mode(Color(0xFFcccdcf), BlendMode.srcIn);
+
+  const LastConnected({super.key, this.lastConnected, required this.connected});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    const boxConstraints = BoxConstraints(
+      minHeight: 5,
+      minWidth: 5,
+      maxHeight: 150,
+      maxWidth: 200,
+    );
+
+    if (connected) {
+      return ConstrainedBox(
+        constraints: boxConstraints,
+        child: ListTile(
+          visualDensity: const VisualDensity(vertical: -4),
+          leading: SizedBox(
+            width: 36,
+            child: Image.asset(AppIcons.stationConnected, cacheWidth: 36),
+          ),
+          title: Text(localizations.stationConnected,
+              style: const TextStyle(fontSize: 12)),
+        ),
+      );
+    }
+
+    final titleText = lastConnected != null
+        ? localizations.notConnected
+        : localizations.notConnected;
+    final subtitleText = lastConnected != null
+        ? localizations.lastConnectedSince(
+            DateFormat.yMd().add_jm().format(
+              DateTime.fromMicrosecondsSinceEpoch(lastConnected!.field0 * 1000),
+            ),
+          )
+        : null;
+
+    return ConstrainedBox(
+      constraints: boxConstraints,
+      child: ListTile(
+        visualDensity: const VisualDensity(vertical: -4),
+        leading: SizedBox(
+          width: 36,
+          child: SvgPicture.asset(
+            "resources/images/icon_station_disconnected.svg",
+            semanticsLabel: localizations.stationDisconnectedIcon,
+            colorFilter: colorFilter,
+          ),
+        ),
+        title: Text(titleText, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)), subtitle: subtitleText != null ? Row(children: [Text(subtitleText, style: const TextStyle(fontSize: 12, color: Colors.grey)), const SizedBox(width: 5),],
+              )
+            : null,
       ),
     );
   }
