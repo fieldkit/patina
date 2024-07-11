@@ -291,6 +291,7 @@ class DataSyncPage extends StatelessWidget {
       );
       Loggers.ui.i(
           "data-sync: busy=$busy downloadTask=$downloadTask uploadTask=$uploadTask loginTasks=$loginTasks");
+
       return StationSyncStatus(
           station: station,
           busy: busy,
@@ -308,6 +309,72 @@ class DataSyncPage extends StatelessWidget {
           if (stations.isEmpty) const NoStationsHelpWidget(showImage: true),
           ...stations,
         ]));
+  }
+}
+
+class AcknowledgeSyncWidget extends StatefulWidget {
+  final bool downloading;
+  final bool uploading;
+  final Widget child;
+
+  const AcknowledgeSyncWidget({
+    super.key,
+    required this.downloading,
+    required this.uploading,
+    required this.child,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _AcknowledgeSyncState();
+}
+
+enum Ack {
+  unnecessary,
+  download,
+  upload,
+}
+
+class _AcknowledgeSyncState extends State<AcknowledgeSyncWidget> {
+  Ack _ack = Ack.unnecessary;
+
+  @override
+  void didUpdateWidget(covariant AcknowledgeSyncWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.downloading != widget.downloading && !widget.downloading) {
+      _ack = Ack.download;
+    }
+
+    if (oldWidget.uploading != widget.uploading && !widget.uploading) {
+      _ack = Ack.upload;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    if (_ack == Ack.unnecessary) {
+      return widget.child;
+    } else {
+      return Column(children: [
+        Text(
+          _ack == Ack.download
+              ? localizations.syncDownloadSuccess
+              : localizations.syncUploadSuccess,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),
+        ),
+        padAll(SizedBox(
+            width: double.infinity,
+            child: ElevatedTextButton(
+                text: localizations.syncDismissOk,
+                onPressed: () {
+                  setState(() {
+                    _ack = Ack.unnecessary;
+                  });
+                })))
+      ]);
+    }
   }
 }
 
@@ -334,21 +401,25 @@ class StationSyncStatus extends StatelessWidget {
     required this.upload,
   });
 
-  Widget _progress(BuildContext context) {
+  Widget _body(BuildContext context) {
     if (isDownloading) {
       return DownloadProgressPanel(progress: station.syncing!.download!);
     }
     if (isUploading) {
       return UploadProgressPanel(progress: station.syncing!.upload!);
     }
-    if ((isSyncing || busy) && !isFailed) {
+    if (isSyncing || busy) {
       final localizations = AppLocalizations.of(context)!;
       return WH.padColumn(Column(children: [
         WH.progressBar(0.0),
         WH.padBelowProgress(Text(localizations.syncWorking)),
       ]));
     }
-    return Column(children: [status, download, upload]);
+    return Column(children: [
+      status,
+      download,
+      upload,
+    ]);
   }
 
   @override
@@ -359,10 +430,14 @@ class StationSyncStatus extends StatelessWidget {
     final subtitle = isSyncing
         ? localizations.syncPercentageComplete(station.syncing?.completed ?? 0)
         : null;
+    final header = GenericListItemHeader(title: title, subtitle: subtitle);
 
-    return BorderedListItem(
-        header: GenericListItemHeader(title: title, subtitle: subtitle),
-        children: [_progress(context)]);
+    final body = AcknowledgeSyncWidget(
+        downloading: isDownloading,
+        uploading: isUploading,
+        child: _body(context));
+
+    return BorderedListItem(header: header, children: [body]);
   }
 }
 
