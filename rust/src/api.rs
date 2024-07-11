@@ -621,7 +621,7 @@ impl Sdk {
                 Ok(UpgradeProgress {
                     device_id: device_id.0.clone(),
                     firmware_id: firmware.id,
-                    status: UpgradeStatus::Failed,
+                    status: UpgradeStatus::Failed(None),
                 })
             }
         }
@@ -1096,13 +1096,32 @@ pub enum FirmwareDownloadStatus {
 }
 
 #[derive(Debug)]
+pub enum UpgradeError {
+    Other,
+    SdCard,
+}
+
+impl From<crate::firmware::Error> for UpgradeError {
+    fn from(value: crate::firmware::Error) -> Self {
+        match value {
+            crate::firmware::Error::Upgrade(e) => match e {
+                device::UpgradeError::SdCardMissing => UpgradeError::SdCard,
+                device::UpgradeError::SdCardIo => UpgradeError::SdCard,
+                _ => UpgradeError::Other,
+            },
+            _ => UpgradeError::Other,
+        }
+    }
+}
+
+#[derive(Debug)]
 pub enum UpgradeStatus {
     Starting,
     Uploading(UploadProgress),
     Restarting,
     ReconnectTimeout,
     Completed,
-    Failed,
+    Failed(Option<UpgradeError>),
 }
 
 #[derive(Debug)]

@@ -765,7 +765,7 @@ class SolarInfo {
 class StationConfig {
   final String deviceId;
   final String generationId;
-  final String name;
+  String name;
   final FirmwareInfo firmware;
   final UtcDateTime lastSeen;
   final StreamInfo meta;
@@ -775,7 +775,7 @@ class StationConfig {
   final Uint8List? pb;
   final List<ModuleConfig> modules;
 
-  const StationConfig({
+  StationConfig({
     required this.deviceId,
     required this.generationId,
     required this.name,
@@ -937,6 +937,11 @@ class TransmissionToken {
           url == other.url;
 }
 
+enum UpgradeError {
+  other,
+  sdCard,
+}
+
 class UpgradeProgress {
   final String deviceId;
   final int firmwareId;
@@ -971,7 +976,9 @@ sealed class UpgradeStatus with _$UpgradeStatus {
   const factory UpgradeStatus.reconnectTimeout() =
       UpgradeStatus_ReconnectTimeout;
   const factory UpgradeStatus.completed() = UpgradeStatus_Completed;
-  const factory UpgradeStatus.failed() = UpgradeStatus_Failed;
+  const factory UpgradeStatus.failed([
+    UpgradeError? field0,
+  ]) = UpgradeStatus_Failed;
 }
 
 class UploadProgress {

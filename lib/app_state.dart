@@ -32,6 +32,10 @@ class StationModel {
     this.config,
     this.connected = false,
   });
+
+  void updateName(String value) {
+    config?.name = value;
+  }
 }
 
 class UpdatePortal {
@@ -369,6 +373,11 @@ class StationOperations extends ChangeNotifier {
   bool isBusy(String deviceId) {
     return getBusy<Operation>(deviceId).isNotEmpty;
   }
+
+  void dismiss(UpgradeOperation operation) {
+    operation.dismiss();
+    notifyListeners();
+  }
 }
 
 abstract class Operation extends ChangeNotifier {
@@ -456,24 +465,41 @@ class FirmwareComparison {
 
 class UpgradeOperation extends Operation {
   int firmwareId;
+  bool dismissed = false;
   UpgradeStatus status = const UpgradeStatus.starting();
+  UpgradeError? error;
 
   UpgradeOperation(this.firmwareId);
 
   @override
   void update(DomainMessage message) {
     if (message is DomainMessage_UpgradeProgress) {
+      final upgradeStatus = message.field0.status;
+      if (upgradeStatus is UpgradeStatus_Failed) {
+        error = upgradeStatus.field0;
+        Loggers.state.i("upgrade: $error");
+      } else {
+        error = null;
+        Loggers.state.i("upgrade: $upgradeStatus");
+      }
       firmwareId = message.field0.firmwareId;
-      status = message.field0.status;
+      status = upgradeStatus;
+      dismissed = false;
       notifyListeners();
     }
   }
 
   @override
-  bool get done =>
-      status is UpgradeStatus_Completed ||
+  bool get done => dismissed;
+
+  @override
+  bool get busy => !(status is UpgradeStatus_Completed ||
       status is UpgradeStatus_Failed ||
-      status is UpgradeStatus_ReconnectTimeout;
+      status is UpgradeStatus_ReconnectTimeout);
+
+  void dismiss() {
+    dismissed = true;
+  }
 }
 
 class FirmwareDownloadOperation extends Operation {
@@ -491,6 +517,45 @@ class FirmwareDownloadOperation extends Operation {
   bool get done =>
       status is FirmwareDownloadStatus_Completed ||
       status is FirmwareDownloadStatus_Failed;
+}
+
+class LocalFirmwareBranchInfo {
+  final String branch;
+  final String? version;
+  final String? sha;
+
+  LocalFirmwareBranchInfo(
+      {required this.version, required this.branch, required this.sha});
+
+  static LocalFirmwareBranchInfo? parse(String label) {
+    if (label.length >= 8) {
+      final version = label.split('-').first;
+      final lastDash = label.lastIndexOf("-");
+      if (lastDash > 0) {
+        final sha = label.substring(lastDash + 1);
+        final RegExp hex = RegExp("[0..9abcdef]+");
+        if (hex.hasMatch(sha)) {
+          final branch = label.substring(version.length + 1, lastDash);
+          final maybeDot = branch.indexOf(".");
+          if (maybeDot > 0) {
+            return LocalFirmwareBranchInfo(
+                version: version,
+                branch: branch.substring(0, maybeDot),
+                sha: sha);
+          } else {
+            return LocalFirmwareBranchInfo(
+                version: version, branch: branch, sha: sha);
+          }
+        }
+      }
+    }
+    return LocalFirmwareBranchInfo(version: null, branch: label, sha: null);
+  }
+
+  @override
+  String toString() {
+    return "BranchInfo($version, $branch, $sha)";
+  }
 }
 
 class AvailableFirmwareModel extends ChangeNotifier {
@@ -1406,16 +1471,15 @@ class PortalAccounts extends ChangeNotifier {
   }
 
   Future<void> refreshFirmware() async {
-    Loggers.state.i("firmware: refresh");
     try {
-      if (_accounts.isEmpty) {
-        Loggers.state.w("firmware: unauthenticated");
-        await cacheFirmware(tokens: null, background: true);
-      } else {
-        for (PortalAccount account in _accounts) {
-          Loggers.state.i("firmware: ${account.email}");
-          await cacheFirmware(tokens: account.tokens, background: true);
-        }
+      // Refresh unauthenticated to get the production firmware.
+      Loggers.state.w("firmware: unauthenticated");
+      await cacheFirmware(tokens: null, background: true);
+
+      // Request per-user development/testing firmware.
+      for (PortalAccount account in _accounts) {
+        Loggers.state.i("firmware: ${account.email}");
+        await cacheFirmware(tokens: account.tokens, background: true);
       }
     } catch (e) {
       Loggers.main.e("firmware: $e");

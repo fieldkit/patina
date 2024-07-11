@@ -846,6 +846,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  UpgradeError dco_decode_box_autoadd_upgrade_error(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_upgrade_error(raw);
+  }
+
+  @protected
   UpgradeProgress dco_decode_box_autoadd_upgrade_progress(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_upgrade_progress(raw);
@@ -1253,6 +1259,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  UpgradeError? dco_decode_opt_box_autoadd_upgrade_error(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_upgrade_error(raw);
+  }
+
+  @protected
   Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_list_prim_u_8_strict(raw);
@@ -1489,6 +1501,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  UpgradeError dco_decode_upgrade_error(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return UpgradeError.values[raw as int];
+  }
+
+  @protected
   UpgradeProgress dco_decode_upgrade_progress(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1518,7 +1536,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 4:
         return UpgradeStatus_Completed();
       case 5:
-        return UpgradeStatus_Failed();
+        return UpgradeStatus_Failed(
+          dco_decode_opt_box_autoadd_upgrade_error(raw[1]),
+        );
       default:
         throw Exception("unreachable");
     }
@@ -1761,6 +1781,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   int sse_decode_box_autoadd_u_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_u_64(deserializer));
+  }
+
+  @protected
+  UpgradeError sse_decode_box_autoadd_upgrade_error(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_upgrade_error(deserializer));
   }
 
   @protected
@@ -2282,6 +2309,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  UpgradeError? sse_decode_opt_box_autoadd_upgrade_error(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_upgrade_error(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   Uint8List? sse_decode_opt_list_prim_u_8_strict(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -2508,6 +2547,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  UpgradeError sse_decode_upgrade_error(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return UpgradeError.values[inner];
+  }
+
+  @protected
   UpgradeProgress sse_decode_upgrade_progress(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_deviceId = sse_decode_String(deserializer);
@@ -2535,7 +2581,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 4:
         return UpgradeStatus_Completed();
       case 5:
-        return UpgradeStatus_Failed();
+        var var_field0 = sse_decode_opt_box_autoadd_upgrade_error(deserializer);
+        return UpgradeStatus_Failed(var_field0);
       default:
         throw UnimplementedError('');
     }
@@ -2761,6 +2808,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_box_autoadd_u_64(int self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_64(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_upgrade_error(
+      UpgradeError self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_upgrade_error(self, serializer);
   }
 
   @protected
@@ -3199,6 +3253,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_opt_box_autoadd_upgrade_error(
+      UpgradeError? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_upgrade_error(self, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_opt_list_prim_u_8_strict(
       Uint8List? self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -3378,6 +3443,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_upgrade_error(UpgradeError self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
   void sse_encode_upgrade_progress(
       UpgradeProgress self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -3401,8 +3472,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_i_32(3, serializer);
       case UpgradeStatus_Completed():
         sse_encode_i_32(4, serializer);
-      case UpgradeStatus_Failed():
+      case UpgradeStatus_Failed(field0: final field0):
         sse_encode_i_32(5, serializer);
+        sse_encode_opt_box_autoadd_upgrade_error(field0, serializer);
     }
   }
 

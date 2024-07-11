@@ -1,12 +1,12 @@
 import 'package:fk/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import 'common_widgets.dart';
 import 'gen/api.dart';
-
 import 'app_state.dart';
 import 'location_widgets.dart';
 import 'map_widget.dart';
@@ -20,45 +20,44 @@ class StationsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<KnownStationsModel>(
       builder: (context, knownStations, child) {
-        return ProvideLocation(child: ListStationsPage(known: knownStations));
+        return ProvideLocation(
+          child: ListStationsPage(knownStations: knownStations),
+        );
       },
     );
   }
 }
 
 class ListStationsPage extends StatelessWidget {
-  final KnownStationsModel known;
+  final KnownStationsModel knownStations;
 
-  const ListStationsPage({super.key, required this.known});
+  const ListStationsPage({super.key, required this.knownStations});
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> map = [const SizedBox(height: 200, child: MapWidget())];
 
-    final cards = known.stations.map((station) {
-      if (station.config == null) {
-        return DiscoveringStationCard(station: station);
-      } else {
-        return StationCard(station: station);
-      }
+    final cards = knownStations.stations.map((station) {
+      return station.config == null
+          ? DiscoveringStationCard(station: station)
+          : StationCard(station: station);
     }).toList();
 
     final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(localizations.myStationsTitle),
-        ),
-        body: ListView(children: [
+      appBar: AppBar(
+        title: Text(localizations.myStationsTitle),
+      ),
+      body: ListView(
+        children: [
           ...map,
-          const SizedBox(
-              height:
-                  50.0), // Adding space under map, might have to change once cards are there. Looks good with the no stations
+          const SizedBox(height: 50.0),
           ...cards,
-          if (cards.isEmpty) ...[
-            const NoStationsHelpWidget(showImage: false),
-          ]
-        ]));
+          if (cards.isEmpty) const NoStationsHelpWidget(showImage: false),
+        ],
+      ),
+    );
   }
 }
 
@@ -70,17 +69,19 @@ class TinyOperation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final op = operation;
-    if (op is UploadOperation) {
-      return WH.align(WH.padPage(Text(localizations.busyUploading)));
+    final String operationText;
+
+    if (operation is UploadOperation) {
+      operationText = localizations.busyUploading;
+    } else if (operation is DownloadOperation) {
+      operationText = localizations.busyDownloading;
+    } else if (operation is UpgradeOperation) {
+      operationText = localizations.busyUpgrading;
+    } else {
+      operationText = localizations.busyWorking;
     }
-    if (op is DownloadOperation) {
-      return WH.align(WH.padPage(Text(localizations.busyDownloading)));
-    }
-    if (op is UpgradeOperation) {
-      return WH.align(WH.padPage(Text(localizations.busyUpgrading)));
-    }
-    return WH.align(WH.padPage(Text(localizations.busyWorking)));
+
+    return WH.align(WH.padPage(Text(operationText)));
   }
 }
 
@@ -88,80 +89,87 @@ class StationCard extends StatelessWidget {
   final StationModel station;
 
   StationConfig get config => station.config!;
+  final colorFilter =
+      const ColorFilter.mode(Color(0xFFcccdcf), BlendMode.srcIn);
 
   const StationCard({super.key, required this.station});
 
   @override
   Widget build(BuildContext context) {
-    final operations =
-        context.watch<StationOperations>().getBusy<Operation>(config.deviceId);
+    final operations = context
+        .watch<StationOperations>()
+        .getBusy<Operation>(config.deviceId)
+        .where((op) => op.done);
     final localizations = AppLocalizations.of(context)!;
     final ModuleConfigurations moduleConfigurations =
         context.watch<ModuleConfigurations>();
+
     final icon = SizedBox(
-        width: 54.0,
-        height: 54.0,
-        child: Image(
-          image: AssetImage(station.connected
-              ? AppIcons.stationConnected
-              : AppIcons.stationNotConnected),
-        ));
-    final tinyOperations =
-        operations.map((op) => TinyOperation(operation: op)).toList();
-    final subtitle = station.ephemeral?.deployment?.startTime != null
-        ? PreferredSize(
-            preferredSize: const Size.fromHeight(-10),
-            child: Text(
-              "${localizations.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000))}",
+      width: 54.0,
+      height: 54.0,
+      child: station.connected
+          ? const Image(image: AssetImage(AppIcons.stationConnected))
+          : SvgPicture.asset(
+              "resources/images/icon_station_disconnected.svg",
+              semanticsLabel: localizations.helpSettingsIcon,
+              colorFilter: colorFilter,
             ),
-          )
-        : moduleConfigurations.areAllModulesCalibrated(station, context) ==
-                false
-            ? PreferredSize(
-                preferredSize: const Size.fromHeight(-10),
-                child: Text(
-                  localizations.readyToCalibrate,
-                ),
-              )
-            : PreferredSize(
-                preferredSize: const Size.fromHeight(-10),
-                child: Text(
-                  localizations.readyToDeploy,
-                ),
-              );
+    );
+
+    final tinyOperations = operations.map((op) => TinyOperation(operation: op)).toList();
+    final subtitle = _buildSubtitle(context, moduleConfigurations, localizations);
 
     return Container(
-        padding: const EdgeInsets.all(10),
-        child: Container(
-            decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color.fromRGBO(212, 212, 212, 1),
-                ),
-                borderRadius: const BorderRadius.all(Radius.circular(2))),
-            child: Column(children: [
-              ListTile(
-                title: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Text(config.name)),
-                subtitle: Container(
-                    padding: const EdgeInsets.only(bottom: 8), child: subtitle),
-                trailing: icon,
-                dense: false,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ViewStationRoute(deviceId: station.deviceId),
-                    ),
-                  );
-                },
+      padding: const EdgeInsets.all(10),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color.fromRGBO(212, 212, 212, 1)),
+          borderRadius: const BorderRadius.all(Radius.circular(2)),
+        ),
+        child: Column(
+          children: [
+            ListTile(
+              title: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Text(config.name),
               ),
-              if (tinyOperations.isNotEmpty)
-                Container(
-                    padding: const EdgeInsets.all(6),
-                    child: Column(children: tinyOperations))
-            ])));
+              subtitle: Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: subtitle,
+              ),
+              trailing: icon,
+              dense: false,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewStationRoute(deviceId: station.deviceId),
+                  ),
+                );
+              },
+            ),
+            if (tinyOperations.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(6),
+                child: Column(children: tinyOperations),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubtitle(BuildContext context, ModuleConfigurations moduleConfigurations, AppLocalizations localizations) {
+    if (station.ephemeral?.deployment?.startTime != null) {
+      final deploymentDate = DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000);
+      return Text("${localizations.deployedAt} ${DateFormat.yMd().format(deploymentDate)}");
+    }
+
+    if (!moduleConfigurations.areAllModulesCalibrated(station, context)) {
+      return Text(localizations.readyToCalibrate);
+    }
+
+    return Text(localizations.readyToDeploy);
   }
 }
 

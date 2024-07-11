@@ -29,35 +29,53 @@ class CurrentReadingAndStandard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         isConnected: true);
 
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(20, 30, 20, 40),
-        child: Text(
-          localizations.countdownInstructions,
-          textAlign: TextAlign.center,
-        ),
-      ),
-      const DisplayCountdown(),
-      Padding(
-          padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Align(
-              alignment: Alignment.center,
-              child: Column(
-                children: [
-                  Text(localizations.sensorValue,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black54,
-                      )),
-                  sensorValue,
-                ],
+    return SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 30, 20, 40),
+                      child: Text(
+                        localizations.countdownInstructions,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const DisplayCountdown(),
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Column(
+                              children: [
+                                Text(localizations.sensorValue,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black54,
+                                    )),
+                                sensorValue,
+                              ],
+                            ),
+                          ),
+                        )),
+                    StandardWidget(standard: standard, sensor: sensor),
+                    const Spacer(), // Ensures the form doesn't move with the keyboard for some reason
+                  ],
+                ),
               ),
             ),
-          )),
-      StandardWidget(standard: standard, sensor: sensor),
-    ]);
+          );
+        },
+      ),
+    );
   }
 }
 
