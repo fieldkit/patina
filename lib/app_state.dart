@@ -926,15 +926,20 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
       if (total != null) {
         if (_generations.containsKey(nearby.deviceId)) {
           final String generationId = _generations[nearby.deviceId]!;
+
+          // Find already downloaded archives.
           final Iterable<RecordArchive>? archives =
               archivesById[nearby.deviceId]
                   ?.where((archive) => archive.generationId == generationId);
+
           if (archives != null && archives.isNotEmpty) {
+            // Some records have already been downloaded.
             final int first =
                 archives.map((archive) => archive.tail).reduce(max);
             tasks.add(DownloadTask(
                 deviceId: nearby.deviceId, total: total, first: first));
           } else {
+            // Nothing has been downloaded yet.
             Loggers.state.w("${nearby.deviceId} no archives");
             tasks.add(DownloadTask(
                 deviceId: nearby.deviceId, total: total, first: 0));
@@ -954,6 +959,10 @@ class DownloadTask extends Task {
   final String deviceId;
   final int total;
   final int? first;
+
+  bool get hasReadings {
+    return first != null && total - first! > 0;
+  }
 
   DownloadTask({required this.deviceId, required this.total, this.first});
 
@@ -990,25 +999,29 @@ class UploadTaskFactory extends TaskFactory<UploadTask> {
 
   List<UploadTask> create() {
     final List<UploadTask> tasks = List.empty(growable: true);
-    final byId = _archives
+    final pending = _archives
         .where((a) => a.uploaded == null)
         .groupListsBy((a) => a.deviceId);
-    for (final entry in byId.entries) {
+    for (final entry in pending.entries) {
       final account = portalAccounts.getAccountForDevice(entry.key);
-      if (account != null) {
-        if (account.tokens == null) {
-          tasks.add(UploadTask(
-              deviceId: entry.key,
-              files: entry.value,
-              tokens: null,
-              problem: UploadProblem.authentication));
-        } else if (account.validity == Validity.connectivity) {
+      // Always create an UploadTask, regardless of authentication status.
+      if (account == null || account.tokens == null) {
+        // User needs to login.
+        tasks.add(UploadTask(
+            deviceId: entry.key,
+            files: entry.value,
+            tokens: null,
+            problem: UploadProblem.authentication));
+      } else {
+        if (account.validity == Validity.connectivity) {
+          // User *may* need to login, or could just have connectivity issues.
           tasks.add(UploadTask(
               deviceId: entry.key,
               files: entry.value,
               tokens: account.tokens,
               problem: UploadProblem.connectivity));
         } else {
+          // User is good to try uploading.
           tasks.add(UploadTask(
               deviceId: entry.key,
               files: entry.value,

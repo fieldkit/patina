@@ -120,6 +120,47 @@ Widget padVertical(Widget child) {
       child: child);
 }
 
+class StatusMessagePanel extends StatelessWidget {
+  final DownloadTask? downloadTask;
+  final UploadTask? uploadTask;
+
+  const StatusMessagePanel(
+      {super.key, required this.downloadTask, required this.uploadTask});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final readingsDown = downloadable;
+    final readingsUp = uploadable;
+    if (downloadable > 0) {
+      if (uploadable > 0) {
+        return padAll(Text(localizations.syncReadingsWaitingDownloadAndUpload(
+            readingsDown, readingsUp)));
+      } else {
+        return padAll(
+            Text(localizations.syncReadingsWaitingDownload(readingsDown)));
+      }
+    } else {
+      if (uploadable > 0) {
+        return padAll(
+            Text(localizations.syncReadingsWaitingUpload(readingsUp)));
+      } else {
+        return padAll(Text(localizations.syncReadingsNone));
+      }
+    }
+  }
+
+  int get downloadable {
+    final task = downloadTask;
+    if (task == null) {
+      return 0;
+    }
+    return task.total - (task.first ?? 0);
+  }
+
+  int get uploadable => (uploadTask?.total ?? 0);
+}
+
 class DownloadPanel extends StatelessWidget {
   final StationModel station;
   final void Function(DownloadTask) onDownload;
@@ -143,54 +184,24 @@ class DownloadPanel extends StatelessWidget {
       return UpgradeRequiredWidget(station: station);
     }
 
-    if (downloadTask == null) {
-      return padAll(Text(localizations.syncNoDownload));
-    }
-
-    return padAll(Column(children: [
-      padVertical(Text(availableReadings(context))),
-      buildDownloadButton(context, downloadTask, onDownload),
-    ]));
-  }
-
-  Widget buildDownloadButton(BuildContext context, DownloadTask? downloadTask,
-      void Function(DownloadTask) onDownload) {
-    final localizations = AppLocalizations.of(context)!;
-    final DownloadTask? task = downloadTask;
-    if (task == null || task.first == null) {
-      // If there are no readings to download hide the button
+    // If there are no readings to download hide the button
+    final task = downloadTask;
+    if (task == null || !task.hasReadings) {
       return const SizedBox.shrink();
-    } else {
-      final num first = task.first as num;
-      if (task.total - first != 0) {
-        // If there are readings to download show the button
-        return SizedBox(
-          width: double.infinity,
-          child: ElevatedTextButton(
-            onPressed: () => onDownload(downloadTask!),
-            text: localizations.download,
-          ),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
     }
+
+    return padAll(buildDownloadButton(context));
   }
 
-  String availableReadings(BuildContext context) {
+  Widget buildDownloadButton(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final DownloadTask? task = downloadTask;
-    if (task == null) {
-      return localizations.syncWorking;
-    } else {
-      final int? first = task.first;
-      if (first != null) {
-        return localizations.readingsAvailableAndAlreadyHave(
-            first, task.total - first);
-      } else {
-        return localizations.readingsAvailable(task.total);
-      }
-    }
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedTextButton(
+        onPressed: () => onDownload(downloadTask!),
+        text: localizations.download,
+      ),
+    );
   }
 }
 
@@ -198,55 +209,38 @@ class UploadPanel extends StatelessWidget {
   final StationModel station;
   final void Function(UploadTask) onUpload;
   final UploadTask? uploadTask;
-  final bool hasLoginTasks;
 
   const UploadPanel(
       {super.key,
       required this.station,
       required this.onUpload,
-      required this.uploadTask,
-      required this.hasLoginTasks});
+      required this.uploadTask});
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
     if (uploadTask == null) {
-      if (hasLoginTasks) {
-        return const SizedBox.shrink();
-      } else {
-        return padAll(Text(localizations.syncNoUpload));
-      }
+      // Nothing to upload.
+      return const SizedBox.shrink();
     }
 
+    // Show message about problems with the internet. This will be fairly common.
     if (uploadTask?.problem == UploadProblem.connectivity) {
       return padAll(Text(localizations.syncNoInternet));
     }
 
     if (uploadTask?.problem == UploadProblem.authentication) {
-      // We could do this, but right now we show a Login button at the top of the page.
-      // return Text("Not logged in to portal.");
+      // We could show a message, but right now we show a Login button at the
+      // top of the page.
       return const SizedBox.shrink();
     }
 
-    return padAll(Column(children: [
-      padVertical(Text(availableReadings(context))),
-      SizedBox(
-          width: double.infinity,
-          child: ElevatedTextButton(
-              onPressed: () => onUpload(uploadTask!),
-              text: localizations.upload))
-    ]));
-  }
-
-  String availableReadings(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    final UploadTask? task = uploadTask;
-    if (task == null) {
-      return localizations.syncWorking;
-    } else {
-      return localizations.readingsPendingUpload(task.total);
-    }
+    return padAll(SizedBox(
+        width: double.infinity,
+        child: ElevatedTextButton(
+            onPressed: () => onUpload(uploadTask!),
+            text: localizations.upload)));
   }
 }
 
@@ -275,18 +269,23 @@ class DataSyncPage extends StatelessWidget {
       final downloadTask = tasks.getMaybeOne<DownloadTask>(station.deviceId);
       final uploadTask = tasks.getMaybeOne<UploadTask>(station.deviceId);
       final busy = stationOperations.isBusy(station.deviceId);
+      final status = StatusMessagePanel(
+          downloadTask: downloadTask, uploadTask: uploadTask);
       final download = DownloadPanel(
           station: station, downloadTask: downloadTask, onDownload: onDownload);
       final upload = UploadPanel(
         station: station,
         uploadTask: uploadTask,
         onUpload: onUpload,
-        hasLoginTasks: loginTasks.isNotEmpty,
       );
       Loggers.ui.i(
           "data-sync: busy=$busy downloadTask=$downloadTask uploadTask=$uploadTask loginTasks=$loginTasks");
       return StationSyncStatus(
-          station: station, busy: busy, download: download, upload: upload);
+          station: station,
+          busy: busy,
+          status: status,
+          download: download,
+          upload: upload);
     }).toList();
 
     return Scaffold(
@@ -304,6 +303,7 @@ class DataSyncPage extends StatelessWidget {
 class StationSyncStatus extends StatelessWidget {
   final StationModel station;
   final bool busy;
+  final StatusMessagePanel status;
   final Widget download;
   final Widget upload;
 
@@ -318,6 +318,7 @@ class StationSyncStatus extends StatelessWidget {
     super.key,
     required this.station,
     required this.busy,
+    required this.status,
     required this.download,
     required this.upload,
   });
@@ -336,7 +337,7 @@ class StationSyncStatus extends StatelessWidget {
         WH.padBelowProgress(Text(localizations.syncWorking)),
       ]));
     }
-    return Column(children: [download, upload]);
+    return Column(children: [status, download, upload]);
   }
 
   @override
