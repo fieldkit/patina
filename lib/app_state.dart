@@ -866,6 +866,7 @@ class DeployTask extends Task {
 class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
   final AvailableFirmwareModel availableFirmware;
   final KnownStationsModel knownStations;
+  final Map<String, String?> _forLoggingChanges = {};
 
   UpgradeTaskFactory(
       {required this.availableFirmware, required this.knownStations}) {
@@ -879,6 +880,16 @@ class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
     knownStations.addListener(listener);
   }
 
+  _logChanges(StationModel station, LocalFirmware local,
+      FirmwareComparison comparison) {
+    if (!_forLoggingChanges.containsKey(station.deviceId) ||
+        _forLoggingChanges[station.deviceId] != comparison.label) {
+      Loggers.state.i(
+          "UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
+      _forLoggingChanges[station.deviceId] = comparison.label;
+    }
+  }
+
   List<UpgradeTask> create() {
     final List<UpgradeTask> tasks = List.empty(growable: true);
     for (final station in knownStations.stations) {
@@ -887,9 +898,8 @@ class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
         for (final local in availableFirmware.firmware) {
           final comparison = FirmwareComparison.compare(local, firmware);
           if (comparison.newer) {
-            Loggers.state.i(
-                "UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
             tasks.add(UpgradeTask(station: station, comparison: comparison));
+            _logChanges(station, local, comparison);
             break;
           }
         }
