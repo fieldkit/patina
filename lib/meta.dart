@@ -305,6 +305,10 @@ class LocalizedSensor {
         return LocalizedSensor(
             name: localizations.sensorDistanceDistance2,
             uom: sensor.calibratedUom);
+      case "modules.distance.calibration":
+        return LocalizedSensor(
+            name: localizations.sensorDistanceCalibration,
+            uom: sensor.calibratedUom);
 
       case "modules.random.random_0":
         return LocalizedSensor(

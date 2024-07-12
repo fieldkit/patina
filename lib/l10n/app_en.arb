@@ -330,6 +330,7 @@
   "sensorDistanceDistance0": "Distance 0",
   "sensorDistanceDistance1": "Distance 1",
   "sensorDistanceDistance2": "Distance 2",
+  "sensorDistanceCalibration": "Distance Cal",
 
   "sensorRandomRandom0": "Random 0",
   "sensorRandomRandom1": "Random 1",
