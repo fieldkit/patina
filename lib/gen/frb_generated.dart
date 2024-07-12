@@ -1191,14 +1191,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ModuleConfig dco_decode_module_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return ModuleConfig(
       position: dco_decode_u_32(arr[0]),
-      moduleId: dco_decode_String(arr[1]),
-      key: dco_decode_String(arr[2]),
-      sensors: dco_decode_list_sensor_config(arr[3]),
-      configuration: dco_decode_opt_list_prim_u_8_strict(arr[4]),
+      internal: dco_decode_bool(arr[1]),
+      moduleId: dco_decode_String(arr[2]),
+      key: dco_decode_String(arr[3]),
+      sensors: dco_decode_list_sensor_config(arr[4]),
+      configuration: dco_decode_opt_list_prim_u_8_strict(arr[5]),
     );
   }
 
@@ -1381,16 +1382,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   SensorConfig dco_decode_sensor_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 7)
-      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+    if (arr.length != 8)
+      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
     return SensorConfig(
       number: dco_decode_u_32(arr[0]),
-      key: dco_decode_String(arr[1]),
-      fullKey: dco_decode_String(arr[2]),
-      calibratedUom: dco_decode_String(arr[3]),
-      uncalibratedUom: dco_decode_String(arr[4]),
-      value: dco_decode_opt_box_autoadd_sensor_value(arr[5]),
-      previousValue: dco_decode_opt_box_autoadd_sensor_value(arr[6]),
+      internal: dco_decode_bool(arr[1]),
+      key: dco_decode_String(arr[2]),
+      fullKey: dco_decode_String(arr[3]),
+      calibratedUom: dco_decode_String(arr[4]),
+      uncalibratedUom: dco_decode_String(arr[5]),
+      value: dco_decode_opt_box_autoadd_sensor_value(arr[6]),
+      previousValue: dco_decode_opt_box_autoadd_sensor_value(arr[7]),
     );
   }
 
@@ -2205,12 +2207,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ModuleConfig sse_decode_module_config(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_position = sse_decode_u_32(deserializer);
+    var var_internal = sse_decode_bool(deserializer);
     var var_moduleId = sse_decode_String(deserializer);
     var var_key = sse_decode_String(deserializer);
     var var_sensors = sse_decode_list_sensor_config(deserializer);
     var var_configuration = sse_decode_opt_list_prim_u_8_strict(deserializer);
     return ModuleConfig(
         position: var_position,
+        internal: var_internal,
         moduleId: var_moduleId,
         key: var_key,
         sensors: var_sensors,
@@ -2455,6 +2459,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   SensorConfig sse_decode_sensor_config(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_number = sse_decode_u_32(deserializer);
+    var var_internal = sse_decode_bool(deserializer);
     var var_key = sse_decode_String(deserializer);
     var var_fullKey = sse_decode_String(deserializer);
     var var_calibratedUom = sse_decode_String(deserializer);
@@ -2464,6 +2469,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_decode_opt_box_autoadd_sensor_value(deserializer);
     return SensorConfig(
         number: var_number,
+        internal: var_internal,
         key: var_key,
         fullKey: var_fullKey,
         calibratedUom: var_calibratedUom,
@@ -3181,6 +3187,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_module_config(ModuleConfig self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_32(self.position, serializer);
+    sse_encode_bool(self.internal, serializer);
     sse_encode_String(self.moduleId, serializer);
     sse_encode_String(self.key, serializer);
     sse_encode_list_sensor_config(self.sensors, serializer);
@@ -3395,6 +3402,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_sensor_config(SensorConfig self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_32(self.number, serializer);
+    sse_encode_bool(self.internal, serializer);
     sse_encode_String(self.key, serializer);
     sse_encode_String(self.fullKey, serializer);
     sse_encode_String(self.calibratedUom, serializer);

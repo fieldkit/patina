@@ -527,6 +527,7 @@ class LoraTransmissionConfig {
 
 class ModuleConfig {
   final int position;
+  final bool internal;
   final String moduleId;
   final String key;
   final List<SensorConfig> sensors;
@@ -534,6 +535,7 @@ class ModuleConfig {
 
   const ModuleConfig({
     required this.position,
+    required this.internal,
     required this.moduleId,
     required this.key,
     required this.sensors,
@@ -543,6 +545,7 @@ class ModuleConfig {
   @override
   int get hashCode =>
       position.hashCode ^
+      internal.hashCode ^
       moduleId.hashCode ^
       key.hashCode ^
       sensors.hashCode ^
@@ -554,6 +557,7 @@ class ModuleConfig {
       other is ModuleConfig &&
           runtimeType == other.runtimeType &&
           position == other.position &&
+          internal == other.internal &&
           moduleId == other.moduleId &&
           key == other.key &&
           sensors == other.sensors &&
@@ -702,6 +706,7 @@ sealed class Schedule with _$Schedule {
 
 class SensorConfig {
   final int number;
+  final bool internal;
   final String key;
   final String fullKey;
   final String calibratedUom;
@@ -711,6 +716,7 @@ class SensorConfig {
 
   const SensorConfig({
     required this.number,
+    required this.internal,
     required this.key,
     required this.fullKey,
     required this.calibratedUom,
@@ -722,6 +728,7 @@ class SensorConfig {
   @override
   int get hashCode =>
       number.hashCode ^
+      internal.hashCode ^
       key.hashCode ^
       fullKey.hashCode ^
       calibratedUom.hashCode ^
@@ -735,6 +742,7 @@ class SensorConfig {
       other is SensorConfig &&
           runtimeType == other.runtimeType &&
           number == other.number &&
+          internal == other.internal &&
           key == other.key &&
           fullKey == other.fullKey &&
           calibratedUom == other.calibratedUom &&
