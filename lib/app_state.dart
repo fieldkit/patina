@@ -1674,6 +1674,7 @@ class ModuleConfiguration {
 
 class ModuleConfigurations extends ChangeNotifier {
   final KnownStationsModel knownStations;
+  final Map<ModuleIdentity, String?> _forLoggingChanges = {};
 
   ModuleConfigurations({required this.knownStations}) {
     knownStations.addListener(() {
@@ -1681,9 +1682,19 @@ class ModuleConfigurations extends ChangeNotifier {
     });
   }
 
+  _logChanges(ModuleIdentity identity, Uint8List? config) {
+    final encoded = config == null ? null : base64.encode(config);
+    if (!_forLoggingChanges.containsKey(identity) ||
+        _forLoggingChanges[identity] != encoded) {
+      Loggers.state.i("$identity cfg: `$encoded`");
+      _forLoggingChanges[identity] = encoded;
+    }
+  }
+
   ModuleConfiguration find(ModuleIdentity moduleIdentity) {
     final stationAndModule = knownStations.findModule(moduleIdentity);
     final configuration = stationAndModule?.module.configuration;
+    _logChanges(moduleIdentity, configuration);
     if (configuration == null || configuration.isEmpty) {
       return ModuleConfiguration(null);
     }
