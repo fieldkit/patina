@@ -1684,7 +1684,6 @@ class ModuleConfigurations extends ChangeNotifier {
   ModuleConfiguration find(ModuleIdentity moduleIdentity) {
     final stationAndModule = knownStations.findModule(moduleIdentity);
     final configuration = stationAndModule?.module.configuration;
-    Loggers.state.v("$moduleIdentity Configuration: $configuration");
     if (configuration == null || configuration.isEmpty) {
       return ModuleConfiguration(null);
     }
