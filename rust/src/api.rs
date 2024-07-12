@@ -17,7 +17,6 @@ use discovery::{DeviceId, Discovered, Discovery};
 use query::{
     device::{
         self, ConfigureLoraTransmission, HttpQuery, HttpReply, ModuleFlags, QueryType, Recording,
-        SensorFlags,
     },
     portal::{DecodedToken, StatusCode},
 };
