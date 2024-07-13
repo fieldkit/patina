@@ -120,6 +120,8 @@
   "settingsTitle": "Settings",
   "settingsGeneral": "General",
   "settingsNameHint": "Station Name",
+  "nameConfigSuccess": "Name configured successfully!",
+  "errorMessage": "Error: {message}",
   "settingsFirmware": "Firmware",
   "settingsModules": "Modules",
   "settingsWifi": "WiFi",

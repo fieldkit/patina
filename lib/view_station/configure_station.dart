@@ -61,9 +61,50 @@ class _NameConfigWidgetState extends State<NameConfigWidget> {
     super.dispose();
   }
 
-  void _submitName(String value) {
+  Future<void> _submitName(String value) async {
     var newName = NameConfig(name: value);
-    configureName(deviceId: widget.station.deviceId, config: newName);
+    OverlayEntry overlayEntry = _createOverlayEntry();
+    Overlay.of(context).insert(overlayEntry);
+
+    try {
+      await configureName(deviceId: widget.station.deviceId, config: newName);
+      _showSuccessMessage();
+    } catch (error) {
+      _showErrorMessage(error.toString());
+    } finally {
+      overlayEntry.remove();
+    }
+  }
+
+  OverlayEntry _createOverlayEntry() {
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        child: Container(
+          color: Colors.black.withOpacity(0.5),
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSuccessMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.nameConfigSuccess),
+      ),
+    );
+  }
+
+  void _showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context)!.errorMessage(message))),
+    );
   }
 
   @override
