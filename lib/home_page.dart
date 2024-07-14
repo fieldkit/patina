@@ -28,7 +28,8 @@ final GlobalKey<NavigatorState> helpNavigatorKey = GlobalKey();
 
 class _HomePageState extends State<HomePage> {
   int _pageIndex = 0;
-  bool _showWelcome = true;
+  bool _showWelcome = false;
+  int _openCount = 0;
 
   @override
   void initState() {
@@ -45,13 +46,17 @@ class _HomePageState extends State<HomePage> {
       await appPrefs.setLastOpened(today);
 
       setState(() {
-        _showWelcome = true; // Always show welcome page when the app opens
+        _showWelcome = false; // Always show welcome page when the app opens if set to true
       });
     } else {
       DateTime? lastOpened = await appPrefs.getLastOpened();
       DateTime today = DateTime.now();
 
-      if (lastOpened == null ||
+      if (_openCount >= 3) {
+        setState(() {
+          _showWelcome = false;
+        });
+      } else if (lastOpened == null ||
           lastOpened.day != today.day ||
           lastOpened.month != today.month ||
           lastOpened.year != today.year) {
@@ -80,6 +85,7 @@ class _HomePageState extends State<HomePage> {
                   onDone: () {
                     setState(() {
                       _showWelcome = false;
+                      _openCount++;
                     });
                   },
                 )
