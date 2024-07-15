@@ -153,8 +153,8 @@ class __$$DomainMessage_PreAccountImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_PreAccountImpl implements DomainMessage_PreAccount {
-  const _$DomainMessage_PreAccountImpl();
+class _$DomainMessage_PreAccountImpl extends DomainMessage_PreAccount {
+  const _$DomainMessage_PreAccountImpl() : super._();
 
   @override
   String toString() {
@@ -293,8 +293,9 @@ class _$DomainMessage_PreAccountImpl implements DomainMessage_PreAccount {
   }
 }
 
-abstract class DomainMessage_PreAccount implements DomainMessage {
+abstract class DomainMessage_PreAccount extends DomainMessage {
   const factory DomainMessage_PreAccount() = _$DomainMessage_PreAccountImpl;
+  const DomainMessage_PreAccount._() : super._();
 }
 
 /// @nodoc
@@ -333,10 +334,10 @@ class __$$DomainMessage_NearbyStationsImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_NearbyStationsImpl
-    implements DomainMessage_NearbyStations {
+class _$DomainMessage_NearbyStationsImpl extends DomainMessage_NearbyStations {
   const _$DomainMessage_NearbyStationsImpl(final List<NearbyStation> field0)
-      : _field0 = field0;
+      : _field0 = field0,
+        super._();
 
   final List<NearbyStation> _field0;
   @override
@@ -493,9 +494,10 @@ class _$DomainMessage_NearbyStationsImpl
   }
 }
 
-abstract class DomainMessage_NearbyStations implements DomainMessage {
+abstract class DomainMessage_NearbyStations extends DomainMessage {
   const factory DomainMessage_NearbyStations(final List<NearbyStation> field0) =
       _$DomainMessage_NearbyStationsImpl;
+  const DomainMessage_NearbyStations._() : super._();
 
   List<NearbyStation> get field0;
   @JsonKey(ignore: true)
@@ -551,9 +553,10 @@ class __$$DomainMessage_StationRefreshedImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$DomainMessage_StationRefreshedImpl
-    implements DomainMessage_StationRefreshed {
+    extends DomainMessage_StationRefreshed {
   const _$DomainMessage_StationRefreshedImpl(
-      this.field0, this.field1, this.field2);
+      this.field0, this.field1, this.field2)
+      : super._();
 
   @override
   final StationConfig field0;
@@ -710,11 +713,12 @@ class _$DomainMessage_StationRefreshedImpl
   }
 }
 
-abstract class DomainMessage_StationRefreshed implements DomainMessage {
+abstract class DomainMessage_StationRefreshed extends DomainMessage {
   const factory DomainMessage_StationRefreshed(
       final StationConfig field0,
       final EphemeralConfig? field1,
       final String field2) = _$DomainMessage_StationRefreshedImpl;
+  const DomainMessage_StationRefreshed._() : super._();
 
   StationConfig get field0;
   EphemeralConfig? get field1;
@@ -761,9 +765,8 @@ class __$$DomainMessage_UploadProgressImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_UploadProgressImpl
-    implements DomainMessage_UploadProgress {
-  const _$DomainMessage_UploadProgressImpl(this.field0);
+class _$DomainMessage_UploadProgressImpl extends DomainMessage_UploadProgress {
+  const _$DomainMessage_UploadProgressImpl(this.field0) : super._();
 
   @override
   final TransferProgress field0;
@@ -914,9 +917,10 @@ class _$DomainMessage_UploadProgressImpl
   }
 }
 
-abstract class DomainMessage_UploadProgress implements DomainMessage {
+abstract class DomainMessage_UploadProgress extends DomainMessage {
   const factory DomainMessage_UploadProgress(final TransferProgress field0) =
       _$DomainMessage_UploadProgressImpl;
+  const DomainMessage_UploadProgress._() : super._();
 
   TransferProgress get field0;
   @JsonKey(ignore: true)
@@ -962,8 +966,8 @@ class __$$DomainMessage_DownloadProgressImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$DomainMessage_DownloadProgressImpl
-    implements DomainMessage_DownloadProgress {
-  const _$DomainMessage_DownloadProgressImpl(this.field0);
+    extends DomainMessage_DownloadProgress {
+  const _$DomainMessage_DownloadProgressImpl(this.field0) : super._();
 
   @override
   final TransferProgress field0;
@@ -1114,9 +1118,10 @@ class _$DomainMessage_DownloadProgressImpl
   }
 }
 
-abstract class DomainMessage_DownloadProgress implements DomainMessage {
+abstract class DomainMessage_DownloadProgress extends DomainMessage {
   const factory DomainMessage_DownloadProgress(final TransferProgress field0) =
       _$DomainMessage_DownloadProgressImpl;
+  const DomainMessage_DownloadProgress._() : super._();
 
   TransferProgress get field0;
   @JsonKey(ignore: true)
@@ -1172,8 +1177,8 @@ class __$$DomainMessage_FirmwareDownloadStatusImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$DomainMessage_FirmwareDownloadStatusImpl
-    implements DomainMessage_FirmwareDownloadStatus {
-  const _$DomainMessage_FirmwareDownloadStatusImpl(this.field0);
+    extends DomainMessage_FirmwareDownloadStatus {
+  const _$DomainMessage_FirmwareDownloadStatusImpl(this.field0) : super._();
 
   @override
   final FirmwareDownloadStatus field0;
@@ -1324,10 +1329,11 @@ class _$DomainMessage_FirmwareDownloadStatusImpl
   }
 }
 
-abstract class DomainMessage_FirmwareDownloadStatus implements DomainMessage {
+abstract class DomainMessage_FirmwareDownloadStatus extends DomainMessage {
   const factory DomainMessage_FirmwareDownloadStatus(
           final FirmwareDownloadStatus field0) =
       _$DomainMessage_FirmwareDownloadStatusImpl;
+  const DomainMessage_FirmwareDownloadStatus._() : super._();
 
   FirmwareDownloadStatus get field0;
   @JsonKey(ignore: true)
@@ -1373,8 +1379,8 @@ class __$$DomainMessage_UpgradeProgressImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$DomainMessage_UpgradeProgressImpl
-    implements DomainMessage_UpgradeProgress {
-  const _$DomainMessage_UpgradeProgressImpl(this.field0);
+    extends DomainMessage_UpgradeProgress {
+  const _$DomainMessage_UpgradeProgressImpl(this.field0) : super._();
 
   @override
   final UpgradeProgress field0;
@@ -1525,9 +1531,10 @@ class _$DomainMessage_UpgradeProgressImpl
   }
 }
 
-abstract class DomainMessage_UpgradeProgress implements DomainMessage {
+abstract class DomainMessage_UpgradeProgress extends DomainMessage {
   const factory DomainMessage_UpgradeProgress(final UpgradeProgress field0) =
       _$DomainMessage_UpgradeProgressImpl;
+  const DomainMessage_UpgradeProgress._() : super._();
 
   UpgradeProgress get field0;
   @JsonKey(ignore: true)
@@ -1573,9 +1580,10 @@ class __$$DomainMessage_AvailableFirmwareImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$DomainMessage_AvailableFirmwareImpl
-    implements DomainMessage_AvailableFirmware {
+    extends DomainMessage_AvailableFirmware {
   const _$DomainMessage_AvailableFirmwareImpl(final List<LocalFirmware> field0)
-      : _field0 = field0;
+      : _field0 = field0,
+        super._();
 
   final List<LocalFirmware> _field0;
   @override
@@ -1732,9 +1740,10 @@ class _$DomainMessage_AvailableFirmwareImpl
   }
 }
 
-abstract class DomainMessage_AvailableFirmware implements DomainMessage {
+abstract class DomainMessage_AvailableFirmware extends DomainMessage {
   const factory DomainMessage_AvailableFirmware(
       final List<LocalFirmware> field0) = _$DomainMessage_AvailableFirmwareImpl;
+  const DomainMessage_AvailableFirmware._() : super._();
 
   List<LocalFirmware> get field0;
   @JsonKey(ignore: true)
@@ -1779,10 +1788,10 @@ class __$$DomainMessage_RecordArchivesImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DomainMessage_RecordArchivesImpl
-    implements DomainMessage_RecordArchives {
+class _$DomainMessage_RecordArchivesImpl extends DomainMessage_RecordArchives {
   const _$DomainMessage_RecordArchivesImpl(final List<RecordArchive> field0)
-      : _field0 = field0;
+      : _field0 = field0,
+        super._();
 
   final List<RecordArchive> _field0;
   @override
@@ -1939,9 +1948,10 @@ class _$DomainMessage_RecordArchivesImpl
   }
 }
 
-abstract class DomainMessage_RecordArchives implements DomainMessage {
+abstract class DomainMessage_RecordArchives extends DomainMessage {
   const factory DomainMessage_RecordArchives(final List<RecordArchive> field0) =
       _$DomainMessage_RecordArchivesImpl;
+  const DomainMessage_RecordArchives._() : super._();
 
   List<RecordArchive> get field0;
   @JsonKey(ignore: true)
@@ -2052,8 +2062,8 @@ class __$$FirmwareDownloadStatus_CheckingImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$FirmwareDownloadStatus_CheckingImpl
-    implements FirmwareDownloadStatus_Checking {
-  const _$FirmwareDownloadStatus_CheckingImpl();
+    extends FirmwareDownloadStatus_Checking {
+  const _$FirmwareDownloadStatus_CheckingImpl() : super._();
 
   @override
   String toString() {
@@ -2152,10 +2162,10 @@ class _$FirmwareDownloadStatus_CheckingImpl
   }
 }
 
-abstract class FirmwareDownloadStatus_Checking
-    implements FirmwareDownloadStatus {
+abstract class FirmwareDownloadStatus_Checking extends FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus_Checking() =
       _$FirmwareDownloadStatus_CheckingImpl;
+  const FirmwareDownloadStatus_Checking._() : super._();
 }
 
 /// @nodoc
@@ -2195,8 +2205,8 @@ class __$$FirmwareDownloadStatus_DownloadingImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$FirmwareDownloadStatus_DownloadingImpl
-    implements FirmwareDownloadStatus_Downloading {
-  const _$FirmwareDownloadStatus_DownloadingImpl(this.field0);
+    extends FirmwareDownloadStatus_Downloading {
+  const _$FirmwareDownloadStatus_DownloadingImpl(this.field0) : super._();
 
   @override
   final DownloadProgress field0;
@@ -2308,9 +2318,10 @@ class _$FirmwareDownloadStatus_DownloadingImpl
 }
 
 abstract class FirmwareDownloadStatus_Downloading
-    implements FirmwareDownloadStatus {
+    extends FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus_Downloading(
       final DownloadProgress field0) = _$FirmwareDownloadStatus_DownloadingImpl;
+  const FirmwareDownloadStatus_Downloading._() : super._();
 
   DownloadProgress get field0;
   @JsonKey(ignore: true)
@@ -2341,8 +2352,8 @@ class __$$FirmwareDownloadStatus_OfflineImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$FirmwareDownloadStatus_OfflineImpl
-    implements FirmwareDownloadStatus_Offline {
-  const _$FirmwareDownloadStatus_OfflineImpl();
+    extends FirmwareDownloadStatus_Offline {
+  const _$FirmwareDownloadStatus_OfflineImpl() : super._();
 
   @override
   String toString() {
@@ -2441,10 +2452,10 @@ class _$FirmwareDownloadStatus_OfflineImpl
   }
 }
 
-abstract class FirmwareDownloadStatus_Offline
-    implements FirmwareDownloadStatus {
+abstract class FirmwareDownloadStatus_Offline extends FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus_Offline() =
       _$FirmwareDownloadStatus_OfflineImpl;
+  const FirmwareDownloadStatus_Offline._() : super._();
 }
 
 /// @nodoc
@@ -2469,8 +2480,8 @@ class __$$FirmwareDownloadStatus_CompletedImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$FirmwareDownloadStatus_CompletedImpl
-    implements FirmwareDownloadStatus_Completed {
-  const _$FirmwareDownloadStatus_CompletedImpl();
+    extends FirmwareDownloadStatus_Completed {
+  const _$FirmwareDownloadStatus_CompletedImpl() : super._();
 
   @override
   String toString() {
@@ -2569,10 +2580,10 @@ class _$FirmwareDownloadStatus_CompletedImpl
   }
 }
 
-abstract class FirmwareDownloadStatus_Completed
-    implements FirmwareDownloadStatus {
+abstract class FirmwareDownloadStatus_Completed extends FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus_Completed() =
       _$FirmwareDownloadStatus_CompletedImpl;
+  const FirmwareDownloadStatus_Completed._() : super._();
 }
 
 /// @nodoc
@@ -2597,8 +2608,8 @@ class __$$FirmwareDownloadStatus_FailedImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$FirmwareDownloadStatus_FailedImpl
-    implements FirmwareDownloadStatus_Failed {
-  const _$FirmwareDownloadStatus_FailedImpl();
+    extends FirmwareDownloadStatus_Failed {
+  const _$FirmwareDownloadStatus_FailedImpl() : super._();
 
   @override
   String toString() {
@@ -2697,9 +2708,10 @@ class _$FirmwareDownloadStatus_FailedImpl
   }
 }
 
-abstract class FirmwareDownloadStatus_Failed implements FirmwareDownloadStatus {
+abstract class FirmwareDownloadStatus_Failed extends FirmwareDownloadStatus {
   const factory FirmwareDownloadStatus_Failed() =
       _$FirmwareDownloadStatus_FailedImpl;
+  const FirmwareDownloadStatus_Failed._() : super._();
 }
 
 /// @nodoc
@@ -2794,8 +2806,8 @@ class __$$PortalError_AuthenticationImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$PortalError_AuthenticationImpl implements PortalError_Authentication {
-  const _$PortalError_AuthenticationImpl();
+class _$PortalError_AuthenticationImpl extends PortalError_Authentication {
+  const _$PortalError_AuthenticationImpl() : super._();
 
   @override
   String toString() {
@@ -2887,8 +2899,9 @@ class _$PortalError_AuthenticationImpl implements PortalError_Authentication {
   }
 }
 
-abstract class PortalError_Authentication implements PortalError {
+abstract class PortalError_Authentication extends PortalError {
   const factory PortalError_Authentication() = _$PortalError_AuthenticationImpl;
+  const PortalError_Authentication._() : super._();
 }
 
 /// @nodoc
@@ -2911,8 +2924,8 @@ class __$$PortalError_ConnectingImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$PortalError_ConnectingImpl implements PortalError_Connecting {
-  const _$PortalError_ConnectingImpl();
+class _$PortalError_ConnectingImpl extends PortalError_Connecting {
+  const _$PortalError_ConnectingImpl() : super._();
 
   @override
   String toString() {
@@ -3004,8 +3017,9 @@ class _$PortalError_ConnectingImpl implements PortalError_Connecting {
   }
 }
 
-abstract class PortalError_Connecting implements PortalError {
+abstract class PortalError_Connecting extends PortalError {
   const factory PortalError_Connecting() = _$PortalError_ConnectingImpl;
+  const PortalError_Connecting._() : super._();
 }
 
 /// @nodoc
@@ -3041,8 +3055,8 @@ class __$$PortalError_OtherImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$PortalError_OtherImpl implements PortalError_Other {
-  const _$PortalError_OtherImpl(this.field0);
+class _$PortalError_OtherImpl extends PortalError_Other {
+  const _$PortalError_OtherImpl(this.field0) : super._();
 
   @override
   final String field0;
@@ -3145,9 +3159,10 @@ class _$PortalError_OtherImpl implements PortalError_Other {
   }
 }
 
-abstract class PortalError_Other implements PortalError {
+abstract class PortalError_Other extends PortalError {
   const factory PortalError_Other(final String field0) =
       _$PortalError_OtherImpl;
+  const PortalError_Other._() : super._();
 
   String get field0;
   @JsonKey(ignore: true)
@@ -3173,8 +3188,8 @@ class __$$PortalError_SdkImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$PortalError_SdkImpl implements PortalError_Sdk {
-  const _$PortalError_SdkImpl();
+class _$PortalError_SdkImpl extends PortalError_Sdk {
+  const _$PortalError_SdkImpl() : super._();
 
   @override
   String toString() {
@@ -3265,8 +3280,9 @@ class _$PortalError_SdkImpl implements PortalError_Sdk {
   }
 }
 
-abstract class PortalError_Sdk implements PortalError {
+abstract class PortalError_Sdk extends PortalError {
   const factory PortalError_Sdk() = _$PortalError_SdkImpl;
+  const PortalError_Sdk._() : super._();
 }
 
 /// @nodoc
@@ -3377,8 +3393,8 @@ class __$$Schedule_EveryImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$Schedule_EveryImpl implements Schedule_Every {
-  const _$Schedule_EveryImpl(this.field0);
+class _$Schedule_EveryImpl extends Schedule_Every {
+  const _$Schedule_EveryImpl(this.field0) : super._();
 
   @override
   final int field0;
@@ -3463,8 +3479,9 @@ class _$Schedule_EveryImpl implements Schedule_Every {
   }
 }
 
-abstract class Schedule_Every implements Schedule {
+abstract class Schedule_Every extends Schedule {
   const factory Schedule_Every(final int field0) = _$Schedule_EveryImpl;
+  const Schedule_Every._() : super._();
 
   @override
   int get field0;
@@ -3578,8 +3595,8 @@ class __$$TransferStatus_StartingImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$TransferStatus_StartingImpl implements TransferStatus_Starting {
-  const _$TransferStatus_StartingImpl();
+class _$TransferStatus_StartingImpl extends TransferStatus_Starting {
+  const _$TransferStatus_StartingImpl() : super._();
 
   @override
   String toString() {
@@ -3683,8 +3700,9 @@ class _$TransferStatus_StartingImpl implements TransferStatus_Starting {
   }
 }
 
-abstract class TransferStatus_Starting implements TransferStatus {
+abstract class TransferStatus_Starting extends TransferStatus {
   const factory TransferStatus_Starting() = _$TransferStatus_StartingImpl;
+  const TransferStatus_Starting._() : super._();
 }
 
 /// @nodoc
@@ -3722,8 +3740,8 @@ class __$$TransferStatus_DownloadingImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$TransferStatus_DownloadingImpl implements TransferStatus_Downloading {
-  const _$TransferStatus_DownloadingImpl(this.field0);
+class _$TransferStatus_DownloadingImpl extends TransferStatus_Downloading {
+  const _$TransferStatus_DownloadingImpl(this.field0) : super._();
 
   @override
   final DownloadProgress field0;
@@ -3838,9 +3856,10 @@ class _$TransferStatus_DownloadingImpl implements TransferStatus_Downloading {
   }
 }
 
-abstract class TransferStatus_Downloading implements TransferStatus {
+abstract class TransferStatus_Downloading extends TransferStatus {
   const factory TransferStatus_Downloading(final DownloadProgress field0) =
       _$TransferStatus_DownloadingImpl;
+  const TransferStatus_Downloading._() : super._();
 
   DownloadProgress get field0;
   @JsonKey(ignore: true)
@@ -3883,8 +3902,8 @@ class __$$TransferStatus_UploadingImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$TransferStatus_UploadingImpl implements TransferStatus_Uploading {
-  const _$TransferStatus_UploadingImpl(this.field0);
+class _$TransferStatus_UploadingImpl extends TransferStatus_Uploading {
+  const _$TransferStatus_UploadingImpl(this.field0) : super._();
 
   @override
   final UploadProgress field0;
@@ -3999,9 +4018,10 @@ class _$TransferStatus_UploadingImpl implements TransferStatus_Uploading {
   }
 }
 
-abstract class TransferStatus_Uploading implements TransferStatus {
+abstract class TransferStatus_Uploading extends TransferStatus {
   const factory TransferStatus_Uploading(final UploadProgress field0) =
       _$TransferStatus_UploadingImpl;
+  const TransferStatus_Uploading._() : super._();
 
   UploadProgress get field0;
   @JsonKey(ignore: true)
@@ -4029,8 +4049,8 @@ class __$$TransferStatus_ProcessingImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$TransferStatus_ProcessingImpl implements TransferStatus_Processing {
-  const _$TransferStatus_ProcessingImpl();
+class _$TransferStatus_ProcessingImpl extends TransferStatus_Processing {
+  const _$TransferStatus_ProcessingImpl() : super._();
 
   @override
   String toString() {
@@ -4134,8 +4154,9 @@ class _$TransferStatus_ProcessingImpl implements TransferStatus_Processing {
   }
 }
 
-abstract class TransferStatus_Processing implements TransferStatus {
+abstract class TransferStatus_Processing extends TransferStatus {
   const factory TransferStatus_Processing() = _$TransferStatus_ProcessingImpl;
+  const TransferStatus_Processing._() : super._();
 }
 
 /// @nodoc
@@ -4158,8 +4179,8 @@ class __$$TransferStatus_CompletedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$TransferStatus_CompletedImpl implements TransferStatus_Completed {
-  const _$TransferStatus_CompletedImpl();
+class _$TransferStatus_CompletedImpl extends TransferStatus_Completed {
+  const _$TransferStatus_CompletedImpl() : super._();
 
   @override
   String toString() {
@@ -4263,8 +4284,9 @@ class _$TransferStatus_CompletedImpl implements TransferStatus_Completed {
   }
 }
 
-abstract class TransferStatus_Completed implements TransferStatus {
+abstract class TransferStatus_Completed extends TransferStatus {
   const factory TransferStatus_Completed() = _$TransferStatus_CompletedImpl;
+  const TransferStatus_Completed._() : super._();
 }
 
 /// @nodoc
@@ -4286,8 +4308,8 @@ class __$$TransferStatus_FailedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$TransferStatus_FailedImpl implements TransferStatus_Failed {
-  const _$TransferStatus_FailedImpl();
+class _$TransferStatus_FailedImpl extends TransferStatus_Failed {
+  const _$TransferStatus_FailedImpl() : super._();
 
   @override
   String toString() {
@@ -4391,8 +4413,9 @@ class _$TransferStatus_FailedImpl implements TransferStatus_Failed {
   }
 }
 
-abstract class TransferStatus_Failed implements TransferStatus {
+abstract class TransferStatus_Failed extends TransferStatus {
   const factory TransferStatus_Failed() = _$TransferStatus_FailedImpl;
+  const TransferStatus_Failed._() : super._();
 }
 
 /// @nodoc
@@ -4500,8 +4523,8 @@ class __$$UpgradeStatus_StartingImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
-  const _$UpgradeStatus_StartingImpl();
+class _$UpgradeStatus_StartingImpl extends UpgradeStatus_Starting {
+  const _$UpgradeStatus_StartingImpl() : super._();
 
   @override
   String toString() {
@@ -4606,8 +4629,9 @@ class _$UpgradeStatus_StartingImpl implements UpgradeStatus_Starting {
   }
 }
 
-abstract class UpgradeStatus_Starting implements UpgradeStatus {
+abstract class UpgradeStatus_Starting extends UpgradeStatus {
   const factory UpgradeStatus_Starting() = _$UpgradeStatus_StartingImpl;
+  const UpgradeStatus_Starting._() : super._();
 }
 
 /// @nodoc
@@ -4645,8 +4669,8 @@ class __$$UpgradeStatus_UploadingImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
-  const _$UpgradeStatus_UploadingImpl(this.field0);
+class _$UpgradeStatus_UploadingImpl extends UpgradeStatus_Uploading {
+  const _$UpgradeStatus_UploadingImpl(this.field0) : super._();
 
   @override
   final UploadProgress field0;
@@ -4762,9 +4786,10 @@ class _$UpgradeStatus_UploadingImpl implements UpgradeStatus_Uploading {
   }
 }
 
-abstract class UpgradeStatus_Uploading implements UpgradeStatus {
+abstract class UpgradeStatus_Uploading extends UpgradeStatus {
   const factory UpgradeStatus_Uploading(final UploadProgress field0) =
       _$UpgradeStatus_UploadingImpl;
+  const UpgradeStatus_Uploading._() : super._();
 
   UploadProgress get field0;
   @JsonKey(ignore: true)
@@ -4792,8 +4817,8 @@ class __$$UpgradeStatus_RestartingImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
-  const _$UpgradeStatus_RestartingImpl();
+class _$UpgradeStatus_RestartingImpl extends UpgradeStatus_Restarting {
+  const _$UpgradeStatus_RestartingImpl() : super._();
 
   @override
   String toString() {
@@ -4898,8 +4923,9 @@ class _$UpgradeStatus_RestartingImpl implements UpgradeStatus_Restarting {
   }
 }
 
-abstract class UpgradeStatus_Restarting implements UpgradeStatus {
+abstract class UpgradeStatus_Restarting extends UpgradeStatus {
   const factory UpgradeStatus_Restarting() = _$UpgradeStatus_RestartingImpl;
+  const UpgradeStatus_Restarting._() : super._();
 }
 
 /// @nodoc
@@ -4924,8 +4950,8 @@ class __$$UpgradeStatus_ReconnectTimeoutImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$UpgradeStatus_ReconnectTimeoutImpl
-    implements UpgradeStatus_ReconnectTimeout {
-  const _$UpgradeStatus_ReconnectTimeoutImpl();
+    extends UpgradeStatus_ReconnectTimeout {
+  const _$UpgradeStatus_ReconnectTimeoutImpl() : super._();
 
   @override
   String toString() {
@@ -5030,9 +5056,10 @@ class _$UpgradeStatus_ReconnectTimeoutImpl
   }
 }
 
-abstract class UpgradeStatus_ReconnectTimeout implements UpgradeStatus {
+abstract class UpgradeStatus_ReconnectTimeout extends UpgradeStatus {
   const factory UpgradeStatus_ReconnectTimeout() =
       _$UpgradeStatus_ReconnectTimeoutImpl;
+  const UpgradeStatus_ReconnectTimeout._() : super._();
 }
 
 /// @nodoc
@@ -5055,8 +5082,8 @@ class __$$UpgradeStatus_CompletedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
-  const _$UpgradeStatus_CompletedImpl();
+class _$UpgradeStatus_CompletedImpl extends UpgradeStatus_Completed {
+  const _$UpgradeStatus_CompletedImpl() : super._();
 
   @override
   String toString() {
@@ -5161,8 +5188,9 @@ class _$UpgradeStatus_CompletedImpl implements UpgradeStatus_Completed {
   }
 }
 
-abstract class UpgradeStatus_Completed implements UpgradeStatus {
+abstract class UpgradeStatus_Completed extends UpgradeStatus {
   const factory UpgradeStatus_Completed() = _$UpgradeStatus_CompletedImpl;
+  const UpgradeStatus_Completed._() : super._();
 }
 
 /// @nodoc
@@ -5198,8 +5226,8 @@ class __$$UpgradeStatus_FailedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
-  const _$UpgradeStatus_FailedImpl([this.field0]);
+class _$UpgradeStatus_FailedImpl extends UpgradeStatus_Failed {
+  const _$UpgradeStatus_FailedImpl([this.field0]) : super._();
 
   @override
   final UpgradeError? field0;
@@ -5316,9 +5344,10 @@ class _$UpgradeStatus_FailedImpl implements UpgradeStatus_Failed {
   }
 }
 
-abstract class UpgradeStatus_Failed implements UpgradeStatus {
+abstract class UpgradeStatus_Failed extends UpgradeStatus {
   const factory UpgradeStatus_Failed([final UpgradeError? field0]) =
       _$UpgradeStatus_FailedImpl;
+  const UpgradeStatus_Failed._() : super._();
 
   UpgradeError? get field0;
   @JsonKey(ignore: true)

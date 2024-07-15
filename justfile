@@ -6,9 +6,10 @@ setup:
     cd rust_builder && flutter pub get
 
 gen: setup
-    cargo install flutter_rust_bridge_codegen@2.0.0-dev.28
+    cargo install flutter_rust_bridge_codegen@2.1.0
     flutter_rust_bridge_codegen generate \
-        --rust-input rust/src/api.rs \
+        --rust-root=rust \
+        --rust-input crate::api \
         --dart-output lib/gen \
         --c-output macos/Runner/bridge_generated.h
 
