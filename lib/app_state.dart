@@ -40,10 +40,6 @@ class StationModel {
     this.config,
     this.connected = false,
   });
-
-  void updateName(String value) {
-    // config?.name = value;
-  }
 }
 
 class UpdatePortal {
@@ -866,6 +862,7 @@ class DeployTask extends Task {
 class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
   final AvailableFirmwareModel availableFirmware;
   final KnownStationsModel knownStations;
+  final Map<String, String?> _forLoggingChanges = {};
 
   UpgradeTaskFactory(
       {required this.availableFirmware, required this.knownStations}) {
@@ -879,6 +876,16 @@ class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
     knownStations.addListener(listener);
   }
 
+  _logChanges(StationModel station, LocalFirmware local,
+      FirmwareComparison comparison) {
+    if (!_forLoggingChanges.containsKey(station.deviceId) ||
+        _forLoggingChanges[station.deviceId] != comparison.label) {
+      Loggers.state.i(
+          "UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
+      _forLoggingChanges[station.deviceId] = comparison.label;
+    }
+  }
+
   List<UpgradeTask> create() {
     final List<UpgradeTask> tasks = List.empty(growable: true);
     for (final station in knownStations.stations) {
@@ -887,9 +894,8 @@ class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
         for (final local in availableFirmware.firmware) {
           final comparison = FirmwareComparison.compare(local, firmware);
           if (comparison.newer) {
-            Loggers.state.i(
-                "UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
             tasks.add(UpgradeTask(station: station, comparison: comparison));
+            _logChanges(station, local, comparison);
             break;
           }
         }
@@ -1674,6 +1680,7 @@ class ModuleConfiguration {
 
 class ModuleConfigurations extends ChangeNotifier {
   final KnownStationsModel knownStations;
+  final Map<ModuleIdentity, String?> _forLoggingChanges = {};
 
   ModuleConfigurations({required this.knownStations}) {
     knownStations.addListener(() {
@@ -1681,10 +1688,19 @@ class ModuleConfigurations extends ChangeNotifier {
     });
   }
 
+  _logChanges(ModuleIdentity identity, Uint8List? config) {
+    final encoded = config == null ? null : base64.encode(config);
+    if (!_forLoggingChanges.containsKey(identity) ||
+        _forLoggingChanges[identity] != encoded) {
+      Loggers.state.i("$identity cfg: `$encoded`");
+      _forLoggingChanges[identity] = encoded;
+    }
+  }
+
   ModuleConfiguration find(ModuleIdentity moduleIdentity) {
     final stationAndModule = knownStations.findModule(moduleIdentity);
     final configuration = stationAndModule?.module.configuration;
-    Loggers.state.v("$moduleIdentity Configuration: $configuration");
+    _logChanges(moduleIdentity, configuration);
     if (configuration == null || configuration.isEmpty) {
       return ModuleConfiguration(null);
     }

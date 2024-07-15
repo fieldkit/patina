@@ -17,7 +17,6 @@ use discovery::{DeviceId, Discovered, Discovery};
 use query::{
     device::{
         self, ConfigureLoraTransmission, HttpQuery, HttpReply, ModuleFlags, QueryType, Recording,
-        SensorFlags,
     },
     portal::{DecodedToken, StatusCode},
 };
@@ -467,62 +466,10 @@ impl Sdk {
         Ok(discovered.and_then(|d| d.http_addr.map(|o| format!("{}", o))))
     }
 
-    async fn configure_deploy(&self, device_id: DeviceId, config: DeployConfig) -> Result<()> {
+    async fn configure(&self, device_id: DeviceId, config: impl Into<HttpQuery>) -> Result<()> {
         if let Some(addr) = self.get_nearby_addr(&device_id).await? {
             let client = query::device::Client::new()?;
             let status = client.configure(&addr, config).await?;
-            self.nearby
-                .mark_finished_and_publish_reply(&device_id, status)
-                .await?;
-        }
-
-        Ok(())
-    }
-
-    async fn configure_wifi_networks(
-        &self,
-        device_id: DeviceId,
-        config: WifiNetworksConfig,
-    ) -> Result<()> {
-        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
-            let client = query::device::Client::new()?;
-            let status = client.configure_wifi_networks(&addr, config.into()).await?;
-            self.nearby
-                .mark_finished_and_publish_reply(&device_id, status)
-                .await?;
-        }
-
-        Ok(())
-    }
-
-    async fn configure_wifi_transmission(
-        &self,
-        device_id: DeviceId,
-        config: WifiTransmissionConfig,
-    ) -> Result<()> {
-        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
-            let client = query::device::Client::new()?;
-            let status = client
-                .configure_wifi_transmission(&addr, config.into())
-                .await?;
-            self.nearby
-                .mark_finished_and_publish_reply(&device_id, status)
-                .await?;
-        }
-
-        Ok(())
-    }
-
-    async fn configure_lora_transmission(
-        &self,
-        device_id: DeviceId,
-        config: LoraTransmissionConfig,
-    ) -> Result<()> {
-        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
-            let client = query::device::Client::new()?;
-            let status = client
-                .configure_lora_transmission(&addr, config.into())
-                .await?;
             self.nearby
                 .mark_finished_and_publish_reply(&device_id, status)
                 .await?;
@@ -542,23 +489,7 @@ impl Sdk {
                 band: None,
                 schedule: None,
             };
-            let status = client
-                .configure_lora_transmission(&addr, config.into())
-                .await?;
-            self.nearby
-                .mark_finished_and_publish_reply(&device_id, status)
-                .await?;
-        }
-
-        Ok(())
-    }
-
-    async fn clear_calibration(&self, device_id: DeviceId, module: usize) -> Result<()> {
-        info!("clear-calibration: {:?} {:?}", device_id, module);
-        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
-            let client = query::device::Client::new()?;
-            client.clear_calibration(&addr, module).await?;
-            let status = client.query_readings(&addr).await?;
+            let status = client.configure(&addr, config).await?;
             self.nearby
                 .mark_finished_and_publish_reply(&device_id, status)
                 .await?;
@@ -572,6 +503,20 @@ impl Sdk {
         if let Some(addr) = self.get_nearby_addr(&device_id).await? {
             let client = query::device::Client::new()?;
             client.calibrate(&addr, module, &data).await?;
+            let status = client.query_readings(&addr).await?;
+            self.nearby
+                .mark_finished_and_publish_reply(&device_id, status)
+                .await?;
+        }
+
+        Ok(())
+    }
+
+    async fn clear_calibration(&self, device_id: DeviceId, module: usize) -> Result<()> {
+        info!("clear-calibration: {:?} {:?}", device_id, module);
+        if let Some(addr) = self.get_nearby_addr(&device_id).await? {
+            let client = query::device::Client::new()?;
+            client.clear_calibration(&addr, module).await?;
             let status = client.query_readings(&addr).await?;
             self.nearby
                 .mark_finished_and_publish_reply(&device_id, status)
@@ -663,13 +608,13 @@ pub fn add_or_update_station_in_portal(
 
 pub fn configure_deploy(device_id: String, config: DeployConfig) -> Result<()> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.configure_deploy(DeviceId(device_id.clone()), config))
+        rt.block_on(sdk.configure(DeviceId(device_id.clone()), config))
     })?)
 }
 
 pub fn configure_wifi_networks(device_id: String, config: WifiNetworksConfig) -> Result<()> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.configure_wifi_networks(DeviceId(device_id.clone()), config))
+        rt.block_on(sdk.configure(DeviceId(device_id.clone()), config))
     })?)
 }
 
@@ -678,7 +623,7 @@ pub fn configure_wifi_transmission(
     config: WifiTransmissionConfig,
 ) -> Result<()> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.configure_wifi_transmission(DeviceId(device_id.clone()), config))
+        rt.block_on(sdk.configure(DeviceId(device_id.clone()), config))
     })?)
 }
 
@@ -687,7 +632,13 @@ pub fn configure_lora_transmission(
     config: LoraTransmissionConfig,
 ) -> Result<()> {
     Ok(with_runtime(|rt, sdk| {
-        rt.block_on(sdk.configure_lora_transmission(DeviceId(device_id.clone()), config))
+        rt.block_on(sdk.configure(DeviceId(device_id.clone()), config))
+    })?)
+}
+
+pub fn configure_name(device_id: String, config: NameConfig) -> Result<()> {
+    Ok(with_runtime(|rt, sdk| {
+        rt.block_on(sdk.configure(DeviceId(device_id.clone()), config))
     })?)
 }
 
@@ -886,6 +837,24 @@ pub fn create_log_sink(sink: StreamSink<String>) -> Result<()> {
 }
 
 #[derive(Clone, Debug)]
+pub struct NameConfig {
+    pub name: String,
+}
+
+impl Into<HttpQuery> for NameConfig {
+    fn into(self) -> HttpQuery {
+        let mut query = HttpQuery::default();
+        query.r#type = QueryType::QueryConfigure as i32;
+        query.identity = Some(device::Identity {
+            name: self.name,
+            ..Default::default()
+        });
+
+        query
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct DeployConfig {
     pub location: String,
     pub deployed: u64,
@@ -938,6 +907,13 @@ impl Into<device::ConfigureWifiNetworks> for WifiNetworksConfig {
     }
 }
 
+impl Into<HttpQuery> for WifiNetworksConfig {
+    fn into(self) -> HttpQuery {
+        let config: device::ConfigureWifiNetworks = self.into();
+        config.into()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum Schedule {
     Every(u32),
@@ -972,6 +948,13 @@ impl Into<device::ConfigureWifiTransmission> for WifiTransmissionConfig {
     }
 }
 
+impl Into<HttpQuery> for WifiTransmissionConfig {
+    fn into(self) -> HttpQuery {
+        let config: device::ConfigureWifiTransmission = self.into();
+        config.into()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct LoraTransmissionConfig {
     pub band: Option<u32>,
@@ -990,6 +973,13 @@ impl Into<device::ConfigureLoraTransmission> for LoraTransmissionConfig {
             join_eui: self.join_eui,
             band: self.band,
         }
+    }
+}
+
+impl Into<HttpQuery> for LoraTransmissionConfig {
+    fn into(self) -> HttpQuery {
+        let config: device::ConfigureLoraTransmission = self.into();
+        config.into()
     }
 }
 

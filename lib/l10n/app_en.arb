@@ -125,6 +125,8 @@
   "settingsTitle": "Settings",
   "settingsGeneral": "General",
   "settingsNameHint": "Station Name",
+  "nameConfigSuccess": "Name configured successfully!",
+  "errorMessage": "Error: {message}",
   "settingsFirmware": "Firmware",
   "settingsModules": "Modules",
   "settingsWifi": "WiFi",
@@ -137,6 +139,10 @@
   "settingsLoraVerify": "Verify",
   "settingsLanguage": "Language",
   "endDeployment": "End Deployment",
+  "error": "Error",
+  "ok": "OK",
+  "submit": "Submit",
+  "nameErrorDescription": "Name can only contain letters, numbers, underscores, and spaces.",
 
   "noModulesTitle": "No Modules Attached",
   "noModulesMessage": "Your station needs modules in order to complete setup, deploy, and capture data.",
@@ -330,6 +336,7 @@
   "sensorDistanceDistance0": "Distance 0",
   "sensorDistanceDistance1": "Distance 1",
   "sensorDistanceDistance2": "Distance 2",
+  "sensorDistanceCalibration": "Distance Cal",
 
   "sensorRandomRandom0": "Random 0",
   "sensorRandomRandom1": "Random 1",
