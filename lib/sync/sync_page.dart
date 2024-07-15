@@ -191,7 +191,6 @@ class DownloadPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     if (!station.connected || station.ephemeral == null) {
       return padAll(LastConnected(
           lastConnected: station.config?.lastSeen,
@@ -208,12 +207,7 @@ class DownloadPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return padAll(Column(
-      children: [
-        padVertical(Text(availableReadings(context))),
-        buildDownloadButton(context, downloadTask, onDownload),
-      ],
-    ));
+    return padAll(buildDownloadButton(context, downloadTask, onDownload));
   }
 
   Widget buildDownloadButton(BuildContext context, DownloadTask? downloadTask,
@@ -234,22 +228,6 @@ class DownloadPanel extends StatelessWidget {
         );
       } else {
         return const SizedBox.shrink();
-      }
-    }
-  }
-
-  String availableReadings(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    final DownloadTask? task = downloadTask;
-    if (task == null) {
-      return localizations.syncWorking;
-    } else {
-      final int? first = task.first;
-      if (first != null) {
-        return localizations.readingsAvailableAndAlreadyHave(
-            first, task.total - first);
-      } else {
-        return localizations.readingsAvailable(task.total);
       }
     }
   }
@@ -299,28 +277,15 @@ class UploadPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return padAll(Column(
-      children: [
-        padVertical(Text(availableReadings(context))),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedTextButton(
-            onPressed: () => onUpload(uploadTask!),
-            text: localizations.upload,
-          ),
+    return padAll(
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedTextButton(
+          onPressed: () => onUpload(uploadTask!),
+          text: localizations.upload,
         ),
-      ],
-    ));
-  }
-
-  String availableReadings(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    final UploadTask? task = uploadTask;
-    if (task == null) {
-      return localizations.syncWorking;
-    } else {
-      return localizations.readingsPendingUpload(task.total);
-    }
+      ),
+    );
   }
 }
 
