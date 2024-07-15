@@ -28,12 +28,18 @@ final GlobalKey<NavigatorState> helpNavigatorKey = GlobalKey();
 
 class _HomePageState extends State<HomePage> {
   int _pageIndex = 0;
-  bool _showWelcome = false;
+  bool _showWelcome = true;
   int _openCount = 0;
 
   @override
   void initState() {
     super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    final appPrefs = AppPreferences();
+    _openCount = await appPrefs.getOpenCount() ?? 0;
     _checkIfFirstTimeToday();
   }
 
@@ -46,7 +52,7 @@ class _HomePageState extends State<HomePage> {
       await appPrefs.setLastOpened(today);
 
       setState(() {
-        _showWelcome = false; // Always show welcome page when the app opens if set to true
+        _showWelcome = true; // Always show welcome page when the app opens
       });
     } else {
       DateTime? lastOpened = await appPrefs.getLastOpened();
@@ -82,11 +88,13 @@ class _HomePageState extends State<HomePage> {
         body: SafeArea(
           child: _showWelcome
               ? WelcomeScreen(
-                  onDone: () {
+                  onDone: () async {
                     setState(() {
                       _showWelcome = false;
                       _openCount++;
                     });
+                    final appPrefs = AppPreferences();
+                    await appPrefs.setOpenCount(_openCount);
                   },
                 )
               : IndexedStack(
