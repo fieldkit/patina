@@ -40,10 +40,6 @@ class StationModel {
     this.config,
     this.connected = false,
   });
-
-  void updateName(String value) {
-    // config?.name = value;
-  }
 }
 
 class UpdatePortal {

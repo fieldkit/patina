@@ -78,6 +78,11 @@ Future<void> configureLoraTransmission(
     RustLib.instance.api.configureLoraTransmission(
         deviceId: deviceId, config: config, hint: hint);
 
+Future<void> configureName(
+        {required String deviceId, required NameConfig config, dynamic hint}) =>
+    RustLib.instance.api
+        .configureName(deviceId: deviceId, config: config, hint: hint);
+
 Future<void> verifyLoraTransmission({required String deviceId, dynamic hint}) =>
     RustLib.instance.api.verifyLoraTransmission(deviceId: deviceId, hint: hint);
 
@@ -557,6 +562,24 @@ class ModuleConfig {
           key == other.key &&
           sensors == other.sensors &&
           configuration == other.configuration;
+}
+
+class NameConfig {
+  final String name;
+
+  const NameConfig({
+    required this.name,
+  });
+
+  @override
+  int get hashCode => name.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NameConfig &&
+          runtimeType == other.runtimeType &&
+          name == other.name;
 }
 
 class NearbyStation {
