@@ -47,13 +47,13 @@ dependencies:
   provider: ^6.0.4
   uuid: ^4.3.3
   meta: ^1.10.0
-  intl: ^0.18.0
+  intl: ^0.19.0
   markdown: ^7.1.0
   flutter_secure_storage: ^9.0.0
   flutter_form_builder: ^9.0.0
-  form_builder_validators: ^9.0.0
+  form_builder_validators: ^11.0.0
   path_provider: ^2.0.15
-  flutter_markdown: ^0.6.14
+  flutter_markdown: ^0.7.3
   loader_overlay: ^4.0.0
   collection: ^1.17.1
   data: ^0.12.0
@@ -71,12 +71,12 @@ dependencies:
       url: https://gitlab.com/fieldkit/libraries/data-protocol.git
       ref: "13d5785bdcc53ea74a2215f5149d6d576c5ac1c4"
       path: dart
-  logger: ^1.4.0
+  logger: ^2.4.0
   flutter_dotenv: ^5.1.0
-  location: ^5.0.3
+  location: ^7.0.0
   shared_preferences: ^2.2.1
   flutter_map_location_marker: ^6.0.0
-  package_info_plus: ^5.0.1
+  package_info_plus: ^8.0.0
   ansi_styles: ^0.3.2+1
   circular_countdown_timer: ^0.2.3
   convert: ^3.1.1
@@ -88,7 +88,7 @@ dependencies:
   connectivity_plus: ^6.0.3
   svg_flutter: ^0.0.1
   archive: ^3.6.1
-  share_plus: ^7.2.2
+  share_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -97,7 +97,7 @@ dev_dependencies:
     sdk: flutter
   freezed: ^2.4.6
   build_runner: ^2.4.8
-  ffigen: ^9.0.0
+  ffigen: ^12.0.0
   test: ^1.24.3
   mockito: ^5.4.2
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -105,7 +105,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.1
+  flutter_lints: ^4.0.0
 
 flutter_icons:
   android: true
