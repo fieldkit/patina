@@ -19,6 +19,13 @@ import 'dispatcher.dart';
 
 const uuid = Uuid();
 
+class SyncStatus {
+  int uploaded;
+  int downloaded;
+
+  SyncStatus({required this.uploaded, required this.downloaded});
+}
+
 class StationModel {
   final String deviceId;
   StationConfig? config;
@@ -26,16 +33,13 @@ class StationModel {
   SyncingProgress? syncing;
   FirmwareInfo? get firmware => config?.firmware;
   bool connected;
+  SyncStatus? syncStatus;
 
   StationModel({
     required this.deviceId,
     this.config,
     this.connected = false,
   });
-
-  void updateName(String value) {
-    config?.name = value;
-  }
 }
 
 class UpdatePortal {
@@ -166,7 +170,7 @@ class KnownStationsModel extends ChangeNotifier {
   KnownStationsModel(AppEventDispatcher dispatcher) {
     dispatcher.addListener<DomainMessage_NearbyStations>((nearby) {
       final byDeviceId = {};
-      for (var station in nearby.field0) {
+      for (final station in nearby.field0) {
         findOrCreate(station.deviceId);
         byDeviceId[station.deviceId] = station;
       }
@@ -195,6 +199,19 @@ class KnownStationsModel extends ChangeNotifier {
       applyTransferProgress(transferProgress.field0);
     });
 
+    dispatcher.addListener<DomainMessage_RecordArchives>((archives) {
+      final byDeviceId = archives.field0.groupListsBy((a) => a.deviceId);
+      for (final entry in byDeviceId.entries) {
+        final uploaded = entry.value
+            .where((e) => e.uploaded != null)
+            .map((e) => e.tail - e.head)
+            .sum;
+        final downloaded = entry.value.map((e) => e.tail - e.head).sum;
+        findOrCreate(entry.key).syncStatus =
+            SyncStatus(uploaded: uploaded, downloaded: downloaded);
+      }
+    });
+
     _load();
   }
 
@@ -202,7 +219,6 @@ class KnownStationsModel extends ChangeNotifier {
     final deviceId = transferProgress.deviceId;
     final station = findOrCreate(deviceId);
     final status = transferProgress.status;
-
     if (status is TransferStatus_Starting) {
       station.syncing =
           SyncingProgress(download: null, upload: null, failed: false);
@@ -374,14 +390,24 @@ class StationOperations extends ChangeNotifier {
     return getBusy<Operation>(deviceId).isNotEmpty;
   }
 
-  void dismiss(UpgradeOperation operation) {
+  void dismiss(Operation operation) {
     operation.dismiss();
     notifyListeners();
   }
 }
 
 abstract class Operation extends ChangeNotifier {
+  bool dismissed = false;
+
   void update(DomainMessage message);
+
+  void dismiss() {
+    dismissed = true;
+  }
+
+  void undismiss() {
+    dismissed = false;
+  }
 
   bool get done;
 
@@ -418,7 +444,7 @@ abstract class TransferOperation extends Operation {
       return status.field0.received / status.field0.total;
     }
     if (status is TransferStatus_Completed) {
-      return 0.0;
+      return 100.0;
     }
     return 0.0;
   }
@@ -465,7 +491,6 @@ class FirmwareComparison {
 
 class UpgradeOperation extends Operation {
   int firmwareId;
-  bool dismissed = false;
   UpgradeStatus status = const UpgradeStatus.starting();
   UpgradeError? error;
 
@@ -484,7 +509,7 @@ class UpgradeOperation extends Operation {
       }
       firmwareId = message.field0.firmwareId;
       status = upgradeStatus;
-      dismissed = false;
+      undismiss();
       notifyListeners();
     }
   }
@@ -496,10 +521,6 @@ class UpgradeOperation extends Operation {
   bool get busy => !(status is UpgradeStatus_Completed ||
       status is UpgradeStatus_Failed ||
       status is UpgradeStatus_ReconnectTimeout);
-
-  void dismiss() {
-    dismissed = true;
-  }
 }
 
 class FirmwareDownloadOperation extends Operation {
@@ -841,6 +862,7 @@ class DeployTask extends Task {
 class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
   final AvailableFirmwareModel availableFirmware;
   final KnownStationsModel knownStations;
+  final Map<String, String?> _forLoggingChanges = {};
 
   UpgradeTaskFactory(
       {required this.availableFirmware, required this.knownStations}) {
@@ -854,6 +876,16 @@ class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
     knownStations.addListener(listener);
   }
 
+  _logChanges(StationModel station, LocalFirmware local,
+      FirmwareComparison comparison) {
+    if (!_forLoggingChanges.containsKey(station.deviceId) ||
+        _forLoggingChanges[station.deviceId] != comparison.label) {
+      Loggers.state.i(
+          "UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
+      _forLoggingChanges[station.deviceId] = comparison.label;
+    }
+  }
+
   List<UpgradeTask> create() {
     final List<UpgradeTask> tasks = List.empty(growable: true);
     for (final station in knownStations.stations) {
@@ -862,9 +894,8 @@ class UpgradeTaskFactory extends TaskFactory<UpgradeTask> {
         for (final local in availableFirmware.firmware) {
           final comparison = FirmwareComparison.compare(local, firmware);
           if (comparison.newer) {
-            Loggers.state.i(
-                "UpgradeTask ${station.config?.name} ${local.label} ${comparison.label}");
             tasks.add(UpgradeTask(station: station, comparison: comparison));
+            _logChanges(station, local, comparison);
             break;
           }
         }
@@ -926,15 +957,20 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
       if (total != null) {
         if (_generations.containsKey(nearby.deviceId)) {
           final String generationId = _generations[nearby.deviceId]!;
+
+          // Find already downloaded archives.
           final Iterable<RecordArchive>? archives =
               archivesById[nearby.deviceId]
                   ?.where((archive) => archive.generationId == generationId);
+
           if (archives != null && archives.isNotEmpty) {
+            // Some records have already been downloaded.
             final int first =
                 archives.map((archive) => archive.tail).reduce(max);
             tasks.add(DownloadTask(
                 deviceId: nearby.deviceId, total: total, first: first));
           } else {
+            // Nothing has been downloaded yet.
             Loggers.state.w("${nearby.deviceId} no archives");
             tasks.add(DownloadTask(
                 deviceId: nearby.deviceId, total: total, first: 0));
@@ -954,6 +990,10 @@ class DownloadTask extends Task {
   final String deviceId;
   final int total;
   final int? first;
+
+  bool get hasReadings {
+    return first != null && total - first! > 0;
+  }
 
   DownloadTask({required this.deviceId, required this.total, this.first});
 
@@ -990,25 +1030,29 @@ class UploadTaskFactory extends TaskFactory<UploadTask> {
 
   List<UploadTask> create() {
     final List<UploadTask> tasks = List.empty(growable: true);
-    final byId = _archives
+    final pending = _archives
         .where((a) => a.uploaded == null)
         .groupListsBy((a) => a.deviceId);
-    for (final entry in byId.entries) {
+    for (final entry in pending.entries) {
       final account = portalAccounts.getAccountForDevice(entry.key);
-      if (account != null) {
-        if (account.tokens == null) {
-          tasks.add(UploadTask(
-              deviceId: entry.key,
-              files: entry.value,
-              tokens: null,
-              problem: UploadProblem.authentication));
-        } else if (account.validity == Validity.connectivity) {
+      // Always create an UploadTask, regardless of authentication status.
+      if (account == null || account.tokens == null) {
+        // User needs to login.
+        tasks.add(UploadTask(
+            deviceId: entry.key,
+            files: entry.value,
+            tokens: null,
+            problem: UploadProblem.authentication));
+      } else {
+        if (account.validity == Validity.connectivity) {
+          // User *may* need to login, or could just have connectivity issues.
           tasks.add(UploadTask(
               deviceId: entry.key,
               files: entry.value,
               tokens: account.tokens,
               problem: UploadProblem.connectivity));
         } else {
+          // User is good to try uploading.
           tasks.add(UploadTask(
               deviceId: entry.key,
               files: entry.value,
@@ -1183,7 +1227,7 @@ class AppState {
         if (state == AppLifecycleState.resumed) {
           if (_periodicRan != null &&
               DateTime.now().difference(_periodicRan!).inSeconds < 30) {
-            Loggers.state.i("periodc: $_periodicRan");
+            Loggers.state.i("periodic: $_periodicRan");
           } else {
             _periodic();
           }
@@ -1636,6 +1680,7 @@ class ModuleConfiguration {
 
 class ModuleConfigurations extends ChangeNotifier {
   final KnownStationsModel knownStations;
+  final Map<ModuleIdentity, String?> _forLoggingChanges = {};
 
   ModuleConfigurations({required this.knownStations}) {
     knownStations.addListener(() {
@@ -1643,10 +1688,19 @@ class ModuleConfigurations extends ChangeNotifier {
     });
   }
 
+  _logChanges(ModuleIdentity identity, Uint8List? config) {
+    final encoded = config == null ? null : base64.encode(config);
+    if (!_forLoggingChanges.containsKey(identity) ||
+        _forLoggingChanges[identity] != encoded) {
+      Loggers.state.i("$identity cfg: `$encoded`");
+      _forLoggingChanges[identity] = encoded;
+    }
+  }
+
   ModuleConfiguration find(ModuleIdentity moduleIdentity) {
     final stationAndModule = knownStations.findModule(moduleIdentity);
     final configuration = stationAndModule?.module.configuration;
-    Loggers.state.v("$moduleIdentity Configuration: $configuration");
+    _logChanges(moduleIdentity, configuration);
     if (configuration == null || configuration.isEmpty) {
       return ModuleConfiguration(null);
     }

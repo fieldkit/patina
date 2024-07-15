@@ -78,6 +78,11 @@ Future<void> configureLoraTransmission(
     RustLib.instance.api.configureLoraTransmission(
         deviceId: deviceId, config: config, hint: hint);
 
+Future<void> configureName(
+        {required String deviceId, required NameConfig config, dynamic hint}) =>
+    RustLib.instance.api
+        .configureName(deviceId: deviceId, config: config, hint: hint);
+
 Future<void> verifyLoraTransmission({required String deviceId, dynamic hint}) =>
     RustLib.instance.api.verifyLoraTransmission(deviceId: deviceId, hint: hint);
 
@@ -522,6 +527,7 @@ class LoraTransmissionConfig {
 
 class ModuleConfig {
   final int position;
+  final bool internal;
   final String moduleId;
   final String key;
   final List<SensorConfig> sensors;
@@ -529,6 +535,7 @@ class ModuleConfig {
 
   const ModuleConfig({
     required this.position,
+    required this.internal,
     required this.moduleId,
     required this.key,
     required this.sensors,
@@ -538,6 +545,7 @@ class ModuleConfig {
   @override
   int get hashCode =>
       position.hashCode ^
+      internal.hashCode ^
       moduleId.hashCode ^
       key.hashCode ^
       sensors.hashCode ^
@@ -549,10 +557,29 @@ class ModuleConfig {
       other is ModuleConfig &&
           runtimeType == other.runtimeType &&
           position == other.position &&
+          internal == other.internal &&
           moduleId == other.moduleId &&
           key == other.key &&
           sensors == other.sensors &&
           configuration == other.configuration;
+}
+
+class NameConfig {
+  final String name;
+
+  const NameConfig({
+    required this.name,
+  });
+
+  @override
+  int get hashCode => name.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NameConfig &&
+          runtimeType == other.runtimeType &&
+          name == other.name;
 }
 
 class NearbyStation {
@@ -679,6 +706,7 @@ sealed class Schedule with _$Schedule {
 
 class SensorConfig {
   final int number;
+  final bool internal;
   final String key;
   final String fullKey;
   final String calibratedUom;
@@ -688,6 +716,7 @@ class SensorConfig {
 
   const SensorConfig({
     required this.number,
+    required this.internal,
     required this.key,
     required this.fullKey,
     required this.calibratedUom,
@@ -699,6 +728,7 @@ class SensorConfig {
   @override
   int get hashCode =>
       number.hashCode ^
+      internal.hashCode ^
       key.hashCode ^
       fullKey.hashCode ^
       calibratedUom.hashCode ^
@@ -712,6 +742,7 @@ class SensorConfig {
       other is SensorConfig &&
           runtimeType == other.runtimeType &&
           number == other.number &&
+          internal == other.internal &&
           key == other.key &&
           fullKey == other.fullKey &&
           calibratedUom == other.calibratedUom &&
@@ -765,7 +796,7 @@ class SolarInfo {
 class StationConfig {
   final String deviceId;
   final String generationId;
-  String name;
+  final String name;
   final FirmwareInfo firmware;
   final UtcDateTime lastSeen;
   final StreamInfo meta;
@@ -775,7 +806,7 @@ class StationConfig {
   final Uint8List? pb;
   final List<ModuleConfig> modules;
 
-  StationConfig({
+  const StationConfig({
     required this.deviceId,
     required this.generationId,
     required this.name,

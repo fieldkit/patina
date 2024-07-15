@@ -24,21 +24,16 @@ class AppRetainWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (Platform.isAndroid) {
-          if (Navigator.of(context).canPop()) {
-            return true;
-          } else {
-            _channel.invokeMethod('sendToBackground');
-            return false;
-          }
-        } else {
-          return true;
-        }
-      },
-      child: child,
-    );
+    final navigator = Navigator.of(context);
+    final workaround = Platform.isAndroid && !navigator.canPop();
+    return PopScope(
+        canPop: !workaround,
+        child: NavigatorPopHandler(
+            enabled: workaround,
+            onPop: () {
+              _channel.invokeMethod('sendToBackground');
+            },
+            child: child));
   }
 }
 

@@ -125,6 +125,58 @@ Widget padVertical(Widget child) {
   );
 }
 
+class StatusMessagePanel extends StatelessWidget {
+  final StationModel station;
+  final DownloadTask? downloadTask;
+  final UploadTask? uploadTask;
+
+  const StatusMessagePanel(
+      {super.key,
+      required this.downloadTask,
+      required this.uploadTask,
+      required this.station});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final readingsDown = downloadable;
+    final readingsUp = uploadable;
+    if (downloadable > 0) {
+      if (uploadable > 0) {
+        return padAll(Text(localizations.syncReadingsWaitingDownloadAndUpload(
+            readingsDown, readingsUp)));
+      } else {
+        return padAll(
+            Text(localizations.syncReadingsWaitingDownload(readingsDown)));
+      }
+    } else {
+      if (uploadable > 0) {
+        return padAll(
+            Text(localizations.syncReadingsWaitingUpload(readingsUp)));
+      } else {
+        final syncStatus = station.syncStatus;
+        if (syncStatus != null &&
+            syncStatus.downloaded == syncStatus.uploaded) {
+          return padAll(
+              Text(localizations.syncReadingsNoneWaiting(syncStatus.uploaded)));
+        } else {
+          return padAll(Text(localizations.syncReadingsNone));
+        }
+      }
+    }
+  }
+
+  int get downloadable {
+    final task = downloadTask;
+    if (task == null) {
+      return 0;
+    }
+    return task.total - (task.first ?? 0);
+  }
+
+  int get uploadable => (uploadTask?.total ?? 0);
+}
+
 class DownloadPanel extends StatelessWidget {
   final StationModel station;
   final void Function(DownloadTask) onDownload;
@@ -139,7 +191,6 @@ class DownloadPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
 
     if (!station.connected || station.ephemeral == null) {
       return padAll(LastConnected(
@@ -151,8 +202,10 @@ class DownloadPanel extends StatelessWidget {
       return UpgradeRequiredWidget(station: station);
     }
 
-    if (downloadTask == null) {
-      return padAll(Text(localizations.syncNoDownload));
+    // If there are no readings to download hide the button
+    final task = downloadTask;
+    if (task == null || !task.hasReadings) {
+      return const SizedBox.shrink();
     }
 
     return padAll(Column(
@@ -208,13 +261,12 @@ class UploadPanel extends StatelessWidget {
   final UploadTask? uploadTask;
   final bool hasLoginTasks;
 
-  const UploadPanel({
-    super.key,
-    required this.station,
-    required this.onUpload,
-    required this.uploadTask,
-    required this.hasLoginTasks,
-  });
+  const UploadPanel(
+      {super.key,
+      required this.station,
+      required this.onUpload,
+      required this.uploadTask,
+      required this.hasLoginTasks});
 
   @override
   Widget build(BuildContext context) {
@@ -236,11 +288,14 @@ class UploadPanel extends StatelessWidget {
       }
     }
 
+    // Show message about problems with the internet. This will be fairly common.
     if (uploadTask?.problem == UploadProblem.connectivity) {
       return padAll(Text(localizations.syncNoInternet));
     }
 
     if (uploadTask?.problem == UploadProblem.authentication) {
+      // We could show a message, but right now we show a Login button at the
+      // top of the page.
       return const SizedBox.shrink();
     }
 
@@ -295,6 +350,8 @@ class DataSyncPage extends StatelessWidget {
       final downloadTask = tasks.getMaybeOne<DownloadTask>(station.deviceId);
       final uploadTask = tasks.getMaybeOne<UploadTask>(station.deviceId);
       final busy = stationOperations.isBusy(station.deviceId);
+      final status = StatusMessagePanel(
+          station: station, downloadTask: downloadTask, uploadTask: uploadTask);
       final download = DownloadPanel(
           station: station, downloadTask: downloadTask, onDownload: onDownload);
       final upload = UploadPanel(
@@ -304,8 +361,13 @@ class DataSyncPage extends StatelessWidget {
           hasLoginTasks: loginTasks.isNotEmpty);
       Loggers.ui.i(
           "data-sync: busy=$busy downloadTask=$downloadTask uploadTask=$uploadTask loginTasks=$loginTasks");
+
       return StationSyncStatus(
-          station: station, busy: busy, download: download, upload: upload);
+          station: station,
+          busy: busy,
+          status: status,
+          download: download,
+          upload: upload);
     }).toList();
 
     return Scaffold(
@@ -323,9 +385,76 @@ class DataSyncPage extends StatelessWidget {
   }
 }
 
+class AcknowledgeSyncWidget extends StatefulWidget {
+  final bool downloading;
+  final bool uploading;
+  final Widget child;
+
+  const AcknowledgeSyncWidget({
+    super.key,
+    required this.downloading,
+    required this.uploading,
+    required this.child,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _AcknowledgeSyncState();
+}
+
+enum Ack {
+  unnecessary,
+  download,
+  upload,
+}
+
+class _AcknowledgeSyncState extends State<AcknowledgeSyncWidget> {
+  Ack _ack = Ack.unnecessary;
+
+  @override
+  void didUpdateWidget(covariant AcknowledgeSyncWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.downloading != widget.downloading && !widget.downloading) {
+      _ack = Ack.download;
+    }
+
+    if (oldWidget.uploading != widget.uploading && !widget.uploading) {
+      _ack = Ack.upload;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    if (_ack == Ack.unnecessary) {
+      return widget.child;
+    } else {
+      return Column(children: [
+        Text(
+          _ack == Ack.download
+              ? localizations.syncDownloadSuccess
+              : localizations.syncUploadSuccess,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),
+        ),
+        padAll(SizedBox(
+            width: double.infinity,
+            child: ElevatedTextButton(
+                text: localizations.syncDismissOk,
+                onPressed: () {
+                  setState(() {
+                    _ack = Ack.unnecessary;
+                  });
+                })))
+      ]);
+    }
+  }
+}
+
 class StationSyncStatus extends StatelessWidget {
   final StationModel station;
   final bool busy;
+  final StatusMessagePanel status;
   final Widget download;
   final Widget upload;
 
@@ -340,18 +469,19 @@ class StationSyncStatus extends StatelessWidget {
     super.key,
     required this.station,
     required this.busy,
+    required this.status,
     required this.download,
     required this.upload,
   });
 
-  Widget _progress(BuildContext context) {
+  Widget _body(BuildContext context) {
     if (isDownloading) {
       return DownloadProgressPanel(progress: station.syncing!.download!);
     }
     if (isUploading) {
       return UploadProgressPanel(progress: station.syncing!.upload!);
     }
-    if ((isSyncing || busy) && !isFailed) {
+    if (isSyncing || busy) {
       final localizations = AppLocalizations.of(context)!;
       return WH.padColumn(
         Column(
@@ -362,7 +492,11 @@ class StationSyncStatus extends StatelessWidget {
         ),
       );
     }
-    return Column(children: [download, upload]);
+    return Column(children: [
+      status,
+      download,
+      upload,
+    ]);
   }
 
   @override
@@ -373,11 +507,14 @@ class StationSyncStatus extends StatelessWidget {
     final subtitle = isSyncing
         ? localizations.syncPercentageComplete(station.syncing?.completed ?? 0)
         : null;
+    final header = GenericListItemHeader(title: title, subtitle: subtitle);
 
-    return BorderedListItem(
-      header: GenericListItemHeader(title: title, subtitle: subtitle),
-      children: [_progress(context)],
-    );
+    final body = AcknowledgeSyncWidget(
+        downloading: isDownloading,
+        uploading: isUploading,
+        child: _body(context));
+
+    return BorderedListItem(header: header, children: [body]);
   }
 }
 
@@ -500,8 +637,9 @@ class LastConnected extends StatelessWidget {
     final subtitleText = lastConnected != null
         ? localizations.lastConnectedSince(
             DateFormat.yMd().add_jm().format(
-              DateTime.fromMicrosecondsSinceEpoch(lastConnected!.field0 * 1000),
-            ),
+                  DateTime.fromMicrosecondsSinceEpoch(
+                      lastConnected!.field0 * 1000),
+                ),
           )
         : null;
 
@@ -517,7 +655,15 @@ class LastConnected extends StatelessWidget {
             colorFilter: colorFilter,
           ),
         ),
-        title: Text(titleText, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)), subtitle: subtitleText != null ? Row(children: [Text(subtitleText, style: const TextStyle(fontSize: 12, color: Colors.grey)), const SizedBox(width: 5),],
+        title: Text(titleText,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+        subtitle: subtitleText != null
+            ? Row(
+                children: [
+                  Text(subtitleText,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  const SizedBox(width: 5),
+                ],
               )
             : null,
       ),

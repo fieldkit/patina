@@ -40,7 +40,7 @@ class HelpTab extends StatelessWidget {
                 MaterialPageRoute(
                     builder: (context) => QuickFlow(
                         start: const StartFlow(prefix: "onboarding"),
-                        onForwardEnd: () => onDone(context))),
+                        onComplete: () => onDone(context))),
               );
             },
           ),

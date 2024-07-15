@@ -70,6 +70,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       dynamic raw);
 
   @protected
+  NameConfig dco_decode_box_autoadd_name_config(dynamic raw);
+
+  @protected
   Schedule dco_decode_box_autoadd_schedule(dynamic raw);
 
   @protected
@@ -186,6 +189,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ModuleConfig dco_decode_module_config(dynamic raw);
+
+  @protected
+  NameConfig dco_decode_name_config(dynamic raw);
 
   @protected
   NearbyStation dco_decode_nearby_station(dynamic raw);
@@ -372,6 +378,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
+  NameConfig sse_decode_box_autoadd_name_config(SseDeserializer deserializer);
+
+  @protected
   Schedule sse_decode_box_autoadd_schedule(SseDeserializer deserializer);
 
   @protected
@@ -506,6 +515,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ModuleConfig sse_decode_module_config(SseDeserializer deserializer);
+
+  @protected
+  NameConfig sse_decode_name_config(SseDeserializer deserializer);
 
   @protected
   NearbyStation sse_decode_nearby_station(SseDeserializer deserializer);
@@ -703,6 +715,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       LoraTransmissionConfig self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_name_config(
+      NameConfig self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_schedule(Schedule self, SseSerializer serializer);
 
   @protected
@@ -842,6 +858,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_module_config(ModuleConfig self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_name_config(NameConfig self, SseSerializer serializer);
 
   @protected
   void sse_encode_nearby_station(NearbyStation self, SseSerializer serializer);

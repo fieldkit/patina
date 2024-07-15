@@ -1,18 +1,6 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Strapi Content Sync and Test Script
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+This Dart script provides functionality to download content from a Strapi GraphQL API, save it locally, and test the downloaded content for verification.
 
 ## Features
 
@@ -32,8 +20,29 @@ to `/example` folder.
 const like = 'sample';
 ```
 
-## Additional information
+### Download Content
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+The script downloads content from a Strapi GraphQL API and saves it to a specified directory. It also downloads images linked within the content.
+
+### Test Content
+
+The script tests the downloaded content to verify its integrity by parsing the markdown and checking for any errors.
+
+### Running the Script
+
+The script can be executed with the following arguments:
+
+- `--test`: Tests the downloaded content for verification.
+- `--sync`: Downloads the content from the Strapi API and saves it locally.
+
+To run the script, use the following command in your terminal (from the main folder):
+
+```sh
+dart flows/example/sync.dart --test
+```
+
+then
+
+```sh
+dart flows/example/sync.dart --sync
+```
