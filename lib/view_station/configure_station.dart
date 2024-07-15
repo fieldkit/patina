@@ -78,17 +78,21 @@ class _NameConfigWidgetState extends State<NameConfigWidget> {
 
   OverlayEntry _createOverlayEntry() {
     return OverlayEntry(
-      builder: (context) => Positioned(
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        child: Container(
-          color: Colors.black.withOpacity(0.5),
-          child: const Center(
-            child: CircularProgressIndicator(),
+      builder: (context) => Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
