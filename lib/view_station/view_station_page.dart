@@ -40,7 +40,7 @@ class ViewStationRoute extends StatelessWidget {
 class ViewStationPage extends StatelessWidget {
   final StationModel station;
 
-  StationConfig? get config => station.config;
+  StationConfig get config => station.config!;
 
   const ViewStationPage({super.key, required this.station});
 
@@ -50,8 +50,8 @@ class ViewStationPage extends StatelessWidget {
         context.watch<ModuleConfigurations>();
     return Scaffold(
       appBar: AppBar(
-        title: Text(config?.name ?? AppLocalizations.of(context)!.unknownStation),
-        bottom: config != null && station.ephemeral?.deployment?.startTime != null
+        title: Text(config.name),
+        bottom: station.ephemeral?.deployment?.startTime != null
             ? PreferredSize(
                 preferredSize: Size.zero,
                 child: Text(
@@ -87,11 +87,9 @@ class ViewStationPage extends StatelessWidget {
                   style: const TextStyle(color: Colors.grey)))
         ],
       ),
-      body: config != null
-          ? ListView(children: [
-              HighLevelsDetails(station: station),
-            ])
-          : Center(child: Text(AppLocalizations.of(context)!.stationNoConfig)),
+      body: ListView(children: [
+        HighLevelsDetails(station: station),
+      ]),
     );
   }
 }

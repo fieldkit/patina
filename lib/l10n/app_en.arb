@@ -88,8 +88,6 @@
   "contacting": "Contacting...",
   "unknownStationTitle": "Unknown Station",
   "backButtonTitle": "Back",
-  "unknownStation": "Unknown Station",
-  "stationNoConfig": "Station configuration not available",
   "bytesUsed": "${bytesUsed}b of 512MB",
 
   "calibrationStartTimer": "Start Timer",
