@@ -58,17 +58,18 @@ class _HomePageState extends State<HomePage> {
       DateTime? lastOpened = await appPrefs.getLastOpened();
       DateTime today = DateTime.now();
 
-      if (_openCount >= 3) {
-        setState(() {
-          _showWelcome = false;
-        });
-      } else if (lastOpened == null ||
+      
+      if (lastOpened == null ||
           lastOpened.day != today.day ||
           lastOpened.month != today.month ||
-          lastOpened.year != today.year) {
+          lastOpened.year != today.year && _openCount < 3) {
         await appPrefs.setLastOpened(today);
         setState(() {
           _showWelcome = true;
+        });
+      } else {
+        setState(() {
+          _showWelcome = false;
         });
       }
     }
