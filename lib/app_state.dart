@@ -117,7 +117,7 @@ class UpdatePortal {
               if (idIfOk == null) {
                 Loggers.state.w("$deviceId permissions-conflict");
               } else {
-                Loggers.state.v("$deviceId refreshed portal-id=$idIfOk");
+                Loggers.state.t("$deviceId refreshed portal-id=$idIfOk");
               }
             },
             retryIf: (e) => e is PortalError_Connecting,

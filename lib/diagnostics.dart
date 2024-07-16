@@ -33,7 +33,7 @@ class StandardFilter extends LogFilter {
 
 class AutomatedBuildFilter extends LogFilter {
   @override
-  bool shouldLog(LogEvent event) => event.level.index >= Level.verbose.index;
+  bool shouldLog(LogEvent event) => event.level.index >= Level.trace.index;
 }
 
 class AddLoggerName extends LogPrinter {
