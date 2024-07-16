@@ -192,9 +192,7 @@ class DownloadPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!station.connected || station.ephemeral == null) {
-      return padAll(LastConnected(
-          lastConnected: station.config?.lastSeen,
-          connected: station.connected));
+      return const SizedBox.shrink();
     }
 
     if (!(station.ephemeral?.capabilities.udp ?? false)) {
@@ -457,7 +455,14 @@ class StationSyncStatus extends StatelessWidget {
         ),
       );
     }
+
     return Column(children: [
+      if (!station.connected)
+        SizedBox(
+            width: double.infinity,
+            child: LastConnected(
+                lastConnected: station.config?.lastSeen,
+                connected: station.connected)),
       status,
       download,
       upload,
