@@ -116,8 +116,10 @@ class StationCard extends StatelessWidget {
             ),
     );
 
-    final tinyOperations = operations.map((op) => TinyOperation(operation: op)).toList();
-    final subtitle = _buildSubtitle(context, moduleConfigurations, localizations);
+    final tinyOperations =
+        operations.map((op) => TinyOperation(operation: op)).toList();
+    final subtitle =
+        _buildSubtitle(context, moduleConfigurations, localizations);
 
     return Container(
       padding: const EdgeInsets.all(10),
@@ -143,7 +145,8 @@ class StationCard extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ViewStationRoute(deviceId: station.deviceId),
+                    builder: (context) =>
+                        ViewStationRoute(deviceId: station.deviceId),
                   ),
                 );
               },
@@ -159,10 +162,15 @@ class StationCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSubtitle(BuildContext context, ModuleConfigurations moduleConfigurations, AppLocalizations localizations) {
+  Widget _buildSubtitle(
+      BuildContext context,
+      ModuleConfigurations moduleConfigurations,
+      AppLocalizations localizations) {
     if (station.ephemeral?.deployment?.startTime != null) {
-      final deploymentDate = DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000);
-      return Text("${localizations.deployedAt} ${DateFormat.yMd().format(deploymentDate)}");
+      final deploymentDate = DateTime.fromMillisecondsSinceEpoch(
+          station.ephemeral!.deployment!.startTime.toInt() * 1000);
+      return Text(
+          "${localizations.deployedAt} ${DateFormat.yMd().format(deploymentDate)}");
     }
 
     if (!moduleConfigurations.areAllModulesCalibrated(station, context)) {

@@ -57,7 +57,7 @@ class ViewStationPage extends StatelessWidget {
             ? PreferredSize(
                 preferredSize: Size.zero,
                 child: Text(
-                  "${AppLocalizations.of(context)!.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000))}",
+                  "${AppLocalizations.of(context)!.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime.toInt() * 1000))}",
                 ),
               )
             : moduleConfigurations.areAllModulesCalibrated(station, context) ==
@@ -100,7 +100,8 @@ class LastConnected extends StatelessWidget {
   final UtcDateTime? lastConnected;
   final bool connected;
 
-  final colorFilter = const ColorFilter.mode(Color(0xFFcccdcf), BlendMode.srcIn);
+  final colorFilter =
+      const ColorFilter.mode(Color(0xFFcccdcf), BlendMode.srcIn);
 
   const LastConnected({super.key, this.lastConnected, required this.connected});
 
@@ -329,7 +330,8 @@ class HighLevelsDetails extends StatelessWidget {
                                   child: TimerCircle(
                                     enabled: station.connected,
                                     deployed: station
-                                        .ephemeral?.deployment?.startTime,
+                                        .ephemeral?.deployment?.startTime
+                                        .toInt(),
                                   ),
                                 ),
                               ),
@@ -342,7 +344,7 @@ class HighLevelsDetails extends StatelessWidget {
                                         level: battery),
                                     MemoryIndicator(
                                         enabled: station.connected,
-                                        bytesUsed: bytesUsed),
+                                        bytesUsed: bytesUsed.toInt()),
                                   ],
                                 ),
                               ),

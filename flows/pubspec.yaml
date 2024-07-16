@@ -10,11 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.5
-  logger: ^1.4.0
+  logger: ^2.4.0
   markdown: ^7.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lints: ^2.0.0
+  lints: ^4.0.0
   test: ^1.21.0

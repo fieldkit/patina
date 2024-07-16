@@ -282,7 +282,8 @@ class KnownStationsModel extends ChangeNotifier {
       }
     }
 
-    final progress = await startDownload(deviceId: deviceId, first: first);
+    final progress = await startDownload(
+        deviceId: deviceId, first: first == null ? null : BigInt.from(first));
     applyTransferProgress(progress);
   }
 
@@ -456,9 +457,9 @@ class DownloadOperation extends TransferOperation {
   TransferStatus_Downloading? get _downloading =>
       status as TransferStatus_Downloading;
 
-  int get received => _downloading?.field0.received ?? 0;
-  int get total => _downloading?.field0.total ?? 0;
-  int get started => _downloading?.field0.started ?? 0;
+  int get received => _downloading?.field0.received.toInt() ?? 0;
+  int get total => _downloading?.field0.total.toInt() ?? 0;
+  int get started => _downloading?.field0.started.toInt() ?? 0;
 }
 
 class UploadOperation extends TransferOperation {
@@ -734,10 +735,11 @@ class StationConfiguration extends ChangeNotifier {
     final List<WifiNetworkConfig> networks =
         List<int>.generate(2, (i) => i).map((index) {
       if (keeping == index) {
-        return WifiNetworkConfig(index: index, keeping: true, preferred: false);
+        return WifiNetworkConfig(
+            index: BigInt.from(index), keeping: true, preferred: false);
       } else {
         return WifiNetworkConfig(
-            index: index,
+            index: BigInt.from(index),
             keeping: false,
             preferred: false,
             ssid: network.ssid!,
@@ -752,15 +754,16 @@ class StationConfiguration extends ChangeNotifier {
   Future<void> removeNetwork(NetworkConfig network) async {
     final List<WifiNetworkConfig> networks =
         List<int>.generate(2, (i) => i).map((index) {
-      if (network.index == index) {
+      if (network.index.toInt() == index) {
         return WifiNetworkConfig(
-            index: index,
+            index: BigInt.from(index),
             keeping: false,
             preferred: false,
             ssid: "",
             password: "");
       } else {
-        return WifiNetworkConfig(index: index, keeping: true, preferred: false);
+        return WifiNetworkConfig(
+            index: BigInt.from(index), keeping: true, preferred: false);
       }
     }).toList();
 
@@ -927,7 +930,8 @@ class DownloadTaskFactory extends TaskFactory<DownloadTask> {
       {required KnownStationsModel knownStations,
       required AppEventDispatcher dispatcher}) {
     dispatcher.addListener<DomainMessage_StationRefreshed>((refreshed) {
-      _records[refreshed.field0.deviceId] = refreshed.field0.data.records;
+      _records[refreshed.field0.deviceId] =
+          refreshed.field0.data.records.toInt();
       _generations[refreshed.field0.deviceId] = refreshed.field0.generationId;
       _tasks.clear();
       _tasks.addAll(create());
@@ -1715,7 +1719,8 @@ class ModuleConfigurations extends ChangeNotifier {
     if (mas != null) {
       await retryOnFailure(() async {
         await clearCalibration(
-            deviceId: mas.station.deviceId, module: mas.module.position);
+            deviceId: mas.station.deviceId,
+            module: BigInt.from(mas.module.position));
       });
     } else {
       Loggers.state.e("Unknown module identity $moduleIdentity");
@@ -1729,7 +1734,7 @@ class ModuleConfigurations extends ChangeNotifier {
       await retryOnFailure(() async {
         await calibrate(
             deviceId: mas.station.deviceId,
-            module: mas.module.position,
+            module: BigInt.from(mas.module.position),
             data: data);
       });
     } else {
