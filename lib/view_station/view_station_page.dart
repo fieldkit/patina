@@ -50,7 +50,7 @@ class ViewStationPage extends StatelessWidget {
         context.watch<ModuleConfigurations>();
     return Scaffold(
       appBar: AppBar(
-        title: Text(config?.name ?? 'Unknown Station'),
+        title: Text(config?.name ?? AppLocalizations.of(context)!.unknownStation),
         bottom: config != null && station.ephemeral?.deployment?.startTime != null
             ? PreferredSize(
                 preferredSize: Size.zero,
@@ -91,7 +91,7 @@ class ViewStationPage extends StatelessWidget {
           ? ListView(children: [
               HighLevelsDetails(station: station),
             ])
-          : const Center(child: Text('Station configuration not available')),
+          : Center(child: Text(AppLocalizations.of(context)!.stationNoConfig)),
     );
   }
 }
@@ -217,7 +217,7 @@ class MemoryIndicator extends StatelessWidget {
     return ListTile(
         leading: Image.asset(icon(), cacheWidth: 16),
         title: Text(localizations.memoryUsage),
-        subtitle: Text("${bytesUsed}b of 512MB"));
+        subtitle: Text(AppLocalizations.of(context)!.bytesUsed(bytesUsed)));
   }
 }
 
