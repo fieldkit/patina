@@ -55,7 +55,7 @@ class ViewStationPage extends StatelessWidget {
             ? PreferredSize(
                 preferredSize: Size.zero,
                 child: Text(
-                  "${AppLocalizations.of(context)!.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime * 1000))}",
+                  "${AppLocalizations.of(context)!.deployedAt} ${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(station.ephemeral!.deployment!.startTime.toInt() * 1000))}",
                 ),
               )
             : moduleConfigurations.areAllModulesCalibrated(station, context) ==
@@ -98,7 +98,8 @@ class LastConnected extends StatelessWidget {
   final UtcDateTime? lastConnected;
   final bool connected;
 
-  final colorFilter = const ColorFilter.mode(Color(0xFFcccdcf), BlendMode.srcIn);
+  final colorFilter =
+      const ColorFilter.mode(Color(0xFFcccdcf), BlendMode.srcIn);
 
   const LastConnected({super.key, this.lastConnected, required this.connected});
 
@@ -127,7 +128,7 @@ class LastConnected extends StatelessWidget {
       );
     }
     final titleText = lastConnected != null
-        ? localizations.notConnectedSince
+        ? localizations.lastConnectedSince(lastConnected!)
         : localizations.notConnected;
     final subtitleText = lastConnected != null
         ? DateFormat.yMd().add_jm().format(
@@ -303,7 +304,11 @@ class HighLevelsDetails extends StatelessWidget {
         Container(
           padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
           child: SizedBox(
-            height: deployTask != null && station.connected && modulesCalibrated || !station.connected ? 340 : 260,
+            height:
+                deployTask != null && station.connected && modulesCalibrated ||
+                        !station.connected
+                    ? 340
+                    : 260,
             child: Stack(
               children: [
                 Positioned.fill(
@@ -329,7 +334,8 @@ class HighLevelsDetails extends StatelessWidget {
                                     child: TimerCircle(
                                       enabled: station.connected,
                                       deployed: station
-                                          .ephemeral?.deployment?.startTime,
+                                          .ephemeral?.deployment?.startTime
+                                          .toInt(),
                                     ),
                                   ),
                                 ),
@@ -342,7 +348,7 @@ class HighLevelsDetails extends StatelessWidget {
                                           level: battery),
                                       MemoryIndicator(
                                           enabled: station.connected,
-                                          bytesUsed: bytesUsed),
+                                          bytesUsed: bytesUsed.toInt()),
                                     ],
                                   ),
                                 ),
@@ -385,7 +391,8 @@ class HighLevelsDetails extends StatelessWidget {
                                     ),
                                   );
                                 },
-                              text: AppLocalizations.of(context)!.deployButton,
+                                text:
+                                    AppLocalizations.of(context)!.deployButton,
                               ),
                             )
                         ],
@@ -415,7 +422,8 @@ class HighLevelsDetails extends StatelessWidget {
             ),
           ),
         ),
-        if (modules.length == 1) // Note: This is on purpose, checking for only diagnostics module
+        if (modules.length ==
+            1) // Note: This is on purpose, checking for only diagnostics module
           NoModulesWidget(station: station)
         else
           Column(children: modules),

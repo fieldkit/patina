@@ -62,7 +62,7 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
 
   @override
   bool visitElementBefore(md.Element element) {
-    logger?.v("BEGIN ${element.tag}");
+    logger?.t("BEGIN ${element.tag}");
 
     switch (element.tag) {
       case "p":
@@ -133,7 +133,7 @@ abstract class MarkdownParser<T> implements md.NodeVisitor {
 
   @override
   void visitElementAfter(md.Element element) {
-    logger?.v("  END ${element.tag}");
+    logger?.t("  END ${element.tag}");
 
     final builder = builders.isEmpty ? null : builders.removeLast();
     final widget = builder?.build();
