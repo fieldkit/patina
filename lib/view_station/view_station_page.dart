@@ -128,7 +128,7 @@ class LastConnected extends StatelessWidget {
       );
     }
     final titleText = lastConnected != null
-        ? localizations.lastConnectedSince(lastConnected!)
+        ? localizations.lastConnected
         : localizations.notConnected;
     final subtitleText = lastConnected != null
         ? DateFormat.yMd().add_jm().format(
