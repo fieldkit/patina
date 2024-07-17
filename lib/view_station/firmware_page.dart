@@ -208,8 +208,8 @@ class StationFirmwarePage extends StatelessWidget {
 
   String _formatFirmwareReleaseDate() {
     final formatter = DateFormat('MM-dd HH:mm:ss');
-    return formatter
-        .format(DateTime.fromMillisecondsSinceEpoch(config.firmware.time));
+    return formatter.format(
+        DateTime.fromMillisecondsSinceEpoch(config.firmware.time * 1000));
   }
 }
 
