@@ -91,7 +91,7 @@ class _DeployFormState extends State<DeployFormWidget> {
                   try {
                     await configuration.deploy(DeployConfig(
                         location: location,
-                        deployed: deployed,
+                        deployed: BigInt.from(deployed),
                         schedule: ScheduleHelpers.fromForm(
                             scheduleEvery, scheduleUnit)));
                   } finally {

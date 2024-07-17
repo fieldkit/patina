@@ -99,8 +99,8 @@ build:ios:
     - security show-keychain-info login.keychain || true
     # END Signing
     # BEGIN flutter
-    - curl --silent -O https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.5-stable.zip
-    - unzip flutter_macos_arm64_3.19.5-stable.zip
+    - curl --silent -O https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.22.2-stable.zip
+    - unzip flutter_macos_arm64_3.22.2-stable.zip
     - ls -alh
     # END flutter
     - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}" > .env

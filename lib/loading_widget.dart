@@ -209,7 +209,7 @@ Future<void> _startNative(
     storagePath: config.storagePath,
     portalBaseUrl: config.portalBaseUrl,
   )) {
-    Loggers.sdkMessages.v("$e");
+    Loggers.sdkMessages.t("$e");
     dispatcher.dispatch(e);
   }
 }

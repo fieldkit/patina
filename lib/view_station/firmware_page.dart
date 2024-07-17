@@ -148,7 +148,7 @@ class StationFirmwarePage extends StatelessWidget {
     bool isFirmwareNewer = false;
     for (var firmware in availableFirmware.firmware) {
       final time = DateTime.fromMillisecondsSinceEpoch(firmware.time);
-      Loggers.ui.v(
+      Loggers.ui.t(
           "$time ${firmware.label} ${LocalFirmwareBranchInfo.parse(firmware.label)}");
       if (FirmwareComparison.compare(firmware, config.firmware).newer) {
         isFirmwareNewer = true;

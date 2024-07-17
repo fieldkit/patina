@@ -111,7 +111,7 @@ class ActiveCalibrationStandardForm extends StatelessWidget {
     final initial = standard.value;
     final key = ObjectKey(standard);
 
-    Loggers.cal.v("active=$activeCalibration initial=$initial");
+    Loggers.cal.t("active=$activeCalibration initial=$initial");
 
     final form = NumberForm(
       key: key,

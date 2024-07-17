@@ -33,7 +33,7 @@ class StandardFilter extends LogFilter {
 
 class AutomatedBuildFilter extends LogFilter {
   @override
-  bool shouldLog(LogEvent event) => event.level.index >= Level.verbose.index;
+  bool shouldLog(LogEvent event) => event.level.index >= Level.trace.index;
 }
 
 class AddLoggerName extends LogPrinter {
@@ -74,6 +74,21 @@ Logger create(FileOutput file, String name, bool colors) {
   );
 }
 
+bool rollover(File file) {
+  if (!file.existsSync() || file.lengthSync() < 1024 * 1024 * 5) {
+    return false;
+  }
+
+  final rolloverPath = "${file.path}.1";
+  final rolloverFile = File(rolloverPath);
+  if (rolloverFile.existsSync()) {
+    rolloverFile.delete();
+  }
+  file.renameSync(rolloverPath);
+
+  return true;
+}
+
 class Loggers {
   static String? _path;
   static Logger _main = devNull;
@@ -87,17 +102,19 @@ class Loggers {
   static void initialize(String logsPath) {
     final colors = !isAutomatedBuild();
     final path = "$logsPath/logs.txt";
-    final FileOutput file = FileOutput(file: File(path));
-    _main = create(file, "main", colors);
-    _bridge = create(file, "bridge", colors);
-    _state = create(file, "state", colors);
-    _cal = create(file, "cal", colors);
-    _ui = create(file, "ui", colors);
-    _portal = create(file, "portal", colors);
-    _markDown = create(file, "mark-down", colors);
+    final logFile = File(path);
+    final rolled = rollover(logFile);
+    final FileOutput fileOutput = FileOutput(file: logFile);
+    _main = create(fileOutput, "main", colors);
+    _bridge = create(fileOutput, "bridge", colors);
+    _state = create(fileOutput, "state", colors);
+    _cal = create(fileOutput, "cal", colors);
+    _ui = create(fileOutput, "ui", colors);
+    _portal = create(fileOutput, "portal", colors);
+    _markDown = create(fileOutput, "mark-down", colors);
     _path = path;
 
-    _main.i("logging to $path");
+    _main.i("logging to $path (rolled = $rolled)");
   }
 
   static Logger get main => _main;

@@ -39,6 +39,9 @@
 
   "download": "Download",
   "upload": "Upload",
+  "readingsAvailable": "{readings} readings can be downloaded.",
+  "readingsAvailableAndAlreadyHave": "Already have {alreadyHave} readings and {readings} more can be downloaded.",
+  "readingsPendingUpload": "{readings} readings can be uploaded.",
   "syncReadingsWaitingDownload": "There are {readings} readings waiting to be downloaded.",
   "syncReadingsWaitingDownloadAndUpload": "There are {readingsDown} readings waiting to be downloaded and {readingsUp} readings waiting to be uploaded.",
   "syncReadingsWaitingUpload": "There are {readings} readings waiting to be uploaded.",
@@ -70,8 +73,9 @@
   "syncManageFirmware": "Manage Firmware",
   "quickTip": "Quick Tip",
   "stationConnected": "Connected",
-  "notConnectedSince": "Last Connected",
+  "lastConnected": "Last Connected",
   "notConnected": "Not Connected",
+  "lastConnectedSince": "Since {date}",
 
   "deployButton": "Deploy",
   "deployTitle": "Deploy Station",

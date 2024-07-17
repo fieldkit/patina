@@ -266,7 +266,7 @@ class _ImageWidgetState extends State<MarkdownImageWidget> {
   @override
   Widget build(BuildContext context) {
     final String path = visiblePath;
-    Loggers.ui.v("MarkdownImageWidget[$_currentIndex]: $path");
+    Loggers.ui.t("MarkdownImageWidget[$_currentIndex]: $path");
 
     final int flex = widget.sizing != null ? 0 : 1;
 
