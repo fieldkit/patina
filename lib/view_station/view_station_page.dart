@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:fk/view_station/no_modules.dart';
 
 import '../gen/api.dart';
-
 import '../app_state.dart';
 import '../meta.dart';
 import '../unknown_station_page.dart';
@@ -41,8 +40,7 @@ class ViewStationRoute extends StatelessWidget {
 class ViewStationPage extends StatelessWidget {
   final StationModel station;
 
-  StationConfig get config =>
-      station.config!; // TODO: check if config is null, fix null error
+  StationConfig get config => station.config!;
 
   const ViewStationPage({super.key, required this.station});
 
@@ -218,7 +216,7 @@ class MemoryIndicator extends StatelessWidget {
     return ListTile(
         leading: Image.asset(icon(), cacheWidth: 16),
         title: Text(localizations.memoryUsage),
-        subtitle: Text("${bytesUsed}b of 512MB"));
+        subtitle: Text(AppLocalizations.of(context)!.bytesUsed(bytesUsed)));
   }
 }
 
@@ -303,118 +301,126 @@ class HighLevelsDetails extends StatelessWidget {
 
     return Column(
       children: [
-        Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 38, 10, 0),
-              child: Positioned.fill(
-                top: 32,
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(2),
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        IntrinsicHeight(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Center(
-                                  child: TimerCircle(
-                                    enabled: station.connected,
-                                    deployed: station
-                                        .ephemeral?.deployment?.startTime
-                                        .toInt(),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    BatteryIndicator(
-                                        enabled: station.connected,
-                                        level: battery),
-                                    MemoryIndicator(
-                                        enabled: station.connected,
-                                        bytesUsed: bytesUsed.toInt()),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+        Container(
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+          child: SizedBox(
+            height:
+                deployTask != null && station.connected && modulesCalibrated ||
+                        !station.connected
+                    ? 340
+                    : 260,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  top: 32,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(2),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1,
                         ),
-                        if (!station.connected)
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            margin: const EdgeInsets.all(10),
-                            width: 350,
-                            height: 50,
-                            color: Colors.grey.shade300,
-                            child: TextButton(
-                              onPressed: null,
-                              child: Text(
-                                AppLocalizations.of(context)!.deployButton,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          )
-                        else if (deployTask != null &&
-                            station.connected &&
-                            modulesCalibrated)
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            width: 400,
-                            height: 50,
-                            child: ElevatedTextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DeployStationRoute(
-                                      deviceId: station.deviceId,
+                      ),
+                      child: Column(
+                        children: [
+                          IntrinsicHeight(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Center(
+                                    child: TimerCircle(
+                                      enabled: station.connected,
+                                      deployed: station
+                                          .ephemeral?.deployment?.startTime
+                                          .toInt(),
                                     ),
                                   ),
-                                );
-                              },
-                              text: AppLocalizations.of(context)!.deployButton,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      BatteryIndicator(
+                                          enabled: station.connected,
+                                          level: battery),
+                                      MemoryIndicator(
+                                          enabled: station.connected,
+                                          bytesUsed: bytesUsed.toInt()),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                      ],
+                          ),
+                          if (!station.connected)
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(10),
+                              width: 350,
+                              height: 50,
+                              color: Colors.grey.shade300,
+                              child: TextButton(
+                                onPressed: null,
+                                child: Text(
+                                  AppLocalizations.of(context)!.deployButton,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            )
+                          else if (deployTask != null &&
+                              station.connected &&
+                              modulesCalibrated)
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              width: 400,
+                              height: 50,
+                              child: ElevatedTextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DeployStationRoute(
+                                        deviceId: station.deviceId,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                text:
+                                    AppLocalizations.of(context)!.deployButton,
+                              ),
+                            )
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            Positioned.fill(
-              top: 8,
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(2),
-                    border: Border.all(
-                      color: Colors.grey.shade300,
+                Positioned.fill(
+                  top: 8,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(2),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                        ),
+                      ),
+                      child: LastConnected(
+                          lastConnected: station.config?.lastSeen,
+                          connected: station.connected),
                     ),
                   ),
-                  child: LastConnected(
-                      lastConnected: station.config?.lastSeen,
-                      connected: station.connected),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
         if (modules.length ==
             1) // Note: This is on purpose, checking for only diagnostics module
