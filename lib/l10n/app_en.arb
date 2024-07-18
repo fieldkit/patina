@@ -92,6 +92,7 @@
   "contacting": "Contacting...",
   "unknownStationTitle": "Unknown Station",
   "backButtonTitle": "Back",
+  "bytesUsed": "${bytesUsed}b of 512MB",
 
   "calibrationStartTimer": "Start Timer",
   "calibrationTitle": "Calibration",

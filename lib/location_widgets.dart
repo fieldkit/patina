@@ -22,8 +22,8 @@ Stream<Location> _monitorLocation() async* {
     distanceFilter: 100,
   );
 
-  // final initialStatus = Stream.value(await Geolocator.isLocationServiceEnabled() ? ServiceStatus.enabled : ServiceStatus.disabled);
-  final serviceStatusStream = StreamGroup.merge([Geolocator.getServiceStatusStream()]);
+  final serviceStatusStream =
+      StreamGroup.merge([Geolocator.getServiceStatusStream()]);
   serviceStatusStream.listen((ServiceStatus status) async {
     Loggers.ui.i("location: $status");
     if (status == ServiceStatus.enabled) {
@@ -42,9 +42,10 @@ Stream<Location> _monitorLocation() async* {
         return;
       }
 
-      final positionStream = Geolocator.getPositionStream(locationSettings: locationSettings);
+      final positionStream =
+          Geolocator.getPositionStream(locationSettings: locationSettings);
       positionStream.listen((Position position) async {
-        Loggers.ui.i("location: $position");
+        Loggers.ui.i("location: ${position.timestamp} ${position.accuracy}");
       });
     }
   });
@@ -57,7 +58,8 @@ class RequestLocationPermissions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Location>(builder: (context, Location location, otherChild) {
+    return Consumer<Location>(
+        builder: (context, Location location, otherChild) {
       return child;
     });
   }
@@ -73,7 +75,6 @@ class ProvideLocation extends StatelessWidget {
     return StreamProvider<Location>(
       create: (_) => _monitorLocation(),
       initialData: Location(),
-      // catchError: (_, error) => error.toString(),
       child: RequestLocationPermissions(child: child),
     );
   }
