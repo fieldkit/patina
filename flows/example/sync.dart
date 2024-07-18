@@ -25,8 +25,8 @@ Future<void> download(Logger logger, String resources) async {
               header { title subtitle }
               simple {
                   body
-                  images { url }
-                  logo { url }
+                  images { url alternativeText }
+                  logo { url alternativeText }
               }
           }
       }'''
