@@ -253,6 +253,7 @@ class KnownStationsModel extends ChangeNotifier {
     Loggers.state.i("stations: ${stations.length} stations");
     for (var station in stations) {
       findOrCreate(station.deviceId).config = station;
+      Loggers.state.i("stations: ${station.deviceId} ${station.name}");
     }
     Loggers.state.i("stations: loaded");
     notifyListeners();
