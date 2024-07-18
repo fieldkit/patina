@@ -351,12 +351,14 @@ class DataSyncPage extends StatelessWidget {
 class AcknowledgeSyncWidget extends StatefulWidget {
   final bool downloading;
   final bool uploading;
+  final bool failed;
   final Widget child;
 
   const AcknowledgeSyncWidget({
     super.key,
     required this.downloading,
     required this.uploading,
+    required this.failed,
     required this.child,
   });
 
@@ -393,13 +395,19 @@ class _AcknowledgeSyncState extends State<AcknowledgeSyncWidget> {
     if (_ack == Ack.unnecessary) {
       return widget.child;
     } else {
+      final message = _ack == Ack.download
+          ? (widget.failed
+              ? localizations.syncDownloadFailed
+              : localizations.syncDownloadSuccess)
+          : (widget.failed
+              ? localizations.syncUploadFailed
+              : localizations.syncUploadSuccess);
+
       return Column(children: [
-        Text(
-          _ack == Ack.download
-              ? localizations.syncDownloadSuccess
-              : localizations.syncUploadSuccess,
+        padAll(Text(
+          message,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),
-        ),
+        )),
         padAll(SizedBox(
             width: double.infinity,
             child: ElevatedTextButton(
@@ -423,7 +431,8 @@ class StationSyncStatus extends StatelessWidget {
 
   StationConfig get config => station.config!;
 
-  bool get isSyncing => station.syncing != null;
+  bool get isSyncing =>
+      station.syncing != null && station.syncing?.failed != true;
   bool get isFailed => station.syncing?.failed == true;
   bool get isDownloading => station.syncing?.download != null;
   bool get isUploading => station.syncing?.upload != null;
@@ -482,6 +491,7 @@ class StationSyncStatus extends StatelessWidget {
     final body = AcknowledgeSyncWidget(
         downloading: isDownloading,
         uploading: isUploading,
+        failed: station.syncing?.failed ?? false,
         child: _body(context));
 
     return BorderedListItem(header: header, children: [body]);

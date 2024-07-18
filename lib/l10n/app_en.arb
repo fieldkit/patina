@@ -51,6 +51,8 @@
   "syncDismissOk": "OK",
   "syncDownloadSuccess": "Download successful!",
   "syncUploadSuccess": "Upload successful!",
+  "syncDownloadFailed": "Uh oh, something went wrong. Please contact support.",
+  "syncUploadFailed": "Uh oh, something went wrong. Please contact support.",
   "syncWorking": "Working...",
   "syncDisconnected": "Station disconnected.",
   "syncElapsed": "{elapsed} elapsed.",
