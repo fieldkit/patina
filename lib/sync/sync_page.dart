@@ -235,33 +235,20 @@ class UploadPanel extends StatelessWidget {
   final StationModel station;
   final void Function(UploadTask) onUpload;
   final UploadTask? uploadTask;
-  final bool hasLoginTasks;
 
-  const UploadPanel(
-      {super.key,
-      required this.station,
-      required this.onUpload,
-      required this.uploadTask,
-      required this.hasLoginTasks});
+  const UploadPanel({
+    super.key,
+    required this.station,
+    required this.onUpload,
+    required this.uploadTask,
+  });
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
     if (uploadTask == null) {
-      if (hasLoginTasks) {
-        return const SizedBox.shrink();
-      } else {
-        return Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Divider(),
-            ),
-            padAll(Text(localizations.syncNoUpload)),
-          ],
-        );
-      }
+      return const SizedBox.shrink();
     }
 
     // Show message about problems with the internet. This will be fairly common.
@@ -318,12 +305,10 @@ class DataSyncPage extends StatelessWidget {
       final download = DownloadPanel(
           station: station, downloadTask: downloadTask, onDownload: onDownload);
       final upload = UploadPanel(
-          station: station,
-          uploadTask: uploadTask,
-          onUpload: onUpload,
-          hasLoginTasks: loginTasks.isNotEmpty);
-      Loggers.ui.i(
-          "data-sync: busy=$busy downloadTask=$downloadTask uploadTask=$uploadTask loginTasks=$loginTasks");
+        station: station,
+        uploadTask: uploadTask,
+        onUpload: onUpload,
+      );
 
       return StationSyncStatus(
           station: station,
