@@ -25,10 +25,10 @@ clean:
     cd rust && cargo clean
 
 test:
-    cd flows && dart run --enable-asserts example/sync.dart --test
+    cd flows && dart run --enable-asserts example/sync.dart --test ../resources/flows
 
 sync:
-    cd flows && dart run --enable-asserts example/sync.dart --sync
+    cd flows && dart run --enable-asserts example/sync.dart --sync ../resources/flows
 
 serve *args='':
     flutter pub run flutter_rust_bridge:serve {{args}}

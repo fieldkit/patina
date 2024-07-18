@@ -67,9 +67,16 @@ Future<void> test(Logger logger, String resources) async {
 
 void main(List<String> args) async {
   final logger = Logger(printer: SimplePrinter());
-  final resourcesPath = "resources/flows";
 
-  for (final arg in args) {
+  final flags = args.where((a) => a.startsWith("--"));
+  final paths = args.where((a) => !a.startsWith("--"));
+  final resourcesPath = paths.firstOrNull;
+  if (resourcesPath == null) {
+    logger.e("missing resources path");
+    return;
+  }
+
+  for (final arg in flags) {
     if (arg == "--sync") {
       await download(logger, resourcesPath);
     }
