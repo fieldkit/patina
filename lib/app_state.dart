@@ -1527,7 +1527,7 @@ class PortalAccounts extends ChangeNotifier {
 
       // Request per-user development/testing firmware.
       for (PortalAccount account in _accounts) {
-        Loggers.state.i("firmware: ${account.email}");
+        Loggers.state.i("firmware: authenticated");
         await cacheFirmware(tokens: account.tokens, background: true);
       }
     } catch (e) {
