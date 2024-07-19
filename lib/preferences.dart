@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AppPreferences {
   static const String _lastOpenedKey = 'lastOpened';
   static const String _localeKey = 'locale';
+  static const String _openCountKey = 'openCount';
 
   static final AppPreferences _singleton = AppPreferences._internal();
 
@@ -11,6 +12,16 @@ class AppPreferences {
   }
 
   AppPreferences._internal();
+
+  Future<int?> getOpenCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_openCountKey);
+  }
+
+  Future<void> setOpenCount(int count) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt(_openCountKey, count);
+  }
 
   Future<void> setLastOpened(DateTime date) async {
     final prefs = await SharedPreferences.getInstance();
