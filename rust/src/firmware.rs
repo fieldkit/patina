@@ -157,11 +157,15 @@ impl FirmwareUpgrader {
                 while let Some(res) = stream.next().await {
                     match res {
                         Ok(bytes) => {
-                            self.publish(UpgradeStatus::Uploading(UploadProgress {
-                                bytes_uploaded: bytes.bytes_uploaded,
-                                total_bytes: bytes.total_bytes,
-                            }))
-                            .await?;
+                            if bytes.completed() {
+                                self.publish(UpgradeStatus::Restarting {}).await?;
+                            } else {
+                                self.publish(UpgradeStatus::Uploading(UploadProgress {
+                                    bytes_uploaded: bytes.bytes_uploaded,
+                                    total_bytes: bytes.total_bytes,
+                                }))
+                                .await?;
+                            }
                         }
                         Err(e) => {
                             return Err(e.into());
