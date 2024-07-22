@@ -1,7 +1,7 @@
+import 'package:fk/diagnostics.dart';
 import 'package:fk/preferences.dart';
 import 'package:fk/settings/help_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
       _openCount++;
     });
 
-    print('open count: $_openCount');
+    Loggers.ui.i('open count: $_openCount');
 
     if (showWelcomeScreen) {
       setState(() {
@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
         _showWelcome = prefs.getBool('showWelcome') ?? false;
       });
     }
-    print('show welcome: $_showWelcome');
+    Loggers.ui.i('show welcome: $_showWelcome');
   }
 
   void setPageIndex(int index) {

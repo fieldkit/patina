@@ -7,7 +7,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fk/gen/api.dart';
 import '../app_state.dart';
 import '../common_widgets.dart';
-import '../diagnostics.dart';
 import '../no_stations_widget.dart';
 import '../view_station/firmware_page.dart';
 import '../settings/edit_account_page.dart';
