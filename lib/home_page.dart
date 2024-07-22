@@ -109,7 +109,8 @@ class _HomePageState extends State<HomePage> {
                         });
                         final appPrefs = AppPreferences();
                         await appPrefs.setOpenCount(_openCount);
-                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
                         await prefs.setBool('showWelcome', false);
                       },
                     )
@@ -119,13 +120,16 @@ class _HomePageState extends State<HomePage> {
                         MultiProvider(
                           providers: [
                             ChangeNotifierProvider.value(
-                                value: context.read<AppState>().moduleConfigurations),
+                                value: context
+                                    .read<AppState>()
+                                    .moduleConfigurations),
                             ChangeNotifierProvider.value(
                                 value: context.read<AppState>().knownStations),
                             ChangeNotifierProvider.value(
                                 value: context.read<AppState>().firmware),
                             ChangeNotifierProvider.value(
-                                value: context.read<AppState>().stationOperations),
+                                value:
+                                    context.read<AppState>().stationOperations),
                             ChangeNotifierProvider.value(
                                 value: context.read<AppState>().tasks),
                           ],
@@ -145,7 +149,8 @@ class _HomePageState extends State<HomePage> {
                             ChangeNotifierProvider.value(
                                 value: context.read<AppState>().firmware),
                             ChangeNotifierProvider.value(
-                                value: context.read<AppState>().stationOperations),
+                                value:
+                                    context.read<AppState>().stationOperations),
                             ChangeNotifierProvider.value(
                                 value: context.read<AppState>().tasks),
                           ],
@@ -192,8 +197,8 @@ class _HomePageState extends State<HomePage> {
               type: BottomNavigationBarType.fixed,
               selectedItemColor: const Color(0xFF2C3E50),
               unselectedLabelStyle: const TextStyle(fontSize: 12.0),
-              selectedLabelStyle: const TextStyle(
-                  fontSize: 12.0, fontWeight: FontWeight.w700),
+              selectedLabelStyle:
+                  const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w700),
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Image.asset(
