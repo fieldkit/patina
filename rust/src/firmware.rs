@@ -145,6 +145,8 @@ impl FirmwareUpgrader {
     async fn run(&self) -> Result<(), Error> {
         let path = PathBuf::from(&self.storage_path).join(self.firmware.file_name());
 
+        debug!("upgrade: starting {:?}", self.firmware);
+
         let client = query::device::Client::new().map_err(|_| Error::Unknown)?;
         match client
             .upgrade(&self.addr, &path, UpgradeOptions::default())
@@ -167,6 +169,8 @@ impl FirmwareUpgrader {
                 }
 
                 if self.swap {
+                    debug!("upgrade: upload done, swapped");
+
                     self.publish(UpgradeStatus::Restarting).await?;
 
                     match self.wait_for_station_restart().await {
@@ -182,6 +186,8 @@ impl FirmwareUpgrader {
                         Err(e) => Err(e),
                     }
                 } else {
+                    debug!("upgrade: upload done, completed");
+
                     self.publish(UpgradeStatus::Completed).await?;
 
                     Ok(())
@@ -222,7 +228,7 @@ pub async fn upgrade(
     addr: String,
 ) -> Result<UpgradeProgress> {
     let upgrader = FirmwareUpgrader {
-        publish_tx,
+        publish_tx: publish_tx.clone(),
         storage_path,
         device_id: device_id.clone(),
         firmware: firmware.clone(),
@@ -257,11 +263,23 @@ pub async fn upgrade(
         }
     });
 
-    Ok(UpgradeProgress {
+    info!("upgrade: starting");
+
+    let starting = UpgradeProgress {
         device_id: device_id.0,
         firmware_id: firmware.id,
         status: UpgradeStatus::Starting,
-    })
+    };
+
+    match publish_tx
+        .send(DomainMessage::UpgradeProgress(starting.clone()))
+        .await
+    {
+        Err(e) => warn!("Error published start: {:?}", e),
+        Ok(_) => {}
+    }
+
+    Ok(starting)
 }
 
 async fn check_cached_firmware(storage_path: &str) -> Result<Vec<Firmware>> {

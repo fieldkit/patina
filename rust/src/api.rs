@@ -1061,7 +1061,7 @@ pub struct DownloadProgress {
     pub received: usize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct UploadProgress {
     pub bytes_uploaded: u64,
     pub total_bytes: u64,
@@ -1088,7 +1088,7 @@ pub enum FirmwareDownloadStatus {
     Failed,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum UpgradeError {
     Other,
     SdCard,
@@ -1107,7 +1107,7 @@ impl From<crate::firmware::Error> for UpgradeError {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum UpgradeStatus {
     Starting,
     Uploading(UploadProgress),
@@ -1117,7 +1117,7 @@ pub enum UpgradeStatus {
     Failed(Option<UpgradeError>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct UpgradeProgress {
     pub device_id: String,
     pub firmware_id: i64,
