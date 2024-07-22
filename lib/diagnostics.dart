@@ -39,23 +39,26 @@ class AutomatedBuildFilter extends LogFilter {
 class AddLoggerName extends LogPrinter {
   final LogPrinter real;
   final String name;
-  final bool colors;
 
-  AddLoggerName(this.real, this.name, this.colors);
+  AddLoggerName(this.real, this.name);
 
   @override
   List<String> log(LogEvent event) {
-    final printed = real.log(event);
-    return printed
-        .map((s) {
-          if (colors) {
-            return s;
-          } else {
-            return AnsiStyles.strip(s);
-          }
-        })
-        .map((s) => '$name $s')
-        .toList();
+    return real.log(event).map((s) => '$name $s').toList();
+  }
+}
+
+class AnsiStrippingFileOutput extends FileOutput {
+  AnsiStrippingFileOutput({required super.file});
+
+  @override
+  void output(OutputEvent event) {
+    super.output(OutputEvent(
+        event.origin,
+        event.lines.map((l) {
+          // No idea why this doesn't catch them all.
+          return AnsiStyles.strip(l).replaceAll(";5;12m", "");
+        }).toList()));
   }
 }
 
@@ -66,7 +69,10 @@ Logger create(FileOutput file, String name, bool colors) {
       isAutomatedBuild() ? AutomatedBuildFilter() : StandardFilter();
   return Logger(
     filter: filter,
-    printer: AddLoggerName(SimplePrinter(colors: colors), name, colors),
+    printer: AddLoggerName(
+      SimplePrinter(colors: colors),
+      name,
+    ),
     output: MultiOutput([
       ConsoleOutput(),
       file,
@@ -104,7 +110,7 @@ class Loggers {
     final path = "$logsPath/logs.txt";
     final logFile = File(path);
     final rolled = rollover(logFile);
-    final FileOutput fileOutput = FileOutput(file: logFile);
+    final FileOutput fileOutput = AnsiStrippingFileOutput(file: logFile);
     _main = create(fileOutput, "main", colors);
     _bridge = create(fileOutput, "bridge", colors);
     _state = create(fileOutput, "state", colors);
