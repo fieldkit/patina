@@ -107,6 +107,7 @@ pub async fn cache_firmware(
 }
 
 pub struct FirmwareUpgrader {
+    options: UpgradeOptions,
     publish_tx: Sender<DomainMessage>,
     storage_path: String,
     device_id: DeviceId,
@@ -149,7 +150,7 @@ impl FirmwareUpgrader {
 
         let client = query::device::Client::new().map_err(|_| Error::Unknown)?;
         match client
-            .upgrade(&self.addr, &path, UpgradeOptions::default())
+            .upgrade(&self.addr, &path, self.options.clone())
             .await
         {
             Ok(mut stream) => {
@@ -227,7 +228,12 @@ pub async fn upgrade(
     swap: bool,
     addr: String,
 ) -> Result<UpgradeProgress> {
+    let options = UpgradeOptions {
+        swap,
+        limited: None,
+    };
     let upgrader = FirmwareUpgrader {
+        options,
         publish_tx: publish_tx.clone(),
         storage_path,
         device_id: device_id.clone(),
