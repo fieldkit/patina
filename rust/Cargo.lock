@@ -381,7 +381,7 @@ dependencies = [
 [[package]]
 name = "discovery"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=7338fc163d65bd062bf00ae7a6646008d1283dbc#7338fc163d65bd062bf00ae7a6646008d1283dbc"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=f71a9ef0a14218fef92ff2bafb019374b82b960f#f71a9ef0a14218fef92ff2bafb019374b82b960f"
 dependencies = [
  "anyhow",
  "hex",
@@ -1177,7 +1177,7 @@ dependencies = [
 [[package]]
 name = "protos"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=7338fc163d65bd062bf00ae7a6646008d1283dbc#7338fc163d65bd062bf00ae7a6646008d1283dbc"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=f71a9ef0a14218fef92ff2bafb019374b82b960f#f71a9ef0a14218fef92ff2bafb019374b82b960f"
 dependencies = [
  "anyhow",
  "prost",
@@ -1205,7 +1205,7 @@ dependencies = [
 [[package]]
 name = "query"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=7338fc163d65bd062bf00ae7a6646008d1283dbc#7338fc163d65bd062bf00ae7a6646008d1283dbc"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=f71a9ef0a14218fef92ff2bafb019374b82b960f#f71a9ef0a14218fef92ff2bafb019374b82b960f"
 dependencies = [
  "anyhow",
  "async-stream",
@@ -1621,7 +1621,7 @@ dependencies = [
 [[package]]
 name = "store"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=7338fc163d65bd062bf00ae7a6646008d1283dbc#7338fc163d65bd062bf00ae7a6646008d1283dbc"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=f71a9ef0a14218fef92ff2bafb019374b82b960f#f71a9ef0a14218fef92ff2bafb019374b82b960f"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1661,7 +1661,7 @@ dependencies = [
 [[package]]
 name = "sync"
 version = "0.1.0"
-source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=7338fc163d65bd062bf00ae7a6646008d1283dbc#7338fc163d65bd062bf00ae7a6646008d1283dbc"
+source = "git+https://gitlab.com/fieldkit/libraries/rustfk.git?rev=f71a9ef0a14218fef92ff2bafb019374b82b960f#f71a9ef0a14218fef92ff2bafb019374b82b960f"
 dependencies = [
  "anyhow",
  "async-trait",
