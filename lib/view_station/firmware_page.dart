@@ -348,16 +348,20 @@ class UpgradeProgressWidget extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final status = operation.status;
     if (status is UpgradeStatus_Starting) {
-      return Column(children: [
-        WH.progressBar(0.0),
-        WH.padBelowProgress(Text(localizations.firmwareStarting)),
-      ]);
+      return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(children: [
+            WH.progressBar(0.0),
+            WH.padBelowProgress(Text(localizations.firmwareStarting)),
+          ]));
     }
     if (status is UpgradeStatus_Uploading) {
-      return Column(children: [
-        WH.progressBar(status.field0.completed),
-        WH.padBelowProgress(Text(localizations.firmwareUploading)),
-      ]);
+      return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(children: [
+            WH.progressBar(status.field0.completed),
+            WH.padBelowProgress(Text(localizations.firmwareUploading)),
+          ]));
     }
     if (status is UpgradeStatus_Restarting) {
       return Text(localizations.firmwareRestarting);
