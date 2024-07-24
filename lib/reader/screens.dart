@@ -3,6 +3,7 @@ import 'package:fk/reader/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flows/flows.dart' as flows;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../diagnostics.dart';
 
@@ -139,11 +140,20 @@ class _QuickFlowState extends State<QuickFlow> {
           onBack: onBack,
           onSkip: widget.onComplete,
           onGuide: () {
-            Loggers.ui.i("guide");
+            openGuideUrl(screen.guideUrl!);
           },
         ),
       ),
     );
+  }
+}
+
+void openGuideUrl(String guideUrl) async {
+  final Uri url = Uri.parse(guideUrl);
+  if (await canLaunchUrl(url)) {
+    await launchUrl(url);
+  } else {
+    throw 'Could not launch $guideUrl';
   }
 }
 
