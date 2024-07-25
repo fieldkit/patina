@@ -894,6 +894,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  LocalFirmware dco_decode_box_local_firmware(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_local_firmware(raw);
+  }
+
+  @protected
   DeployConfig dco_decode_deploy_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1119,14 +1125,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   LocalFirmware dco_decode_local_firmware(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return LocalFirmware(
       id: dco_decode_i_64(arr[0]),
       label: dco_decode_String(arr[1]),
       time: dco_decode_i_64(arr[2]),
       module: dco_decode_String(arr[3]),
       profile: dco_decode_String(arr[4]),
+      bootloader: dco_decode_opt_box_local_firmware(arr[5]),
     );
   }
 
@@ -1291,6 +1298,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   UpgradeError? dco_decode_opt_box_autoadd_upgrade_error(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_upgrade_error(raw);
+  }
+
+  @protected
+  LocalFirmware? dco_decode_opt_box_local_firmware(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_local_firmware(raw);
   }
 
   @protected
@@ -1869,6 +1882,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  LocalFirmware sse_decode_box_local_firmware(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_local_firmware(deserializer));
+  }
+
+  @protected
   DeployConfig sse_decode_deploy_config(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_location = sse_decode_String(deserializer);
@@ -2146,12 +2165,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_time = sse_decode_i_64(deserializer);
     var var_module = sse_decode_String(deserializer);
     var var_profile = sse_decode_String(deserializer);
+    var var_bootloader = sse_decode_opt_box_local_firmware(deserializer);
     return LocalFirmware(
         id: var_id,
         label: var_label,
         time: var_time,
         module: var_module,
-        profile: var_profile);
+        profile: var_profile,
+        bootloader: var_bootloader);
   }
 
   @protected
@@ -2374,6 +2395,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
     if (sse_decode_bool(deserializer)) {
       return (sse_decode_box_autoadd_upgrade_error(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  LocalFirmware? sse_decode_opt_box_local_firmware(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_local_firmware(deserializer));
     } else {
       return null;
     }
@@ -2941,6 +2974,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_local_firmware(
+      LocalFirmware self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_local_firmware(self, serializer);
+  }
+
+  @protected
   void sse_encode_deploy_config(DeployConfig self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.location, serializer);
@@ -3178,6 +3218,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_i_64(self.time, serializer);
     sse_encode_String(self.module, serializer);
     sse_encode_String(self.profile, serializer);
+    sse_encode_opt_box_local_firmware(self.bootloader, serializer);
   }
 
   @protected
@@ -3367,6 +3408,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_box_autoadd_upgrade_error(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_local_firmware(
+      LocalFirmware? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_local_firmware(self, serializer);
     }
   }
 

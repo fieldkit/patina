@@ -8,9 +8,9 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'api.freezed.dart';
 
-// These functions are ignored because they are not marked as `pub`: `add_or_update_station_in_portal`, `authenticate_portal`, `background_task`, `cache_firmware`, `calibrate`, `clear_calibration`, `configure`, `create_sdk`, `decoded`, `file_name`, `from`, `get_my_stations`, `get_nearby_addr`, `handle_background_message`, `new`, `new`, `open`, `refresh_token`, `refresh_tokens`, `register_portal_account`, `run`, `start_download`, `start_runtime`, `start_upload`, `upgrade_station`, `validate_tokens`, `verify_lora_transmission`, `with_runtime`
+// These functions are ignored because they are not marked as `pub`: `add_or_update_station_in_portal`, `authenticate_portal`, `background_task`, `cache_firmware`, `calibrate`, `clear_calibration`, `configure`, `create_sdk`, `decoded`, `file_name`, `from`, `get_my_stations`, `get_nearby_addr`, `handle_background_message`, `new`, `new`, `new`, `open`, `refresh_token`, `refresh_tokens`, `register_portal_account`, `run`, `start_download`, `start_runtime`, `start_upload`, `upgrade_station`, `validate_tokens`, `verify_lora_transmission`, `with_runtime`
 // These types are ignored because they are not used by any `pub` functions: `LogSink`, `MergeAndPublishReplies`, `RuntimeError`, `SdkMappingError`, `Sdk`, `StationAndConnection`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `flush`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `into`, `into`, `into`, `into`, `into`, `into`, `into`, `into`, `into`, `into`, `into`, `make_writer`, `try_into`, `try_into`, `write`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `flush`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `into`, `into`, `into`, `into`, `into`, `into`, `into`, `into`, `into`, `into`, `into`, `make_writer`, `try_into`, `try_into`, `write`
 
 Stream<DomainMessage> startNative(
         {required String storagePath, required String portalBaseUrl}) =>
@@ -396,6 +396,7 @@ class LocalFirmware {
   final PlatformInt64 time;
   final String module;
   final String profile;
+  final LocalFirmware? bootloader;
 
   const LocalFirmware({
     required this.id,
@@ -403,6 +404,7 @@ class LocalFirmware {
     required this.time,
     required this.module,
     required this.profile,
+    this.bootloader,
   });
 
   @override
@@ -411,7 +413,8 @@ class LocalFirmware {
       label.hashCode ^
       time.hashCode ^
       module.hashCode ^
-      profile.hashCode;
+      profile.hashCode ^
+      bootloader.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -422,7 +425,8 @@ class LocalFirmware {
           label == other.label &&
           time == other.time &&
           module == other.module &&
-          profile == other.profile;
+          profile == other.profile &&
+          bootloader == other.bootloader;
 }
 
 enum LoraBand {
