@@ -120,6 +120,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       dynamic raw);
 
   @protected
+  LocalFirmware dco_decode_box_local_firmware(dynamic raw);
+
+  @protected
   DeployConfig dco_decode_deploy_config(dynamic raw);
 
   @protected
@@ -242,6 +245,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   UpgradeError? dco_decode_opt_box_autoadd_upgrade_error(dynamic raw);
+
+  @protected
+  LocalFirmware? dco_decode_opt_box_local_firmware(dynamic raw);
 
   @protected
   Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw);
@@ -443,6 +449,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
+  LocalFirmware sse_decode_box_local_firmware(SseDeserializer deserializer);
+
+  @protected
   DeployConfig sse_decode_deploy_config(SseDeserializer deserializer);
 
   @protected
@@ -580,6 +589,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   UpgradeError? sse_decode_opt_box_autoadd_upgrade_error(
+      SseDeserializer deserializer);
+
+  @protected
+  LocalFirmware? sse_decode_opt_box_local_firmware(
       SseDeserializer deserializer);
 
   @protected
@@ -791,6 +804,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       WifiTransmissionConfig self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_local_firmware(
+      LocalFirmware self, SseSerializer serializer);
+
+  @protected
   void sse_encode_deploy_config(DeployConfig self, SseSerializer serializer);
 
   @protected
@@ -936,6 +953,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_upgrade_error(
       UpgradeError? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_box_local_firmware(
+      LocalFirmware? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_list_prim_u_8_strict(

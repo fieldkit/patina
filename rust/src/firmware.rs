@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use discovery::DeviceId;
 use query::{
     device::{self, UpgradeOptions},
-    portal::{Firmware, FirmwareFilter},
+    portal::{Firmware, FirmwareFilter, ModuleKind},
 };
 use std::path::PathBuf;
 use thiserror::Error;
@@ -109,7 +109,6 @@ pub async fn cache_firmware(
 pub struct FirmwareUpgrader {
     options: UpgradeOptions,
     publish_tx: Sender<DomainMessage>,
-    storage_path: String,
     device_id: DeviceId,
     firmware: LocalFirmware,
     swap: bool,
@@ -144,15 +143,10 @@ impl FirmwareUpgrader {
     }
 
     async fn run(&self) -> Result<(), Error> {
-        let path = PathBuf::from(&self.storage_path).join(self.firmware.file_name());
-
         debug!("upgrade: starting {:?}", self.firmware);
 
         let client = query::device::Client::new().map_err(|_| Error::Unknown)?;
-        match client
-            .upgrade(&self.addr, &path, self.options.clone())
-            .await
-        {
+        match client.upgrade(&self.addr, self.options.clone()).await {
             Ok(mut stream) => {
                 while let Some(res) = stream.next().await {
                     match res {
@@ -232,14 +226,22 @@ pub async fn upgrade(
     swap: bool,
     addr: String,
 ) -> Result<UpgradeProgress> {
+    let bootloader = firmware
+        .bootloader
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("no bootloader for firmware"))?;
+    let bootloader = PathBuf::from(&storage_path).join(bootloader.file_name());
+    let main = PathBuf::from(&storage_path).join(firmware.file_name());
+
     let options = UpgradeOptions {
         swap,
         limited: None,
+        bootloader,
+        main,
     };
     let upgrader = FirmwareUpgrader {
         options,
         publish_tx: publish_tx.clone(),
-        storage_path,
         device_id: device_id.clone(),
         firmware: firmware.clone(),
         swap,
@@ -318,32 +320,42 @@ async fn publish_available_firmware(
     info!("publish_available_firmware");
 
     let firmware = check_cached_firmware(storage_path).await?;
+
+    // There are two kinds of firmware, one is bootloader and the other is for
+    // the core. This finds the matching bootloader firmware for each core
+    // firmware and maps them to LocalFirmware instances. We do this because the
+    // etag profile and time are the same for corresponding bootloader and core
+    // firmware from the same build.
     let local = firmware
         .into_iter()
-        .map(|f| f.into())
-        .collect::<Vec<LocalFirmware>>()
+        .flat_map(|f| {
+            f.etag
+                .parts()
+                .map(|parts| ((parts.profile, parts.stamp), f))
+        })
+        .sorted_by(|(a, _), (b, _)| a.cmp(b))
+        .group_by(|(parts, _)| parts.clone())
         .into_iter()
-        .sorted_unstable_by_key(|i| i.time)
-        .rev()
-        .collect();
+        .map(|(_, group)| group.map(|(_, f)| f).collect::<Vec<_>>())
+        .flat_map(|group| match group.as_slice() {
+            [a, b] => match (a.module_kind(), b.module_kind()) {
+                (Some(ModuleKind::Bootloader), Some(ModuleKind::Core)) => {
+                    Some(LocalFirmware::new(b.clone(), Some(a.clone())))
+                }
+                (Some(ModuleKind::Core), Some(ModuleKind::Bootloader)) => {
+                    Some(LocalFirmware::new(a.clone(), Some(b.clone())))
+                }
+                _ => None,
+            },
+            _ => None,
+        })
+        .collect::<Vec<_>>();
 
     publish_tx
         .send(DomainMessage::AvailableFirmware(local))
         .await?;
 
     Ok(())
-}
-
-impl From<Firmware> for LocalFirmware {
-    fn from(value: Firmware) -> Self {
-        Self {
-            id: value.id,
-            time: value.time.timestamp_millis(),
-            label: value.version,
-            module: value.module,
-            profile: value.profile,
-        }
-    }
 }
 
 async fn query_available_firmware(
@@ -376,10 +388,10 @@ async fn cache_firmware_and_json_if_newer(
         &client,
         tokens,
         Some(FirmwareFilter {
-            module: Some("fk-core".to_owned()),
+            module: None,
             profile: None,
             page: None,
-            page_size: Some(20),
+            page_size: Some(30),
         }),
     )
     .await?;

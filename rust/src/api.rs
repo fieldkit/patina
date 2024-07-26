@@ -18,7 +18,7 @@ use query::{
     device::{
         self, ConfigureLoraTransmission, HttpQuery, HttpReply, ModuleFlags, QueryType, Recording,
     },
-    portal::{DecodedToken, StatusCode},
+    portal::{DecodedToken, Firmware, StatusCode},
 };
 use store::Db;
 
@@ -1160,9 +1160,21 @@ pub struct LocalFirmware {
     pub time: i64,
     pub module: String,
     pub profile: String,
+    pub bootloader: Option<Box<LocalFirmware>>,
 }
 
 impl LocalFirmware {
+    pub(crate) fn new(core: Firmware, bootloader: Option<Firmware>) -> Self {
+        Self {
+            id: core.id,
+            label: core.version,
+            time: core.time.timestamp_millis(),
+            module: core.module,
+            profile: core.profile,
+            bootloader: bootloader.map(|f| Box::new(LocalFirmware::new(f, None))),
+        }
+    }
+
     pub(crate) fn file_name(&self) -> String {
         format!("firmware-{}.bin", self.id)
     }

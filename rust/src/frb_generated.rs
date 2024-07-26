@@ -856,6 +856,13 @@ impl SseDecode for bool {
     }
 }
 
+impl SseDecode for Box<crate::api::LocalFirmware> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        return Box::new(<crate::api::LocalFirmware>::sse_decode(deserializer));
+    }
+}
+
 impl SseDecode for crate::api::DeployConfig {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1156,12 +1163,14 @@ impl SseDecode for crate::api::LocalFirmware {
         let mut var_time = <i64>::sse_decode(deserializer);
         let mut var_module = <String>::sse_decode(deserializer);
         let mut var_profile = <String>::sse_decode(deserializer);
+        let mut var_bootloader = <Option<Box<crate::api::LocalFirmware>>>::sse_decode(deserializer);
         return crate::api::LocalFirmware {
             id: var_id,
             label: var_label,
             time: var_time,
             module: var_module,
             profile: var_profile,
+            bootloader: var_bootloader,
         };
     }
 }
@@ -1398,6 +1407,17 @@ impl SseDecode for Option<crate::api::UpgradeError> {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         if (<bool>::sse_decode(deserializer)) {
             return Some(<crate::api::UpgradeError>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<Box<crate::api::LocalFirmware>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<Box<crate::api::LocalFirmware>>::sse_decode(deserializer));
         } else {
             return None;
         }
@@ -2104,6 +2124,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::LocalFirmware {
             self.time.into_into_dart().into_dart(),
             self.module.into_into_dart().into_dart(),
             self.profile.into_into_dart().into_dart(),
+            self.bootloader.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -2717,6 +2738,13 @@ impl SseEncode for bool {
     }
 }
 
+impl SseEncode for Box<crate::api::LocalFirmware> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <crate::api::LocalFirmware>::sse_encode(*self, serializer);
+    }
+}
+
 impl SseEncode for crate::api::DeployConfig {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2965,6 +2993,7 @@ impl SseEncode for crate::api::LocalFirmware {
         <i64>::sse_encode(self.time, serializer);
         <String>::sse_encode(self.module, serializer);
         <String>::sse_encode(self.profile, serializer);
+        <Option<Box<crate::api::LocalFirmware>>>::sse_encode(self.bootloader, serializer);
     }
 }
 
@@ -3160,6 +3189,16 @@ impl SseEncode for Option<crate::api::UpgradeError> {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
             <crate::api::UpgradeError>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<Box<crate::api::LocalFirmware>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <Box<crate::api::LocalFirmware>>::sse_encode(value, serializer);
         }
     }
 }
