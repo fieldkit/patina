@@ -130,7 +130,7 @@ class UpdatePortal {
         if (update.isLeft()) {
           final error = update.getLeftValue();
           if (error is PortalError_Authentication) {
-            Loggers.main.e("portal: auth $e");
+            Loggers.state.e("portal: auth $e");
             await portalAccounts.validateAccount(account);
           } else {
             Loggers.state.e("portal: $error");
@@ -373,7 +373,7 @@ class StationOperations extends ChangeNotifier {
         return operation;
       }
     }
-    Loggers.state.i("Creating $T");
+    Loggers.state.i("creating $T");
     final operation = factory();
     _active[deviceId]!.add(operation);
     return operation;
@@ -507,7 +507,7 @@ class UpgradeOperation extends Operation {
         Loggers.state.i("upgrade: $error");
       } else {
         error = null;
-        Loggers.state.i("upgrade: $upgradeStatus");
+        Loggers.state.t("upgrade: $upgradeStatus");
       }
       firmwareId = message.field0.firmwareId;
       status = upgradeStatus;
@@ -715,16 +715,16 @@ class StationConfiguration extends ChangeNotifier {
       final List<int> delimited = reader.readBytes();
       try {
         final proto.DataRecord record = proto.DataRecord.fromBuffer(delimited);
-        Loggers.state.i("Events $record");
+        Loggers.state.i("events $record");
         return record.events.map((e) => Event.from(e)).toList();
       } catch (e) {
-        Loggers.state.w("Error reading events: $e");
+        Loggers.state.w("error reading events: $e");
         Loggers.state.w("$bytes (${bytes.length})");
         Loggers.state.i("$delimited (${delimited.length})");
         return List.empty();
       }
     } catch (e) {
-      Loggers.state.w("Error reading events: $e");
+      Loggers.state.w("error reading events: $e");
       Loggers.state.w("$bytes (${bytes.length})");
       return List.empty();
     }
