@@ -109,7 +109,6 @@ pub async fn cache_firmware(
 pub struct FirmwareUpgrader {
     options: UpgradeOptions,
     publish_tx: Sender<DomainMessage>,
-    storage_path: String,
     device_id: DeviceId,
     firmware: LocalFirmware,
     swap: bool,
@@ -144,15 +143,10 @@ impl FirmwareUpgrader {
     }
 
     async fn run(&self) -> Result<(), Error> {
-        let path = PathBuf::from(&self.storage_path).join(self.firmware.file_name());
-
         debug!("upgrade: starting {:?}", self.firmware);
 
         let client = query::device::Client::new().map_err(|_| Error::Unknown)?;
-        match client
-            .upgrade(&self.addr, &path, self.options.clone())
-            .await
-        {
+        match client.upgrade(&self.addr, self.options.clone()).await {
             Ok(mut stream) => {
                 while let Some(res) = stream.next().await {
                     match res {
@@ -232,14 +226,22 @@ pub async fn upgrade(
     swap: bool,
     addr: String,
 ) -> Result<UpgradeProgress> {
+    let bootloader = firmware
+        .bootloader
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("no bootloader for firmware"))?;
+    let bootloader = PathBuf::from(&storage_path).join(bootloader.file_name());
+    let main = PathBuf::from(&storage_path).join(firmware.file_name());
+
     let options = UpgradeOptions {
         swap,
         limited: None,
+        bootloader,
+        main,
     };
     let upgrader = FirmwareUpgrader {
         options,
         publish_tx: publish_tx.clone(),
-        storage_path,
         device_id: device_id.clone(),
         firmware: firmware.clone(),
         swap,
