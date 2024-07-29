@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'language_page.dart';
 import 'accounts_page.dart';
 import 'legal_page.dart';
-import 'help_page.dart';
 
 class SettingsTab extends StatelessWidget {
 
@@ -32,19 +31,6 @@ class SettingsTab extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => const AccountsPage(),
                 ),
-              );
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: SvgPicture.asset(
-              "resources/images/icon_help_settings.svg",
-              semanticsLabel: AppLocalizations.of(context)!.helpSettingsIcon),
-            title: Text(AppLocalizations.of(context)!.helpTitle),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HelpTab()),
               );
             },
           ),
