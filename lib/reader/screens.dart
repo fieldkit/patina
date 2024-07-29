@@ -3,6 +3,8 @@ import 'package:fk/reader/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flows/flows.dart' as flows;
+import 'package:url_launcher/link.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../diagnostics.dart';
 
@@ -138,12 +140,18 @@ class _QuickFlowState extends State<QuickFlow> {
           onForward: onForward,
           onBack: onBack,
           onSkip: widget.onComplete,
-          onGuide: () {
-            Loggers.ui.i("guide");
-          },
         ),
       ),
     );
+  }
+}
+
+void openGuideUrl(String guideUrl) async {
+  final Uri url = Uri.parse(guideUrl);
+  if (await canLaunchUrl(url)) {
+    await launchUrl(url);
+  } else {
+    throw 'Could not launch $guideUrl';
   }
 }
 
@@ -189,7 +197,6 @@ class FlowScreenWidget extends StatelessWidget {
   final flows.Screen screen;
   final VoidCallback? onForward;
   final VoidCallback? onSkip;
-  final VoidCallback? onGuide;
   final VoidCallback? onBack;
 
   const FlowScreenWidget({
@@ -197,7 +204,6 @@ class FlowScreenWidget extends StatelessWidget {
     required this.screen,
     this.onForward,
     this.onSkip,
-    this.onGuide,
     this.onBack,
   });
 
@@ -232,7 +238,54 @@ class FlowScreenWidget extends StatelessWidget {
           ),
         ),
       if (screen.guideTitle != null)
-        ElevatedTextButton(onPressed: onGuide, text: screen.guideTitle!),
+      Link(
+          uri: Uri.parse(
+             screen.guideUrl!),
+          target: LinkTarget.blank,
+          builder: (BuildContext ctx, FollowLink? openLink) {
+            return Center(
+              child: StatefulBuilder(
+                builder: (context, setState) {
+                  bool isPressed = false;
+        
+                  return TextButton(
+                    onPressed: () {
+                      setState(() {
+                        isPressed = !isPressed;
+                      });
+                      openLink!();
+                    },
+                    style: ButtonStyle(
+                      overlayColor: WidgetStateProperty.resolveWith(
+                        (Set<WidgetState> states) {
+                          if (states.contains(WidgetState.pressed) == true) {
+                            return Colors.black12;
+                          }
+                          return Colors.white;
+                        },
+                      ),
+                      foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                        (Set<WidgetState> states) {
+                          return const Color(0xFF2C3E50);
+                        },
+                      ),
+                      textStyle: WidgetStateProperty.resolveWith<TextStyle>(
+                        (Set<WidgetState> states) {
+                          return const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Avenir',
+                          );
+                        },
+                      ),
+                    ),
+                    child: Text(screen.guideTitle!),
+                  );
+                },
+              ),
+            );
+          },
+        ),
     ];
   }
 
@@ -276,7 +329,6 @@ class FlowNamedScreenWidget extends StatelessWidget {
   final String name;
   final VoidCallback? onForward;
   final VoidCallback? onSkip;
-  final VoidCallback? onGuide;
   final VoidCallback? onBack;
 
   const FlowNamedScreenWidget({
@@ -284,7 +336,6 @@ class FlowNamedScreenWidget extends StatelessWidget {
     required this.name,
     this.onForward,
     this.onSkip,
-    this.onGuide,
     this.onBack,
   });
 
@@ -297,7 +348,6 @@ class FlowNamedScreenWidget extends StatelessWidget {
       screen: screen,
       onForward: onForward,
       onSkip: onSkip,
-      onGuide: onGuide,
       onBack: onBack,
     );
   }

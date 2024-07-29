@@ -32,36 +32,60 @@ Future<void> download(Logger logger, String resources) async {
       }'''
   };
 
-  logger.i("downloading json");
+  try {
+    logger.i("downloading json");
 
-  final response = await http.post(Uri.parse("$baseUrl/graphql"),
-      body: json.encode(query), headers: {"Content-Type": "application/json"});
-  await file.writeAsBytes(response.bodyBytes);
-  final data = await file.readAsString();
-  final flows = ContentFlows.get(data);
+    final response = await http.post(Uri.parse("$baseUrl/graphql"),
+        body: json.encode(query), headers: {"Content-Type": "application/json"});
+    if (response.statusCode == 200) {
+      await file.writeAsBytes(response.bodyBytes);
+      final data = await file.readAsString();
+      final flows = ContentFlows.get(data);
 
-  for (final screen in flows.allScreens.values) {
-    for (final simple in screen.simple) {
-      for (final image in simple.images) {
-        logger.i("downloading ${image.url}");
+      for (final screen in flows.allScreens.values) {
+        for (final simple in screen.simple) {
+          for (final image in simple.images) {
+            try {
+              logger.i("downloading ${image.url}");
 
-        final response = await http.get(Uri.parse(baseUrl + image.url));
-        final writing = File(resources + image.url);
-        await writing.writeAsBytes(response.bodyBytes);
+              final response = await http.get(Uri.parse(baseUrl + image.url));
+              if (response.statusCode == 200) {
+                final writing = File(resources + image.url);
+                await writing.writeAsBytes(response.bodyBytes);
+              } else {
+                logger.e("Failed to download ${image.url}: ${response.statusCode}");
+              }
+            } catch (e) {
+              logger.e("Error occurred while downloading ${image.url}: $e");
+            }
+          }
+        }
       }
+    } else {
+      logger.e("Failed to download JSON: ${response.statusCode}");
     }
+  } catch (e) {
+    logger.e("Error occurred during download: $e");
   }
 }
 
 Future<void> test(Logger logger, String resources) async {
-  final file = File("$resources/flows_en.json");
-  final data = await file.readAsString();
-  final flows = ContentFlows.get(data);
-  for (final screen in flows.allScreens.values) {
-    for (final simple in screen.simple) {
-      final parser = MarkdownVerifyParser(logger: logger, images: List.empty());
-      parser.parse(simple.body);
+  try {
+    final file = File("$resources/flows_en.json");
+    final data = await file.readAsString();
+    final flows = ContentFlows.get(data);
+    for (final screen in flows.allScreens.values) {
+      for (final simple in screen.simple) {
+        try {
+          final parser = MarkdownVerifyParser(logger: logger, images: List.empty());
+          parser.parse(simple.body);
+        } catch (e) {
+          logger.e("Error occurred while parsing body: $e");
+        }
+      }
     }
+  } catch (e) {
+    logger.e("Error occurred during test: $e");
   }
 }
 
@@ -76,12 +100,16 @@ void main(List<String> args) async {
     return;
   }
 
-  for (final arg in flags) {
-    if (arg == "--sync") {
-      await download(logger, resourcesPath);
+  try {
+    for (final arg in flags) {
+      if (arg == "--sync") {
+        await download(logger, resourcesPath);
+      }
+      if (arg == "--test") {
+        await test(logger, resourcesPath);
+      }
     }
-    if (arg == "--test") {
-      await test(logger, resourcesPath);
-    }
+  } catch (e) {
+    logger.e("Error occurred in main: $e");
   }
 }

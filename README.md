@@ -141,9 +141,9 @@ flutter test
 ## 📖 Updating Strapi
 To Update Strapi, or the static content, run:
 ```bash
-dart flows/example/sync.dart --test
+just test
 ```
 then
 ```bash
-dart flows/example/sync.dart --sync
+just sync
 ```
