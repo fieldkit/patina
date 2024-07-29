@@ -18,13 +18,13 @@ class Flow {
 
 class ImageRef {
   final String url;
-  final String alt;
+  final String? alt;
 
   ImageRef({required this.url, required this.alt});
 
   factory ImageRef.fromJson(Map<String, dynamic> data) {
     final url = data['url'] as String;
-    final alt = data['alternativeText'] as String;
+    final alt = data['alternativeText'] as String?;
 
     return ImageRef(url: url, alt: alt);
   }
